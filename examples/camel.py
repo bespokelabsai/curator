@@ -50,7 +50,7 @@ def camelai():
         prompter=GetSubjects,
         name="Generate subjects",
     )
-    # If the response is a list, bella automatically flattens it.
+    # If the output is a list, bella automatically flattens it.
     subject_dataset = bella.map(
         subject_dataset,
         lambda sample: [{"subject": subject} for subject in sample["subjects"]],
