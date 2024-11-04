@@ -216,7 +216,10 @@ def completions(
 def map(dataset: Iterable, func: Callable):
     samples = []
     for sample in dataset:
-        result = func(sample)
+        if len(sample) == 1:
+            result = func(sample)
+        else:   
+            result = func(*sample)
         if isinstance(result, list):
             samples.extend(result)
         else:

@@ -66,9 +66,9 @@ def camelai():
     subsubject_dataset = bella.map(
         zip(subject_dataset, subsubject_dataset),
         # ({"subject": "Math"}, {"subjects": ["Algebra", "Geometry"]}) -> [{"subject": "Math", "subsubject": "Algebra"}, {"subject": "Math", "subsubject": "Geometry"}]
-        lambda sample: [
-            {"subject": sample[0]["subject"], "subsubject": subsubject}
-            for subsubject in sample[1]["subjects"]
+        lambda subject, subsubjects: [
+            {"subject": subject["subject"], "subsubject": subsubject}
+            for subsubject in subsubjects["subjects"]
         ],
     )
     print(pd.DataFrame.from_records(subsubject_dataset))
@@ -80,14 +80,14 @@ def camelai():
     )
     qa_dataset = bella.map(
         zip(subsubject_dataset, qa_dataset),
-        lambda sample: [
+        lambda subsubject, qas: [
             {
-                "subject": sample[0]["subject"],
-                "subsubject": sample[0]["subsubject"],
+                "subject": subsubject["subject"],
+                "subsubject": subsubject["subsubject"],
                 "question": qa["question"],
                 "answer": qa["answer"],
             }
-            for qa in sample[1]["qas"]
+            for qa in qas["qas"]
         ],
     )
     print(pd.DataFrame.from_records(qa_dataset))
