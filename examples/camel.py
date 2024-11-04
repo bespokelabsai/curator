@@ -53,6 +53,7 @@ def camelai():
     # If the output is a list, bella automatically flattens it.
     subject_dataset = bella.map(
         subject_dataset,
+        # {"subjects": ["Math", "Science"]} -> [{"subject": "Math"}, {"subject": "Science"}]
         lambda sample: [{"subject": subject} for subject in sample["subjects"]],
     )
     print(pd.DataFrame.from_records(subject_dataset))
@@ -65,6 +66,7 @@ def camelai():
     # join the subject and subsubject datasets
     subsubject_dataset = bella.map(
         zip(subject_dataset, subsubject_dataset),
+        # ({"subject": "Math"}, {"subjects": ["Algebra", "Geometry"]}) -> [{"subject": "Math", "subsubject": "Algebra"}, {"subject": "Math", "subsubject": "Geometry"}]
         lambda sample: [
             {"subject": sample[0]["subject"], "subsubject": subsubject}
             for subsubject in sample[1]["subjects"]
