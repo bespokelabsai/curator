@@ -46,7 +46,6 @@ GetQAList = prompt.Prompter(
 
 def camelai():
     subject_dataset = bella.completions(
-        dataset=(),
         prompter=GetSubjects,
         name="Generate subjects",
     )

@@ -158,8 +158,8 @@ def empty():
 
 
 def completions(
-    dataset: Iterable,
-    prompter: Prompter,
+    dataset: Iterable = [],
+    prompter: Prompter = None,
     name: Optional[str] = None,
     resume: bool = True,
 ) -> "Dataset":
@@ -175,6 +175,9 @@ def completions(
     Returns:
         A Dataset with the completions added in the output_column
     """
+    if prompter is None:
+        raise ValueError("prompter is required")
+
     bella_cache_dir = os.environ.get(
         "BELLA_CACHE_DIR", os.path.expanduser("~/.cache/bella")
     )
