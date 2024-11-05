@@ -19,78 +19,42 @@ class QA(BaseModel):
 class QAs(BaseModel):
     qas: List[QA] = Field(description="A list of QAs")
 
-
-GetSubjects = prompt.Prompter(
-    system_prompt="You are a helpful AI assistant.",
-    user_prompt="Generate a diverse list of 3 subjects. Keep it high-level (e.g. Math, Science).",
-    response_format=Subjects,
-    model_name="gpt-4o-mini",
+@bella.completion(
+    model="gpt-4o-mini",
+    response_model=Subjects,
 )
+def generate_subjects(n: int = 3):
+    return f"Generate a diverse list of {n} subjects. Keep it high-level (e.g. Math, Science)."
 
+@bella.completion(model="gpt-4o-mini", response_model=Subjects)
+def generate_subsubjects(subject: str) -> str:
+    return f"For the subject {subject}, generate 3 diverse subsubjects within the subject."
 
-GetSubSubjects = prompt.Prompter(
-    system_prompt="You are a helpful AI assistant.",
-    user_prompt="For the given subject {{ subject }}. Generate 3 diverse subsubjects. No explanation.",
-    response_format=Subjects,
-    model_name="gpt-4o-mini",
+@bella.completion(
+    model="gpt-4o-mini",
+    response_model=QAs,
 )
+def generate_qas(subject: str):
+    """You are a helpful AI assistant."""
+    return f"For the given subject {subject}, generate 3 questions and answers."
 
+subjects = generate_subjects()
+subjects = [subject for subject in subjects.subjects]
 
-GetQAList = prompt.Prompter(
-    system_prompt="You are a helpful AI assistant.",
-    user_prompt="For the given subject {{ subsubject }}, generate 1 diverse questions and answers. No explanation.",
-    response_format=QAs,
-    model_name="gpt-4o-mini",
-)
+subsubjects = bella.parallel(generate_subsubjects)(subjects)
+flattened_subsubjects = [
+    {"subject": subject, "subsubject": subsubject} 
+    for subject, subsubjects_list in zip(subjects, subsubjects)
+    for subsubject in subsubjects_list.subjects
+]
 
+qas = bella.parallel(generate_qas)(flattened_subsubjects)
+flattened_qas = [
+    {"subject": subsubject["subject"], "subsubject": subsubject["subsubject"], "question": qa.question, "answer": qa.answer}
+    for subsubject, qas_list in zip(flattened_subsubjects, qas)
+    for qa in qas_list.qas
+]
 
-def camelai():
-    subject_dataset = bella.completions(
-        prompter=GetSubjects,
-        name="Generate subjects",
-    )
-    # If the output is a list, bella automatically flattens it.
-    subject_dataset = bella.map(
-        subject_dataset,
-        # {"subjects": ["Math", "Science"]} -> [{"subject": "Math"}, {"subject": "Science"}]
-        lambda sample: [{"subject": subject} for subject in sample["subjects"]],
-    )
-    print(pd.DataFrame.from_records(subject_dataset))
-
-    subsubject_dataset = bella.completions(
-        dataset=subject_dataset,
-        prompter=GetSubSubjects,
-        name="Generate subsubjects",
-    )
-    # join the subject and subsubject datasets
-    subsubject_dataset = bella.map(
-        zip(subject_dataset, subsubject_dataset),
-        # ({"subject": "Math"}, {"subjects": ["Algebra", "Geometry"]}) -> [{"subject": "Math", "subsubject": "Algebra"}, {"subject": "Math", "subsubject": "Geometry"}]
-        lambda subject, subsubjects: [
-            {"subject": subject["subject"], "subsubject": subsubject}
-            for subsubject in subsubjects["subjects"]
-        ],
-    )
-    print(pd.DataFrame.from_records(subsubject_dataset))
-
-    qa_dataset = bella.completions(
-        subsubject_dataset,
-        prompter=GetQAList,
-        name="Generate QAs",
-    )
-    qa_dataset = bella.map(
-        zip(subsubject_dataset, qa_dataset),
-        lambda subsubject, qas: [
-            {
-                "subject": subsubject["subject"],
-                "subsubject": subsubject["subsubject"],
-                "question": qa["question"],
-                "answer": qa["answer"],
-            }
-            for qa in qas["qas"]
-        ],
-    )
-    print(pd.DataFrame.from_records(qa_dataset))
-
-
-camelai()
+qas_df = pd.DataFrame(flattened_qas)
+print(qas_df)
+# camelai()

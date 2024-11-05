@@ -15,6 +15,7 @@ instructor = "^1.6.3"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
 pandas = "^2.2.3"
+tqdm = "^4.65.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"
