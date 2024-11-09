@@ -87,22 +87,16 @@ class Prompter:
         prompts.
 
         Args:
-            dataset (Iterable): A dataset consisting of a list of items to apply completions
-            prompter (Prompter): A Prompter that contains the logic for formatting each
-                item in the dataset
-            resume (bool): Whether to resume from the previous completions run. If True,
-                we use a fingerprint from the input dataset and the prompter to resume
-                from a previous run that matches the same fingerprint.
+            request_processor (BaseRequestProcessor): A request processor that
+                will run the completions.
+            dataset (Iterable): A dataset consisting of a list of items to apply completions.
 
         Returns:
-            Iterable: A list of structured outputs from the completions
+            Dataset: A dataset of structured outputs from the completions.
         """
-        # NOTE(Ryan): We convert from iterable to Dataset because Dataset has random access via row_idx
+        # We convert from iterable to Dataset because Dataset has random access via row_idx.
         if not isinstance(dataset, Dataset) and dataset is not None:
             dataset = Dataset.from_generator(dataset)
-
-        if self is None:
-            raise ValueError("Prompter must be provided")
 
         curator_cache_dir = os.environ.get(
             "CURATOR_CACHE_DIR", os.path.expanduser("~/.cache/curator")
@@ -155,17 +149,15 @@ class Prompter:
         }
         metadata_db.store_metadata(metadata_dict)
 
-        # TODO(Ryan): do the response processing, while context of original dataset is available and need random access via row_idx)
-        dataset = request_processor.run(
+        # TODO(Ryan): Do the response processing, while context of original dataset
+        # is available and need random access via row_idx.
+        return request_processor.run(
             dataset, f"{curator_cache_dir}/{fingerprint}", self.prompt_formatter
         )
-
-        return dataset
 
 
 def _get_function_hash(func) -> str:
     """Get a hash of a function's source code."""
     if func is None:
         return xxh64("").hexdigest()
-
     return xxh64(inspect.getsource(func)).hexdigest()
