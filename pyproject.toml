@@ -20,10 +20,8 @@ keywords = ["ai", "curator", "bespoke"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-litellm = "*"
 pydantic = ">=2.9.2"
 datasets = "^3.0.2"
-ipython = "^8.29.0"
 instructor = "^1.6.3"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
@@ -32,6 +30,7 @@ xxhash = "^3.5.0"
 tqdm = "^4.67.0"
 matplotlib = "^3.9.2"
 aiofiles = "^24.1.0"
+tiktoken = "^0.8.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"
