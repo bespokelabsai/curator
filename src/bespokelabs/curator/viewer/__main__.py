@@ -111,7 +111,9 @@ def main():
         sys.exit(1)
 
     try:
-        subprocess.run(["node", server_file], cwd=viewer_path, env=env, check=True)
+        subprocess.run(
+            ["node", server_file], cwd=viewer_path, env=env, check=True
+        )
     except subprocess.CalledProcessError as e:
         print(f"Error starting Next.js server: {e}")
         sys.exit(1)

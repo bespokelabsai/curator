@@ -11,7 +11,9 @@ from datasets.arrow_writer import ArrowWriter, SchemaInferenceError
 from typing import Any, Dict, Iterable, Iterator, List, TypeVar
 
 from bespokelabs.curator.prompter.prompt_formatter import PromptFormatter
-from bespokelabs.curator.request_processor.generic_response import GenericResponse
+from bespokelabs.curator.request_processor.generic_response import (
+    GenericResponse,
+)
 
 T = TypeVar("T")
 
@@ -31,7 +33,9 @@ class Dataset:
         return Dataset(iterable=iterable)
 
     def from_working_dir(working_dir: str, prompt_formatter: PromptFormatter):
-        return Dataset(working_dir=working_dir, prompt_formatter=prompt_formatter)
+        return Dataset(
+            working_dir=working_dir, prompt_formatter=prompt_formatter
+        )
 
     def __iter__(self) -> Iterator[Dict[str, Any] | BaseModel]:
         if self.iterable is not None:
@@ -93,8 +97,10 @@ class Dataset:
                         total_responses_count += 1
                         response = GenericResponse.model_validate_json(line)
                         if self.prompt_formatter.response_format:
-                            response.response = self.prompt_formatter.response_format(
-                                **response.response
+                            response.response = (
+                                self.prompt_formatter.response_format(
+                                    **response.response
+                                )
                             )
 
                         if response is None:

@@ -11,10 +11,16 @@ import aiofiles
 from datasets import Dataset
 from datasets.arrow_writer import ArrowWriter, SchemaInferenceError
 from pydantic import BaseModel
+import pyarrow
 
 from bespokelabs.curator.prompter.prompt_formatter import PromptFormatter
+from bespokelabs.curator.request_processor.event_loop import (
+    get_or_create_event_loop,
+)
 from bespokelabs.curator.request_processor.generic_request import GenericRequest
-from bespokelabs.curator.request_processor.generic_response import GenericResponse
+from bespokelabs.curator.request_processor.generic_response import (
+    GenericResponse,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +44,9 @@ class BaseRequestProcessor(ABC):
         pass
 
     @abstractmethod
-    def create_api_specific_request(self, generic_request: GenericRequest) -> dict:
+    def create_api_specific_request(
+        self, generic_request: GenericRequest
+    ) -> dict:
         """
         Creates a API-specific request body from a GenericRequest.
 
@@ -54,27 +62,12 @@ class BaseRequestProcessor(ABC):
         pass
 
     @abstractmethod
-    def get_generic_response(
-        self, response: dict, prompt_formatter: PromptFormatter, dataset: Dataset
-    ) -> GenericResponse:
-        """
-        Parses a API-specific response into a generic response body.
-        Does error handling on the response.
-
-        IMPORTANT: In the generic response body you need to provide either the original dataset row OR the index of the row in the original dataset.
-        Must return request_body.metadata.dataset_row or request_body.metadata.dataset_row_idx
-
-        Args:
-            response (dict): API-specific response
-
-        Returns:
-            dict: Generic response body with an extra field "metadata" which contains the original dataset row or the index of the row in the original dataset
-        """
-        pass
-
-    @abstractmethod
     def run(
-        self, dataset: Dataset, working_dir: str, prompt_formatter: PromptFormatter
+        self,
+        dataset: Dataset,
+        working_dir: str,
+        parse_func_hash: str,
+        prompt_formatter: PromptFormatter,
     ) -> Dataset:
         """
         Uses the API to completing the specific map by calling the LLM.
@@ -128,7 +121,7 @@ class BaseRequestProcessor(ABC):
                         f"There are {num_jobs} existing requests in {requests_files[0]}"
                     )
                     logger.info(
-                        f"Example request in {requests_files[0]}:\n{json.dumps(first_job, indent=2)}"
+                        f"Example request in {requests_files[0]}:\n{json.dumps(first_job, default=str, indent=2)}"
                     )
                     return requests_files
 
@@ -138,9 +131,12 @@ class BaseRequestProcessor(ABC):
 
         if dataset is None:
             with open(requests_file, "w") as f:
-                request = prompt_formatter.get_generic_request(dict(), 0)
-                api_request = self.create_api_specific_request(request)
-                f.write(json.dumps(api_request) + "\n")
+                generic_request = prompt_formatter.create_generic_request(
+                    dict(), 0
+                )
+                f.write(
+                    json.dumps(generic_request.model_dump(), default=str) + "\n"
+                )
             return requests_files
 
         if self.batch_size:
@@ -161,10 +157,14 @@ class BaseRequestProcessor(ABC):
                 ]
                 await asyncio.gather(*tasks)
 
-            asyncio.run(create_all_request_files())
+            loop = get_or_create_event_loop()
+            loop.run_until_complete(create_all_request_files())
         else:
-            asyncio.run(
-                self.acreate_request_file(dataset, prompt_formatter, requests_file)
+            loop = get_or_create_event_loop()
+            loop.run_until_complete(
+                self.acreate_request_file(
+                    dataset, prompt_formatter, requests_file
+                )
             )
 
         return requests_files
@@ -188,19 +188,18 @@ class BaseRequestProcessor(ABC):
             for idx, dataset_row in enumerate(dataset):
                 dataset_row_idx = idx + start_idx
                 # Get the generic request from the map function
-                request = prompt_formatter.get_generic_request(
+                request = prompt_formatter.create_generic_request(
                     dataset_row, dataset_row_idx
                 )
-                # Convert the generic request to an API-specific request
-                api_request = self.create_api_specific_request(request)
-                # Write the API-specific request to file
-                await f.write(json.dumps(api_request) + "\n")
+                await f.write(
+                    json.dumps(request.model_dump(), default=str) + "\n"
+                )
         logger.info(f"Wrote {end_idx - start_idx} requests to {request_file}.")
 
     def create_dataset_files(
         self,
-        dataset: Dataset,
         working_dir: str,
+        parse_func_hash: str,
         prompt_formatter: PromptFormatter,
     ) -> None:
         """
@@ -223,10 +222,29 @@ class BaseRequestProcessor(ABC):
         responses_files = glob.glob(f"{working_dir}/responses_*.jsonl")
         if len(responses_files) == 0:
             raise ValueError(f"No responses files found in {working_dir}")
-        dataset_file = f"{working_dir}/dataset.arrow"
+        dataset_file = f"{working_dir}/{parse_func_hash}.arrow"
         if os.path.exists(dataset_file):
             logger.info(f"Using existing dataset file {dataset_file}")
-            return Dataset.from_file(dataset_file)
+            successful_dataset_cache_load = False
+            try:
+                output_dataset = Dataset.from_file(dataset_file)
+                successful_dataset_cache_load = True
+            except pyarrow.lib.ArrowInvalid as e:
+                os.remove(dataset_file)
+                logger.warning(
+                    f"Failed to load dataset from {dataset_file}, "
+                    "which was likely corrupted by a failed previous run. "
+                    "Deleted file and attempting to regenerate dataset from cached LLM responses."
+                )
+
+            if successful_dataset_cache_load:
+                return output_dataset
+
+        error_help = (
+            f"Please check your `parse_func` is returning a valid row (dict) "
+            "or list of rows (list of dicts) and re-run. "
+            "Dataset will be regenerated from cached LLM responses."
+        )
 
         # Process all response files
         with ArrowWriter(path=dataset_file) as writer:
@@ -237,32 +255,46 @@ class BaseRequestProcessor(ABC):
                         response = GenericResponse.model_validate_json(
                             generic_response_string
                         )
-                        if prompt_formatter.response_format:
-                            response.response = prompt_formatter.response_format(
-                                **response.response
-                            )
 
-                        if response is None:
+                        if response.response_errors:
                             failed_responses_count += 1
                             continue
 
-                        # Requires dataset to be Dataset object with random access
-                        if response.row is None:
-                            response.row = dataset[response.row_idx]
+                        if prompt_formatter.response_format:
+                            # Response message is a string, which is converted to a dict
+                            # The dict is then used to construct the response_format Pydantic model
+                            response.response_message = (
+                                prompt_formatter.response_format(
+                                    **response.response_message
+                                )
+                            )
 
                         # parse_func can return a single row or a list of rows
                         if prompt_formatter.parse_func:
                             dataset_rows = prompt_formatter.parse_func(
-                                response.row, response.response
+                                response.generic_request.original_row,
+                                response.response_message,
                             )
                             if not isinstance(dataset_rows, list):
                                 dataset_rows = [dataset_rows]
                         else:
-                            dataset_rows = [{"response": response.response}]
+                            dataset_rows = [
+                                {"response": response.response_message}
+                            ]
 
                         for row in dataset_rows:
                             if isinstance(row, BaseModel):
                                 row = row.model_dump()
+
+                            if not isinstance(row, dict):
+                                raise ValueError(
+                                    f"Got invalid row {row} of type {type(row)} from `parse_func`. {error_help}"
+                                )
+                            if not row:
+                                raise ValueError(
+                                    f"Got empty row {row} from `parse_func`. {error_help}"
+                                )
+
                             writer.write(row)
 
             logger.info(
@@ -272,11 +304,9 @@ class BaseRequestProcessor(ABC):
                 raise ValueError("All requests failed")
 
             logger.info("Finalizing writer")
-            try:
-                writer.finalize()
-            except SchemaInferenceError as e:
-                raise ValueError(
-                    "Arrow writer is complaining about the schema: likely all of your parsed rows were None and writer.write only wrote None objects."
-                ) from e
 
-        return Dataset.from_file(dataset_file)
+            writer.finalize()
+
+        output_dataset = Dataset.from_file(dataset_file)
+
+        return output_dataset

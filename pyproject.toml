@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bespokelabs-curator"
-version = "0.1.6rc8"
+version = "0.1.7rc1"
 description = "Bespoke Labs Curator"
 authors = ["Bespoke Labs <company@bespokelabs.ai>"]
 readme = "README.md"
@@ -25,7 +25,7 @@ datasets = "^3.0.2"
 instructor = "^1.6.3"
 pytest = "^8.3.3"
 pytest-asyncio = "^0.24.0"
-pandas = "^2.2.3"
+pandas = "2.2.2"
 xxhash = "^3.5.0"
 tqdm = "^4.67.0"
 matplotlib = "^3.9.2"
@@ -42,3 +42,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 curator-viewer = "bespokelabs.curator.viewer.__main__:main"
+
+[tool.black]
+line-length = 80

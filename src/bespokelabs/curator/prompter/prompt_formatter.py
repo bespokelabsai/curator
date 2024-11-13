@@ -13,7 +13,11 @@ class PromptFormatter:
     prompt_func: Callable[[Union[Dict[str, Any], BaseModel]], Dict[str, str]]
     parse_func: Optional[
         Callable[
-            [Union[Dict[str, Any], BaseModel], Union[Dict[str, Any], BaseModel]], T
+            [
+                Union[Dict[str, Any], BaseModel],
+                Union[Dict[str, Any], BaseModel],
+            ],
+            T,
         ]
     ] = None
     response_format: Optional[Type[BaseModel]] = None
@@ -21,10 +25,16 @@ class PromptFormatter:
     def __init__(
         self,
         model_name: str,
-        prompt_func: Callable[[Union[Dict[str, Any], BaseModel]], Dict[str, str]],
+        prompt_func: Callable[
+            [Union[Dict[str, Any], BaseModel]], Dict[str, str]
+        ],
         parse_func: Optional[
             Callable[
-                [Union[Dict[str, Any], BaseModel], Union[Dict[str, Any], BaseModel]], T
+                [
+                    Union[Dict[str, Any], BaseModel],
+                    Union[Dict[str, Any], BaseModel],
+                ],
+                T,
             ]
         ] = None,
         response_format: Optional[Type[BaseModel]] = None,
@@ -34,7 +44,7 @@ class PromptFormatter:
         self.parse_func = parse_func
         self.response_format = response_format
 
-    def get_generic_request(
+    def create_generic_request(
         self, row: Dict[str, Any] | BaseModel, idx: int
     ) -> GenericRequest:
         """Format the request object based off Prompter attributes."""
@@ -61,8 +71,11 @@ class PromptFormatter:
         return GenericRequest(
             model=self.model_name,
             messages=messages,
-            row=row,
-            row_idx=idx,
-            metadata=prompts,
-            response_format=self.response_format,
+            original_row=row,
+            original_row_idx=idx,
+            response_format=(
+                self.response_format.model_json_schema()
+                if self.response_format
+                else None
+            ),
         )

@@ -2,17 +2,23 @@ import asyncio
 import json
 import logging
 import os
-from typing import Callable, Dict, Optional, TypeVar
+from typing import Optional, Type, TypeVar
+from pydantic import BaseModel
 from openai import AsyncOpenAI
 import aiofiles
+from openai import AsyncOpenAI
+from tqdm import tqdm
+
 from bespokelabs.curator.dataset import Dataset
+from bespokelabs.curator.prompter.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.base_request_processor import (
     BaseRequestProcessor,
     GenericRequest,
     GenericResponse,
 )
-from bespokelabs.curator.prompter.prompt_formatter import PromptFormatter
-from tqdm import tqdm
+from bespokelabs.curator.request_processor.event_loop import (
+    get_or_create_event_loop,
+)
 
 T = TypeVar("T")
 logger = logging.getLogger(__name__)
@@ -76,7 +82,9 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
 
         return rate_limits
 
-    def create_api_specific_request(self, generic_request: GenericRequest) -> dict:
+    def create_api_specific_request(
+        self, generic_request: GenericRequest
+    ) -> dict:
         """
         Creates a API-specific request body from a generic request body.
 
@@ -108,7 +116,7 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
             }
 
         request = {
-            "custom_id": str(generic_request.row_idx),
+            "custom_id": str(generic_request.original_row_idx),
             "method": "POST",
             "url": "/v1/chat/completions",
             "body": body,
@@ -116,60 +124,23 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
 
         return request
 
-    def get_generic_response(
-        self, response: Dict, prompt_formatter: PromptFormatter, dataset: Dataset
-    ) -> GenericResponse:
-        """
-        Parses a API-specific response into a generic response body.
-        Does error handling on the response.
-        If there is an error, return None.
-
-        IMPORTANT: In the generic response body you need to provide either the original dataset row OR the index of the row in the original dataset.
-
-        Args:
-            response: API-specific response
-
-        Returns:
-            dict: Generic response body with an extra field "metadata" which contains the original dataset row or the index of the row in the original dataset
-        """
-        request_id = response["id"]
-        status_code = response["response"]["status_code"]
-
-        # TODO(Ryan): Add error handling. This should handle error files from BatchAPI.
-        if status_code != 200:
-            logger.warning(
-                f"Request {request_id} failed with status code {status_code}"
-            )
-            return None
-
-        # NOTE(Ryan): can we actually parse the response into a an OpenAI ChatCompletions object? Easier to access fields?
-        # TODO(Ryan): if you add token tokens to generic response, we can parse that here too, similar to my comment above we can do that in the shared place.
-        content = response["response"]["body"]["choices"][0]["message"]["content"]
-        row_idx = int(response["custom_id"])
-
-        if prompt_formatter.response_format:
-            content = json.loads(content)
-
-        # NOTE(Ryan): So dicts that have objects that are not JSON serializable will be converted to strings.
-
-        if dataset is None:
-            dataset_row = dict()
-        else:
-            dataset_row = dataset[row_idx]
-
-        return GenericResponse(
-            response=content,
-            row_idx=row_idx,
-            row=dataset_row,
-            raw_response=response,
-        )
-
     async def asubmit_batch(self, batch_file: str) -> dict:
-        async with aiofiles.open(batch_file, "rb") as file:
+        # Create a list to store API-specific requests
+        api_specific_requests = []
+
+        async with aiofiles.open(batch_file, "r") as file:
             file_content = await file.read()
-            batch_file_upload = await self.async_client.files.create(
-                file=file_content, purpose="batch"
-            )
+            for line in file_content.splitlines():
+                request = GenericRequest.model_validate_json(line)
+                api_specific_request = self.create_api_specific_request(request)
+                api_specific_requests.append(json.dumps(api_specific_request))
+
+        # Join requests with newlines and encode to bytes for upload
+        file_content = "\n".join(api_specific_requests).encode()
+
+        batch_file_upload = await self.async_client.files.create(
+            file=file_content, purpose="batch"
+        )
 
         logger.info(f"File uploaded: {batch_file_upload}")
 
@@ -179,9 +150,11 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
             completion_window="24h",
             metadata={
                 "request_file_name": batch_file
-            },  # for easily mapping back later, NOTE(Ryan): can convert to the int or UUID later
+            },  # for downloading the batch to similarly named responses file
         )
-        logger.info(f"Batch request submitted, received batch object: {batch_object}")
+        logger.info(
+            f"Batch request submitted, received batch object: {batch_object}"
+        )
 
         return batch_object
 
@@ -189,6 +162,7 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
         self,
         dataset: Optional[Dataset],
         working_dir: str,
+        parse_func_hash: str,
         prompt_formatter: PromptFormatter,
     ) -> Dataset:
         """
@@ -197,6 +171,8 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
         Args:
             dataset (Dataset): Dataset that is being mapped over
             working_dir (str): Working directory to save files (requests.jsonl, responses.jsonl, dataset.arrow)
+            parse_func_hash (str): Hash of the parse_func to be used as the dataset file name
+            prompt_formatter (PromptFormatter): Prompt formatter to be used to format the prompt
 
         Returns:
             Dataset: Completed dataset
@@ -223,12 +199,13 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
                 ]
                 return await asyncio.gather(*tasks)
 
-            batch_objects = asyncio.run(submit_all_batches())
+            loop = get_or_create_event_loop()
+            batch_objects = loop.run_until_complete(submit_all_batches())
 
             with open(batch_objects_file, "w") as f:
                 # NOTE(Ryan): we can also store the request_file_name in this object here, instead of in the metadata during batch submission. Can find a nice abstraction across other batch APIs (e.g. claude)
                 for obj in batch_objects:
-                    f.write(json.dumps(obj.model_dump()) + "\n")
+                    f.write(json.dumps(obj.model_dump(), default=str) + "\n")
             logger.info(f"Batch objects written to {batch_objects_file}")
 
         # TODO(Ryan): Actually do accounting for tokens, so rate limits enforced locally.
@@ -241,13 +218,24 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
         # TODO(Ryan): This creates responses_0.jsonl, responses_1.jsonl, etc. errors named same way? or errors_0.jsonl, errors_1.jsonl?
         # TODO(Ryan): retries, resubmits on lagging batches - need to study this a little closer
         # TODO(Ryan): likely can add some logic for smarter check_interval based on batch size and if the batch has started or not, fine to do a dumb ping for now
-        batch_watcher = BatchWatcher(working_dir, check_interval=self.check_interval)
-
-        asyncio.run(
-            batch_watcher.watch(prompt_formatter, self.get_generic_response, dataset)
+        batch_watcher = BatchWatcher(
+            working_dir, check_interval=self.check_interval
         )
 
-        dataset = self.create_dataset_files(dataset, working_dir, prompt_formatter)
+        # NOTE(Ryan): If we allow for multiple heterogeneous requests per dataset row, we will need to update this.
+        total_requests = 1 if dataset is None else len(dataset)
+
+        loop = get_or_create_event_loop()
+        loop.run_until_complete(
+            batch_watcher.watch(
+                prompt_formatter.response_format, total_requests
+            )
+        )
+
+        dataset = self.create_dataset_files(
+            working_dir, parse_func_hash, prompt_formatter
+        )
+
         return dataset
 
 
@@ -288,13 +276,10 @@ class BatchWatcher:
 
     async def watch(
         self,
-        prompt_formatter: PromptFormatter,
-        get_generic_response: Callable[[Dict], GenericResponse],
-        dataset: Dataset,
+        response_format: Optional[Type[BaseModel]],
+        total_requests: int,
     ) -> None:
         """Monitor the status of batches until all are completed (includes successfully, failed, expired or cancelled)."""
-
-        total_requests = 1 if dataset is None else len(dataset)
 
         completed_batches = {}
         pbar = tqdm(
@@ -319,7 +304,12 @@ class BatchWatcher:
             batches = await asyncio.gather(*status_tasks)
             newly_completed_batches = []
             for batch_id, batch in batches:
-                if batch.status in ["completed", "failed", "expired", "cancelled"]:
+                if batch.status in [
+                    "completed",
+                    "failed",
+                    "expired",
+                    "cancelled",
+                ]:
                     logger.info(
                         f"Batch {batch_id} processing finished with status: {batch.status}"
                     )
@@ -334,10 +324,9 @@ class BatchWatcher:
 
             pbar.refresh()
 
-            # NOTE(Ryan): Now downloading after each check, instead of waiting until all are completed
             tasks = [
-                self.download_batch_result_file(
-                    batch, prompt_formatter, get_generic_response, dataset
+                self.download_batch_to_generic_responses_file(
+                    batch, response_format
                 )
                 for batch in newly_completed_batches
             ]
@@ -353,12 +342,10 @@ class BatchWatcher:
         pbar.close()
         self.batches = completed_batches.values()
 
-    async def download_batch_result_file(
+    async def download_batch_to_generic_responses_file(
         self,
         batch,
-        prompt_formatter: PromptFormatter,
-        get_generic_response: Callable[[Dict], GenericResponse],
-        dataset: Dataset,
+        response_format: Optional[Type[BaseModel]],
     ) -> str:
         """Download the result of a completed batch to file.
 
@@ -372,20 +359,66 @@ class BatchWatcher:
             file_content = await self.client.files.content(batch.output_file_id)
         elif batch.status == "failed" and batch.error_file_id:
             file_content = await self.client.files.content(batch.error_file_id)
+        elif batch.status == "failed" and not batch.error_file_id:
+            errors = [str(error) for error in batch.errors.data]
+            logger.warning(
+                f"Batch {batch.id} failed\n"
+                f"Batch errors: {'\n'.join(errors)}"
+            )
+            return None
         elif batch.status == "cancelled" or batch.status == "expired":
             logger.warning(f"Batch {batch.id} was cancelled or expired")
             return None
 
-        # NOTE(Ryan): This is so the naming is consistent with the request file naming
-        request_file_idx = (
-            self.batch_id_to_request_file_name[batch.id].split("/")[-1].split("_", 1)[1]
-        )
-        output_path = f"{self.working_dir}/responses_{request_file_idx}"
-        with open(output_path, "w") as f:
-            for raw_response in file_content.text.splitlines():
-                # TODO(Ryan): We should abstract this out
-                generic_response = get_generic_response(
-                    json.loads(raw_response), prompt_formatter, dataset
+        # Naming is consistent with the request file (e.g. requests_0.jsonl -> responses_0.jsonl)
+        request_file = self.batch_id_to_request_file_name[batch.id]
+        request_file_idx = request_file.split("/")[-1].split("_", 1)[1]
+        response_file = f"{self.working_dir}/responses_{request_file_idx}"
+
+        generic_request_map = {}
+        with open(request_file, "r") as f:
+            for line in f:
+                generic_request = GenericRequest.model_validate_json(line)
+                generic_request_map[generic_request.original_row_idx] = (
+                    generic_request
                 )
-                f.write(json.dumps(generic_response.model_dump(), default=str) + "\n")
-        return output_path
+
+        with open(response_file, "w") as f:
+            for raw_response in file_content.text.splitlines():
+                raw_response = json.loads(raw_response)
+                generic_request = generic_request_map[
+                    int(raw_response["custom_id"])
+                ]
+
+                generic_response = GenericResponse(
+                    raw_response=raw_response,
+                    raw_request=None,
+                    generic_request=generic_request,
+                )
+
+                # TODO(Ryan): Add more specific error handling
+                status_code = raw_response["response"]["status_code"]
+                if status_code != 200:
+                    logger.warning(
+                        f"Request {generic_request} failed with status code {status_code}"
+                    )
+                    generic_response.response_errors = [
+                        f"Request {generic_request} failed with status code {status_code}"
+                    ]
+                else:
+                    # NOTE(Ryan): can we actually parse the response into a an OpenAI ChatCompletions object? Easier to access fields?
+                    # TODO(Ryan): if you add token tokens to generic response
+                    content = raw_response["response"]["body"]["choices"][0][
+                        "message"
+                    ]["content"]
+
+                    if response_format:
+                        content = json.loads(content)
+
+                    generic_response.response_message = content
+
+                f.write(
+                    json.dumps(generic_response.model_dump(), default=str)
+                    + "\n"
+                )
+        return response_file

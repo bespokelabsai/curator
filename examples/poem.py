@@ -57,8 +57,6 @@ from typing import List
 
 
 # We use Pydantic and structured outputs to define the format of the response.
-
-
 # This defines a list of topics, which is the response format for the topic generator.
 class Topics(BaseModel):
     topics_list: List[str] = Field(description="A list of topics.")
