@@ -125,6 +125,7 @@ class OpenAIOnlineRequestProcessor(BaseRequestProcessor):
         working_dir: str,
         parse_func_hash: str,
         prompt_formatter: PromptFormatter,
+        load_from_cache: bool,
     ) -> Dataset:
         """
         Uses the API to completing the specific map by calling the LLM.
@@ -134,12 +135,12 @@ class OpenAIOnlineRequestProcessor(BaseRequestProcessor):
             working_dir (str): Working directory to save files (requests.jsonl, responses.jsonl, dataset.arrow)
             parse_func_hash (str): Hash of the parse_func to be used as the dataset file name
             prompt_formatter (PromptFormatter): Prompt formatter to be used to format the prompt
-
+            load_from_cache (bool): Whether to load the dataset from the cache (if false, then will overwrite cache)
         Returns:
             Dataset: Completed dataset
         """
         generic_requests_files = self.create_request_files(
-            dataset, working_dir, prompt_formatter
+            dataset, working_dir, prompt_formatter, load_from_cache
         )
         generic_responses_files = [
             f"{working_dir}/responses_{i}.jsonl"
@@ -169,12 +170,12 @@ class OpenAIOnlineRequestProcessor(BaseRequestProcessor):
                     max_tokens_per_minute=tpm,
                     token_encoding_name=token_encoding_name,
                     max_attempts=5,
-                    resume=True,  # detects existing jobs and resume from there
+                    load_from_cache=load_from_cache,
                 )
             )
 
         dataset = self.create_dataset_files(
-            working_dir, parse_func_hash, prompt_formatter
+            working_dir, parse_func_hash, prompt_formatter, load_from_cache
         )
         return dataset
 
@@ -187,8 +188,7 @@ class OpenAIOnlineRequestProcessor(BaseRequestProcessor):
         max_tokens_per_minute: float,
         token_encoding_name: str,
         max_attempts: int,
-        resume: bool,
-        resume_no_retry: bool = False,
+        load_from_cache: bool,
     ) -> None:
         """Processes API requests in parallel, throttling to stay under rate limits."""
 
@@ -232,70 +232,39 @@ class OpenAIOnlineRequestProcessor(BaseRequestProcessor):
         logger.debug(f"Initialization complete.")
 
         completed_request_ids: Set[int] = set()
-        if os.path.exists(save_filepath):
-            if resume:
-                # save all successfully completed requests to a temporary file, then overwrite the original file with the temporary file
-                logger.debug(
-                    f"Resuming progress from existing file: {save_filepath}"
-                )
-                logger.debug(
-                    f"Removing all failed requests from {save_filepath} so they can be retried"
-                )
-                temp_filepath = f"{save_filepath}.temp"
-                num_previously_failed_requests = 0
-                with open(save_filepath, "r") as input_file, open(
-                    temp_filepath, "w"
-                ) as output_file:
-                    for line in input_file:
-                        response = GenericResponse.model_validate_json(line)
-                        if response.response_errors:
-                            # this means that the request failed and we have a list of errors
-                            logger.debug(
-                                f"Request {response.generic_request.original_row_idx} previously failed due to errors: {response.response_errors}, removing from output and will retry"
-                            )
-                            num_previously_failed_requests += 1
-                        else:
-                            completed_request_ids.add(
-                                response.generic_request.original_row_idx
-                            )
-                            output_file.write(line)
-                logger.info(
-                    f"Found {len(completed_request_ids)} completed requests and {num_previously_failed_requests} previously failed requests"
-                )
-                logger.info(
-                    "Failed requests and remaining requests will now be processed."
-                )
-                os.replace(temp_filepath, save_filepath)
-            elif resume_no_retry:
-                logger.warning(
-                    f"Resuming progress from existing file: {save_filepath}, without retrying failed requests"
-                )
-                num_previously_failed_requests = 0
-                with open(save_filepath, "r") as input_file, open(
-                    temp_filepath, "w"
-                ) as output_file:
-                    for line in tqdm(
-                        input_file, desc="Processing existing requests"
-                    ):
-                        data = json.loads(line)
-                        if isinstance(data[1], list):
-                            # this means that the request failed and we have a list of errors
-                            logger.debug(
-                                f"Request {data[2].get('request_idx')} previously failed due to errors: {data[1]}, will NOT retry"
-                            )
-                            num_previously_failed_requests += 1
-                        completed_request_ids.add(data[2].get("request_idx"))
-                logger.info(
-                    f"Found {len(completed_request_ids)} total requests and {num_previously_failed_requests} previously failed requests"
-                )
-                logger.info("Remaining requests will now be processed.")
-            else:
-                user_input = input(
-                    f"File {save_filepath} already exists.\nTo resume if there are remaining requests without responses, run with --resume flag.\nOverwrite? (Y/n): "
-                )
-                if user_input.lower() != "y" and user_input.lower() != "":
-                    logger.info("Aborting operation.")
-                    return
+        if os.path.exists(save_filepath) and load_from_cache:
+            # save all successfully completed requests to a temporary file, then overwrite the original file with the temporary file
+            logger.debug(
+                f"Resuming progress from existing file: {save_filepath}"
+            )
+            logger.debug(
+                f"Removing all failed requests from {save_filepath} so they can be retried"
+            )
+            temp_filepath = f"{save_filepath}.temp"
+            num_previously_failed_requests = 0
+            with open(save_filepath, "r") as input_file, open(
+                temp_filepath, "w"
+            ) as output_file:
+                for line in input_file:
+                    response = GenericResponse.model_validate_json(line)
+                    if response.response_errors:
+                        # this means that the request failed and we have a list of errors
+                        logger.debug(
+                            f"Request {response.generic_request.original_row_idx} previously failed due to errors: {response.response_errors}, removing from output and will retry"
+                        )
+                        num_previously_failed_requests += 1
+                    else:
+                        completed_request_ids.add(
+                            response.generic_request.original_row_idx
+                        )
+                        output_file.write(line)
+            logger.info(
+                f"Found {len(completed_request_ids)} completed requests and {num_previously_failed_requests} previously failed requests"
+            )
+            logger.info(
+                "Failed requests and remaining requests will now be processed."
+            )
+            os.replace(temp_filepath, save_filepath)
 
         # initialize file reading
         with open(generic_requests_filepath) as file:
@@ -344,7 +313,7 @@ class OpenAIOnlineRequestProcessor(BaseRequestProcessor):
 
                                 # Skip requests we already have responses for
                                 if (
-                                    resume
+                                    load_from_cache
                                     and request_idx in completed_request_ids
                                 ):
                                     logger.debug(

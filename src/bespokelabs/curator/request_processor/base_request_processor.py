@@ -66,6 +66,7 @@ class BaseRequestProcessor(ABC):
         working_dir: str,
         parse_func_hash: str,
         prompt_formatter: PromptFormatter,
+        load_from_cache: bool,
     ) -> Dataset:
         """
         Uses the API to completing the specific map by calling the LLM.
@@ -73,7 +74,9 @@ class BaseRequestProcessor(ABC):
         Args:
             dataset (Dataset): Dataset that is being mapped over
             working_dir (str): Working directory to save files (requests.jsonl, responses.jsonl, dataset.arrow)
-
+            parse_func_hash (str): Hash of the parse_func to be used as the dataset file name
+            prompt_formatter (PromptFormatter): Prompt formatter to be used to format the prompt
+            load_from_cache (bool): Whether to load the dataset from the cache (if false, then will overwrite cache)
         Returns:
             Dataset: Completed dataset
         """
@@ -84,6 +87,7 @@ class BaseRequestProcessor(ABC):
         dataset: Optional[Dataset],
         working_dir: str,
         prompt_formatter: PromptFormatter,
+        load_from_cache: bool,
     ) -> list[str]:
         """
         Creates a request file if they don't already exist or use existing.
@@ -91,6 +95,8 @@ class BaseRequestProcessor(ABC):
         Args:
             dataset (Dataset): The dataset to be processed.
             working_dir (str): The directory where request files will be saved.
+            prompt_formatter (PromptFormatter): Prompt formatter to be used to format the prompt
+            load_from_cache (bool): Whether to load the dataset from the cache (if false, then will overwrite cache)
 
         Returns:
             list[str]: Paths to the request files that were created.
@@ -99,7 +105,7 @@ class BaseRequestProcessor(ABC):
         requests_files = glob.glob(f"{working_dir}/requests_*.jsonl")
 
         # By default use existing requests in working_dir
-        if len(requests_files) > 0:
+        if len(requests_files) > 0 and load_from_cache:
             logger.info(
                 f"Using existing requests in {working_dir} by default. Found {len(requests_files)} request files."
                 f"If this is not what you want, delete the directory or specify a new one and re-run."
@@ -197,6 +203,7 @@ class BaseRequestProcessor(ABC):
         working_dir: str,
         parse_func_hash: str,
         prompt_formatter: PromptFormatter,
+        load_from_cache: bool,
     ) -> None:
         """
         Creates the request files if they don't already exist or use existing.
@@ -208,7 +215,7 @@ class BaseRequestProcessor(ABC):
             dataset (Dataset): The dataset to be processed.
             working_dir (str): The directory where request files will be saved.
             prompt_formatter (PromptFormatter): The prompt formatter to use for parsing the responses.
-
+            load_from_cache (bool): Whether to load the dataset from the cache (if false, then will overwrite cache)
         Returns:
             Dataset: Completed dataset
         """
@@ -219,7 +226,8 @@ class BaseRequestProcessor(ABC):
         if len(responses_files) == 0:
             raise ValueError(f"No responses files found in {working_dir}")
         dataset_file = f"{working_dir}/{parse_func_hash}.arrow"
-        if os.path.exists(dataset_file):
+
+        if os.path.exists(dataset_file) and load_from_cache:
             logger.info(f"Using existing dataset file {dataset_file}")
             successful_dataset_cache_load = False
             try:

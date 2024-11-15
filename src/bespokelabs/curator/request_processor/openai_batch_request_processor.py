@@ -205,6 +205,7 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
         working_dir: str,
         parse_func_hash: str,
         prompt_formatter: PromptFormatter,
+        load_from_cache: bool,
     ) -> Dataset:
         """
         Uses the API to completing the specific map by calling the LLM.
@@ -214,17 +215,18 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
             working_dir (str): Working directory to save files (requests.jsonl, responses.jsonl, dataset.arrow)
             parse_func_hash (str): Hash of the parse_func to be used as the dataset file name
             prompt_formatter (PromptFormatter): Prompt formatter to be used to format the prompt
+            load_from_cache (bool): Whether to load the dataset from the cache (if false, then will overwrite cache)
 
         Returns:
             Dataset: Completed dataset
         """
         requests_files = self.create_request_files(
-            dataset, working_dir, prompt_formatter
+            dataset, working_dir, prompt_formatter, load_from_cache
         )
         batch_objects_file = f"{working_dir}/batch_objects.jsonl"
 
         # TODO(Ryan): we should have an easy way to cancel all batches in batch_objects.jsonl if the user realized they made a mistake
-        if os.path.exists(batch_objects_file):
+        if os.path.exists(batch_objects_file) and load_from_cache:
             logger.warning(
                 f"Batch objects file already exists, skipping batch submission and resuming: {batch_objects_file}"
             )
@@ -274,7 +276,7 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
         run_in_event_loop(watch_batches())
 
         dataset = self.create_dataset_files(
-            working_dir, parse_func_hash, prompt_formatter
+            working_dir, parse_func_hash, prompt_formatter, load_from_cache
         )
 
         return dataset
