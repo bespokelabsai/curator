@@ -140,12 +140,12 @@ class Prompter:
 
         if self is None:
             raise ValueError("Prompter must be provided")
-
+        
         if working_dir is None:
-            curator_cache_dir = os.environ.get(
-                "CURATOR_CACHE_DIR",
-                os.path.expanduser(_CURATOR_DEFAULT_CACHE_DIR),
-            )
+            # First check if CURATOR_CACHE_DIR is set and non-empty
+            curator_cache_dir = os.environ.get("CURATOR_CACHE_DIR", "")
+            if not curator_cache_dir:  # If empty or not set
+                curator_cache_dir = os.path.expanduser(_CURATOR_DEFAULT_CACHE_DIR)
         else:
             curator_cache_dir = working_dir
 

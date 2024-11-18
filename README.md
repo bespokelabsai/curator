@@ -133,4 +133,20 @@ nvm install 22
 node -v # should print `v22.11.0`
 # verifies the right npm version is in the environment
 npm -v # should print `10.9.0`
+
 ```
+
+<details>
+<summary><h2 style="display: inline-block">Development</h2></summary>
+
+### Environment Setup
+Copy `.env.example` to create your `.env` file:
+```bash
+cp .env.example .env
+```
+
+Available environment variables:
+- `OPENAI_API_KEY`: (Required) Your OpenAI API key for language model requests
+- `CURATOR_CACHE_DIR`: (Optional) Custom cache directory, defaults to `~/.cache/curator`. Used to store datasets, model responses, and metadata for caching and viewer functionality.
+
+</details>
