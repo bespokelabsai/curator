@@ -3,13 +3,15 @@ import { Database } from 'sqlite3'
 import { homedir } from 'os'
 import { join } from 'path'
 import { existsSync } from 'fs'
+import { getCacheDir } from '@/utils/getCacheDir'
 
 export async function GET(request: Request): Promise<Response>  {
   return new Promise((resolve) => {
     const { searchParams } = new URL(request.url)
     const lastCreatedTime = searchParams.get('lastCreatedTime')
     
-    const dbPath = join(homedir(), '.cache', 'curator', 'metadata.db')
+    const cacheDir = getCacheDir()
+    const dbPath = join(cacheDir, 'metadata.db')
     
     if (!existsSync(dbPath)) {
       console.error(`Database file not found at: ${dbPath}`)

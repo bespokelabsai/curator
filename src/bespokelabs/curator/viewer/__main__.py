@@ -72,6 +72,10 @@ def main():
         action="store_true",
         help="Enables debug logging for more verbose output",
     )
+    parser.add_argument(
+        "--cache-dir",
+        help="Directory to store cache files (default: ~/.cache/curator)",
+    )
     args = parser.parse_args()
 
     _setup_logging(logging.DEBUG if args.verbose else logging.INFO)
@@ -94,6 +98,10 @@ def main():
     env["NODE_ENV"] = "production"
     env["HOST"] = args.host
     env["PORT"] = str(args.port)
+    
+    # Set cache directory if provided
+    if args.cache_dir:
+        env["CURATOR_CACHE_DIR"] = args.cache_dir
 
     # Start the Next.js server
     viewer_path = get_viewer_path()

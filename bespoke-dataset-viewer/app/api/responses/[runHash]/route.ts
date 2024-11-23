@@ -1,8 +1,8 @@
 import { DataItem } from '@/types/dataset'
 import { existsSync, promises as fs } from 'fs'
 import { NextRequest, NextResponse } from 'next/server'
-import { homedir } from 'os'
 import { join } from 'path'
+import { getCacheDir } from '@/utils/getCacheDir'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -20,7 +20,8 @@ export async function GET(
 ): Promise<Response> {
   try {
     const { runHash } = await params
-    const runDir = join(homedir(), '.cache', 'curator', runHash)
+    const cacheDir = getCacheDir()
+    const runDir = join(cacheDir, runHash)
 
     const searchParams = request.nextUrl.searchParams
     const lastLineNumber = parseInt(searchParams.get('lastLine') || '0')
