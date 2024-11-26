@@ -24,6 +24,9 @@
   <a href="https://discord.gg/KqpXvpzVBS">
     <img alt="Discord" src="https://img.shields.io/discord/1230990265867698186">
   </a>
+  <a href="https://github.com/psf/black">
+    <img alt="Code style: black" src="https://img.shields.io/badge/Code%20style-black-000000.svg">
+  </a>
 </p>
 
 ### Overview
