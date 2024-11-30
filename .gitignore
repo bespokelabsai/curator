@@ -1,7 +1,9 @@
 .venv
 __pycache__
 .vscode
+.coverage
 
 # Static / Build
 /src/bespokelabs/curator/viewer/static
 /dist
+todo.txt
