@@ -330,38 +330,49 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
             # Process any remaining retries in the queue
             pending_retries = []
+            retry_batch = []
+
+            # Process retries in batches to avoid overwhelming the queue
             while not queue_of_requests_to_retry.empty():
                 retry_request = await queue_of_requests_to_retry.get()
-                token_estimate = self.estimate_total_tokens(retry_request.generic_request.messages)
+                retry_batch.append(retry_request)
 
-                attempt_number = 6 - retry_request.attempts_left
-                logger.info(
-                    f"Processing final retry for request {retry_request.task_id} "
-                    f"(attempt #{attempt_number} of 5). "
-                    f"Previous errors: {retry_request.result}"
-                )
+                # Process in batches of up to 10 requests
+                if len(retry_batch) >= 10 or queue_of_requests_to_retry.empty():
+                    for request in retry_batch:
+                        token_estimate = self.estimate_total_tokens(
+                            request.generic_request.messages
+                        )
+                        attempt_number = 6 - request.attempts_left
+                        logger.info(
+                            f"Processing retry for request {request.task_id} "
+                            f"(attempt #{attempt_number} of 5). "
+                            f"Previous errors: {request.result}"
+                        )
 
-                # Wait for capacity if needed
-                while not status_tracker.has_capacity(token_estimate):
-                    await asyncio.sleep(0.1)
+                        # Wait for capacity if needed
+                        while not status_tracker.has_capacity(token_estimate):
+                            await asyncio.sleep(0.1)
 
-                # Consume capacity before making request
-                status_tracker.consume_capacity(token_estimate)
+                        # Consume capacity before making request
+                        status_tracker.consume_capacity(token_estimate)
 
-                task = asyncio.create_task(
-                    self.handle_single_request_with_retries(
-                        request=retry_request,
-                        session=session,
-                        retry_queue=queue_of_requests_to_retry,
-                        save_filepath=save_filepath,
-                        status_tracker=status_tracker,
-                    )
-                )
-                pending_retries.append(task)
+                        task = asyncio.create_task(
+                            self.handle_single_request_with_retries(
+                                request=request,
+                                session=session,
+                                retry_queue=queue_of_requests_to_retry,
+                                save_filepath=save_filepath,
+                                status_tracker=status_tracker,
+                            )
+                        )
+                        pending_retries.append(task)
 
-            # Wait for all retry tasks to complete
-            if pending_retries:
-                await asyncio.gather(*pending_retries)
+                    # Wait for current batch to complete before processing more
+                    if pending_retries:
+                        await asyncio.gather(*pending_retries)
+                        pending_retries = []
+                    retry_batch = []
 
         status_tracker.pbar.close()
 
@@ -466,7 +477,16 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
     async def append_generic_response(self, data: GenericResponse, filename: str) -> None:
         """Append a response to a jsonl file with async file operations."""
-        json_string = json.dumps(data.model_dump(), default=str)
-        async with aiofiles.open(filename, "a") as f:
-            await f.write(json_string + "\n")
-        logger.debug(f"Successfully appended response to {filename}")
+        try:
+            json_string = json.dumps(data.model_dump(), default=str)
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            async with aiofiles.open(filename, "a") as f:
+                await f.write(json_string + "\n")
+                # Ensure data is written to disk
+                await f.flush()
+                os.fsync(f.fileno())
+            logger.debug(f"Successfully appended response to {filename}")
+        except Exception as e:
+            logger.error(f"Failed to write response to {filename}: {e}")
+            raise  # Re-raise to ensure the error is handled by the caller

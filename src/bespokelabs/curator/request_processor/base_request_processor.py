@@ -194,6 +194,7 @@ class BaseRequestProcessor(ABC):
         """
         total_responses_count = 0
         failed_responses_count = 0
+        error_messages = []  # Track specific error messages
 
         responses_files = glob.glob(f"{working_dir}/responses_*.jsonl")
         if len(responses_files) == 0:
@@ -233,6 +234,10 @@ class BaseRequestProcessor(ABC):
                         # response.response_errors is not None IFF response.response_message is None
                         if response.response_errors is not None:
                             failed_responses_count += 1
+                            if isinstance(response.response_errors, list):
+                                error_messages.extend(response.response_errors)
+                            else:
+                                error_messages.append(str(response.response_errors))
                             continue
 
                         if prompt_formatter.response_format:
@@ -308,7 +313,18 @@ class BaseRequestProcessor(ABC):
             logger.info(f"Read {total_responses_count} responses, {failed_responses_count} failed")
             if failed_responses_count == total_responses_count:
                 os.remove(dataset_file)
-                raise ValueError("All requests failed")
+                error_details = "\n".join(
+                    f"- {msg}" for msg in error_messages[:5]
+                )  # Show first 5 errors
+                if len(error_messages) > 5:
+                    error_details += f"\n...and {len(error_messages) - 5} more errors"
+
+                error_msg = (
+                    "All API requests failed. This usually indicates an issue with model access permissions. "
+                    f"Here are the specific errors that occurred:\n{error_details}\n\n"
+                    "Please check your API key permissions and verify you have access to the requested model."
+                )
+                raise ValueError(error_msg)
 
             logger.info("Finalizing writer")
 
