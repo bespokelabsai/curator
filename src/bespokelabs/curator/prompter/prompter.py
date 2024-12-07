@@ -1,4 +1,63 @@
-"""Curator: Bespoke Labs Synthetic Data Generation Library."""
+"""Curator: Bespoke Labs Synthetic Data Generation Library.
+
+This module provides the Prompter class for interacting with LLMs. It supports
+both function-based and class-based approaches to defining prompt generation
+and response parsing logic.
+
+Examples:
+    Function-based approach (simple use cases):
+    ```python
+    from bespokelabs.curator import Prompter
+
+    # Define prompt and parse functions
+    def prompt_func(row=None):
+        if row is None:
+            return {
+                "user_prompt": "Default prompt",
+                "system_prompt": "You are a helpful assistant.",
+            }
+        return {
+            "user_prompt": f"Process: {row['data']}",
+            "system_prompt": "You are a helpful assistant.",
+        }
+
+    def parse_func(row, response):
+        return {"result": response.message}
+
+    # Create prompter instance
+    prompter = Prompter(
+        model_name="gpt-4",
+        prompt_func=prompt_func,
+        parse_func=parse_func,
+        response_format=MyResponseFormat,
+    )
+
+    # Use the prompter
+    result = prompter(dataset)  # Process dataset
+    single_result = prompter()  # Single completion
+    ```
+
+    Class-based approach (complex use cases):
+    ```python
+    from bespokelabs.curator.prompter.base_prompter import BasePrompter
+
+    class CustomPrompter(BasePrompter):
+        def prompt_func(self, row=None):
+            # Your custom prompt generation logic
+            return {
+                "user_prompt": "...",
+                "system_prompt": "...",
+            }
+
+        def parse_func(self, row, response):
+            # Your custom response parsing logic
+            return response
+
+    prompter = CustomPrompter(model_name="gpt-4")
+    ```
+
+For more examples, see the examples/ directory in the repository.
+"""
 
 import inspect
 import logging
@@ -13,6 +72,7 @@ from pydantic import BaseModel
 from xxhash import xxh64
 
 from bespokelabs.curator.db import MetadataDB
+from bespokelabs.curator.prompter.base_prompter import BasePrompter
 from bespokelabs.curator.prompter.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.openai_batch_request_processor import (
@@ -31,8 +91,40 @@ T = TypeVar("T")
 logger = logger = logging.getLogger(__name__)
 
 
-class Prompter:
-    """Interface for prompting LLMs."""
+class Prompter(BasePrompter):
+    """Interface for prompting LLMs.
+
+    This class supports both function-based and class-based approaches:
+
+    Function-based:
+        prompter = Prompter(
+            model_name="gpt-4",
+            prompt_func=lambda row: f"Process {row}",
+            parse_func=lambda row, response: response
+        )
+
+    Class-based:
+        class CustomPrompter(BasePrompter):
+            def prompt_func(self, row):
+                return f"Process {row}"
+            def parse_func(self, row, response):
+                return response
+
+        prompter = CustomPrompter(model_name="gpt-4")
+    """
+
+    _prompt_func: Optional[
+        Callable[
+            [Optional[Union[Dict[str, Any], BaseModel]]],
+            Dict[str, str],
+        ]
+    ]
+    _parse_func: Optional[
+        Callable[
+            [Union[Dict[str, Any], BaseModel], Union[Dict[str, Any], BaseModel]],
+            T,
+        ]
+    ]
 
     @staticmethod
     def _determine_backend(
@@ -71,7 +163,7 @@ class Prompter:
     def __init__(
         self,
         model_name: str,
-        prompt_func: Callable[[Union[Dict[str, Any], BaseModel]], Dict[str, str]],
+        prompt_func: Optional[Callable[[Union[Dict[str, Any], BaseModel]], Dict[str, str]]] = None,
         parse_func: Optional[
             Callable[
                 [
@@ -111,11 +203,29 @@ class Prompter:
             presence_penalty (Optional[float]): The presence_penalty to use for the LLM, only used if batch is False
             frequency_penalty (Optional[float]): The frequency_penalty to use for the LLM, only used if batch is False
         """
-        prompt_sig = inspect.signature(prompt_func)
-        if len(prompt_sig.parameters) > 1:
-            raise ValueError(
-                f"prompt_func must take one argument or less, got {len(prompt_sig.parameters)}"
-            )
+        # Call parent class constructor first
+        super().__init__(
+            model_name=model_name,
+            response_format=response_format,
+            batch=batch,
+            batch_size=batch_size,
+            temperature=temperature,
+            top_p=top_p,
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+        )
+
+        # Store the provided functions
+        self._prompt_func = prompt_func
+        self._parse_func = parse_func
+
+        # Validate function signatures if provided
+        if prompt_func is not None:
+            prompt_sig = inspect.signature(prompt_func)
+            if len(prompt_sig.parameters) > 1:
+                raise ValueError(
+                    f"prompt_func must take one argument or less, got {len(prompt_sig.parameters)}"
+                )
 
         if parse_func is not None:
             parse_sig = inspect.signature(parse_func)
@@ -125,8 +235,9 @@ class Prompter:
                 )
 
         self.prompt_formatter = PromptFormatter(
-            model_name, prompt_func, parse_func, response_format
+            model_name, self.prompt_func, self.parse_func, response_format
         )
+
         self.batch_mode = batch
 
         # Auto-determine backend if not specified
