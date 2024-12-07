@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 from io import BytesIO
 from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
+import types
 
 import dill
 from datasets import Dataset
@@ -305,13 +306,43 @@ class Prompter:
         return dataset
 
 
+class PathIndependentPickler(dill.Pickler):
+    """A custom pickler that standardizes file paths and line numbers in code objects."""
+
+    def save_code(self, obj):
+        # Create a copy of the code object with standardized filename and line numbers
+        code = types.CodeType(
+            obj.co_argcount,
+            obj.co_posonlyargcount,
+            obj.co_kwonlyargcount,
+            obj.co_nlocals,
+            obj.co_stacksize,
+            obj.co_flags,
+            obj.co_code,
+            obj.co_consts,
+            obj.co_names,
+            obj.co_varnames,
+            "<standardized>",  # co_filename
+            obj.co_name,
+            1,  # co_firstlineno - standardized to 1
+            bytes([]),  # co_lnotab - empty as we standardize line numbers
+            obj.co_freevars,
+            obj.co_cellvars,
+        )
+        # Pickle the standardized code object
+        super().save_code(code)
+
+
 def _get_function_hash(func) -> str:
-    """Get a hash of a function's source code."""
+    """Get a hash of a function's bytecode and closure variables, independent of file location."""
     if func is None:
         return xxh64("").hexdigest()
 
+    # Create a BytesIO buffer and custom pickler for serialization
     file = BytesIO()
-    dill.Pickler(file, recurse=True).dump(func)
+    pickler = PathIndependentPickler(file, recurse=True)
+    pickler.dump(func)
+
     return xxh64(file.getvalue()).hexdigest()
 
 
