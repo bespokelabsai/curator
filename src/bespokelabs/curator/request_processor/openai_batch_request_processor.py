@@ -656,6 +656,18 @@ class BatchManager:
 
             return batch_object
 
+    def get_submitted_batch_ids(self) -> set[str]:
+        if not os.path.exists(self.submitted_batch_objects_file):
+            return set()
+        with open(self.submitted_batch_objects_file, "r") as f:
+            return {json.loads(line.strip())["id"] for line in f}
+
+    def get_downloaded_batch_ids(self) -> set[str]:
+        if not os.path.exists(self.downloaded_batch_objects_file):
+            return set()
+        with open(self.downloaded_batch_objects_file, "r") as f:
+            return {json.loads(line.strip())["id"] for line in f}
+
     async def cancel_batches(self):
         if not os.path.exists(self.submitted_batch_objects_file):
             logger.warning("No batches to be cancelled, but cancel_batches=True.")
@@ -736,6 +748,10 @@ class BatchManager:
                     )
                     batch_object = await self.retrieve_batch(batch_object.id)
 
+                    if batch_object.status in ["cancelled", "expired"]:
+                        # don't mark as submitted, will submit a new batch for this request file
+                        continue
+
                     # Edge case where the batch is still validating, and we need to know the total number of requests
                     if batch_object.status == "validating":
                         n_requests = len(open(request_file_name, "r").readlines())
@@ -745,9 +761,6 @@ class BatchManager:
 
                     if request_file_name in self.tracker.unsubmitted_request_files:
                         self.tracker.mark_as_submitted(request_file_name, batch_object, n_requests)
-                    else:
-                        # batch objects if not unsubmitted, should be downloaded
-                        assert batch_object.id in self.tracker.downloaded_batches
 
         if self.tracker.n_submitted_batches > 0:
             logger.info(
