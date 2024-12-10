@@ -104,6 +104,9 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Note:
             - Makes a dummy request to get actual rate limits
         """
+        if not self.api_key:
+            raise ValueError("Missing OpenAI API Key - Please set OPENAI_API_KEY in your environment vars")
+
         response = requests.post(
             self.url,
             headers={"Authorization": f"Bearer {self.api_key}"},
