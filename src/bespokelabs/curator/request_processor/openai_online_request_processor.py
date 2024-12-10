@@ -288,7 +288,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
             cost = litellm.completion_cost(completion_response=response)
 
             # Create and return response
-            return GenericResponse(
+            generic_response = GenericResponse(
                 response_message=response_message,
                 response_errors=None,
                 raw_request=request.api_specific_request,
@@ -299,3 +299,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
                 token_usage=token_usage,
                 response_cost=cost,
             )
+
+            # Update stats before returning response
+            status_tracker.update_stats(token_usage, cost)
+            return generic_response

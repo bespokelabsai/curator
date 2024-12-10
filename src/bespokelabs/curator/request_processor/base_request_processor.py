@@ -50,7 +50,7 @@ class BaseRequestProcessor(ABC):
         pass
 
     @abstractmethod
-    def create_api_specific_request(self, generic_request: GenericRequest) -> dict:
+    def create_api_specific_request(sself, generic_request: GenericRequest) -> dict:
         """
         Creates a API-specific request body from a GenericRequest.
 

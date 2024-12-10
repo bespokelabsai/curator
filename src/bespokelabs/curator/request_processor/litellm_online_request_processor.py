@@ -259,7 +259,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             cost = 0
 
         # Create and return response
-        return GenericResponse(
+        generic_response = GenericResponse(
             response_message=response_message,
             response_errors=None,
             raw_request=request.api_specific_request,
@@ -270,3 +270,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             token_usage=token_usage,
             response_cost=cost,
         )
+
+        # Update stats before returning response
+        status_tracker.update_stats(token_usage, cost)
+        return generic_response
