@@ -7,22 +7,24 @@ from datetime import datetime
 from io import BytesIO
 from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
 
-from datasets.utils._dill import Pickler
 from datasets import Dataset
+from datasets.utils._dill import Pickler
 from pydantic import BaseModel
 from xxhash import xxh64
 
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.prompter.prompt_formatter import PromptFormatter
-from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
+from bespokelabs.curator.request_processor.base_request_processor import (
+    BaseRequestProcessor,
+)
+from bespokelabs.curator.request_processor.litellm_online_request_processor import (
+    LiteLLMOnlineRequestProcessor,
+)
 from bespokelabs.curator.request_processor.openai_batch_request_processor import (
     OpenAIBatchRequestProcessor,
 )
 from bespokelabs.curator.request_processor.openai_online_request_processor import (
     OpenAIOnlineRequestProcessor,
-)
-from bespokelabs.curator.request_processor.litellm_online_request_processor import (
-    LiteLLMOnlineRequestProcessor,
 )
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
