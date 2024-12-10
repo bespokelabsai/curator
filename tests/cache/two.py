@@ -1,4 +1,4 @@
-from bespokelabs.curator import Prompter
+from bespokelabs.curator import LLM
 from datasets import Dataset
 import logging
 import argparse
@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 def main(delete_cache: bool = False):
     dataset = Dataset.from_dict({"prompt": ["just say 'hi'"] * 3})
 
-    prompter = Prompter(
+    prompter = LLM(
         prompt_func=lambda row: row["prompt"],
         model_name="gpt-4o-mini",
         response_format=None,

@@ -1,6 +1,6 @@
 from datasets import Dataset
 
-from bespokelabs.curator import Prompter
+from bespokelabs.curator import LLM
 
 
 def test_same_value_caching(tmp_path):
@@ -13,7 +13,7 @@ def test_same_value_caching(tmp_path):
         def prompt_func():
             return f"Say '1'. Do not explain."
 
-        prompter = Prompter(
+        prompter = LLM(
             prompt_func=prompt_func,
             model_name="gpt-4o-mini",
         )
@@ -36,7 +36,7 @@ def test_different_values_caching(tmp_path):
         def prompt_func():
             return f"Say '{x}'. Do not explain."
 
-        prompter = Prompter(
+        prompter = LLM(
             prompt_func=prompt_func,
             model_name="gpt-4o-mini",
         )
@@ -52,7 +52,7 @@ def test_different_values_caching(tmp_path):
 def test_same_dataset_caching(tmp_path):
     """Test that using the same dataset multiple times uses cache."""
     dataset = Dataset.from_list([{"instruction": "Say '1'. Do not explain."}])
-    prompter = Prompter(
+    prompter = LLM(
         prompt_func=lambda x: x["instruction"],
         model_name="gpt-4o-mini",
     )
@@ -72,7 +72,7 @@ def test_different_dataset_caching(tmp_path):
     """Test that using different datasets creates different cache entries."""
     dataset1 = Dataset.from_list([{"instruction": "Say '1'. Do not explain."}])
     dataset2 = Dataset.from_list([{"instruction": "Say '2'. Do not explain."}])
-    prompter = Prompter(
+    prompter = LLM(
         prompt_func=lambda x: x["instruction"],
         model_name="gpt-4o-mini",
     )
@@ -97,7 +97,7 @@ def test_nested_call_caching(tmp_path):
     def prompt_func():
         return f"Say '{value_generator()}'. Do not explain."
 
-    prompter = Prompter(
+    prompter = LLM(
         prompt_func=prompt_func,
         model_name="gpt-4o-mini",
     )

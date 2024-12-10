@@ -31,7 +31,7 @@ def main():
     # 3. Set environment variable: GEMINI_API_KEY
     #############################################
 
-    recipe_prompter = curator.Prompter(
+    recipe_prompter = curator.LLM(
         model_name="gemini/gemini-1.5-flash",
         prompt_func=lambda row: f"Generate a random {row['cuisine']} recipe. Be creative but keep it realistic.",
         parse_func=lambda row, response: {

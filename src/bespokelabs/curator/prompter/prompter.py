@@ -33,7 +33,7 @@ T = TypeVar("T")
 logger = logger = logging.getLogger(__name__)
 
 
-class Prompter:
+class LLM:
     """Interface for prompting LLMs."""
 
     @staticmethod
@@ -70,6 +70,16 @@ class Prompter:
         )
         return "litellm"
 
+    @staticmethod
+    def _convert_response_to_dict(response):
+        if hasattr(response, "model_dump"):
+            return response.model_dump()
+        elif isinstance(response, dict):
+            return response
+        elif hasattr(response, "__dict__"):
+            return response.__dict__
+        return response
+
     def __init__(
         self,
         model_name: str,
@@ -97,7 +107,7 @@ class Prompter:
         presence_penalty: Optional[float] = None,
         frequency_penalty: Optional[float] = None,
     ):
-        """Initialize a Prompter.
+        """Initialize a LLM.
 
         Args:
             model_name (str): The name of the LLM to use
@@ -166,7 +176,7 @@ class Prompter:
             else:
                 if batch_size is not None:
                     logger.warning(
-                        f"Prompter argument `batch_size` {batch_size} is ignored because `batch` is False"
+                        f"LLM argument `batch_size` {batch_size} is ignored because `batch` is False"
                     )
                 self._request_processor = OpenAIOnlineRequestProcessor(
                     model=model_name,
@@ -223,7 +233,7 @@ class Prompter:
 
         Args:
             dataset (Iterable): A dataset consisting of a list of items to apply completions
-            prompter (Prompter): A Prompter that contains the logic for formatting each
+            prompter (LLM): A LLM that contains the logic for formatting each
                 item in the dataset
             working_dir (str): The working directory to save the requests.jsonl, responses.jsonl, and dataset.arrow files.
 
@@ -235,7 +245,7 @@ class Prompter:
             dataset = Dataset.from_generator(dataset)
 
         if self is None:
-            raise ValueError("Prompter must be provided")
+            raise ValueError("LLM must be provided")
 
         if working_dir is None:
             curator_cache_dir = os.environ.get(
@@ -313,6 +323,13 @@ class Prompter:
                 parse_func_hash=parse_func_hash,
                 prompt_formatter=self.prompt_formatter,
             )
+            if dataset is not None:
+                dataset = Dataset.from_list(
+                    [
+                        {**row, "response": self._convert_response_to_dict(row["response"])}
+                        for row in dataset
+                    ]
+                )
 
         return dataset
 

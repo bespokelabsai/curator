@@ -21,7 +21,7 @@ def parse_func(row, response):
     return {"instruction": instruction, "new_response": response}
 
 
-distill_prompter = curator.Prompter(
+distill_prompter = curator.LLM(
     prompt_func=prompt_func,
     parse_func=parse_func,
     model_name="gpt-4o-mini",

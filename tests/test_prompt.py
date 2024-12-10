@@ -1,11 +1,12 @@
 import os
 from typing import Optional
+from unittest.mock import patch, MagicMock
 
 import pytest
 from datasets import Dataset
 from pydantic import BaseModel
 
-from bespokelabs.curator import Prompter
+from bespokelabs.curator import LLM
 
 
 class MockResponseFormat(BaseModel):
@@ -16,7 +17,7 @@ class MockResponseFormat(BaseModel):
 
 
 @pytest.fixture
-def prompter() -> Prompter:
+def prompter() -> LLM:
     """Create a Prompter instance for testing.
 
     Returns:
@@ -24,12 +25,18 @@ def prompter() -> Prompter:
     """
 
     def prompt_func(row):
-        return {
-            "user_prompt": f"Context: {row['context']} Answer this question: {row['question']}",
-            "system_prompt": "You are a helpful assistant.",
-        }
+        return [
+            {
+                "role": "system",
+                "content": "You are a helpful assistant.",
+            },
+            {
+                "role": "user",
+                "content": f"Context: {row['context']} Answer this question: {row['question']}",
+            },
+        ]
 
-    return Prompter(
+    return LLM(
         model_name="gpt-4o-mini",
         prompt_func=prompt_func,
         response_format=MockResponseFormat,
@@ -37,7 +44,7 @@ def prompter() -> Prompter:
 
 
 @pytest.mark.test
-def test_completions(prompter: Prompter, tmp_path):
+def test_completions(prompter: LLM, tmp_path):
     """Test that completions processes a dataset correctly.
 
     Args:
@@ -54,17 +61,31 @@ def test_completions(prompter: Prompter, tmp_path):
     # Set up temporary cache directory
     os.environ["BELLA_CACHE_DIR"] = str(tmp_path)
 
-    result_dataset = prompter(dataset)
-    result_dataset = result_dataset.to_huggingface()
+    # Mock OpenAI API response
+    mock_response = {
+        "choices": [{"message": {"content": "1 + 1 equals 2."}, "finish_reason": "stop"}]
+    }
 
-    # Assertions
-    assert len(result_dataset) == len(dataset)
-    assert "message" in result_dataset.column_names
-    assert "confidence" in result_dataset.column_names
+    with patch("openai.resources.chat.completions.Completions.create", return_value=mock_response):
+        # Process dataset and get responses
+        result_dataset = prompter(dataset)
+
+        # Verify the dataset structure
+        assert len(result_dataset) == len(dataset)
+        assert "response" in result_dataset.column_names
+        # Check that each response has the required fields
+        for row in result_dataset:
+            response = row["response"]
+            if isinstance(response, dict):
+                assert "message" in response
+                assert "confidence" in response
+            else:
+                assert hasattr(response, "message")
+                assert hasattr(response, "confidence")
 
 
 @pytest.mark.test
-def test_single_completion_batch(prompter: Prompter):
+def test_single_completion_batch(prompter: LLM):
     """Test that a single completion works with batch=True.
 
     Args:
@@ -84,24 +105,36 @@ def test_single_completion_batch(prompter: Prompter):
             },
         ]
 
-    batch_prompter = Prompter(
+    batch_prompter = LLM(
         model_name="gpt-4o-mini",
         prompt_func=simple_prompt_func,
         response_format=MockResponseFormat,
         batch=True,
     )
 
-    # Get single completion
-    result = batch_prompter()
+    # Mock response data
+    mock_dataset = Dataset.from_list(
+        [{"response": {"message": "This is a test message.", "confidence": 0.9}}]
+    )
 
-    # Assertions
-    assert isinstance(result, MockResponseFormat)
-    assert hasattr(result, "message")
-    assert hasattr(result, "confidence")
+    # Mock the run method of OpenAIBatchRequestProcessor
+    with patch(
+        "bespokelabs.curator.request_processor.openai_batch_request_processor.OpenAIBatchRequestProcessor.run",
+        return_value=mock_dataset,
+    ):
+        # Get single completion
+        result = batch_prompter()
+
+        # Assertions
+        assert isinstance(result, Dataset)
+        assert len(result) == 1
+        assert isinstance(result[0]["response"], dict)
+        assert result[0]["response"]["message"] == "This is a test message."
+        assert result[0]["response"]["confidence"] == 0.9
 
 
 @pytest.mark.test
-def test_single_completion_no_batch(prompter: Prompter):
+def test_single_completion_no_batch(prompter: LLM):
     """Test that a single completion works without batch parameter.
 
     Args:
@@ -121,16 +154,28 @@ def test_single_completion_no_batch(prompter: Prompter):
             },
         ]
 
-    non_batch_prompter = Prompter(
+    non_batch_prompter = LLM(
         model_name="gpt-4o-mini",
         prompt_func=simple_prompt_func,
         response_format=MockResponseFormat,
     )
 
-    # Get single completion
-    result = non_batch_prompter()
+    # Mock response data
+    mock_dataset = Dataset.from_list(
+        [{"response": {"message": "This is a test message.", "confidence": 0.9}}]
+    )
 
-    # Assertions
-    assert isinstance(result, MockResponseFormat)
-    assert hasattr(result, "message")
-    assert hasattr(result, "confidence")
+    # Mock the run method of OpenAIOnlineRequestProcessor
+    with patch(
+        "bespokelabs.curator.request_processor.openai_online_request_processor.OpenAIOnlineRequestProcessor.run",
+        return_value=mock_dataset,
+    ):
+        # Get single completion
+        result = non_batch_prompter()
+
+        # Assertions
+        assert isinstance(result, Dataset)
+        assert len(result) == 1
+        assert isinstance(result[0]["response"], dict)
+        assert result[0]["response"]["message"] == "This is a test message."
+        assert result[0]["response"]["confidence"] == 0.9

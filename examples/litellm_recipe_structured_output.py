@@ -28,7 +28,7 @@ def main():
     # 2. Generate an API key or use an existing API key
     # 3. Set environment variable: ANTHROPIC_API_KEY
     #############################################
-    cuisines_generator = curator.Prompter(
+    cuisines_generator = curator.LLM(
         prompt_func=lambda: f"Generate 10 diverse cuisines.",
         model_name="claude-3-5-haiku-20241022",
         response_format=Cuisines,
@@ -44,7 +44,7 @@ def main():
     # 2. Generate an API key or use an existing API key
     # 3. Set environment variable: GEMINI_API_KEY
     #############################################
-    recipe_prompter = curator.Prompter(
+    recipe_prompter = curator.LLM(
         model_name="gemini/gemini-1.5-flash",
         prompt_func=lambda row: f"Generate a random {row['cuisine']} recipe. Be creative but keep it realistic.",
         parse_func=lambda row, response: {

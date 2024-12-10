@@ -2,7 +2,7 @@ import pytest
 import os
 import logging
 from datasets import Dataset
-from bespokelabs.curator import Prompter
+from bespokelabs.curator import LLM
 from tests.helpers import prepare_test_cache
 
 """
@@ -44,7 +44,7 @@ def test_litellm_models():
 
         dataset = Dataset.from_dict({"prompt": ["just say 'hi'"]})
 
-        prompter = Prompter(
+        prompter = LLM(
             prompt_func=lambda row: row["prompt"],
             model_name=model,
             response_format=None,

@@ -293,7 +293,13 @@ class BaseRequestProcessor(ABC):
                             if not isinstance(dataset_rows, list):
                                 dataset_rows = [dataset_rows]
                         else:
-                            dataset_rows = [{"response": response.response_message}]
+                            # Convert response to dict before adding to dataset
+                            response_value = response.response_message
+                            if hasattr(response_value, "model_dump"):
+                                response_value = response_value.model_dump()
+                            elif hasattr(response_value, "__dict__"):
+                                response_value = response_value.__dict__
+                            dataset_rows = [{"response": response_value}]
 
                         for row in dataset_rows:
                             if isinstance(row, BaseModel):

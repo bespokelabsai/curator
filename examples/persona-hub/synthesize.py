@@ -31,7 +31,7 @@ def get_generator(template):
     def prompt_func(row):
         return template.format(persona=row["persona"])
 
-    generator = curator.Prompter(
+    generator = curator.LLM(
         prompt_func=prompt_func,
         model_name="gpt-4o",
         temperature=0.7,

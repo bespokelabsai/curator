@@ -1,4 +1,4 @@
-from bespokelabs.curator import Prompter
+from bespokelabs.curator import LLM
 from datasets import Dataset
 import logging
 import argparse
@@ -13,7 +13,7 @@ def main(args):
 
     dataset = Dataset.from_dict({"prompt": ["write me a poem"] * args.n_requests})
 
-    prompter = Prompter(
+    prompter = LLM(
         prompt_func=lambda row: row["prompt"],
         model_name=args.model,
         max_requests_per_minute=args.max_requests_per_minute,
