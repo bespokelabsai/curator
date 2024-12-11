@@ -1,4 +1,3 @@
-import asyncio
 import datetime
 import logging
 import os
@@ -13,10 +12,10 @@ import time
 
 from bespokelabs.curator.request_processor.base_online_request_processor import (
     BaseOnlineRequestProcessor,
-    APIRequest,
-    StatusTracker,
 )
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
+from bespokelabs.curator.request_processor.base_online_request_processor import APIRequest
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
+from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.request_processor.generic_response import TokenUsage, GenericResponse
 
 T = TypeVar("T")
@@ -239,14 +238,14 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
         self,
         request: APIRequest,
         session: aiohttp.ClientSession,
-        status_tracker: StatusTracker,
+        status_tracker: OnlineStatusTracker,
     ) -> GenericResponse:
         """Make a single OpenAI API request.
 
         Args:
             request (APIRequest): The request to process
             session (aiohttp.ClientSession): Async HTTP session
-            status_tracker (StatusTracker): Tracks request status
+            status_tracker (OnlineStatusTracker): Tracks request status
 
         Returns:
             GenericResponse: The response from OpenAI

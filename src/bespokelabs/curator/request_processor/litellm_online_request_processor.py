@@ -1,6 +1,5 @@
 import logging
 from typing import Optional
-import asyncio
 import aiohttp
 import litellm
 from litellm import get_supported_openai_params
@@ -8,13 +7,12 @@ import datetime
 import instructor
 from bespokelabs.curator.request_processor.base_online_request_processor import (
     BaseOnlineRequestProcessor,
-    APIRequest,
-    StatusTracker,
 )
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
+from bespokelabs.curator.request_processor.base_online_request_processor import APIRequest
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
+from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.request_processor.generic_response import TokenUsage, GenericResponse
 from pydantic import BaseModel
-from bespokelabs.curator.prompter.prompt_formatter import PromptFormatter
 
 logger = logging.getLogger(__name__)
 
@@ -215,7 +213,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         self,
         request: APIRequest,
         session: aiohttp.ClientSession,
-        status_tracker: StatusTracker,
+        status_tracker: OnlineStatusTracker,
     ) -> GenericResponse:
         """Make a single request through LiteLLM.
 
@@ -225,7 +223,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Args:
             request (APIRequest): Request to process
             session (aiohttp.ClientSession): Async HTTP session
-            status_tracker (StatusTracker): Tracks request status
+            status_tracker (OnlineStatusTracker): Tracks request status
 
         Returns:
             GenericResponse: The response from LiteLLM

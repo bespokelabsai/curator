@@ -16,8 +16,8 @@ from pydantic import BaseModel, ValidationError
 
 from bespokelabs.curator.prompter.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
-from bespokelabs.curator.request_processor.generic_response import GenericResponse
+from bespokelabs.curator.types.generic_request import GenericRequest
+from bespokelabs.curator.types.generic_response import GenericResponse
 
 logger = logger = logging.getLogger(__name__)
 
@@ -339,3 +339,33 @@ def parse_response_message(
             response_message = None
             response_errors = [f"Failed to parse response as JSON: {response_message}"]
     return response_message, response_errors
+
+
+def request_file_to_response_file(request_file: str, working_dir: str) -> str:
+    """
+    Converts a request file path to its corresponding response file path.
+
+    Args:
+        request_file (str): Path to the request file (e.g., "requests_0.jsonl")
+        working_dir (str): Working directory containing the files
+
+    Returns:
+        str: Path to the corresponding response file (e.g., "responses_0.jsonl")
+    """
+    request_file_idx = request_file.split("/")[-1].split("_", 1)[1]
+    return f"{working_dir}/responses_{request_file_idx}"
+
+
+def response_file_to_request_file(response_file: str, working_dir: str) -> str:
+    """
+    Converts a response file path to its corresponding request file path.
+
+    Args:
+        response_file (str): Path to the response file (e.g., "responses_0.jsonl")
+        working_dir (str): Working directory containing the files
+
+    Returns:
+        str: Path to the corresponding request file (e.g., "requests_0.jsonl")
+    """
+    response_file_idx = response_file.split("/")[-1].split("_", 1)[1]
+    return f"{working_dir}/requests_{response_file_idx}"

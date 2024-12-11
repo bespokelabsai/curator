@@ -1,6 +1,4 @@
 import asyncio
-from time import sleep
-
 import nest_asyncio
 
 

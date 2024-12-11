@@ -20,7 +20,7 @@ from bespokelabs.curator.request_processor.base_request_processor import (
 from bespokelabs.curator.request_processor.litellm_online_request_processor import (
     LiteLLMOnlineRequestProcessor,
 )
-from bespokelabs.curator.request_processor.openai_batch_request_processor import (
+from bespokelabs.curator.batch_manager.openai_batch_manager import (
     OpenAIBatchRequestProcessor,
 )
 from bespokelabs.curator.request_processor.openai_online_request_processor import (
