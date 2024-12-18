@@ -308,7 +308,16 @@ class BaseRequestProcessor(ABC):
                 with open(responses_file, "r") as f_in:
                     for generic_response_string in f_in:
                         total_responses_count += 1
-                        response = GenericResponse.model_validate_json(generic_response_string)
+
+                        try:
+                            response = GenericResponse.model_validate_json(generic_response_string)
+                        except ValidationError as e:
+                            logger.warning(
+                                f"Failed to parse response message as JSON: {generic_response_string}. "
+                                f"The model likely returned an invalid JSON format. Will skip this response."
+                            )
+                            failed_responses_count += 1
+                            continue
 
                         # response.response_errors is not None IFF response.response_message is None
                         if response.response_errors is not None:

@@ -211,6 +211,12 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
                     )
                 else:
                     response_body = raw_response["response"]["body"]
+                    if "choices" not in response_body:
+                        logger.warning(
+                            f"No choices found in response_body from request file {request_file}, "
+                            f"batch {batch.id}: {response_body}. Skipping response."
+                        )
+                        continue
                     choices = response_body["choices"]
                     usage = response_body.get("usage", {})
 
@@ -806,9 +812,10 @@ class BatchManager:
                     batch_object = Batch.model_validate(json.loads(line))
                     request_file = batch_object.metadata["request_file_name"]
                     response_file = request_file_to_response_file(request_file, self.working_dir)
-                    assert (
-                        request_file in self.tracker.unsubmitted_request_files
-                    ), f"request_file {request_file} not in unsubmitted_request_files: {self.tracker.unsubmitted_request_files}"
+
+                    if request_file not in self.tracker.unsubmitted_request_files:
+                        continue
+
                     if not os.path.exists(response_file):
                         logger.warning(
                             f"Downloaded batch object {batch_object.id} has a response_file {response_file} that does not exist. "
