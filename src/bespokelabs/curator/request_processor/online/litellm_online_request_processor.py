@@ -5,13 +5,11 @@ import litellm
 from litellm import get_supported_openai_params
 import datetime
 import instructor
-from bespokelabs.curator.request_processor.base_online_request_processor import (
-    BaseOnlineRequestProcessor,
-    APIRequest,
-    StatusTracker,
-)
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
-from bespokelabs.curator.request_processor.generic_response import TokenUsage, GenericResponse
+from bespokelabs.curator.request_processor import APIRequest
+from bespokelabs.curator.request_processor import BaseOnlineRequestProcessor
+from bespokelabs.curator.status_tracker import OnlineStatusTracker
+from bespokelabs.curator.types.generic_request import GenericRequest
+from bespokelabs.curator.types.generic_response import TokenUsage, GenericResponse
 from pydantic import BaseModel
 import time
 
@@ -34,35 +32,30 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
     Attributes:
         model (str): The model identifier (e.g., "gpt-4", "claude-2")
-        temperature (Optional[float]): Temperature for response randomness
-        top_p (Optional[float]): Top-p sampling parameter
-        presence_penalty (Optional[float]): Presence penalty for response diversity
-        frequency_penalty (Optional[float]): Frequency penalty for response diversity
         client: Instructor-wrapped LiteLLM client for structured outputs
+        generation_params: The generation kwargs to use for the LLM
+        max_requests_per_minute: The max requests per minute to use for the LLM
+        max_tokens_per_minute: The max tokens per minute to use for the LLM
+        require_all_responses: Whether to require all responses
+        max_retries: The max retries to use for the LLM
     """
 
     def __init__(
         self,
         model: str,
-        temperature: Optional[float] = None,
-        top_p: Optional[float] = None,
-        presence_penalty: Optional[float] = None,
-        frequency_penalty: Optional[float] = None,
         max_requests_per_minute: Optional[int] = None,
         max_tokens_per_minute: Optional[int] = None,
         require_all_responses: Optional[bool] = None,
         max_retries: Optional[int] = None,
+        generation_params: dict | None = None,
     ):
         super().__init__(
             model=model,
-            temperature=temperature,
-            top_p=top_p,
-            presence_penalty=presence_penalty,
-            frequency_penalty=frequency_penalty,
             max_requests_per_minute=max_requests_per_minute,
             max_tokens_per_minute=max_tokens_per_minute,
             require_all_responses=require_all_responses,
             max_retries=max_retries,
+            generation_params=generation_params,
         )
         self.client = instructor.from_litellm(litellm.acompletion)
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = (
@@ -180,7 +173,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
         return rpm, tpm
 
-    def create_api_specific_request(self, generic_request: GenericRequest) -> dict:
+    def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
         """Convert a generic request into a LiteLLM-compatible format.
 
         Checks supported parameters for the specific model and only includes
@@ -195,25 +188,14 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Note:
             Uses LiteLLM's get_supported_openai_params to check parameter support
         """
-        # Get supported parameters for this model
-        supported_params = get_supported_openai_params(model=self.model)
         request = {
             "model": generic_request.model,
             "messages": generic_request.messages,
         }
 
-        # Only add parameters that are supported by this model
-        if "temperature" in supported_params and self.temperature is not None:
-            request["temperature"] = self.temperature
-
-        if "top_p" in supported_params and self.top_p is not None:
-            request["top_p"] = self.top_p
-
-        if "presence_penalty" in supported_params and self.presence_penalty is not None:
-            request["presence_penalty"] = self.presence_penalty
-
-        if "frequency_penalty" in supported_params and self.frequency_penalty is not None:
-            request["frequency_penalty"] = self.frequency_penalty
+        for key, value in generic_request.generation_params.items():
+            if key in self.supported_params:
+                request[key] = value
 
         # Add safety settings for Gemini models
         if "gemini" in generic_request.model.lower():
@@ -246,7 +228,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         self,
         request: APIRequest,
         session: aiohttp.ClientSession,
-        status_tracker: StatusTracker,
+        status_tracker: OnlineStatusTracker,
     ) -> GenericResponse:
         """Make a single request through LiteLLM.
 
@@ -256,7 +238,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Args:
             request (APIRequest): Request to process
             session (aiohttp.ClientSession): Async HTTP session
-            status_tracker (StatusTracker): Tracks request status
+            status_tracker (OnlineStatusTracker): Tracks request status
 
         Returns:
             GenericResponse: The response from LiteLLM

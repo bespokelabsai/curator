@@ -4,22 +4,21 @@ import json
 import logging
 import os
 import resource
-from abc import ABC, abstractmethod
+from abc import ABC
 from math import ceil
-from pathlib import Path
 from typing import Optional, List
 
 import aiofiles
 import pyarrow
 from datasets import Dataset
 from datasets.arrow_writer import ArrowWriter
+from litellm import get_supported_openai_params
 from pydantic import BaseModel, ValidationError
 
 from bespokelabs.curator.file_utilities import count_lines
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
-from bespokelabs.curator.request_processor.generic_response import GenericResponse
+from bespokelabs.curator.types.generic_response import GenericResponse
 
 logger = logger = logging.getLogger(__name__)
 
@@ -31,9 +30,17 @@ class BaseRequestProcessor(ABC):
     Base class for all request processors.
     """
 
-    def __init__(self, batch_size: Optional[int] = None, require_all_responses: bool = True):
+    def __init__(
+        self,
+        model: str,
+        batch_size: Optional[int] = None,
+        require_all_responses: bool = True,
+        generation_params: dict | None = None,
+    ):
+        self.model = model
         self.batch_size = batch_size
         self.require_all_responses = require_all_responses
+        self.generation_params = generation_params or {}
         # Increase the number of open file descriptors to avoid "Too many open files" errors
         soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
         desired_limit = min(10_000_000, hard)
@@ -41,22 +48,13 @@ class BaseRequestProcessor(ABC):
             f"Adjusting file descriptor limit from {soft} to {desired_limit} (hard limit: {hard})"
         )
         resource.setrlimit(resource.RLIMIT_NOFILE, (desired_limit, hard))
-
-    @abstractmethod
-    def create_api_specific_request(self, generic_request: GenericRequest) -> dict:
-        """
-        Creates a API-specific request body from a GenericRequest.
-
-        Must use request_body.metadata.dataset_row or request_body.metadata.dataset_row_idx
-
-        Note that the generic request body has both the original dataset row or the index of the row in the original dataset.
-        What you pass on depends on what is works with the API. For example, OpenAI and Anthropic offline batch API allows you to pass a custom_id (can be index).
-        For online, the api_parallel_processor can store the original dataset row in the metadata.
-
-        Returns:
-            dict: API specific request body
-        """
-        pass
+        self.supported_params = get_supported_openai_params(model=self.model)
+        logger.debug(f"Supported params for {self.model}: {self.supported_params}")
+        for key in self.generation_params.keys():
+            if key not in self.supported_params:
+                raise ValueError(
+                    f"Generation parameter '{key}' is not supported for model '{self.model}'"
+                )
 
     def run(
         self,
@@ -187,6 +185,7 @@ class BaseRequestProcessor(ABC):
         if dataset is None:
             with open(request_file, "w") as f:
                 generic_request = prompt_formatter.create_generic_request(dict(), 0)
+                generic_request.generation_params = self.generation_params
                 f.write(json.dumps(generic_request.model_dump(), default=str) + "\n")
 
             metadata_dict = {"num_jobs": 1}
@@ -221,7 +220,6 @@ class BaseRequestProcessor(ABC):
 
         return request_files
 
-    # NOTE(Ryan): Instead of doing this, just iterate over iterable and keep counter and change filename when hit batch_size, this will be slower but this whole thing is dominated by llm calls anyways
     async def acreate_request_file(
         self,
         dataset: Dataset,
@@ -236,12 +234,12 @@ class BaseRequestProcessor(ABC):
         else:
             end_idx = len(dataset)
 
-        # NOTE(Ryan): For loops only for IterableDataset which allows for _very_ large datasets, when start_idx and batch_size are not specified
         async with aiofiles.open(request_file, "w") as f:
             for idx, dataset_row in enumerate(dataset):
                 dataset_row_idx = idx + start_idx
                 # Get the generic request from the map function
                 request = prompt_formatter.create_generic_request(dataset_row, dataset_row_idx)
+                request.generation_params = self.generation_params
                 await f.write(json.dumps(request.model_dump(), default=str) + "\n")
 
         num_requests = end_idx - start_idx
@@ -310,7 +308,6 @@ class BaseRequestProcessor(ABC):
                         total_responses_count += 1
                         response = GenericResponse.model_validate_json(generic_response_string)
 
-                        # response.response_errors is not None IFF response.response_message is None
                         if response.response_errors is not None:
                             failed_responses_count += 1
                             continue
