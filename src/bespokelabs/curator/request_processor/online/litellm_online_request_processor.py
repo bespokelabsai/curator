@@ -5,13 +5,11 @@ import litellm
 from litellm import get_supported_openai_params
 import datetime
 import instructor
-from bespokelabs.curator.request_processor.base_online_request_processor import (
-    BaseOnlineRequestProcessor,
-    APIRequest,
-    StatusTracker,
-)
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
-from bespokelabs.curator.request_processor.generic_response import TokenUsage, GenericResponse
+from bespokelabs.curator.request_processor import APIRequest
+from bespokelabs.curator.request_processor import BaseOnlineRequestProcessor
+from bespokelabs.curator.status_tracker import OnlineStatusTracker
+from bespokelabs.curator.types.generic_request import GenericRequest
+from bespokelabs.curator.types.generic_response import TokenUsage, GenericResponse
 from pydantic import BaseModel
 import time
 
@@ -44,25 +42,19 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     def __init__(
         self,
         model: str,
-        temperature: Optional[float] = None,
-        top_p: Optional[float] = None,
-        presence_penalty: Optional[float] = None,
-        frequency_penalty: Optional[float] = None,
         max_requests_per_minute: Optional[int] = None,
         max_tokens_per_minute: Optional[int] = None,
         require_all_responses: Optional[bool] = None,
         max_retries: Optional[int] = None,
+        generation_kwargs: Optional[dict] = None,
     ):
         super().__init__(
             model=model,
-            temperature=temperature,
-            top_p=top_p,
-            presence_penalty=presence_penalty,
-            frequency_penalty=frequency_penalty,
             max_requests_per_minute=max_requests_per_minute,
             max_tokens_per_minute=max_tokens_per_minute,
             require_all_responses=require_all_responses,
             max_retries=max_retries,
+            generation_kwargs=generation_kwargs,
         )
         self.client = instructor.from_litellm(litellm.acompletion)
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = (
@@ -246,7 +238,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         self,
         request: APIRequest,
         session: aiohttp.ClientSession,
-        status_tracker: StatusTracker,
+        status_tracker: OnlineStatusTracker,
     ) -> GenericResponse:
         """Make a single request through LiteLLM.
 
@@ -256,7 +248,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Args:
             request (APIRequest): Request to process
             session (aiohttp.ClientSession): Async HTTP session
-            status_tracker (StatusTracker): Tracks request status
+            status_tracker (OnlineStatusTracker): Tracks request status
 
         Returns:
             GenericResponse: The response from LiteLLM

@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel, ValidationError
 
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
+from bespokelabs.curator.types.generic_request import GenericRequest
 
 T = TypeVar("T")
 _DictOrBaseModel = Union[Dict[str, Any], BaseModel]
@@ -84,6 +84,7 @@ class PromptFormatter:
             response_format=(
                 self.response_format.model_json_schema() if self.response_format else None
             ),
+            generation_kwargs=None,
         )
 
     def response_to_response_format(self, response_message: str | dict) -> Optional[dict | str]:

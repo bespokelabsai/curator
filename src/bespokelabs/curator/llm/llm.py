@@ -14,14 +14,11 @@ from xxhash import xxh64
 
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
-from bespokelabs.curator.request_processor.litellm_online_request_processor import (
+from bespokelabs.curator.request_processor import (
     LiteLLMOnlineRequestProcessor,
-)
-from bespokelabs.curator.request_processor.openai_batch_request_processor import (
-    OpenAIBatchRequestProcessor,
-)
-from bespokelabs.curator.request_processor.openai_online_request_processor import (
     OpenAIOnlineRequestProcessor,
+    AnthropicBatchRequestProcessor,
+    OpenAIBatchRequestProcessor,
 )
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
@@ -90,7 +87,9 @@ class LLM:
         if backend is not None:
             self.backend = backend
         else:
-            self.backend = self._determine_backend(model_name, response_format)
+            self.backend = self._determine_backend(model_name, response_format, batch)
+
+        # TODO based on generation_kwargs, use litellm to determine if these are supported and throw if not
 
         # Select request processor based on backend
         if self.backend == "openai":
@@ -107,11 +106,6 @@ class LLM:
                 self._request_processor = OpenAIBatchRequestProcessor(
                     model=model_name,
                     batch_size=batch_size,
-                    temperature=temperature,
-                    top_p=top_p,
-                    batch_check_interval=batch_check_interval,
-                    presence_penalty=presence_penalty,
-                    frequency_penalty=frequency_penalty,
                     delete_successful_batch_files=delete_successful_batch_files,
                     delete_failed_batch_files=delete_failed_batch_files,
                     max_retries=max_retries,
@@ -124,15 +118,23 @@ class LLM:
                     )
                 self._request_processor = OpenAIOnlineRequestProcessor(
                     model=model_name,
-                    temperature=temperature,
-                    top_p=top_p,
-                    presence_penalty=presence_penalty,
-                    frequency_penalty=frequency_penalty,
                     max_requests_per_minute=max_requests_per_minute,
                     max_tokens_per_minute=max_tokens_per_minute,
                     max_retries=max_retries,
                     require_all_responses=require_all_responses,
                 )
+        elif self.backend == "anthropic":
+            if batch:
+                self._request_processor = AnthropicBatchRequestProcessor(
+                    model=model_name,
+                    batch_size=batch_size,
+                    delete_successful_batch_files=delete_successful_batch_files,
+                    delete_failed_batch_files=delete_failed_batch_files,
+                    max_retries=max_retries,
+                    require_all_responses=require_all_responses,
+                )
+            else:
+                raise ValueError("Online mode is not supported with Anthropic backend")
         elif self.backend == "litellm":
             if batch:
                 logger.warning(
@@ -140,10 +142,6 @@ class LLM:
                 )
             self._request_processor = LiteLLMOnlineRequestProcessor(
                 model=model_name,
-                temperature=temperature,
-                top_p=top_p,
-                presence_penalty=presence_penalty,
-                frequency_penalty=frequency_penalty,
                 max_requests_per_minute=max_requests_per_minute,
                 max_tokens_per_minute=max_tokens_per_minute,
                 max_retries=max_retries,
@@ -154,14 +152,14 @@ class LLM:
 
     @staticmethod
     def _determine_backend(
-        model_name: str, response_format: Optional[Type[BaseModel]] = None
+        model_name: str, response_format: Optional[Type[BaseModel]] = None, batch: bool = False
     ) -> str:
         """Determine which backend to use based on model name and response format.
 
         Args:
             model_name (str): Name of the model
             response_format (Optional[Type[BaseModel]]): Response format if specified
-
+            batch (bool): Whether to use batch mode
         Returns:
             str: Backend to use ("openai" or "litellm")
         """
@@ -179,6 +177,10 @@ class LLM:
         if not response_format and any(x in model_name for x in ["gpt-", "o1-preview", "o1-mini"]):
             logger.info(f"Requesting text output from {model_name}, using OpenAI backend")
             return "openai"
+
+        if batch and "claude" in model_name:
+            logger.info(f"Requesting output from {model_name}, using Anthropic backend")
+            return "anthropic"
 
         # Default to LiteLLM for all other cases
         logger.info(

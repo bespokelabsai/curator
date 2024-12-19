@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List
 
 from pydantic import BaseModel
 
@@ -20,3 +20,4 @@ class GenericRequest(BaseModel):
     response_format: Dict[str, Any] | None = None
     original_row: Dict[str, Any]
     original_row_idx: int
+    generation_kwargs: Dict[str, Any] | None = None
