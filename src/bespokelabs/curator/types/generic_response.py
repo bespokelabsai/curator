@@ -1,9 +1,10 @@
 import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from .generic_request import GenericRequest
+from bespokelabs.curator.types.generic_request import GenericRequest
+from bespokelabs.curator.types.token_usage import TokenUsage
 
 """A generic response model for LLM API requests.
 
@@ -21,20 +22,6 @@ Attributes:
     token_usage: Token usage information for the request.
     response_cost: The cost of the request in USD.
 """
-
-
-class TokenUsage(BaseModel):
-    """Token usage information for an API request.
-
-    Attributes:
-        prompt_tokens: Number of tokens in the prompt
-        completion_tokens: Number of tokens in the completion
-        total_tokens: Total number of tokens used
-    """
-
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
 
 
 class GenericResponse(BaseModel):

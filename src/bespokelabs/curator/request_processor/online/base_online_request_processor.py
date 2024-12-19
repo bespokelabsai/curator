@@ -10,98 +10,19 @@ import aiohttp
 import os
 import json
 import resource
+import aiofiles
 
 from bespokelabs.curator.dataset import Dataset
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
+from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.request_processor.generic_response import GenericResponse
-import aiofiles
+from bespokelabs.curator.types.generic_response import GenericResponse
+from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
-DEFAULT_MAX_REQUESTS_PER_MINUTE = 100
-DEFAULT_MAX_TOKENS_PER_MINUTE = 100_000
-DEFAULT_MAX_RETRIES = 10
-SECONDS_TO_PAUSE_ON_RATE_LIMIT = 10
-DEFAULT_REQUEST_TIMEOUT = 10 * 60  # 10 minutes
-
-
-@dataclass
-class StatusTracker:
-    """Tracks the status of all requests."""
-
-    num_tasks_started: int = 0
-    num_tasks_in_progress: int = 0
-    num_tasks_succeeded: int = 0
-    num_tasks_failed: int = 0
-    num_tasks_already_completed: int = 0
-    num_api_errors: int = 0
-    num_other_errors: int = 0
-    num_rate_limit_errors: int = 0
-    available_request_capacity: float = 0
-    available_token_capacity: float = 0
-    last_update_time: float = field(default_factory=time.time)
-    max_requests_per_minute: int = 0
-    max_tokens_per_minute: int = 0
-    pbar: tqdm = field(default=None)
-    response_cost: float = 0
-    time_of_last_rate_limit_error: float = field(
-        default=time.time() - SECONDS_TO_PAUSE_ON_RATE_LIMIT
-    )
-
-    def __str__(self):
-        return (
-            f"Tasks - Started: {self.num_tasks_started}, "
-            f"In Progress: {self.num_tasks_in_progress}, "
-            f"Succeeded: {self.num_tasks_succeeded}, "
-            f"Failed: {self.num_tasks_failed}, "
-            f"Already Completed: {self.num_tasks_already_completed}\n"
-            f"Errors - API: {self.num_api_errors}, "
-            f"Rate Limit: {self.num_rate_limit_errors}, "
-            f"Other: {self.num_other_errors}, "
-            f"Total: {self.num_other_errors + self.num_api_errors + self.num_rate_limit_errors}"
-        )
-
-    def update_capacity(self):
-        """Update available capacity based on time elapsed"""
-        current_time = time.time()
-        seconds_since_update = current_time - self.last_update_time
-
-        self.available_request_capacity = min(
-            self.available_request_capacity
-            + self.max_requests_per_minute * seconds_since_update / 60.0,
-            self.max_requests_per_minute,
-        )
-
-        self.available_token_capacity = min(
-            self.available_token_capacity
-            + self.max_tokens_per_minute * seconds_since_update / 60.0,
-            self.max_tokens_per_minute,
-        )
-
-        self.last_update_time = current_time
-
-    def has_capacity(self, token_estimate: int) -> bool:
-        """Check if there's enough capacity for a request"""
-        self.update_capacity()
-        has_capacity = (
-            self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
-        )
-        if not has_capacity:
-            logger.debug(
-                f"No capacity for request with {token_estimate} tokens. "
-                f"Available capacity: {self.available_token_capacity} tokens, "
-                f"{self.available_request_capacity} requests."
-            )
-        return has_capacity
-
-    def consume_capacity(self, token_estimate: int):
-        """Consume capacity for a request"""
-        self.available_request_capacity -= 1
-        self.available_token_capacity -= token_estimate
 
 
 @dataclass
@@ -120,32 +41,14 @@ class APIRequest:
 class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     """Abstract base class for online request processors that make real-time API calls."""
 
-    def __init__(
-        self,
-        model: str,
-        temperature: Optional[float] = None,
-        top_p: Optional[float] = None,
-        presence_penalty: Optional[float] = None,
-        frequency_penalty: Optional[float] = None,
-        max_requests_per_minute: Optional[int] = None,
-        max_tokens_per_minute: Optional[int] = None,
-        require_all_responses: bool = None,
-        max_retries: Optional[int] = None,
-    ):
-        super().__init__(batch_size=None, require_all_responses=require_all_responses)
-        self.model: str = model
-        self.temperature: float | None = temperature
-        self.top_p: float | None = top_p
-        self.presence_penalty: float | None = presence_penalty
-        self.frequency_penalty: float | None = frequency_penalty
-        self.prompt_formatter: Optional[PromptFormatter] = None
-        self.manual_max_requests_per_minute: Optional[int] = max_requests_per_minute
-        self.manual_max_tokens_per_minute: Optional[int] = max_tokens_per_minute
-        if max_retries is None:
-            self.max_retries = DEFAULT_MAX_RETRIES
-        else:
-            self.max_retries = max_retries
-        self.timeout = DEFAULT_REQUEST_TIMEOUT
+    def __init__(self, config: OnlineRequestProcessorConfig):
+        super().__init__(config)
+        self.manual_max_requests_per_minute = config.max_requests_per_minute
+        self.manual_max_tokens_per_minute = config.max_tokens_per_minute
+        self.default_max_requests_per_minute = 10
+        self.default_max_tokens_per_minute = 100_000
+        self.header_based_max_requests_per_minute = None
+        self.header_based_max_tokens_per_minute = None
 
     @property
     def max_requests_per_minute(self) -> int:
@@ -161,9 +64,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             return self.header_based_max_requests_per_minute
         else:
             logger.warning(
-                f"No manual max_requests_per_minute set, and headers based detection failed, using default value of {DEFAULT_MAX_REQUESTS_PER_MINUTE}"
+                f"No manual max_requests_per_minute set, and headers based detection failed, using default value of {self.default_max_requests_per_minute}"
             )
-            return DEFAULT_MAX_REQUESTS_PER_MINUTE
+            return self.default_max_requests_per_minute
 
     @property
     def max_tokens_per_minute(self) -> int:
@@ -179,9 +82,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             return self.header_based_max_tokens_per_minute
         else:
             logger.warning(
-                f"No manual max_tokens_per_minute set, and headers based detection failed, using default value of {DEFAULT_MAX_TOKENS_PER_MINUTE}"
+                f"No manual max_tokens_per_minute set, and headers based detection failed, using default value of {self.default_max_tokens_per_minute}"
             )
-            return DEFAULT_MAX_TOKENS_PER_MINUTE
+            return self.default_max_tokens_per_minute
 
     @abstractmethod
     def estimate_total_tokens(self, messages: list) -> int:
@@ -193,38 +96,21 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """Estimate output tokens for a request"""
         pass
 
+    @abstractmethod
+    def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
+        """Create an API-specific request body from a generic request body."""
+        pass
+
     def check_structured_output_support(self) -> bool:
         """Check if the model supports structured output"""
         return True
 
-    def run(
+    def requests_to_responses(
         self,
-        dataset: Optional[Dataset],
-        working_dir: str,
-        parse_func_hash: str,
-        prompt_formatter: PromptFormatter,
-    ) -> Dataset:
-        # load from already completed dataset
-        output_dataset = self.attempt_loading_cached_dataset(working_dir, parse_func_hash)
-        if output_dataset is not None:
-            return output_dataset
-
-        """Run completions using the online API with async processing."""
-        logger.info(f"Running {self.__class__.__name__} completions with model: {self.model}")
-
-        self.prompt_formatter = prompt_formatter
-        if self.prompt_formatter.response_format:
-            if not self.check_structured_output_support():
-                raise ValueError(
-                    f"Model {self.model} does not support structured output, "
-                    f"response_format: {self.prompt_formatter.response_format}"
-                )
-        generic_request_files = self.create_request_files(dataset, working_dir, prompt_formatter)
-        generic_responses_files = [
-            f"{working_dir}/responses_{i}.jsonl" for i in range(len(generic_request_files))
-        ]
-
-        for request_file, response_file in zip(generic_request_files, generic_responses_files):
+        generic_request_files: list[str],
+    ) -> None:
+        for request_file in generic_request_files:
+            response_file = request_file.replace("requests_", "responses_")
             run_in_event_loop(
                 self.process_requests_from_file(
                     generic_request_filepath=request_file,
@@ -232,8 +118,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     resume=True,
                 )
             )
-
-        return self.create_dataset_files(working_dir, parse_func_hash, prompt_formatter)
 
     async def process_requests_from_file(
         self,
@@ -246,7 +130,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         # Initialize trackers
         queue_of_requests_to_retry: asyncio.Queue[APIRequest] = asyncio.Queue()
-        status_tracker = StatusTracker()
+        status_tracker = OnlineStatusTracker()
 
         # Get rate limits
         status_tracker.max_requests_per_minute = self.max_requests_per_minute
@@ -357,7 +241,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     request = APIRequest(
                         task_id=status_tracker.num_tasks_started,
                         generic_request=generic_request,
-                        api_specific_request=self.create_api_specific_request(generic_request),
+                        api_specific_request=self.create_api_specific_request_online(
+                            generic_request
+                        ),
                         attempts_left=self.max_retries,
                         prompt_formatter=self.prompt_formatter,
                     )
@@ -458,7 +344,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         session: aiohttp.ClientSession,
         retry_queue: asyncio.Queue,
         save_filepath: str,
-        status_tracker: StatusTracker,
+        status_tracker: OnlineStatusTracker,
     ) -> None:
         """Common wrapper for handling a single request with error handling and retries.
 
@@ -470,7 +356,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             session (aiohttp.ClientSession): Async HTTP session
             retry_queue (asyncio.Queue): Queue for failed requests
             save_filepath (str): Path to save responses
-            status_tracker (StatusTracker): Tracks request status
+            status_tracker (OnlineStatusTracker): Tracks request status
         """
         try:
             generic_response = await self.call_single_request(
@@ -524,7 +410,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self,
         request: APIRequest,
         session: aiohttp.ClientSession,
-        status_tracker: StatusTracker,
+        status_tracker: OnlineStatusTracker,
     ) -> GenericResponse:
         """Make a single API request without error handling.
 
@@ -534,7 +420,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         Args:
             request (APIRequest): Request to process
             session (aiohttp.ClientSession): Async HTTP session
-            status_tracker (StatusTracker): Tracks request status
+            status_tracker (OnlineStatusTracker): Tracks request status
 
         Returns:
             GenericResponse: The response from the API call
