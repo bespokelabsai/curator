@@ -23,6 +23,17 @@ logger = logging.getLogger(__name__)
 
 
 class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin):
+    """OpenAI-specific implementation of the BatchRequestProcessor.
+
+    This class handles batch processing of requests using OpenAI's API, including
+    file uploads, batch submissions, and result retrieval. Supports both standard
+    requests and those with JSON schema response formats.
+
+    Attributes:
+        client: AsyncOpenAI client instance for making API calls.
+        web_dashboard: URL to OpenAI's web dashboard for batch monitoring.
+    """
+
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         super().__init__(config)
         self.client = AsyncOpenAI(max_retries=self.config.max_retries)
@@ -30,22 +41,44 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
 
     @property
     def max_requests_per_batch(self) -> int:
+        """Maximum number of requests allowed in a single OpenAI batch.
+
+        Returns:
+            int: The maximum number of requests (50,000) per batch.
+        """
         return 50_000
 
     @property
     def max_bytes_per_batch(self) -> int:
+        """Maximum size in bytes allowed for a single OpenAI batch.
+
+        Returns:
+            int: The maximum batch size (200 MB) in bytes.
+        """
         return 200 * 1024 * 1024  # 200 MB
 
     @property
     def max_concurrent_batch_operations(self) -> int:
+        """Maximum number of concurrent batch operations allowed.
+
+        Returns:
+            int: The maximum number of concurrent operations (100).
+        """
         return 100
 
     def parse_api_specific_request_counts(
         self, request_counts: BatchRequestCounts
     ) -> GenericBatchRequestCounts:
-        """
-        https://github.com/openai/openai-python/blob/6e1161bc3ed20eef070063ddd5ac52fd9a531e88/src/openai/types/batch_request_counts.py#L9
-        Request Counts (OpenAI): "completed", "failed", "total"
+        """Converts OpenAI-specific request counts to generic format.
+
+        OpenAI request counts include: "completed", "failed", "total".
+        These are mapped to our generic format.
+
+        Args:
+            request_counts: OpenAI's BatchRequestCounts object.
+
+        Returns:
+            GenericBatchRequestCounts: Standardized request count format.
         """
         return GenericBatchRequestCounts(
             failed=request_counts.failed,
@@ -57,12 +90,20 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
     def parse_api_specific_batch_object(
         self, batch: Batch, request_file: str | None = None
     ) -> GenericBatch:
-        """
-        https://github.com/openai/openai-python/blob/995cce048f9427bba4f7ac1e5fc60abbf1f8f0b7/src/openai/types/batch.py#L40C1-L41C1
-        Batch Status (OpenAI): "validating", "finalizing", "cancelling", "in_progress", "completed", "failed", "expired", "cancelled"
+        """Converts an OpenAI batch object to generic format.
 
-        https://github.com/openai/openai-python/blob/bb9c2de913279acc89e79f6154173a422f31de45/src/openai/types/batch.py#L27-L71
-        Timing (OpenAI): "created_at", "in_progress_at", "expires_at", "finalizing_at", "completed_at", "failed_at", "expired_at", "cancelling_at", "cancelled_at"
+        Handles status mapping and timing information from OpenAI's format
+        to our standardized GenericBatch format.
+
+        Args:
+            batch: OpenAI's Batch object.
+            request_file: Optional path to the request file.
+
+        Returns:
+            GenericBatch: Standardized batch object.
+
+        Raises:
+            ValueError: If the batch status is unknown.
         """
         if batch.status in ["validating", "finalizing", "cancelling", "in_progress"]:
             status = "submitted"
@@ -93,6 +134,20 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         generic_request: GenericRequest,
         batch: GenericBatch,
     ) -> GenericResponse:
+        """Parses an OpenAI API response into generic format.
+
+        Processes the raw response from OpenAI's batch API, handling both
+        successful and failed responses, including token usage and cost calculation.
+
+        Args:
+            raw_response: Raw response dictionary from OpenAI's API.
+            generic_request: Original generic request object.
+            batch: The batch object containing timing information.
+
+        Returns:
+            GenericResponse: Standardized response object with parsed message,
+                errors, token usage, and cost information.
+        """
         if raw_response["response"]["status_code"] != 200:
             response_message = None
             response_errors = [str(raw_response["response"]["status_code"])]
@@ -136,22 +191,18 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         )
 
     def create_api_specific_request_batch(self, generic_request: GenericRequest) -> dict:
-        """
-        Creates an API-specific request body from a generic request body.
+        """Creates an API-specific request body from a generic request.
 
-        This function transforms a GenericRequest into the format expected by OpenAI's batch API.
-        It handles both standard requests and those with JSON schema response formats.
+        Transforms a GenericRequest into the format expected by OpenAI's batch API.
+        Handles both standard requests and those with JSON schema response formats.
 
         Args:
-            generic_request (GenericRequest): The generic request object containing model, messages,
+            generic_request: The generic request object containing model, messages,
                 and optional response format.
 
         Returns:
-            dict: API specific request body formatted for OpenAI's batch API, including:
-                - custom_id: String identifier from the original row index
-                - method: Always "POST"
-                - url: OpenAI chat completions endpoint
-                - body: Request parameters including model, messages, and optional formatting
+            dict: API specific request body formatted for OpenAI's batch API,
+                including custom_id, method, URL, and request body.
         """
         request = {
             "custom_id": str(generic_request.original_row_idx),
@@ -163,14 +214,16 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         return request
 
     async def upload_batch_file(self, file_content: bytes) -> FileObject:
-        """
-        Uploads a batch file to OpenAI and waits until ready.
+        """Uploads a batch file to OpenAI and waits until ready.
 
         Args:
-            file_content (bytes): The encoded file content to upload
+            file_content: The encoded file content to upload.
 
         Returns:
-            str: The uploaded file object from OpenAI
+            FileObject: The uploaded file object from OpenAI.
+
+        Raises:
+            Exception: If file upload or processing fails.
         """
         try:
             batch_file_upload = await self.client.files.create(file=file_content, purpose="batch")
@@ -193,18 +246,17 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         return batch_file_upload
 
     async def create_batch(self, batch_file_id: str, metadata: dict) -> Batch:
-        """
-        Creates a batch job with OpenAI using an uploaded file.
+        """Creates a batch job with OpenAI using an uploaded file.
 
         Args:
-            batch_file_id (str): ID of the uploaded file to use for the batch
-            metadata (dict): Metadata to be included with the batch
+            batch_file_id: ID of the uploaded file to use for the batch.
+            metadata: Metadata to be included with the batch.
 
         Returns:
-            Batch: The created batch object from OpenAI
+            Batch: The created batch object from OpenAI.
 
         Raises:
-            Exception: If batch creation fails
+            Exception: If batch creation fails.
         """
         try:
             batch = await self.client.batches.create(
@@ -220,18 +272,19 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         return batch
 
     async def submit_batch(self, requests: list[dict], metadata: dict) -> GenericBatch:
-        """
-        Handles the complete batch submission process.
+        """Handles the complete batch submission process.
+
+        Coordinates file upload and batch creation with OpenAI's API.
 
         Args:
-            requests (list[dict]): List of API-specific requests to submit
-            metadata (dict): Metadata to be included with the batch
+            requests: List of API-specific requests to submit.
+            metadata: Metadata to be included with the batch.
 
         Returns:
-            Batch: The created batch object from OpenAI
+            GenericBatch: The created batch object.
 
         Side Effects:
-            - Updates tracker with submitted batch status
+            - Updates tracker with submitted batch status.
         """
         async with self.semaphore:
             file_content = self.create_batch_file(requests)
@@ -240,6 +293,18 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             return self.parse_api_specific_batch_object(batch)
 
     async def retrieve_batch(self, batch: GenericBatch) -> GenericBatch:
+        """Retrieves the current status of a batch from OpenAI's API.
+
+        Args:
+            batch: The batch object to retrieve status for.
+
+        Returns:
+            GenericBatch: Updated batch object with current status.
+            None: If the batch is not found or inaccessible.
+
+        Note:
+            Uses API key suffix to help identify access issues.
+        """
         try:
             batch = await self.client.batches.retrieve(batch.id)
         except NotFoundError:
@@ -251,12 +316,11 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         return self.parse_api_specific_batch_object(batch)
 
     async def delete_file(self, file_id: str, semaphore: asyncio.Semaphore):
-        """
-        Deletes a file from OpenAI's storage.
+        """Deletes a file from OpenAI's storage.
 
         Args:
-            file_id (str): The ID of the file to delete
-            semaphore (asyncio.Semaphore): Semaphore to limit concurrent operations
+            file_id: The ID of the file to delete.
+            semaphore: Semaphore to limit concurrent operations.
         """
         async with semaphore:
             try:
@@ -270,6 +334,15 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
                 logger.warning(f"Trying to delete file {file_id} but it was not found.")
 
     async def download_batch(self, batch: GenericBatch) -> list[dict] | None:
+        """Downloads the results of a completed batch.
+
+        Args:
+            batch: The batch object to download results for.
+
+        Returns:
+            list[dict]: List of response dictionaries.
+            None: If download fails.
+        """
         output_file_content = None
         error_file_content = None  # TODO how should we use this?
         openai_batch = Batch.model_validate(batch.raw_batch)
@@ -319,6 +392,17 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         return responses
 
     async def cancel_batch(self, batch: GenericBatch) -> int:
+        """Cancels a running batch job.
+
+        Args:
+            batch: The batch object to cancel.
+
+        Returns:
+            int: 0 if cancellation is successful, -1 if it fails.
+
+        Note:
+            Cannot cancel already completed batches.
+        """
         async with self.semaphore:
             batch_object = await self.retrieve_batch(batch)
             if batch_object.status == "completed":

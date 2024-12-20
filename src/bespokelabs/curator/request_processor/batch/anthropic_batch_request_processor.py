@@ -19,10 +19,17 @@ logger = logging.getLogger(__name__)
 
 
 class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
-    """
-    Information about limits:
+    """Anthropic-specific implementation of the BatchRequestProcessor.
+
+    This class handles batch processing of requests using Anthropic's API, including
+    submitting batches, monitoring their status, and retrieving results. For batch
+    limitations and details, see:
     https://docs.anthropic.com/en/api/creating-message-batches
     https://docs.anthropic.com/en/docs/build-with-claude/message-batches#batch-limitations
+
+    Attributes:
+        client: AsyncAnthropic client instance for making API calls
+        web_dashboard: URL to Anthropic's web dashboard for batch monitoring
     """
 
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
@@ -32,22 +39,44 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
 
     @property
     def max_requests_per_batch(self) -> int:
+        """Maximum number of requests allowed in a single Anthropic batch.
+
+        Returns:
+            int: The maximum number of requests (100,000) per batch.
+        """
         return 100_000
 
     @property
     def max_bytes_per_batch(self) -> int:
+        """Maximum size in bytes allowed for a single Anthropic batch.
+
+        Returns:
+            int: The maximum batch size (256 MB) in bytes.
+        """
         return 256 * 1024 * 1024  # 256 MB
 
     @property
     def max_concurrent_batch_operations(self) -> int:
+        """Maximum number of concurrent batch operations allowed.
+
+        Returns:
+            int: The maximum number of concurrent operations (100).
+        """
         return 100
 
     def parse_api_specific_request_counts(
         self, request_counts: MessageBatchRequestCounts
     ) -> GenericBatchRequestCounts:
-        """
-        https://github.com/anthropics/anthropic-sdk-python/blob/e7c5fd1cf9226d73122870d07906664696da3ab8/src/anthropic/types/beta/messages/beta_message_batch_request_counts.py#L9
-        Request Counts (Anthropic): "processing", "canceled", "errored", "expired", "succeeded"
+        """Converts Anthropic-specific request counts to generic format.
+
+        Anthropic request counts include: "processing", "canceled", "errored",
+        "expired", "succeeded". These are mapped to our generic format.
+
+        Args:
+            request_counts: Anthropic's MessageBatchRequestCounts object.
+
+        Returns:
+            GenericBatchRequestCounts: Standardized request count format.
         """
         failed = request_counts.canceled + request_counts.errored + request_counts.expired
         succeeded = request_counts.succeeded
@@ -62,12 +91,20 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
     def parse_api_specific_batch_object(
         self, batch: MessageBatch, request_file: str | None = None
     ) -> GenericBatch:
-        """
-        https://github.com/anthropics/anthropic-sdk-python/blob/e7c5fd1cf9226d73122870d07906664696da3ab8/src/anthropic/types/beta/messages/beta_message_batch.py#L53
-        Batch Status (Anthropic): "in_progress", "canceling", "ended"
+        """Converts an Anthropic batch object to generic format.
 
-        https://github.com/anthropics/anthropic-sdk-python/blob/e7c5fd1cf9226d73122870d07906664696da3ab8/src/anthropic/types/beta/messages/beta_message_batch.py#L20-L51
-        Timing (Anthropic): "created_at", "cancel_initiated_at", "archived_at", "ended_at", "expires_at"
+        Handles status mapping and timing information from Anthropic's format
+        to our standardized GenericBatch format.
+
+        Args:
+            batch: Anthropic's MessageBatch object.
+            request_file: Optional path to the request file.
+
+        Returns:
+            GenericBatch: Standardized batch object.
+
+        Raises:
+            ValueError: If the batch status is unknown.
         """
         if batch.processing_status in ["cancelling", "in_progress"]:
             status = "submitted"
@@ -89,8 +126,22 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         )
 
     def create_api_specific_request_batch(self, generic_request: GenericRequest) -> dict:
+        """Creates an API-specific request body from a generic request.
+
+        Transforms a GenericRequest into the format expected by Anthropic's batch API.
+        Handles message formatting and parameter configuration.
+
+        Args:
+            generic_request: The generic request object containing model, messages,
+                and optional response format.
+
+        Returns:
+            dict: API specific request body formatted for Anthropic's batch API.
+
+        Raises:
+            NotImplementedError: If response_format is specified (not yet supported).
+        """
         if generic_request.response_format:
-            # TODO(Ryan) how can we support this the way litellm does?
             raise NotImplementedError("response_format is not yet supported for Anthropic")
 
         params = {"model": generic_request.model, "max_tokens": get_max_tokens(self.config.model)}
@@ -116,6 +167,20 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         generic_request: GenericRequest,
         batch: GenericBatch,
     ) -> GenericResponse:
+        """Parses an Anthropic API response into generic format.
+
+        Processes the raw response from Anthropic's batch API, handling both
+        successful and failed responses, including token usage and cost calculation.
+
+        Args:
+            raw_response: Raw response dictionary from Anthropic's API.
+            generic_request: Original generic request object.
+            batch: The batch object containing timing information.
+
+        Returns:
+            GenericResponse: Standardized response object with parsed message,
+                errors, token usage, and cost information.
+        """
         result_type = raw_response["result"]["type"]
         if result_type != "succeeded":
             error = raw_response["result"]["error"]
@@ -129,9 +194,6 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         else:
             response_body = raw_response["result"]["message"]
             response_message_raw = response_body["content"][0]["text"]
-            # TODO(Ryan) will want to resubmit requests like in the online case
-            # if we get max_tokens?
-            # end_turn, max_tokens, stop_sequence, tool_use
             stop_reason = response_body["stop_reason"]
             stop_sequence = response_body["stop_sequence"]
             usage = response_body.get("usage", {})
@@ -165,18 +227,17 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         )
 
     async def submit_batch(self, requests: list[dict], metadata: dict) -> GenericBatch:
-        """
-        Handles the complete batch submission process.
+        """Submits a batch of requests to Anthropic's API.
 
         Args:
-            requests (list[dict]): List of API-specific requests to submit
-            metadata (dict): Metadata to be included with the batch
+            requests: List of API-specific requests to submit.
+            metadata: Metadata to be included with the batch.
 
         Returns:
-            Batch: The created batch object from OpenAI
+            GenericBatch: The created batch object.
 
         Side Effects:
-            - Updates tracker with submitted batch status
+            - Updates tracker with submitted batch status.
         """
         async with self.semaphore:
             batch = await self.client.messages.batches.create(requests=requests)
@@ -185,6 +246,18 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             )
 
     async def retrieve_batch(self, batch: GenericBatch) -> GenericBatch:
+        """Retrieves the current status of a batch from Anthropic's API.
+
+        Args:
+            batch: The batch object to retrieve status for.
+
+        Returns:
+            GenericBatch: Updated batch object with current status.
+            None: If the batch is not found or inaccessible.
+
+        Note:
+            Uses API key suffix to help identify access issues.
+        """
         async with self.semaphore:
             try:
                 batch = await self.client.messages.batches.retrieve(batch.id)
@@ -199,6 +272,15 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             return self.parse_api_specific_batch_object(batch, request_file=request_file)
 
     async def download_batch(self, batch: GenericBatch) -> list[dict] | None:
+        """Downloads the results of a completed batch.
+
+        Args:
+            batch: The batch object to download results for.
+
+        Returns:
+            list[dict]: List of response dictionaries.
+            None: If download fails.
+        """
         async with self.semaphore:
             anthropic_batch = MessageBatch.model_validate(batch.raw_batch)
             responses = []
@@ -208,6 +290,17 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             return responses
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:
+        """Cancels a running batch job.
+
+        Args:
+            batch: The batch object to cancel.
+
+        Returns:
+            GenericBatch: Updated batch object reflecting cancellation status.
+
+        Note:
+            Cannot cancel already completed batches.
+        """
         async with self.semaphore:
             request_file = self.tracker.submitted_batches[batch.id].request_file
             batch_object = await self.retrieve_batch(batch)
