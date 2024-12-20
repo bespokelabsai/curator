@@ -1,9 +1,8 @@
-import asyncio
 import datetime
 import logging
 import os
 import re
-from typing import Optional, Any, TypeVar
+from typing import TypeVar
 
 import aiohttp
 import requests
@@ -11,53 +10,19 @@ import tiktoken
 import litellm
 import time
 
-from bespokelabs.curator.request_processor.base_online_request_processor import (
-    BaseOnlineRequestProcessor,
-    APIRequest,
-    StatusTracker,
-)
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
-from bespokelabs.curator.request_processor.generic_response import TokenUsage, GenericResponse
+from bespokelabs.curator.request_processor import APIRequest
+from bespokelabs.curator.request_processor import BaseOnlineRequestProcessor
+from bespokelabs.curator.status_tracker import OnlineStatusTracker
+from bespokelabs.curator.types.generic_request import GenericRequest
+from bespokelabs.curator.types.generic_response import TokenUsage, GenericResponse
+from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
+from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 
 T = TypeVar("T")
 logger = logger = logging.getLogger(__name__)
 
 
-def get_token_encoding_name(model_name: str) -> str:
-    """Get the token encoding name for a given model."""
-    if model_name.startswith("gpt-4"):
-        return "cl100k_base"
-    elif model_name.startswith("gpt-3.5"):
-        return "cl100k_base"
-    else:
-        return "cl100k_base"  # Default to cl100k_base
-
-
-def api_endpoint_from_url(request_url: str) -> str:
-    """Extract the API endpoint from the request URL.
-    This is used to determine the number of tokens consumed by the request.
-    """
-
-    # OpenAI API
-    match = re.search("^https://[^/]+/v\\d+/(.+)$", request_url)
-    if match:
-        return match[1]
-
-    # for Azure OpenAI deployment urls
-    match = re.search(r"^https://[^/]+/openai/deployments/[^/]+/(.+?)(\?|$)", request_url)
-    if match:
-        return match[1]
-
-    # Catch all for other API endpoints using OpenAI OpenAPI format
-    if "chat/completions" in request_url:
-        return "chat/completions"
-    elif "completions" in request_url:
-        return "completions"
-    else:
-        raise NotImplementedError(f'API endpoint "{request_url}" not implemented in Curator yet.')
-
-
-class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
+class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixin):
     """OpenAI-specific implementation of the OnlineRequestProcessor.
 
     Handles API requests to OpenAI's chat completion endpoints with rate limiting,
@@ -70,34 +35,11 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
         - Supports structured output via JSON schema
     """
 
-    def __init__(
-        self,
-        model: str = "gpt-4o-mini",
-        api_key: str = os.getenv("OPENAI_API_KEY"),
-        url: str = "https://api.openai.com/v1/chat/completions",
-        temperature: Optional[float] = None,
-        top_p: Optional[float] = None,
-        presence_penalty: Optional[float] = None,
-        frequency_penalty: Optional[float] = None,
-        max_requests_per_minute: Optional[int] = None,
-        max_tokens_per_minute: Optional[int] = None,
-        require_all_responses: bool = None,
-        max_retries: Optional[int] = None,
-    ):
-        super().__init__(
-            model=model,
-            temperature=temperature,
-            top_p=top_p,
-            presence_penalty=presence_penalty,
-            frequency_penalty=frequency_penalty,
-            max_requests_per_minute=max_requests_per_minute,
-            max_tokens_per_minute=max_tokens_per_minute,
-            require_all_responses=require_all_responses,
-            max_retries=max_retries,
-        )
-        self.url = url
-        self.api_key = api_key
-        self.token_encoding = tiktoken.get_encoding(get_token_encoding_name(model))
+    def __init__(self, config: OnlineRequestProcessorConfig):
+        super().__init__(config)
+        self.url = "https://api.openai.com/v1/chat/completions"
+        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.token_encoding = self.get_token_encoding()
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = (
             self.get_header_based_rate_limits()
         )
@@ -119,7 +61,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
         response = requests.post(
             self.url,
             headers={"Authorization": f"Bearer {self.api_key}"},
-            json={"model": self.model, "messages": []},
+            json={"model": self.config.model, "messages": []},
         )
         rpm = int(response.headers.get("x-ratelimit-limit-requests", 0))
         tpm = int(response.headers.get("x-ratelimit-limit-tokens", 0))
@@ -137,7 +79,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
             Override this method for more accurate model-specific estimates.
         """
         try:
-            return litellm.get_max_tokens(model=self.model) // 4
+            return litellm.get_max_tokens(model=self.config.model) // 4
         except Exception:
             return 0
 
@@ -186,7 +128,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
             - gpt-4o-mini with date >= 2024-07-18 or latest
             - gpt-4o with date >= 2024-08-06 or latest
         """
-        model_name = self.model.lower()
+        model_name = self.config.model.lower()
 
         # Check gpt-4o-mini support
         if model_name == "gpt-4o-mini":  # Latest version
@@ -206,64 +148,29 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
         return False
 
-    def create_api_specific_request(self, generic_request: GenericRequest) -> dict:
+    def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
         """Create an OpenAI-specific request from a generic request.
 
-        Args:
-            generic_request (GenericRequest): Generic request object
-
-        Returns:
-            dict: OpenAI API-compatible request dictionary
-
-        Note:
-            - Handles JSON schema response format if specified
-            - Applies optional parameters (temperature, top_p, etc.)
-            - Maintains compatibility with both chat and completion endpoints
+        Delegates to the mixin implementation.
         """
-        request: dict[str, Any] = {
-            "model": generic_request.model,
-            "messages": generic_request.messages,
-        }
-        if generic_request.response_format:
-            request["response_format"] = {
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "output_schema",
-                    "schema": generic_request.response_format,
-                },
-            }
-
-        if self.temperature is not None:
-            request["temperature"] = self.temperature
-
-        if self.top_p is not None:
-            request["top_p"] = self.top_p
-
-        if self.presence_penalty is not None:
-            request["presence_penalty"] = self.presence_penalty
-
-        if self.frequency_penalty is not None:
-            request["frequency_penalty"] = self.frequency_penalty
-
-        return request
+        return OpenAIRequestMixin.create_api_specific_request_online(self, generic_request)
 
     async def call_single_request(
         self,
         request: APIRequest,
         session: aiohttp.ClientSession,
-        status_tracker: StatusTracker,
+        status_tracker: OnlineStatusTracker,
     ) -> GenericResponse:
         """Make a single OpenAI API request.
 
         Args:
             request (APIRequest): The request to process
             session (aiohttp.ClientSession): Async HTTP session
-            status_tracker (StatusTracker): Tracks request status
+            status_tracker (OnlineStatusTracker): Tracks request status
 
         Returns:
             GenericResponse: The response from OpenAI
         """
-        api_endpoint = api_endpoint_from_url(self.url)
         request_header = {"Authorization": f"Bearer {self.api_key}"}
         if "/deployments" in self.url:  # Azure deployment
             request_header = {"api-key": f"{self.api_key}"}
@@ -272,7 +179,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
             self.url,
             headers=request_header,
             json=request.api_specific_request,
-            timeout=self.timeout,
+            timeout=self.config.request_timeout,
         ) as response_obj:
             response = await response_obj.json()
 
@@ -313,3 +220,14 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
                 token_usage=token_usage,
                 response_cost=cost,
             )
+
+    def get_token_encoding(self) -> str:
+        """Get the token encoding name for a given model."""
+        if self.config.model.startswith("gpt-4"):
+            name = "cl100k_base"
+        elif self.config.model.startswith("gpt-3.5"):
+            name = "cl100k_base"
+        else:
+            name = "cl100k_base"  # Default to cl100k_base
+
+        return tiktoken.get_encoding(name)

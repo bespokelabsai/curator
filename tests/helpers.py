@@ -7,11 +7,15 @@ import re
 
 
 @pytest.fixture
-def prepare_test_cache(request):
+def clear_test_cache(request):
     """Fixture to ensure clean caches before tests"""
     # Get cache_dir from marker if provided, otherwise use default
     marker = request.node.get_closest_marker("cache_dir")
-    cache_dir = marker.args[0]
+    if marker and callable(marker.args[0]):
+        # If the marker arg is a function (lambda), call it with the test params
+        cache_dir = marker.args[0](request.node.callspec.params["script_path"])
+    else:
+        cache_dir = marker.args[0] if marker else None
 
     os.environ["CURATOR_CACHE_DIR"] = cache_dir
 

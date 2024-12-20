@@ -29,6 +29,9 @@ def main():
     # 1. Go to https://aistudio.google.com/app/apikey
     # 2. Generate an API key
     # 3. Set environment variable: GEMINI_API_KEY
+    # 4. If you are a free user, update rate limits:
+    #       max_requests_per_minute=15
+    #       max_tokens_per_minute=1_000_000
     #############################################
 
     recipe_prompter = curator.LLM(
@@ -39,6 +42,8 @@ def main():
             "cuisine": row["cuisine"],
         },
         backend="litellm",
+        max_requests_per_minute=2_000,
+        max_tokens_per_minute=4_000_000,
     )
 
     # Generate recipes for all cuisines

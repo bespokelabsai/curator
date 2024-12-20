@@ -1,4 +1,4 @@
-import dataclasses
+from dataclasses import dataclass, field
 import inspect
 import json
 import logging
@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel, ValidationError
 
-from bespokelabs.curator.request_processor.generic_request import GenericRequest
+from bespokelabs.curator.types.generic_request import GenericRequest
 
 T = TypeVar("T")
 _DictOrBaseModel = Union[Dict[str, Any], BaseModel]
@@ -47,12 +47,13 @@ def _validate_messages(messages: list[dict]) -> None:
             )
 
 
-@dataclasses.dataclass
+@dataclass
 class PromptFormatter:
     model_name: str
     prompt_func: Callable[[_DictOrBaseModel], Dict[str, str]]
     parse_func: Optional[Callable[[_DictOrBaseModel, _DictOrBaseModel], T]] = None
     response_format: Optional[Type[BaseModel]] = None
+    generation_params: dict = field(default_factory=dict)
 
     def create_generic_request(self, row: _DictOrBaseModel, idx: int) -> GenericRequest:
         """Format the request object based off of `LLM` attributes."""
@@ -84,6 +85,7 @@ class PromptFormatter:
             response_format=(
                 self.response_format.model_json_schema() if self.response_format else None
             ),
+            generation_params=self.generation_params,
         )
 
     def response_to_response_format(self, response_message: str | dict) -> Optional[dict | str]:
@@ -138,3 +140,18 @@ class PromptFormatter:
                 f"The model likely returned a JSON that does not match the schema of the `response_format`."
             )
             raise e
+
+    def parse_response_message(
+        self, response_message: str
+    ) -> tuple[Optional[dict | str], Optional[list[str]]]:
+        response_errors = None
+        if self.response_format:
+            try:
+                response_message = json.loads(response_message)
+            except json.JSONDecodeError:
+                logger.warning(
+                    f"Failed to parse response as JSON: {response_message}, skipping this response."
+                )
+                response_message = None
+                response_errors = [f"Failed to parse response as JSON: {response_message}"]
+        return response_message, response_errors

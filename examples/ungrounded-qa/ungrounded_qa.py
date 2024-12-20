@@ -60,7 +60,13 @@ qa_prompter = curator.LLM(
         for qa in qas.qas
     ],
 )
-qa_dataset = qa_prompter(subsubject_dataset)
 
-qa_dataset.map(lambda row: {"answer": row["answer"].strip()}, num_proc=2)
-print(qa_dataset.to_pandas())
+
+def main():
+    qa_dataset = qa_prompter(subsubject_dataset)
+    qa_dataset = qa_dataset.map(lambda row: {"answer": row["answer"].strip()}, num_proc=2)
+    print(qa_dataset.to_pandas())
+
+
+if __name__ == "__main__":
+    main()
