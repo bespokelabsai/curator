@@ -35,6 +35,12 @@ litellm = "1.55.4"
 isort = "^5.13.2"
 tiktoken = ">=0.7.0,<0.8.0"
 aiofiles = ">=22.0,<24.0"
+mimesis = "^18.0.0"
+seaborn = "^0.13.2"
+gliner = {git = "https://github.com/urchade/GLiNER.git"}
+accelerate = "^1.2.1"
+jieba = "^0.42.1"
+scikit-learn = "^1.6.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"

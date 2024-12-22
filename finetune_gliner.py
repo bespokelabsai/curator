@@ -43,18 +43,18 @@ def validate_dataset(dataset) -> bool:
             
         # Validate entity format
         entity = example['output'][0]
-        required_entity_fields = {'type', 'start', 'end', 'value'}
+        required_entity_fields = {'entity_type', 'entity_value', 'entity_source'}
         if not all(field in entity for field in required_entity_fields):
             logger.error(f"Entity missing required fields. Found: {list(entity.keys())}")
             return False
             
-        # Validate entity positions
-        if not (isinstance(entity['start'], int) and isinstance(entity['end'], int)):
-            logger.error("Entity start and end positions must be integers")
+        # Validate entity values
+        if not isinstance(entity['entity_value'], str):
+            logger.error("Entity value must be a string")
             return False
             
-        if entity['start'] >= entity['end']:
-            logger.error("Entity end position must be greater than start position")
+        if not isinstance(entity['entity_type'], str):
+            logger.error("Entity type must be a string")
             return False
             
         return True
