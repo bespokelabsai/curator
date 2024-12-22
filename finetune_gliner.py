@@ -173,11 +173,11 @@ def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
     
     # Initialize GLiNER with configuration for Chinese text
     config = GLiNERConfig(
-        model_name="urchade/gliner_small",
+        model_name="bert-base-chinese",  # Use Chinese BERT as base model
         words_splitter_type="jieba",  # Use jieba for Chinese text
         max_len=256,  # Reduced from 384 to handle memory better
         max_types=25,
-        hidden_size=512,
+        hidden_size=768,  # Match BERT hidden size
         dropout=0.4,
         has_rnn=True,
         fine_tune=True
