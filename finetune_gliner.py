@@ -175,35 +175,42 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                     example_span_indices = []
                     span_mask = []
                     
-                    # Generate spans more efficiently
-                    max_width = model.config.max_width
-                    min_width = getattr(model.config, 'min_width', 1)
+                    # Generate spans with guaranteed minimum count
+                    max_width = min(model.config.max_width, 5)  # Limit max width to prevent explosion
+                    min_width = 1  # Always use 1 as min width
+                    min_spans = 10  # Guarantee at least this many spans
                     
                     # First add spans for actual entities
                     entity_spans = set((start, end) for start, end, _ in ner_spans)
                     for start, end, _ in ner_spans:
-                        example_span_indices.append([start, end])
-                        span_mask.append(True)
+                        if end >= start:  # Validate span
+                            example_span_indices.append([start, end])
+                            span_mask.append(True)
                     
-                    # Then add a limited number of negative samples around entities
-                    for entity_start, entity_end, _ in ner_spans:
-                        # Add spans before the entity (limited context)
-                        context_start = max(0, entity_start - 2)  # Only 2 tokens before
-                        for start in range(context_start, entity_start):
-                            for width in range(min_width, min(3, entity_start - start + 1)):
-                                end = start + width - 1
-                                if (start, end) not in entity_spans:
+                    # Generate sliding window spans
+                    for start in range(seq_len):
+                        for width in range(min_width, min(max_width + 1, seq_len - start + 1)):
+                            end = start + width - 1
+                            if end < seq_len:
+                                span = (start, end)
+                                if span not in entity_spans:
                                     example_span_indices.append([start, end])
                                     span_mask.append(False)
-                        
-                        # Add spans after the entity (limited context)
-                        context_end = min(seq_len, entity_end + 2)  # Only 2 tokens after
-                        for start in range(entity_end + 1, context_end):
-                            for width in range(min_width, min(3, context_end - start + 1)):
-                                end = start + width - 1
-                                if end < seq_len and (start, end) not in entity_spans:
-                                    example_span_indices.append([start, end])
-                                    span_mask.append(False)
+                                    
+                                if len(example_span_indices) >= 100:  # Limit total spans
+                                    break
+                        if len(example_span_indices) >= 100:
+                            break
+                    
+                    # If we don't have enough spans, add single-token spans
+                    while len(example_span_indices) < min_spans:
+                        for start in range(min(seq_len, min_spans)):
+                            if len(example_span_indices) >= min_spans:
+                                break
+                            span = [start, start]
+                            if span not in example_span_indices:
+                                example_span_indices.append(span)
+                                span_mask.append(False)
                     
                     # Ensure we have at least some spans
                     if not example_span_indices:
@@ -275,16 +282,32 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                                     token_spans.append([i, i+len(entity_tokens)-1, label])
                                     break
                     
+                    # Convert data to tensors while preserving required fields
+                    tokenized_text = tokenizer.convert_ids_to_tokens(input_ids)
                     tokenized_example = {
-                        'input_ids': input_ids,
-                        'attention_mask': attention_mask,
-                        'tokenized_text': tokenizer.convert_ids_to_tokens(input_ids),
-                        'ner': token_spans,
-                        'span_indices': example_span_indices,
-                        'span_labels': span_labels,
-                        'span_mask': span_mask,
-                        'num_spans': num_spans
+                        'input_ids': torch.tensor(input_ids, dtype=torch.long),
+                        'attention_mask': torch.tensor(attention_mask, dtype=torch.long),
+                        'token_type_ids': torch.zeros_like(torch.tensor(input_ids, dtype=torch.long)),
+                        'words_mask': torch.tensor(attention_mask, dtype=torch.long),
+                        'span_indices': torch.tensor(example_span_indices, dtype=torch.long),
+                        'span_labels': torch.tensor(span_labels, dtype=torch.float),
+                        'span_mask': torch.tensor(span_mask, dtype=torch.bool),
+                        'text_lengths': torch.tensor([sum(attention_mask)], dtype=torch.long),
+                        'tokenized_text': tokenized_text,  # Keep for debugging
+                        'ner': token_spans  # Keep original NER annotations
                     }
+                    
+                    # Validate tensor shapes
+                    B = 1  # Single example
+                    L = len(input_ids)
+                    S = len(example_span_indices)
+                    T = len(entity_types)
+                    
+                    assert tokenized_example['input_ids'].shape == (L,), f"Expected input_ids shape (L,), got {tokenized_example['input_ids'].shape}"
+                    assert tokenized_example['attention_mask'].shape == (L,), f"Expected attention_mask shape (L,), got {tokenized_example['attention_mask'].shape}"
+                    assert tokenized_example['span_indices'].shape == (S, 2), f"Expected span_indices shape (S,2), got {tokenized_example['span_indices'].shape}"
+                    assert tokenized_example['span_labels'].shape == (S, T), f"Expected span_labels shape (S,T), got {tokenized_example['span_labels'].shape}"
+                    assert tokenized_example['span_mask'].shape == (S,), f"Expected span_mask shape (S,), got {tokenized_example['span_mask'].shape}"
                     logger.info(f"Example {i}: Found {len(ner_spans)} entities, generated {len(example_span_indices)} spans")
                     logger.info(f"First entity span: {ner_spans[0] if ner_spans else 'None'}")
                     gliner_data.append(tokenized_example)
@@ -368,13 +391,20 @@ def main():
             logger.info("\nData format analysis:")
             logger.info("=" * 50)
             logger.info(f"Keys: {list(example.keys())}")
-            logger.info(f"Tokenized text length: {len(example['tokenized_text'])}")
-            logger.info(f"Number of entities: {len(example['ner'])}")
-            logger.info(f"First entity: {example['ner'][0] if example['ner'] else 'None'}")
-            logger.info(f"Number of spans: {example['num_spans']}")
-            logger.info(f"Span indices shape: {len(example['span_indices'])}x2")
-            logger.info(f"Span labels shape: {len(example['span_labels'])}x{len(example['span_labels'][0])}")
-            logger.info(f"Span mask length: {len(example['span_mask'])}")
+            
+            # Log tensor shapes and sizes
+            for key, value in example.items():
+                if isinstance(value, torch.Tensor):
+                    logger.info(f"{key}: shape={value.shape}, dtype={value.dtype}")
+                elif isinstance(value, list):
+                    if key == 'tokenized_text':
+                        logger.info(f"{key}: length={len(value)}")
+                    elif key == 'ner':
+                        logger.info(f"{key}: {len(value)} entities")
+                        if value:
+                            logger.info(f"First entity: {value[0]}")
+                else:
+                    logger.info(f"{key}: type={type(value)}")
             logger.info("=" * 50)
         
         # Setup data collator with span processing
@@ -476,9 +506,21 @@ def main():
                                 else:
                                     logger.info(f"  {k}: type={type(v)}")
                         
-                        # Move inputs to device
+                        # Move inputs to device and ensure proper shapes
                         inputs = {k: v.to(model.device) if isinstance(v, torch.Tensor) else v 
                                 for k, v in inputs.items()}
+                        
+                        # Log tensor shapes for debugging
+                        if epoch == 0 and step == 0:
+                            logger.info("\nInput tensor shapes after moving to device:")
+                            for k, v in inputs.items():
+                                if isinstance(v, torch.Tensor):
+                                    logger.info(f"  {k}: shape={v.shape}, dtype={v.dtype}, device={v.device}")
+                                    # Check for NaN or inf values
+                                    if torch.isnan(v).any():
+                                        logger.warning(f"NaN values detected in {k}")
+                                    if torch.isinf(v).any():
+                                        logger.warning(f"Inf values detected in {k}")
                         
                         # Forward pass and loss computation
                         try:
