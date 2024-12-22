@@ -1,0 +1,281 @@
+"""Script to finetune GLiNER model on PII detection dataset."""
+import os
+import json
+import torch
+import logging
+from pathlib import Path
+from typing import List, Dict, Tuple, Set
+from datasets import load_from_disk
+from gliner import GLiNER, GLiNERConfig
+from gliner.training import Trainer, TrainingArguments
+from gliner.data_processing.collator import DataCollator
+from gliner.utils import load_config_as_namespace
+from gliner.data_processing import WordsSplitter, GLiNERDataset
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('gliner_training.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# Set environment variables
+os.environ["TOKENIZERS_PARALLELISM"] = "true"
+
+def validate_dataset(dataset) -> bool:
+    """Validate that dataset has required fields and format."""
+    try:
+        # Check if dataset has required fields
+        required_fields = {'input', 'output'}
+        example = dataset[0]
+        if not all(field in example for field in required_fields):
+            logger.error(f"Dataset missing required fields. Found: {list(example.keys())}")
+            return False
+        
+        # Validate output format
+        if not isinstance(example['output'], list):
+            logger.error("Output field must be a list of entities")
+            return False
+            
+        # Validate entity format
+        entity = example['output'][0]
+        required_entity_fields = {'type', 'start', 'end', 'value'}
+        if not all(field in entity for field in required_entity_fields):
+            logger.error(f"Entity missing required fields. Found: {list(entity.keys())}")
+            return False
+            
+        # Validate entity positions
+        if not (isinstance(entity['start'], int) and isinstance(entity['end'], int)):
+            logger.error("Entity start and end positions must be integers")
+            return False
+            
+        if entity['start'] >= entity['end']:
+            logger.error("Entity end position must be greater than start position")
+            return False
+            
+        return True
+    except Exception as e:
+        logger.error(f"Dataset validation failed: {str(e)}")
+        return False
+
+def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[str]]:
+    """Load dataset and convert to GLiNER format."""
+    try:
+        logger.info("Loading dataset from disk...")
+        dataset = load_from_disk('pii_dataset')
+        
+        if not validate_dataset(dataset):
+            raise ValueError("Dataset validation failed")
+        
+        logger.info(f"Dataset loaded successfully with {len(dataset)} examples")
+        
+        # Initialize WordsSplitter with jieba for Chinese text
+        logger.info("Setting up jieba tokenizer...")
+        processor = WordsSplitter(splitter_type="jieba")
+        
+        # Initialize GLiNER dataset
+        gliner_data = []
+        entity_types: Set[str] = set()
+        entity_counts = {}
+        
+        logger.info("Converting dataset to GLiNER format...")
+        for i, example in enumerate(dataset):
+            try:
+                # Map our entity types to GLiNER types
+                type_mapping = {
+                    'Name': 'person',
+                    'Address': 'location',
+                    'Phone': 'phone',
+                    'Email': 'email',
+                    'Occupation': 'occupation'
+                }
+                
+                text = example['input']
+                # Tokenize text using the model's tokenizer
+                tokens = model.tokenizer.tokenize(text)
+                
+                # Convert character positions to token positions
+                token_spans = []
+                char_to_token = {}
+                current_pos = 0
+                
+                for token_idx, token in enumerate(tokens):
+                    # Handle special tokens and whitespace
+                    token_text = model.tokenizer.convert_tokens_to_string([token]).strip()
+                    if token_text:
+                        token_start = text.find(token_text, current_pos)
+                        if token_start != -1:
+                            token_end = token_start + len(token_text)
+                            for char_pos in range(token_start, token_end):
+                                char_to_token[char_pos] = token_idx
+                            current_pos = token_end
+                
+                # Process entities and convert to token spans
+                ner_spans = []
+                for entity in example['output']:
+                    entity_text = entity['entity_value']
+                    entity_type = type_mapping.get(entity['entity_type'].title(), 'other')
+                    entity_types.add(entity_type)
+                    entity_counts[entity_type] = entity_counts.get(entity_type, 0) + 1
+                    
+                    # Find entity in text
+                    start = text.find(entity_text)
+                    if start != -1:
+                        end = start + len(entity_text)
+                        # Convert character spans to token spans
+                        if start in char_to_token and (end-1) in char_to_token:
+                            token_start = char_to_token[start]
+                            token_end = char_to_token[end-1]
+                            ner_spans.append([token_start, token_end, entity_type])
+                
+                # Only add examples with valid entities
+                if ner_spans:
+                    logger.info(f"Example {i}: Found {len(ner_spans)} entities")
+                    gliner_data.append({
+                        'tokenized_text': tokens,
+                        'ner': ner_spans
+                    })
+                else:
+                    logger.warning(f"Example {i}: Skipping - no valid entities found")
+                
+                if (i + 1) % 100 == 0:
+                    logger.info(f"Processed {i + 1} examples...")
+                    
+            except Exception as e:
+                logger.warning(f"Error processing example {i}: {str(e)}")
+                continue
+        
+        # Log entity statistics
+        logger.info("Entity type distribution:")
+        for entity_type, count in entity_counts.items():
+            logger.info(f"  {entity_type}: {count}")
+        
+        # Split into train/test
+        train_size = int(0.9 * len(gliner_data))
+        train_dataset = gliner_data[:train_size]
+        test_dataset = gliner_data[train_size:]
+        
+        logger.info(f"Split dataset into {len(train_dataset)} train and {len(test_dataset)} test examples")
+        
+        return train_dataset, test_dataset, list(entity_types)
+        
+    except Exception as e:
+        logger.error(f"Failed to load and prepare data: {str(e)}")
+        raise
+
+def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
+    """Setup training environment and directories."""
+    # Setup device
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    logger.info(f"Using device: {device}")
+    
+    # Initialize model and tokenizer
+    logger.info("Initializing model and tokenizer...")
+    from transformers import AutoTokenizer
+    
+    # Initialize GLiNER with its default configuration
+    model = GLiNER.from_pretrained("urchade/gliner_small", trust_remote_code=True)
+    # Use the model's built-in tokenizer
+    tokenizer = model.tokenizer
+    model.tokenizer = tokenizer
+    model.to(device)
+    
+    # Create output directories
+    output_dir = Path("models/pii_detector")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    return model, device, output_dir
+
+def main():
+    try:
+        # Setup environment and model
+        model, device, output_dir = setup_training_environment()
+        
+        # Load and prepare data
+        logger.info("Loading and preparing data...")
+        train_dataset, test_dataset, entity_types = load_and_prepare_data(model)
+        logger.info(f"Found {len(entity_types)} entity types: {', '.join(entity_types)}")
+        
+        # Setup data collator and validate format
+        logger.info("Setting up data collator and validating format...")
+        data_collator = DataCollator(
+            model.config,
+            data_processor=model.data_processor,
+            prepare_labels=True
+        )
+        
+        # Calculate training parameters
+        batch_size = 8
+        num_steps = 500
+        data_size = len(train_dataset)
+        num_batches = data_size // batch_size
+        num_epochs = max(1, num_steps // num_batches)
+        
+        logger.info(f"Training parameters:")
+        logger.info(f"  Batch size: {batch_size}")
+        logger.info(f"  Number of steps: {num_steps}")
+        logger.info(f"  Number of epochs: {num_epochs}")
+        
+        # Setup training arguments
+        training_args = TrainingArguments(
+            output_dir=str(output_dir),
+            learning_rate=5e-6,
+            weight_decay=0.01,
+            others_lr=1e-5,
+            others_weight_decay=0.01,
+            lr_scheduler_type="linear",
+            warmup_ratio=0.1,
+            per_device_train_batch_size=batch_size,
+            per_device_eval_batch_size=batch_size,
+            focal_loss_alpha=0.75,  # For handling class imbalance
+            focal_loss_gamma=2,
+            num_train_epochs=num_epochs,
+            evaluation_strategy="steps",
+            save_steps=100,
+            save_total_limit=10,
+            dataloader_num_workers=0,
+            use_cpu=device.type == 'cpu',
+            report_to="none",
+        )
+        
+        # Test data format with a small batch
+        try:
+            logger.info("Testing data format with a small batch...")
+            test_batch = train_dataset[:2]
+            test_collated = data_collator([test_batch[0]])
+            logger.info("Data format validation successful")
+        except Exception as e:
+            logger.error(f"Data format validation failed: {str(e)}")
+            raise ValueError("Failed to process test batch. Please check data format.") from e
+            
+        # Initialize trainer
+        logger.info("Setting up trainer...")
+        trainer = Trainer(
+            model=model,
+            args=training_args,
+            train_dataset=train_dataset,
+            eval_dataset=test_dataset,
+            tokenizer=model.data_processor.transformer_tokenizer,
+            data_collator=data_collator,
+        )
+        
+        # Start training
+        logger.info("Starting training...")
+        trainer.train()
+        logger.info("Training completed!")
+        
+        # Save final model
+        final_model_path = output_dir / "final"
+        model.save_pretrained(str(final_model_path))
+        logger.info(f"Model saved to {final_model_path}")
+        
+    except Exception as e:
+        logger.error(f"Training failed: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    main()

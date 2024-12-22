@@ -1,0 +1,560 @@
+2024-12-22 21:26:23,462 - INFO - Loading and preparing data...
+2024-12-22 21:26:23,462 - INFO - Loading dataset from disk...
+2024-12-22 21:26:23,484 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:26:23,484 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:26:23,494 - INFO - Processed 100 examples...
+2024-12-22 21:26:23,495 - INFO - Entity type distribution:
+2024-12-22 21:26:23,495 - INFO -   Name: 200
+2024-12-22 21:26:23,495 - INFO -   Occupation: 100
+2024-12-22 21:26:23,495 - INFO -   Phone: 100
+2024-12-22 21:26:23,495 - INFO -   Email: 100
+2024-12-22 21:26:23,495 - INFO -   Address: 100
+2024-12-22 21:26:23,495 - INFO - Split dataset into 90 train and 10 test examples
+2024-12-22 21:26:23,496 - INFO - Found 5 entity types: Phone, Occupation, Email, Name, Address
+2024-12-22 21:26:23,497 - INFO - Using device: cpu
+2024-12-22 21:26:23,498 - INFO - Initializing model...
+2024-12-22 21:26:44,123 - INFO - Training parameters:
+2024-12-22 21:26:44,123 - INFO -   Batch size: 8
+2024-12-22 21:26:44,123 - INFO -   Number of steps: 500
+2024-12-22 21:26:44,124 - INFO -   Number of epochs: 45
+2024-12-22 21:26:44,126 - INFO - Setting up trainer...
+2024-12-22 21:26:45,982 - INFO - Starting training...
+2024-12-22 21:26:46,113 - ERROR - Training failed: 'ner'
+2024-12-22 21:27:42,468 - INFO - Loading and preparing data...
+2024-12-22 21:27:42,468 - INFO - Loading dataset from disk...
+2024-12-22 21:27:42,472 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:27:42,472 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:27:42,473 - WARNING - Could not find entity 'Fred Chase' in text for example 0
+2024-12-22 21:27:42,473 - WARNING - Could not find entity '雨杭 秋' in text for example 2
+2024-12-22 21:27:42,473 - WARNING - Could not find entity 'Les Lawrence' in text for example 2
+2024-12-22 21:27:42,474 - WARNING - Could not find entity 'Terence Maynard' in text for example 3
+2024-12-22 21:27:42,474 - WARNING - Could not find entity '欣 公羊' in text for example 4
+2024-12-22 21:27:42,474 - WARNING - Could not find entity 'Stasia Solis' in text for example 4
+2024-12-22 21:27:42,474 - WARNING - Could not find entity 'Bret Ware' in text for example 5
+2024-12-22 21:27:42,475 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 6
+2024-12-22 21:27:42,475 - WARNING - Could not find entity 'Randal Holman' in text for example 7
+2024-12-22 21:27:42,475 - WARNING - Could not find entity 'Rosette Pratt' in text for example 8
+2024-12-22 21:27:42,476 - WARNING - Could not find entity '长治 咸' in text for example 9
+2024-12-22 21:27:42,476 - WARNING - Could not find entity 'Zane Cotton' in text for example 9
+2024-12-22 21:27:42,476 - WARNING - Could not find entity 'Rolland Small' in text for example 13
+2024-12-22 21:27:42,477 - WARNING - Could not find entity 'Moses Witt' in text for example 16
+2024-12-22 21:27:42,478 - WARNING - Could not find entity 'Serafina Head' in text for example 21
+2024-12-22 21:27:42,478 - WARNING - Could not find entity 'Randal Holman' in text for example 22
+2024-12-22 21:27:42,478 - WARNING - Could not find entity 'Jessia Cline' in text for example 23
+2024-12-22 21:27:42,478 - WARNING - Could not find entity 'Terence Maynard' in text for example 24
+2024-12-22 21:27:42,479 - WARNING - Could not find entity 'Gregorio Campbell' in text for example 29
+2024-12-22 21:27:42,480 - WARNING - Could not find entity 'Fred Chase' in text for example 30
+2024-12-22 21:27:42,480 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 31
+2024-12-22 21:27:42,480 - WARNING - Could not find entity 'Stasia Solis' in text for example 32
+2024-12-22 21:27:42,480 - WARNING - Could not find entity '云天 竺' in text for example 34
+2024-12-22 21:27:42,481 - WARNING - Could not find entity 'Delmar Blake' in text for example 34
+2024-12-22 21:27:42,481 - WARNING - Could not find entity 'Ayana Downs' in text for example 35
+2024-12-22 21:27:42,481 - WARNING - Could not find entity 'Jessia Cline' in text for example 37
+2024-12-22 21:27:42,482 - WARNING - Could not find entity '宠物美容师' in text for example 37
+2024-12-22 21:27:42,482 - WARNING - Could not find entity 'Ayana Downs' in text for example 40
+2024-12-22 21:27:42,482 - WARNING - Could not find entity 'Isidra Beasley' in text for example 41
+2024-12-22 21:27:42,483 - WARNING - Could not find entity 'Delmar Blake' in text for example 44
+2024-12-22 21:27:42,483 - WARNING - Could not find entity '长治 咸' in text for example 46
+2024-12-22 21:27:42,484 - WARNING - Could not find entity 'Zane Cotton' in text for example 46
+2024-12-22 21:27:42,484 - WARNING - Could not find entity '室内设计师' in text for example 46
+2024-12-22 21:27:42,484 - WARNING - Could not find entity 'Les Lawrence' in text for example 47
+2024-12-22 21:27:42,484 - WARNING - Could not find entity '军 梁' in text for example 49
+2024-12-22 21:27:42,484 - WARNING - Could not find entity 'Bret Ware' in text for example 49
+2024-12-22 21:27:42,485 - WARNING - Could not find entity 'Jessenia Savage' in text for example 50
+2024-12-22 21:27:42,485 - WARNING - Could not find entity 'Serafina Head' in text for example 51
+2024-12-22 21:27:42,485 - WARNING - Could not find entity 'Moses Witt' in text for example 52
+2024-12-22 21:27:42,486 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 53
+2024-12-22 21:27:42,486 - WARNING - Could not find entity 'Rosette Pratt' in text for example 54
+2024-12-22 21:27:42,487 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 57
+2024-12-22 21:27:42,487 - WARNING - Could not find entity 'Les Lawrence' in text for example 58
+2024-12-22 21:27:42,487 - WARNING - Could not find entity 'Marion Sanders' in text for example 59
+2024-12-22 21:27:42,488 - WARNING - Could not find entity 'Isidra Beasley' in text for example 60
+2024-12-22 21:27:42,488 - WARNING - Could not find entity 'Marion Sanders' in text for example 61
+2024-12-22 21:27:42,488 - WARNING - Could not find entity 'Terence Maynard' in text for example 62
+2024-12-22 21:27:42,488 - WARNING - Could not find entity '红卫路三条921号' in text for example 62
+2024-12-22 21:27:42,489 - WARNING - Could not find entity 'Fred Chase' in text for example 63
+2024-12-22 21:27:42,489 - WARNING - Could not find entity 'Stasia Solis' in text for example 65
+2024-12-22 21:27:42,490 - WARNING - Could not find entity 'Moses Witt' in text for example 66
+2024-12-22 21:27:42,490 - WARNING - Could not find entity 'Delmar Blake' in text for example 67
+2024-12-22 21:27:42,490 - WARNING - Could not find entity '河沐 惠' in text for example 68
+2024-12-22 21:27:42,490 - WARNING - Could not find entity 'Rolland Small' in text for example 68
+2024-12-22 21:27:42,491 - WARNING - Could not find entity 'Fred Chase' in text for example 69
+2024-12-22 21:27:42,491 - WARNING - Could not find entity 'Jessia Cline' in text for example 70
+2024-12-22 21:27:42,491 - WARNING - Could not find entity 'Rosette Pratt' in text for example 71
+2024-12-22 21:27:42,491 - WARNING - Could not find entity '珏萱 相' in text for example 72
+2024-12-22 21:27:42,492 - WARNING - Could not find entity 'Marion Sanders' in text for example 72
+2024-12-22 21:27:42,492 - WARNING - Could not find entity 'Jessenia Savage' in text for example 77
+2024-12-22 21:27:42,493 - WARNING - Could not find entity 'Ayana Downs' in text for example 79
+2024-12-22 21:27:42,493 - WARNING - Could not find entity 'Randal Holman' in text for example 81
+2024-12-22 21:27:42,493 - WARNING - Could not find entity '长治 咸' in text for example 82
+2024-12-22 21:27:42,493 - WARNING - Could not find entity 'Zane Cotton' in text for example 82
+2024-12-22 21:27:42,494 - WARNING - Could not find entity 'Rolland Small' in text for example 86
+2024-12-22 21:27:42,495 - WARNING - Could not find entity 'Bret Ware' in text for example 87
+2024-12-22 21:27:42,495 - WARNING - Could not find entity 'Rolland Small' in text for example 88
+2024-12-22 21:27:42,495 - WARNING - Could not find entity 'Delmar Blake' in text for example 89
+2024-12-22 21:27:42,495 - WARNING - Could not find entity 'Bret Ware' in text for example 90
+2024-12-22 21:27:42,496 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 91
+2024-12-22 21:27:42,496 - WARNING - Could not find entity 'Ayana Downs' in text for example 93
+2024-12-22 21:27:42,497 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 96
+2024-12-22 21:27:42,497 - WARNING - Could not find entity 'Moses Witt' in text for example 97
+2024-12-22 21:27:42,497 - WARNING - Could not find entity 'Zane Cotton' in text for example 99
+2024-12-22 21:27:42,498 - INFO - Processed 100 examples...
+2024-12-22 21:27:42,498 - INFO - Entity type distribution:
+2024-12-22 21:27:42,498 - INFO -   Name: 200
+2024-12-22 21:27:42,498 - INFO -   Occupation: 100
+2024-12-22 21:27:42,498 - INFO -   Phone: 100
+2024-12-22 21:27:42,498 - INFO -   Email: 100
+2024-12-22 21:27:42,498 - INFO -   Address: 100
+2024-12-22 21:27:42,498 - INFO - Split dataset into 90 train and 10 test examples
+2024-12-22 21:27:42,499 - INFO - Found 5 entity types: Occupation, Email, Name, Address, Phone
+2024-12-22 21:27:42,499 - INFO - Using device: cpu
+2024-12-22 21:27:42,499 - INFO - Initializing model...
+2024-12-22 21:27:46,263 - INFO - Setting up data collator and validating format...
+2024-12-22 21:27:46,263 - INFO - Training parameters:
+2024-12-22 21:27:46,263 - INFO -   Batch size: 8
+2024-12-22 21:27:46,263 - INFO -   Number of steps: 500
+2024-12-22 21:27:46,264 - INFO -   Number of epochs: 45
+2024-12-22 21:27:46,265 - INFO - Testing data format with a small batch...
+2024-12-22 21:27:46,265 - ERROR - Data format validation failed: 'tokenized_text'
+2024-12-22 21:27:46,266 - ERROR - Training failed: Failed to process test batch. Please check data format.
+2024-12-22 21:28:58,594 - INFO - Loading and preparing data...
+2024-12-22 21:28:58,595 - INFO - Loading dataset from disk...
+2024-12-22 21:28:58,599 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:28:58,599 - INFO - Initializing GLiNER processor...
+2024-12-22 21:28:58,825 - ERROR - Failed to load and prepare data: GLiNERConfig {
+  "class_token_index": -1,
+  "dropout": 0.4,
+  "embed_ent_token": true,
+  "encoder_config": null,
+  "ent_token": "<<ENT>>",
+  "fine_tune": true,
+  "fuse_layers": false,
+  "has_rnn": true,
+  "hidden_size": 512,
+  "labels_encoder": null,
+  "labels_encoder_config": null,
+  "max_len": 384,
+  "max_neg_type_ratio": 1,
+  "max_types": 25,
+  "max_width": 12,
+  "model_name": "microsoft/deberta-v3-small",
+  "model_type": "gliner",
+  "name": "span level gliner",
+  "num_post_fusion_layers": 1,
+  "post_fusion_schema": "",
+  "sep_token": "<<SEP>>",
+  "span_mode": "markerV0",
+  "subtoken_pooling": "first",
+  "transformers_version": "4.47.1",
+  "vocab_size": -1,
+  "words_splitter_type": "whitespace"
+}
+ is not implemented, choose between 'whitespace', 'spacy', 'jieba', 'hanlp' and 'mecab'
+2024-12-22 21:28:58,825 - ERROR - Training failed: GLiNERConfig {
+  "class_token_index": -1,
+  "dropout": 0.4,
+  "embed_ent_token": true,
+  "encoder_config": null,
+  "ent_token": "<<ENT>>",
+  "fine_tune": true,
+  "fuse_layers": false,
+  "has_rnn": true,
+  "hidden_size": 512,
+  "labels_encoder": null,
+  "labels_encoder_config": null,
+  "max_len": 384,
+  "max_neg_type_ratio": 1,
+  "max_types": 25,
+  "max_width": 12,
+  "model_name": "microsoft/deberta-v3-small",
+  "model_type": "gliner",
+  "name": "span level gliner",
+  "num_post_fusion_layers": 1,
+  "post_fusion_schema": "",
+  "sep_token": "<<SEP>>",
+  "span_mode": "markerV0",
+  "subtoken_pooling": "first",
+  "transformers_version": "4.47.1",
+  "vocab_size": -1,
+  "words_splitter_type": "whitespace"
+}
+ is not implemented, choose between 'whitespace', 'spacy', 'jieba', 'hanlp' and 'mecab'
+2024-12-22 21:29:55,784 - INFO - Loading and preparing data...
+2024-12-22 21:29:55,784 - INFO - Loading dataset from disk...
+2024-12-22 21:29:55,788 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:29:55,788 - INFO - Initializing GLiNER processor...
+2024-12-22 21:29:55,966 - ERROR - Failed to load and prepare data: GLiNERConfig {
+  "class_token_index": -1,
+  "dropout": 0.4,
+  "embed_ent_token": true,
+  "encoder_config": null,
+  "ent_token": "<<ENT>>",
+  "fine_tune": true,
+  "fuse_layers": false,
+  "has_rnn": true,
+  "hidden_size": 512,
+  "labels_encoder": null,
+  "labels_encoder_config": null,
+  "max_len": 384,
+  "max_neg_type_ratio": 1,
+  "max_types": 25,
+  "max_width": 12,
+  "model_name": "microsoft/deberta-v3-small",
+  "model_type": "gliner",
+  "name": "span level gliner",
+  "num_post_fusion_layers": 1,
+  "post_fusion_schema": "",
+  "sep_token": "<<SEP>>",
+  "span_mode": "markerV0",
+  "subtoken_pooling": "first",
+  "transformers_version": "4.47.1",
+  "vocab_size": -1,
+  "words_splitter_type": "jieba"
+}
+ is not implemented, choose between 'whitespace', 'spacy', 'jieba', 'hanlp' and 'mecab'
+2024-12-22 21:29:55,966 - ERROR - Training failed: GLiNERConfig {
+  "class_token_index": -1,
+  "dropout": 0.4,
+  "embed_ent_token": true,
+  "encoder_config": null,
+  "ent_token": "<<ENT>>",
+  "fine_tune": true,
+  "fuse_layers": false,
+  "has_rnn": true,
+  "hidden_size": 512,
+  "labels_encoder": null,
+  "labels_encoder_config": null,
+  "max_len": 384,
+  "max_neg_type_ratio": 1,
+  "max_types": 25,
+  "max_width": 12,
+  "model_name": "microsoft/deberta-v3-small",
+  "model_type": "gliner",
+  "name": "span level gliner",
+  "num_post_fusion_layers": 1,
+  "post_fusion_schema": "",
+  "sep_token": "<<SEP>>",
+  "span_mode": "markerV0",
+  "subtoken_pooling": "first",
+  "transformers_version": "4.47.1",
+  "vocab_size": -1,
+  "words_splitter_type": "jieba"
+}
+ is not implemented, choose between 'whitespace', 'spacy', 'jieba', 'hanlp' and 'mecab'
+2024-12-22 21:31:30,008 - INFO - Loading and preparing data...
+2024-12-22 21:31:30,008 - INFO - Loading dataset from disk...
+2024-12-22 21:31:30,012 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:31:30,012 - INFO - Initializing GLiNER processor...
+2024-12-22 21:31:30,368 - ERROR - Failed to load and prepare data: WordsSplitter.__init__() got an unexpected keyword argument 'config'
+2024-12-22 21:31:30,369 - ERROR - Training failed: WordsSplitter.__init__() got an unexpected keyword argument 'config'
+2024-12-22 21:31:58,608 - INFO - Loading and preparing data...
+2024-12-22 21:31:58,608 - INFO - Loading dataset from disk...
+2024-12-22 21:31:58,612 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:31:58,612 - INFO - Initializing GLiNER model and processor...
+2024-12-22 21:32:02,682 - INFO - Setting up jieba tokenizer...
+2024-12-22 21:32:03,008 - ERROR - Failed to load and prepare data: GLiNERDataset.__init__() got an unexpected keyword argument 'max_length'
+2024-12-22 21:32:03,008 - ERROR - Training failed: GLiNERDataset.__init__() got an unexpected keyword argument 'max_length'
+2024-12-22 21:33:15,487 - INFO - Loading and preparing data...
+2024-12-22 21:33:15,487 - INFO - Loading dataset from disk...
+2024-12-22 21:33:15,491 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:33:15,491 - INFO - Initializing GLiNER model and processor...
+2024-12-22 21:33:19,396 - INFO - Setting up jieba tokenizer...
+2024-12-22 21:33:19,481 - ERROR - Failed to load and prepare data: GLiNERDataset.__init__() got an unexpected keyword argument 'max_length'
+2024-12-22 21:33:19,481 - ERROR - Training failed: GLiNERDataset.__init__() got an unexpected keyword argument 'max_length'
+2024-12-22 21:33:56,322 - INFO - Loading and preparing data...
+2024-12-22 21:33:56,322 - INFO - Loading dataset from disk...
+2024-12-22 21:33:56,327 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:33:56,327 - INFO - Initializing GLiNER model and processor...
+2024-12-22 21:34:00,151 - INFO - Setting up jieba tokenizer...
+2024-12-22 21:34:00,227 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:34:00,228 - WARNING - Could not find entity 'Fred Chase' in text for example 0
+2024-12-22 21:34:00,228 - WARNING - Could not find entity '雨杭 秋' in text for example 2
+2024-12-22 21:34:00,228 - WARNING - Could not find entity 'Les Lawrence' in text for example 2
+2024-12-22 21:34:00,229 - WARNING - Could not find entity 'Terence Maynard' in text for example 3
+2024-12-22 21:34:00,229 - WARNING - Could not find entity '欣 公羊' in text for example 4
+2024-12-22 21:34:00,229 - WARNING - Could not find entity 'Stasia Solis' in text for example 4
+2024-12-22 21:34:00,229 - WARNING - Could not find entity 'Bret Ware' in text for example 5
+2024-12-22 21:34:00,230 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 6
+2024-12-22 21:34:00,230 - WARNING - Could not find entity 'Randal Holman' in text for example 7
+2024-12-22 21:34:00,230 - WARNING - Could not find entity 'Rosette Pratt' in text for example 8
+2024-12-22 21:34:00,230 - WARNING - Could not find entity '长治 咸' in text for example 9
+2024-12-22 21:34:00,231 - WARNING - Could not find entity 'Zane Cotton' in text for example 9
+2024-12-22 21:34:00,231 - WARNING - Could not find entity 'Rolland Small' in text for example 13
+2024-12-22 21:34:00,232 - WARNING - Could not find entity 'Moses Witt' in text for example 16
+2024-12-22 21:34:00,232 - WARNING - Could not find entity 'Serafina Head' in text for example 21
+2024-12-22 21:34:00,233 - WARNING - Could not find entity 'Randal Holman' in text for example 22
+2024-12-22 21:34:00,233 - WARNING - Could not find entity 'Jessia Cline' in text for example 23
+2024-12-22 21:34:00,233 - WARNING - Could not find entity 'Terence Maynard' in text for example 24
+2024-12-22 21:34:00,234 - WARNING - Could not find entity 'Gregorio Campbell' in text for example 29
+2024-12-22 21:34:00,234 - WARNING - Could not find entity 'Fred Chase' in text for example 30
+2024-12-22 21:34:00,235 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 31
+2024-12-22 21:34:00,235 - WARNING - Could not find entity 'Stasia Solis' in text for example 32
+2024-12-22 21:34:00,235 - WARNING - Could not find entity '云天 竺' in text for example 34
+2024-12-22 21:34:00,235 - WARNING - Could not find entity 'Delmar Blake' in text for example 34
+2024-12-22 21:34:00,236 - WARNING - Could not find entity 'Ayana Downs' in text for example 35
+2024-12-22 21:34:00,236 - WARNING - Could not find entity 'Jessia Cline' in text for example 37
+2024-12-22 21:34:00,236 - WARNING - Could not find entity '宠物美容师' in text for example 37
+2024-12-22 21:34:00,237 - WARNING - Could not find entity 'Ayana Downs' in text for example 40
+2024-12-22 21:34:00,237 - WARNING - Could not find entity 'Isidra Beasley' in text for example 41
+2024-12-22 21:34:00,238 - WARNING - Could not find entity 'Delmar Blake' in text for example 44
+2024-12-22 21:34:00,238 - WARNING - Could not find entity '长治 咸' in text for example 46
+2024-12-22 21:34:00,238 - WARNING - Could not find entity 'Zane Cotton' in text for example 46
+2024-12-22 21:34:00,238 - WARNING - Could not find entity '室内设计师' in text for example 46
+2024-12-22 21:34:00,239 - WARNING - Could not find entity 'Les Lawrence' in text for example 47
+2024-12-22 21:34:00,239 - WARNING - Could not find entity '军 梁' in text for example 49
+2024-12-22 21:34:00,239 - WARNING - Could not find entity 'Bret Ware' in text for example 49
+2024-12-22 21:34:00,240 - WARNING - Could not find entity 'Jessenia Savage' in text for example 50
+2024-12-22 21:34:00,240 - WARNING - Could not find entity 'Serafina Head' in text for example 51
+2024-12-22 21:34:00,240 - WARNING - Could not find entity 'Moses Witt' in text for example 52
+2024-12-22 21:34:00,240 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 53
+2024-12-22 21:34:00,241 - WARNING - Could not find entity 'Rosette Pratt' in text for example 54
+2024-12-22 21:34:00,241 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 57
+2024-12-22 21:34:00,242 - WARNING - Could not find entity 'Les Lawrence' in text for example 58
+2024-12-22 21:34:00,242 - WARNING - Could not find entity 'Marion Sanders' in text for example 59
+2024-12-22 21:34:00,242 - WARNING - Could not find entity 'Isidra Beasley' in text for example 60
+2024-12-22 21:34:00,243 - WARNING - Could not find entity 'Marion Sanders' in text for example 61
+2024-12-22 21:34:00,243 - WARNING - Could not find entity 'Terence Maynard' in text for example 62
+2024-12-22 21:34:00,243 - WARNING - Could not find entity '红卫路三条921号' in text for example 62
+2024-12-22 21:34:00,243 - WARNING - Could not find entity 'Fred Chase' in text for example 63
+2024-12-22 21:34:00,244 - WARNING - Could not find entity 'Stasia Solis' in text for example 65
+2024-12-22 21:34:00,244 - WARNING - Could not find entity 'Moses Witt' in text for example 66
+2024-12-22 21:34:00,244 - WARNING - Could not find entity 'Delmar Blake' in text for example 67
+2024-12-22 21:34:00,245 - WARNING - Could not find entity '河沐 惠' in text for example 68
+2024-12-22 21:34:00,245 - WARNING - Could not find entity 'Rolland Small' in text for example 68
+2024-12-22 21:34:00,245 - WARNING - Could not find entity 'Fred Chase' in text for example 69
+2024-12-22 21:34:00,245 - WARNING - Could not find entity 'Jessia Cline' in text for example 70
+2024-12-22 21:34:00,246 - WARNING - Could not find entity 'Rosette Pratt' in text for example 71
+2024-12-22 21:34:00,246 - WARNING - Could not find entity '珏萱 相' in text for example 72
+2024-12-22 21:34:00,246 - WARNING - Could not find entity 'Marion Sanders' in text for example 72
+2024-12-22 21:34:00,247 - WARNING - Could not find entity 'Jessenia Savage' in text for example 77
+2024-12-22 21:34:00,247 - WARNING - Could not find entity 'Ayana Downs' in text for example 79
+2024-12-22 21:34:00,248 - WARNING - Could not find entity 'Randal Holman' in text for example 81
+2024-12-22 21:34:00,248 - WARNING - Could not find entity '长治 咸' in text for example 82
+2024-12-22 21:34:00,248 - WARNING - Could not find entity 'Zane Cotton' in text for example 82
+2024-12-22 21:34:00,249 - WARNING - Could not find entity 'Rolland Small' in text for example 86
+2024-12-22 21:34:00,249 - WARNING - Could not find entity 'Bret Ware' in text for example 87
+2024-12-22 21:34:00,249 - WARNING - Could not find entity 'Rolland Small' in text for example 88
+2024-12-22 21:34:00,250 - WARNING - Could not find entity 'Delmar Blake' in text for example 89
+2024-12-22 21:34:00,250 - WARNING - Could not find entity 'Bret Ware' in text for example 90
+2024-12-22 21:34:00,250 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 91
+2024-12-22 21:34:00,251 - WARNING - Could not find entity 'Ayana Downs' in text for example 93
+2024-12-22 21:34:00,251 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 96
+2024-12-22 21:34:00,251 - WARNING - Could not find entity 'Moses Witt' in text for example 97
+2024-12-22 21:34:00,252 - WARNING - Could not find entity 'Zane Cotton' in text for example 99
+2024-12-22 21:34:00,252 - INFO - Processed 100 examples...
+2024-12-22 21:34:00,252 - INFO - Entity type distribution:
+2024-12-22 21:34:00,252 - INFO -   Name: 200
+2024-12-22 21:34:00,252 - INFO -   Occupation: 100
+2024-12-22 21:34:00,253 - INFO -   Phone: 100
+2024-12-22 21:34:00,253 - INFO -   Email: 100
+2024-12-22 21:34:00,253 - INFO -   Address: 100
+2024-12-22 21:34:00,253 - INFO - Split dataset into 90 train and 10 test examples
+2024-12-22 21:34:00,329 - INFO - Found 5 entity types: Phone, Address, Occupation, Name, Email
+2024-12-22 21:34:00,330 - INFO - Using device: cpu
+2024-12-22 21:34:00,330 - INFO - Initializing model...
+2024-12-22 21:34:04,056 - INFO - Setting up data collator and validating format...
+2024-12-22 21:34:04,056 - INFO - Training parameters:
+2024-12-22 21:34:04,056 - INFO -   Batch size: 8
+2024-12-22 21:34:04,056 - INFO -   Number of steps: 500
+2024-12-22 21:34:04,056 - INFO -   Number of epochs: 45
+2024-12-22 21:34:04,059 - INFO - Testing data format with a small batch...
+2024-12-22 21:34:04,059 - ERROR - Data format validation failed: 'tokenized_text'
+2024-12-22 21:34:04,059 - ERROR - Training failed: Failed to process test batch. Please check data format.
+2024-12-22 21:34:43,417 - INFO - Loading and preparing data...
+2024-12-22 21:34:43,417 - INFO - Loading dataset from disk...
+2024-12-22 21:34:43,421 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:34:43,421 - INFO - Initializing GLiNER model and processor...
+2024-12-22 21:34:47,298 - INFO - Setting up jieba tokenizer...
+2024-12-22 21:34:47,375 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:34:47,376 - WARNING - Could not find entity 'Fred Chase' in text for example 0
+2024-12-22 21:34:47,376 - WARNING - Error processing example 0: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,376 - WARNING - Error processing example 1: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,377 - WARNING - Could not find entity '雨杭 秋' in text for example 2
+2024-12-22 21:34:47,377 - WARNING - Could not find entity 'Les Lawrence' in text for example 2
+2024-12-22 21:34:47,377 - WARNING - Error processing example 2: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,377 - WARNING - Could not find entity 'Terence Maynard' in text for example 3
+2024-12-22 21:34:47,377 - WARNING - Error processing example 3: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,378 - WARNING - Could not find entity '欣 公羊' in text for example 4
+2024-12-22 21:34:47,378 - WARNING - Could not find entity 'Stasia Solis' in text for example 4
+2024-12-22 21:34:47,378 - WARNING - Error processing example 4: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,378 - WARNING - Could not find entity 'Bret Ware' in text for example 5
+2024-12-22 21:34:47,378 - WARNING - Error processing example 5: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,379 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 6
+2024-12-22 21:34:47,379 - WARNING - Error processing example 6: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,379 - WARNING - Could not find entity 'Randal Holman' in text for example 7
+2024-12-22 21:34:47,379 - WARNING - Error processing example 7: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,379 - WARNING - Could not find entity 'Rosette Pratt' in text for example 8
+2024-12-22 21:34:47,380 - WARNING - Error processing example 8: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,380 - WARNING - Could not find entity '长治 咸' in text for example 9
+2024-12-22 21:34:47,380 - WARNING - Could not find entity 'Zane Cotton' in text for example 9
+2024-12-22 21:34:47,380 - WARNING - Error processing example 9: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,380 - WARNING - Error processing example 10: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,381 - WARNING - Error processing example 11: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,381 - WARNING - Error processing example 12: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,381 - WARNING - Could not find entity 'Rolland Small' in text for example 13
+2024-12-22 21:34:47,381 - WARNING - Error processing example 13: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,382 - WARNING - Error processing example 14: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,382 - WARNING - Error processing example 15: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,382 - WARNING - Could not find entity 'Moses Witt' in text for example 16
+2024-12-22 21:34:47,383 - WARNING - Error processing example 16: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,383 - WARNING - Error processing example 17: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,383 - WARNING - Error processing example 18: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,384 - WARNING - Error processing example 19: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,384 - WARNING - Error processing example 20: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,384 - WARNING - Could not find entity 'Serafina Head' in text for example 21
+2024-12-22 21:34:47,384 - WARNING - Error processing example 21: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,385 - WARNING - Could not find entity 'Randal Holman' in text for example 22
+2024-12-22 21:34:47,385 - WARNING - Error processing example 22: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,385 - WARNING - Could not find entity 'Jessia Cline' in text for example 23
+2024-12-22 21:34:47,385 - WARNING - Error processing example 23: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,385 - WARNING - Could not find entity 'Terence Maynard' in text for example 24
+2024-12-22 21:34:47,386 - WARNING - Error processing example 24: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,386 - WARNING - Error processing example 25: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,386 - WARNING - Error processing example 26: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,387 - WARNING - Error processing example 27: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,387 - WARNING - Error processing example 28: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,387 - WARNING - Could not find entity 'Gregorio Campbell' in text for example 29
+2024-12-22 21:34:47,387 - WARNING - Error processing example 29: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,388 - WARNING - Could not find entity 'Fred Chase' in text for example 30
+2024-12-22 21:34:47,388 - WARNING - Error processing example 30: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,388 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 31
+2024-12-22 21:34:47,388 - WARNING - Error processing example 31: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,388 - WARNING - Could not find entity 'Stasia Solis' in text for example 32
+2024-12-22 21:34:47,389 - WARNING - Error processing example 32: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,389 - WARNING - Error processing example 33: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,389 - WARNING - Could not find entity '云天 竺' in text for example 34
+2024-12-22 21:34:47,389 - WARNING - Could not find entity 'Delmar Blake' in text for example 34
+2024-12-22 21:34:47,390 - WARNING - Error processing example 34: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,390 - WARNING - Could not find entity 'Ayana Downs' in text for example 35
+2024-12-22 21:34:47,390 - WARNING - Error processing example 35: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,390 - WARNING - Error processing example 36: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,391 - WARNING - Could not find entity 'Jessia Cline' in text for example 37
+2024-12-22 21:34:47,391 - WARNING - Could not find entity '宠物美容师' in text for example 37
+2024-12-22 21:34:47,391 - WARNING - Error processing example 37: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,391 - WARNING - Error processing example 38: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,392 - WARNING - Error processing example 39: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,392 - WARNING - Could not find entity 'Ayana Downs' in text for example 40
+2024-12-22 21:34:47,392 - WARNING - Error processing example 40: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,392 - WARNING - Could not find entity 'Isidra Beasley' in text for example 41
+2024-12-22 21:34:47,393 - WARNING - Error processing example 41: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,393 - WARNING - Error processing example 42: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,393 - WARNING - Error processing example 43: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,394 - WARNING - Could not find entity 'Delmar Blake' in text for example 44
+2024-12-22 21:34:47,394 - WARNING - Error processing example 44: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,394 - WARNING - Error processing example 45: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,394 - WARNING - Could not find entity '长治 咸' in text for example 46
+2024-12-22 21:34:47,394 - WARNING - Could not find entity 'Zane Cotton' in text for example 46
+2024-12-22 21:34:47,395 - WARNING - Could not find entity '室内设计师' in text for example 46
+2024-12-22 21:34:47,395 - WARNING - Error processing example 46: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,395 - WARNING - Could not find entity 'Les Lawrence' in text for example 47
+2024-12-22 21:34:47,395 - WARNING - Error processing example 47: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,396 - WARNING - Error processing example 48: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,396 - WARNING - Could not find entity '军 梁' in text for example 49
+2024-12-22 21:34:47,396 - WARNING - Could not find entity 'Bret Ware' in text for example 49
+2024-12-22 21:34:47,396 - WARNING - Error processing example 49: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,396 - WARNING - Could not find entity 'Jessenia Savage' in text for example 50
+2024-12-22 21:34:47,397 - WARNING - Error processing example 50: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,397 - WARNING - Could not find entity 'Serafina Head' in text for example 51
+2024-12-22 21:34:47,397 - WARNING - Error processing example 51: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,397 - WARNING - Could not find entity 'Moses Witt' in text for example 52
+2024-12-22 21:34:47,397 - WARNING - Error processing example 52: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,398 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 53
+2024-12-22 21:34:47,398 - WARNING - Error processing example 53: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,398 - WARNING - Could not find entity 'Rosette Pratt' in text for example 54
+2024-12-22 21:34:47,398 - WARNING - Error processing example 54: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,399 - WARNING - Error processing example 55: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,399 - WARNING - Error processing example 56: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,399 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 57
+2024-12-22 21:34:47,399 - WARNING - Error processing example 57: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,400 - WARNING - Could not find entity 'Les Lawrence' in text for example 58
+2024-12-22 21:34:47,400 - WARNING - Error processing example 58: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,400 - WARNING - Could not find entity 'Marion Sanders' in text for example 59
+2024-12-22 21:34:47,400 - WARNING - Error processing example 59: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,401 - WARNING - Could not find entity 'Isidra Beasley' in text for example 60
+2024-12-22 21:34:47,401 - WARNING - Error processing example 60: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,401 - WARNING - Could not find entity 'Marion Sanders' in text for example 61
+2024-12-22 21:34:47,401 - WARNING - Error processing example 61: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,402 - WARNING - Could not find entity 'Terence Maynard' in text for example 62
+2024-12-22 21:34:47,402 - WARNING - Could not find entity '红卫路三条921号' in text for example 62
+2024-12-22 21:34:47,402 - WARNING - Error processing example 62: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,402 - WARNING - Could not find entity 'Fred Chase' in text for example 63
+2024-12-22 21:34:47,402 - WARNING - Error processing example 63: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,403 - WARNING - Error processing example 64: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,403 - WARNING - Could not find entity 'Stasia Solis' in text for example 65
+2024-12-22 21:34:47,403 - WARNING - Error processing example 65: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,403 - WARNING - Could not find entity 'Moses Witt' in text for example 66
+2024-12-22 21:34:47,404 - WARNING - Error processing example 66: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,404 - WARNING - Could not find entity 'Delmar Blake' in text for example 67
+2024-12-22 21:34:47,404 - WARNING - Error processing example 67: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,404 - WARNING - Could not find entity '河沐 惠' in text for example 68
+2024-12-22 21:34:47,405 - WARNING - Could not find entity 'Rolland Small' in text for example 68
+2024-12-22 21:34:47,405 - WARNING - Error processing example 68: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,405 - WARNING - Could not find entity 'Fred Chase' in text for example 69
+2024-12-22 21:34:47,405 - WARNING - Error processing example 69: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,405 - WARNING - Could not find entity 'Jessia Cline' in text for example 70
+2024-12-22 21:34:47,406 - WARNING - Error processing example 70: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,406 - WARNING - Could not find entity 'Rosette Pratt' in text for example 71
+2024-12-22 21:34:47,406 - WARNING - Error processing example 71: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,406 - WARNING - Could not find entity '珏萱 相' in text for example 72
+2024-12-22 21:34:47,406 - WARNING - Could not find entity 'Marion Sanders' in text for example 72
+2024-12-22 21:34:47,407 - WARNING - Error processing example 72: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,407 - WARNING - Error processing example 73: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,407 - WARNING - Error processing example 74: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,408 - WARNING - Error processing example 75: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,408 - WARNING - Error processing example 76: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,408 - WARNING - Could not find entity 'Jessenia Savage' in text for example 77
+2024-12-22 21:34:47,408 - WARNING - Error processing example 77: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,409 - WARNING - Error processing example 78: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,409 - WARNING - Could not find entity 'Ayana Downs' in text for example 79
+2024-12-22 21:34:47,409 - WARNING - Error processing example 79: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,409 - WARNING - Error processing example 80: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,410 - WARNING - Could not find entity 'Randal Holman' in text for example 81
+2024-12-22 21:34:47,410 - WARNING - Error processing example 81: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,410 - WARNING - Could not find entity '长治 咸' in text for example 82
+2024-12-22 21:34:47,410 - WARNING - Could not find entity 'Zane Cotton' in text for example 82
+2024-12-22 21:34:47,410 - WARNING - Error processing example 82: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,411 - WARNING - Error processing example 83: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,411 - WARNING - Error processing example 84: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,411 - WARNING - Error processing example 85: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,412 - WARNING - Could not find entity 'Rolland Small' in text for example 86
+2024-12-22 21:34:47,412 - WARNING - Error processing example 86: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,412 - WARNING - Could not find entity 'Bret Ware' in text for example 87
+2024-12-22 21:34:47,412 - WARNING - Error processing example 87: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,412 - WARNING - Could not find entity 'Rolland Small' in text for example 88
+2024-12-22 21:34:47,413 - WARNING - Error processing example 88: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,413 - WARNING - Could not find entity 'Delmar Blake' in text for example 89
+2024-12-22 21:34:47,413 - WARNING - Error processing example 89: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,413 - WARNING - Could not find entity 'Bret Ware' in text for example 90
+2024-12-22 21:34:47,413 - WARNING - Error processing example 90: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,414 - WARNING - Could not find entity 'Adolfo Pratt' in text for example 91
+2024-12-22 21:34:47,414 - WARNING - Error processing example 91: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,414 - WARNING - Error processing example 92: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,414 - WARNING - Could not find entity 'Ayana Downs' in text for example 93
+2024-12-22 21:34:47,415 - WARNING - Error processing example 93: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,415 - WARNING - Error processing example 94: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,415 - WARNING - Error processing example 95: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,415 - WARNING - Could not find entity 'Reynaldo Ingram' in text for example 96
+2024-12-22 21:34:47,416 - WARNING - Error processing example 96: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,416 - WARNING - Could not find entity 'Moses Witt' in text for example 97
+2024-12-22 21:34:47,416 - WARNING - Error processing example 97: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,416 - WARNING - Error processing example 98: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,417 - WARNING - Could not find entity 'Zane Cotton' in text for example 99
+2024-12-22 21:34:47,417 - WARNING - Error processing example 99: 'SpanProcessor' object has no attribute 'tokenize'
+2024-12-22 21:34:47,417 - INFO - Entity type distribution:
+2024-12-22 21:34:47,417 - INFO -   Name: 200
+2024-12-22 21:34:47,417 - INFO -   Occupation: 100
+2024-12-22 21:34:47,417 - INFO -   Phone: 100
+2024-12-22 21:34:47,418 - INFO -   Email: 100
+2024-12-22 21:34:47,418 - INFO -   Address: 100
+2024-12-22 21:34:47,418 - INFO - Split dataset into 0 train and 0 test examples
+2024-12-22 21:34:47,494 - INFO - Found 5 entity types: Address, Occupation, Email, Name, Phone
+2024-12-22 21:34:47,495 - INFO - Using device: cpu
+2024-12-22 21:34:47,495 - INFO - Initializing model...
+2024-12-22 21:34:51,031 - INFO - Setting up data collator and validating format...
+2024-12-22 21:34:51,032 - ERROR - Training failed: integer division or modulo by zero
+2024-12-22 21:37:15,362 - INFO - Using device: cpu
+2024-12-22 21:37:15,363 - INFO - Initializing model and tokenizer...
+2024-12-22 21:37:19,584 - ERROR - Training failed: Unrecognized model in urchade/gliner_small. Should have a `model_type` key in its config.json, or contain one of the following strings in its name: albert, align, altclip, audio-spectrogram-transformer, autoformer, bark, bart, beit, bert, bert-generation, big_bird, bigbird_pegasus, biogpt, bit, blenderbot, blenderbot-small, blip, blip-2, bloom, bridgetower, bros, camembert, canine, chameleon, chinese_clip, chinese_clip_vision_model, clap, clip, clip_text_model, clip_vision_model, clipseg, clvp, code_llama, codegen, cohere, conditional_detr, convbert, convnext, convnextv2, cpmant, ctrl, cvt, dac, data2vec-audio, data2vec-text, data2vec-vision, dbrx, deberta, deberta-v2, decision_transformer, deformable_detr, deit, depth_anything, deta, detr, dinat, dinov2, distilbert, donut-swin, dpr, dpt, efficientformer, efficientnet, electra, encodec, encoder-decoder, ernie, ernie_m, esm, falcon, falcon_mamba, fastspeech2_conformer, flaubert, flava, fnet, focalnet, fsmt, funnel, fuyu, gemma, gemma2, git, glm, glpn, gpt-sw3, gpt2, gpt_bigcode, gpt_neo, gpt_neox, gpt_neox_japanese, gptj, gptsan-japanese, granite, granitemoe, graphormer, grounding-dino, groupvit, hiera, hubert, ibert, idefics, idefics2, idefics3, ijepa, imagegpt, informer, instructblip, instructblipvideo, jamba, jetmoe, jukebox, kosmos-2, layoutlm, layoutlmv2, layoutlmv3, led, levit, lilt, llama, llava, llava_next, llava_next_video, llava_onevision, longformer, longt5, luke, lxmert, m2m_100, mamba, mamba2, marian, markuplm, mask2former, maskformer, maskformer-swin, mbart, mctct, mega, megatron-bert, mgp-str, mimi, mistral, mixtral, mllama, mobilebert, mobilenet_v1, mobilenet_v2, mobilevit, mobilevitv2, moshi, mpnet, mpt, mra, mt5, musicgen, musicgen_melody, mvp, nat, nemotron, nezha, nllb-moe, nougat, nystromformer, olmo, olmo2, olmoe, omdet-turbo, oneformer, open-llama, openai-gpt, opt, owlv2, owlvit, paligemma, patchtsmixer, patchtst, pegasus, pegasus_x, perceiver, persimmon, phi, phi3, phimoe, pix2struct, pixtral, plbart, poolformer, pop2piano, prophetnet, pvt, pvt_v2, qdqbert, qwen2, qwen2_audio, qwen2_audio_encoder, qwen2_moe, qwen2_vl, rag, realm, recurrent_gemma, reformer, regnet, rembert, resnet, retribert, roberta, roberta-prelayernorm, roc_bert, roformer, rt_detr, rt_detr_resnet, rwkv, sam, seamless_m4t, seamless_m4t_v2, segformer, seggpt, sew, sew-d, siglip, siglip_vision_model, speech-encoder-decoder, speech_to_text, speech_to_text_2, speecht5, splinter, squeezebert, stablelm, starcoder2, superpoint, swiftformer, swin, swin2sr, swinv2, switch_transformers, t5, table-transformer, tapas, time_series_transformer, timesformer, timm_backbone, trajectory_transformer, transfo-xl, trocr, tvlt, tvp, udop, umt5, unispeech, unispeech-sat, univnet, upernet, van, video_llava, videomae, vilt, vipllava, vision-encoder-decoder, vision-text-dual-encoder, visual_bert, vit, vit_hybrid, vit_mae, vit_msn, vitdet, vitmatte, vits, vivit, wav2vec2, wav2vec2-bert, wav2vec2-conformer, wavlm, whisper, xclip, xglm, xlm, xlm-prophetnet, xlm-roberta, xlm-roberta-xl, xlnet, xmod, yolos, yoso, zamba, zoedepth
+2024-12-22 21:37:56,503 - INFO - Using device: cpu
+2024-12-22 21:37:56,503 - INFO - Initializing model and tokenizer...
+2024-12-22 21:38:21,432 - ERROR - Training failed: [Errno 2] No such file or directory: '/home/ubuntu/.cache/huggingface/hub/models--bert-base-uncased/snapshots/86b5e0934494bd15c9632b12f734a8a67f723594/gliner_config.json'
