@@ -407,11 +407,69 @@ def main():
                     logger.info(f"{key}: type={type(value)}")
             logger.info("=" * 50)
         
-        # Setup data collator with span processing
+        # Setup custom data collator with proper batching
         logger.info("Setting up data collator...")
-        data_collator = DataCollator(
+        class CustomDataCollator:
+            def __init__(self, config, data_processor, entity_types, prepare_labels=True):
+                self.config = config
+                self.data_processor = data_processor
+                self.entity_types = entity_types
+                self.prepare_labels = prepare_labels
+                logger.info(f"Initialized CustomDataCollator with {len(entity_types)} entity types: {entity_types}")
+                
+            def __call__(self, features):
+                batch = {}
+                
+                # Get max sequence length in batch
+                max_length = max(len(feature['input_ids']) for feature in features)
+                max_length = min(max_length, self.config.max_len)
+                
+                # Get max number of spans in batch
+                max_spans = max(feature['span_indices'].size(0) for feature in features)
+                
+                # Initialize tensors for batch
+                batch_size = len(features)
+                batch['input_ids'] = torch.zeros((batch_size, max_length), dtype=torch.long)
+                batch['attention_mask'] = torch.zeros((batch_size, max_length), dtype=torch.long)
+                batch['token_type_ids'] = torch.zeros((batch_size, max_length), dtype=torch.long)
+                batch['words_mask'] = torch.zeros((batch_size, max_length), dtype=torch.long)
+                batch['span_indices'] = torch.zeros((batch_size, max_spans, 2), dtype=torch.long)
+                batch['span_labels'] = torch.zeros((batch_size, max_spans, len(self.entity_types)), dtype=torch.float)
+                batch['span_mask'] = torch.zeros((batch_size, max_spans), dtype=torch.bool)
+                batch['text_lengths'] = torch.zeros(batch_size, dtype=torch.long)
+                
+                # Fill batch tensors
+                for i, feature in enumerate(features):
+                    seq_length = len(feature['input_ids'])
+                    num_spans = feature['span_indices'].size(0)
+                    
+                    # Sequence tensors
+                    batch['input_ids'][i, :seq_length] = feature['input_ids']
+                    batch['attention_mask'][i, :seq_length] = feature['attention_mask']
+                    batch['token_type_ids'][i, :seq_length] = feature['token_type_ids']
+                    batch['words_mask'][i, :seq_length] = feature['words_mask']
+                    batch['text_lengths'][i] = feature['text_lengths']
+                    
+                    # Span tensors
+                    batch['span_indices'][i, :num_spans] = feature['span_indices']
+                    batch['span_labels'][i, :num_spans] = feature['span_labels']
+                    batch['span_mask'][i, :num_spans] = feature['span_mask']
+                
+                # Move to device if needed
+                device = next(iter(features[0].values())).device
+                batch = {k: v.to(device) for k, v in batch.items()}
+                
+                # Validate tensor shapes
+                logger.info(f"Batch shapes:")
+                for k, v in batch.items():
+                    logger.info(f"  {k}: {v.shape}")
+                
+                return batch
+        
+        data_collator = CustomDataCollator(
             model.config,
             data_processor=model.data_processor,
+            entity_types=entity_types,
             prepare_labels=True
         )
         
@@ -522,24 +580,47 @@ def main():
                                     if torch.isinf(v).any():
                                         logger.warning(f"Inf values detected in {k}")
                         
-                        # Forward pass and loss computation
+                        # Log input shapes before forward pass
+                        if step == 0:
+                            logger.info("\nInput shapes before forward pass:")
+                            for k, v in inputs.items():
+                                if isinstance(v, torch.Tensor):
+                                    logger.info(f"  {k}: shape={v.shape}, dtype={v.dtype}, device={v.device}")
+                                    if torch.isnan(v).any():
+                                        logger.warning(f"NaN values detected in {k}")
+                                    if torch.isinf(v).any():
+                                        logger.warning(f"Inf values detected in {k}")
+                        
+                        # Forward pass with detailed error handling
                         try:
                             loss = trainer.training_step(model, inputs)
+                            if torch.isnan(loss):
+                                logger.error("Loss is NaN, skipping batch")
+                                continue
+                            if torch.isinf(loss):
+                                logger.error("Loss is Inf, skipping batch")
+                                continue
+                                
                             loss = loss / gradient_accumulation_steps  # Scale loss for accumulation
-                            if step == 0:
-                                logger.info(f"Step {step}: Forward pass successful")
+                            if step % 10 == 0:
+                                logger.info(f"Step {step}: Loss before scaling = {loss.item() * gradient_accumulation_steps:.4f}")
                         except Exception as e:
                             logger.error(f"Forward pass failed: {str(e)}")
-                            raise
+                            logger.error("Skipping problematic batch")
+                            continue
                         
-                        # Backward pass
+                        # Backward pass with gradient monitoring
                         try:
                             loss.backward()
-                            if step == 0:
-                                logger.info(f"Step {step}: Backward pass successful")
+                            
+                            # Monitor gradients
+                            if step % 10 == 0:
+                                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), trainer.args.max_grad_norm)
+                                logger.info(f"Step {step}: Gradient norm = {grad_norm:.4f}")
                         except Exception as e:
                             logger.error(f"Backward pass failed: {str(e)}")
-                            raise
+                            logger.error("Skipping problematic batch")
+                            continue
                         
                         # Gradient clipping and optimization steps (only after accumulation)
                         if (step + 1) % gradient_accumulation_steps == 0:
