@@ -568,3 +568,742 @@
 2024-12-22 21:41:36,777 - ERROR - Entity missing required fields. Found: ['entity_source', 'entity_type', 'entity_value']
 2024-12-22 21:41:36,777 - ERROR - Failed to load and prepare data: Dataset validation failed
 2024-12-22 21:41:36,777 - ERROR - Training failed: Dataset validation failed
+2024-12-22 21:42:55,401 - INFO - Using device: cpu
+2024-12-22 21:42:55,401 - INFO - Initializing model and tokenizer...
+2024-12-22 21:42:59,198 - INFO - Loading and preparing data...
+2024-12-22 21:42:59,199 - INFO - Loading dataset from disk...
+2024-12-22 21:42:59,202 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:42:59,202 - INFO - Setting up jieba tokenizer...
+2024-12-22 21:42:59,297 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:42:59,307 - INFO - Example 0: Found 5 entities
+2024-12-22 21:42:59,309 - INFO - Example 1: Found 6 entities
+2024-12-22 21:42:59,310 - INFO - Example 2: Found 4 entities
+2024-12-22 21:42:59,311 - INFO - Example 3: Found 5 entities
+2024-12-22 21:42:59,312 - INFO - Example 4: Found 4 entities
+2024-12-22 21:42:59,313 - INFO - Example 5: Found 5 entities
+2024-12-22 21:42:59,314 - INFO - Example 6: Found 5 entities
+2024-12-22 21:42:59,315 - INFO - Example 7: Found 5 entities
+2024-12-22 21:42:59,316 - INFO - Example 8: Found 5 entities
+2024-12-22 21:42:59,317 - INFO - Example 9: Found 4 entities
+2024-12-22 21:42:59,318 - INFO - Example 10: Found 6 entities
+2024-12-22 21:42:59,319 - INFO - Example 11: Found 6 entities
+2024-12-22 21:42:59,321 - INFO - Example 12: Found 6 entities
+2024-12-22 21:42:59,322 - INFO - Example 13: Found 5 entities
+2024-12-22 21:42:59,324 - INFO - Example 14: Found 6 entities
+2024-12-22 21:42:59,325 - INFO - Example 15: Found 6 entities
+2024-12-22 21:42:59,326 - INFO - Example 16: Found 5 entities
+2024-12-22 21:42:59,328 - INFO - Example 17: Found 6 entities
+2024-12-22 21:42:59,329 - WARNING - Example 18: Skipping - no valid entities found
+2024-12-22 21:42:59,331 - INFO - Example 19: Found 6 entities
+2024-12-22 21:42:59,333 - INFO - Example 20: Found 6 entities
+2024-12-22 21:42:59,334 - INFO - Example 21: Found 5 entities
+2024-12-22 21:42:59,335 - INFO - Example 22: Found 5 entities
+2024-12-22 21:42:59,336 - INFO - Example 23: Found 5 entities
+2024-12-22 21:42:59,338 - INFO - Example 24: Found 5 entities
+2024-12-22 21:42:59,340 - INFO - Example 25: Found 6 entities
+2024-12-22 21:42:59,341 - INFO - Example 26: Found 6 entities
+2024-12-22 21:42:59,343 - INFO - Example 27: Found 6 entities
+2024-12-22 21:42:59,344 - INFO - Example 28: Found 6 entities
+2024-12-22 21:42:59,346 - INFO - Example 29: Found 5 entities
+2024-12-22 21:42:59,348 - INFO - Example 30: Found 5 entities
+2024-12-22 21:42:59,349 - INFO - Example 31: Found 1 entities
+2024-12-22 21:42:59,350 - INFO - Example 32: Found 5 entities
+2024-12-22 21:42:59,352 - INFO - Example 33: Found 6 entities
+2024-12-22 21:42:59,353 - INFO - Example 34: Found 1 entities
+2024-12-22 21:42:59,354 - INFO - Example 35: Found 5 entities
+2024-12-22 21:42:59,355 - INFO - Example 36: Found 6 entities
+2024-12-22 21:42:59,357 - INFO - Example 37: Found 4 entities
+2024-12-22 21:42:59,358 - INFO - Example 38: Found 6 entities
+2024-12-22 21:42:59,360 - INFO - Example 39: Found 6 entities
+2024-12-22 21:42:59,361 - INFO - Example 40: Found 5 entities
+2024-12-22 21:42:59,363 - INFO - Example 41: Found 5 entities
+2024-12-22 21:42:59,364 - INFO - Example 42: Found 6 entities
+2024-12-22 21:42:59,366 - INFO - Example 43: Found 6 entities
+2024-12-22 21:42:59,367 - INFO - Example 44: Found 2 entities
+2024-12-22 21:42:59,369 - WARNING - Example 45: Skipping - no valid entities found
+2024-12-22 21:42:59,370 - INFO - Example 46: Found 3 entities
+2024-12-22 21:42:59,371 - INFO - Example 47: Found 5 entities
+2024-12-22 21:42:59,373 - INFO - Example 48: Found 6 entities
+2024-12-22 21:42:59,375 - INFO - Example 49: Found 4 entities
+2024-12-22 21:42:59,376 - INFO - Example 50: Found 5 entities
+2024-12-22 21:42:59,378 - INFO - Example 51: Found 5 entities
+2024-12-22 21:42:59,379 - INFO - Example 52: Found 5 entities
+2024-12-22 21:42:59,381 - INFO - Example 53: Found 5 entities
+2024-12-22 21:42:59,382 - INFO - Example 54: Found 5 entities
+2024-12-22 21:42:59,384 - INFO - Example 55: Found 6 entities
+2024-12-22 21:42:59,386 - INFO - Example 56: Found 6 entities
+2024-12-22 21:42:59,388 - INFO - Example 57: Found 5 entities
+2024-12-22 21:42:59,389 - WARNING - Example 58: Skipping - no valid entities found
+2024-12-22 21:42:59,391 - INFO - Example 59: Found 5 entities
+2024-12-22 21:42:59,392 - INFO - Example 60: Found 5 entities
+2024-12-22 21:42:59,393 - INFO - Example 61: Found 5 entities
+2024-12-22 21:42:59,395 - INFO - Example 62: Found 4 entities
+2024-12-22 21:42:59,397 - INFO - Example 63: Found 5 entities
+2024-12-22 21:42:59,398 - INFO - Example 64: Found 6 entities
+2024-12-22 21:42:59,400 - INFO - Example 65: Found 5 entities
+2024-12-22 21:42:59,402 - INFO - Example 66: Found 5 entities
+2024-12-22 21:42:59,403 - INFO - Example 67: Found 5 entities
+2024-12-22 21:42:59,405 - WARNING - Example 68: Skipping - no valid entities found
+2024-12-22 21:42:59,407 - INFO - Example 69: Found 5 entities
+2024-12-22 21:42:59,409 - INFO - Example 70: Found 5 entities
+2024-12-22 21:42:59,411 - INFO - Example 71: Found 5 entities
+2024-12-22 21:42:59,413 - INFO - Example 72: Found 4 entities
+2024-12-22 21:42:59,415 - INFO - Example 73: Found 6 entities
+2024-12-22 21:42:59,421 - INFO - Example 74: Found 6 entities
+2024-12-22 21:42:59,423 - INFO - Example 75: Found 6 entities
+2024-12-22 21:42:59,425 - INFO - Example 76: Found 6 entities
+2024-12-22 21:42:59,427 - INFO - Example 77: Found 5 entities
+2024-12-22 21:42:59,429 - INFO - Example 78: Found 6 entities
+2024-12-22 21:42:59,431 - INFO - Example 79: Found 5 entities
+2024-12-22 21:42:59,434 - INFO - Example 80: Found 6 entities
+2024-12-22 21:42:59,436 - INFO - Example 81: Found 5 entities
+2024-12-22 21:42:59,437 - INFO - Example 82: Found 4 entities
+2024-12-22 21:42:59,439 - INFO - Example 83: Found 6 entities
+2024-12-22 21:42:59,442 - INFO - Example 84: Found 6 entities
+2024-12-22 21:42:59,444 - WARNING - Example 85: Skipping - no valid entities found
+2024-12-22 21:42:59,446 - INFO - Example 86: Found 5 entities
+2024-12-22 21:42:59,448 - INFO - Example 87: Found 5 entities
+2024-12-22 21:42:59,450 - INFO - Example 88: Found 5 entities
+2024-12-22 21:42:59,453 - WARNING - Example 89: Skipping - no valid entities found
+2024-12-22 21:42:59,454 - INFO - Example 90: Found 5 entities
+2024-12-22 21:42:59,457 - INFO - Example 91: Found 1 entities
+2024-12-22 21:42:59,460 - INFO - Example 92: Found 6 entities
+2024-12-22 21:42:59,462 - INFO - Example 93: Found 5 entities
+2024-12-22 21:42:59,465 - INFO - Example 94: Found 6 entities
+2024-12-22 21:42:59,467 - INFO - Example 95: Found 6 entities
+2024-12-22 21:42:59,469 - INFO - Example 96: Found 5 entities
+2024-12-22 21:42:59,472 - INFO - Example 97: Found 5 entities
+2024-12-22 21:42:59,476 - INFO - Example 98: Found 6 entities
+2024-12-22 21:42:59,479 - INFO - Example 99: Found 5 entities
+2024-12-22 21:42:59,479 - INFO - Processed 100 examples...
+2024-12-22 21:42:59,479 - INFO - Entity type distribution:
+2024-12-22 21:42:59,479 - INFO -   person: 200
+2024-12-22 21:42:59,479 - INFO -   occupation: 100
+2024-12-22 21:42:59,479 - INFO -   phone: 100
+2024-12-22 21:42:59,479 - INFO -   email: 100
+2024-12-22 21:42:59,480 - INFO -   location: 100
+2024-12-22 21:42:59,480 - INFO - Split dataset into 84 train and 10 test examples
+2024-12-22 21:42:59,480 - INFO - Found 5 entity types: phone, email, occupation, location, person
+2024-12-22 21:42:59,480 - INFO - Setting up data collator and validating format...
+2024-12-22 21:42:59,480 - INFO - Training parameters:
+2024-12-22 21:42:59,480 - INFO -   Batch size: 8
+2024-12-22 21:42:59,480 - INFO -   Number of steps: 500
+2024-12-22 21:42:59,481 - INFO -   Number of epochs: 50
+2024-12-22 21:42:59,484 - INFO - Testing data format with a small batch...
+2024-12-22 21:42:59,557 - INFO - Data format validation successful
+2024-12-22 21:42:59,557 - INFO - Setting up trainer...
+2024-12-22 21:43:00,521 - INFO - Starting training...
+2024-12-22 21:43:00,792 - ERROR - Training failed: Trainer.training_step() takes 3 positional arguments but 4 were given
+2024-12-22 21:44:47,948 - INFO - Using device: cpu
+2024-12-22 21:44:47,948 - INFO - Initializing model and tokenizer...
+2024-12-22 21:44:52,273 - INFO - Loading and preparing data...
+2024-12-22 21:44:52,273 - INFO - Loading dataset from disk...
+2024-12-22 21:44:52,276 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:44:52,277 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:44:52,278 - INFO - Example 0: Found 5 entities
+2024-12-22 21:44:52,278 - INFO - Example 1: Found 6 entities
+2024-12-22 21:44:52,279 - INFO - Example 2: Found 4 entities
+2024-12-22 21:44:52,280 - INFO - Example 3: Found 5 entities
+2024-12-22 21:44:52,280 - INFO - Example 4: Found 4 entities
+2024-12-22 21:44:52,281 - INFO - Example 5: Found 5 entities
+2024-12-22 21:44:52,282 - INFO - Example 6: Found 5 entities
+2024-12-22 21:44:52,282 - INFO - Example 7: Found 5 entities
+2024-12-22 21:44:52,283 - INFO - Example 8: Found 5 entities
+2024-12-22 21:44:52,284 - INFO - Example 9: Found 4 entities
+2024-12-22 21:44:52,284 - INFO - Example 10: Found 6 entities
+2024-12-22 21:44:52,285 - INFO - Example 11: Found 6 entities
+2024-12-22 21:44:52,286 - INFO - Example 12: Found 6 entities
+2024-12-22 21:44:52,287 - INFO - Example 13: Found 5 entities
+2024-12-22 21:44:52,288 - INFO - Example 14: Found 6 entities
+2024-12-22 21:44:52,289 - INFO - Example 15: Found 6 entities
+2024-12-22 21:44:52,290 - INFO - Example 16: Found 5 entities
+2024-12-22 21:44:52,291 - INFO - Example 17: Found 6 entities
+2024-12-22 21:44:52,292 - INFO - Example 18: Found 6 entities
+2024-12-22 21:44:52,293 - INFO - Example 19: Found 6 entities
+2024-12-22 21:44:52,294 - INFO - Example 20: Found 6 entities
+2024-12-22 21:44:52,295 - INFO - Example 21: Found 5 entities
+2024-12-22 21:44:52,296 - INFO - Example 22: Found 5 entities
+2024-12-22 21:44:52,296 - INFO - Example 23: Found 5 entities
+2024-12-22 21:44:52,297 - INFO - Example 24: Found 5 entities
+2024-12-22 21:44:52,298 - INFO - Example 25: Found 6 entities
+2024-12-22 21:44:52,299 - INFO - Example 26: Found 6 entities
+2024-12-22 21:44:52,300 - INFO - Example 27: Found 6 entities
+2024-12-22 21:44:52,301 - INFO - Example 28: Found 6 entities
+2024-12-22 21:44:52,302 - INFO - Example 29: Found 5 entities
+2024-12-22 21:44:52,303 - INFO - Example 30: Found 5 entities
+2024-12-22 21:44:52,304 - INFO - Example 31: Found 5 entities
+2024-12-22 21:44:52,305 - INFO - Example 32: Found 5 entities
+2024-12-22 21:44:52,305 - INFO - Example 33: Found 6 entities
+2024-12-22 21:44:52,306 - INFO - Example 34: Found 4 entities
+2024-12-22 21:44:52,307 - INFO - Example 35: Found 5 entities
+2024-12-22 21:44:52,308 - INFO - Example 36: Found 6 entities
+2024-12-22 21:44:52,308 - INFO - Example 37: Found 4 entities
+2024-12-22 21:44:52,309 - INFO - Example 38: Found 6 entities
+2024-12-22 21:44:52,310 - INFO - Example 39: Found 6 entities
+2024-12-22 21:44:52,311 - INFO - Example 40: Found 5 entities
+2024-12-22 21:44:52,312 - INFO - Example 41: Found 5 entities
+2024-12-22 21:44:52,313 - INFO - Example 42: Found 6 entities
+2024-12-22 21:44:52,314 - INFO - Example 43: Found 6 entities
+2024-12-22 21:44:52,314 - INFO - Example 44: Found 5 entities
+2024-12-22 21:44:52,316 - INFO - Example 45: Found 6 entities
+2024-12-22 21:44:52,316 - INFO - Example 46: Found 3 entities
+2024-12-22 21:44:52,317 - INFO - Example 47: Found 5 entities
+2024-12-22 21:44:52,318 - INFO - Example 48: Found 6 entities
+2024-12-22 21:44:52,319 - INFO - Example 49: Found 4 entities
+2024-12-22 21:44:52,320 - INFO - Example 50: Found 5 entities
+2024-12-22 21:44:52,321 - INFO - Example 51: Found 5 entities
+2024-12-22 21:44:52,322 - INFO - Example 52: Found 5 entities
+2024-12-22 21:44:52,322 - INFO - Example 53: Found 5 entities
+2024-12-22 21:44:52,323 - INFO - Example 54: Found 5 entities
+2024-12-22 21:44:52,324 - INFO - Example 55: Found 6 entities
+2024-12-22 21:44:52,325 - INFO - Example 56: Found 6 entities
+2024-12-22 21:44:52,326 - INFO - Example 57: Found 5 entities
+2024-12-22 21:44:52,327 - INFO - Example 58: Found 5 entities
+2024-12-22 21:44:52,328 - INFO - Example 59: Found 5 entities
+2024-12-22 21:44:52,329 - INFO - Example 60: Found 5 entities
+2024-12-22 21:44:52,330 - INFO - Example 61: Found 5 entities
+2024-12-22 21:44:52,330 - INFO - Example 62: Found 4 entities
+2024-12-22 21:44:52,331 - INFO - Example 63: Found 5 entities
+2024-12-22 21:44:52,332 - INFO - Example 64: Found 6 entities
+2024-12-22 21:44:52,333 - INFO - Example 65: Found 5 entities
+2024-12-22 21:44:52,334 - INFO - Example 66: Found 5 entities
+2024-12-22 21:44:52,335 - INFO - Example 67: Found 5 entities
+2024-12-22 21:44:52,336 - INFO - Example 68: Found 4 entities
+2024-12-22 21:44:52,337 - INFO - Example 69: Found 5 entities
+2024-12-22 21:44:52,338 - INFO - Example 70: Found 5 entities
+2024-12-22 21:44:52,339 - INFO - Example 71: Found 5 entities
+2024-12-22 21:44:52,340 - INFO - Example 72: Found 4 entities
+2024-12-22 21:44:52,341 - INFO - Example 73: Found 6 entities
+2024-12-22 21:44:52,343 - INFO - Example 74: Found 6 entities
+2024-12-22 21:44:52,344 - INFO - Example 75: Found 6 entities
+2024-12-22 21:44:52,345 - INFO - Example 76: Found 6 entities
+2024-12-22 21:44:52,346 - INFO - Example 77: Found 5 entities
+2024-12-22 21:44:52,347 - INFO - Example 78: Found 6 entities
+2024-12-22 21:44:52,348 - INFO - Example 79: Found 5 entities
+2024-12-22 21:44:52,349 - INFO - Example 80: Found 6 entities
+2024-12-22 21:44:52,350 - INFO - Example 81: Found 5 entities
+2024-12-22 21:44:52,351 - INFO - Example 82: Found 4 entities
+2024-12-22 21:44:52,352 - INFO - Example 83: Found 6 entities
+2024-12-22 21:44:52,354 - INFO - Example 84: Found 6 entities
+2024-12-22 21:44:52,355 - INFO - Example 85: Found 6 entities
+2024-12-22 21:44:52,357 - INFO - Example 86: Found 5 entities
+2024-12-22 21:44:52,358 - INFO - Example 87: Found 5 entities
+2024-12-22 21:44:52,360 - INFO - Example 88: Found 5 entities
+2024-12-22 21:44:52,362 - INFO - Example 89: Found 5 entities
+2024-12-22 21:44:52,363 - INFO - Example 90: Found 5 entities
+2024-12-22 21:44:52,365 - INFO - Example 91: Found 5 entities
+2024-12-22 21:44:52,367 - INFO - Example 92: Found 6 entities
+2024-12-22 21:44:52,369 - INFO - Example 93: Found 5 entities
+2024-12-22 21:44:52,370 - INFO - Example 94: Found 6 entities
+2024-12-22 21:44:52,372 - INFO - Example 95: Found 6 entities
+2024-12-22 21:44:52,374 - INFO - Example 96: Found 5 entities
+2024-12-22 21:44:52,375 - INFO - Example 97: Found 5 entities
+2024-12-22 21:44:52,377 - INFO - Example 98: Found 6 entities
+2024-12-22 21:44:52,379 - INFO - Example 99: Found 5 entities
+2024-12-22 21:44:52,380 - INFO - Processed 100 examples...
+2024-12-22 21:44:52,380 - INFO - Entity type distribution:
+2024-12-22 21:44:52,380 - INFO -   person: 200
+2024-12-22 21:44:52,380 - INFO -   occupation: 100
+2024-12-22 21:44:52,380 - INFO -   phone: 100
+2024-12-22 21:44:52,380 - INFO -   email: 100
+2024-12-22 21:44:52,380 - INFO -   location: 100
+2024-12-22 21:44:52,380 - INFO - Split dataset into 90 train and 10 test examples
+2024-12-22 21:44:52,381 - INFO - Found 5 entity types: phone, occupation, person, email, location
+2024-12-22 21:44:52,381 - INFO - Setting up data collator...
+2024-12-22 21:44:52,381 - INFO - Training parameters:
+2024-12-22 21:44:52,381 - INFO -   Batch size: 8
+2024-12-22 21:44:52,381 - INFO -   Number of steps: 500
+2024-12-22 21:44:52,381 - INFO -   Number of epochs: 45
+2024-12-22 21:44:52,382 - INFO - Setting up trainer...
+2024-12-22 21:44:53,024 - INFO - Starting training...
+2024-12-22 21:44:53,273 - ERROR - Training failed: Trainer.training_step() takes 3 positional arguments but 4 were given
+2024-12-22 21:46:24,625 - INFO - Using device: cpu
+2024-12-22 21:46:24,625 - INFO - Initializing model and tokenizer...
+2024-12-22 21:46:28,451 - INFO - Loading and preparing data...
+2024-12-22 21:46:28,451 - INFO - Loading dataset from disk...
+2024-12-22 21:46:28,455 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:46:28,455 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:46:28,456 - INFO - Example 0: Found 5 entities
+2024-12-22 21:46:28,457 - INFO - Example 1: Found 6 entities
+2024-12-22 21:46:28,458 - INFO - Example 2: Found 4 entities
+2024-12-22 21:46:28,458 - INFO - Example 3: Found 5 entities
+2024-12-22 21:46:28,459 - INFO - Example 4: Found 4 entities
+2024-12-22 21:46:28,460 - INFO - Example 5: Found 5 entities
+2024-12-22 21:46:28,460 - INFO - Example 6: Found 5 entities
+2024-12-22 21:46:28,461 - INFO - Example 7: Found 5 entities
+2024-12-22 21:46:28,462 - INFO - Example 8: Found 5 entities
+2024-12-22 21:46:28,462 - INFO - Example 9: Found 4 entities
+2024-12-22 21:46:28,463 - INFO - Example 10: Found 6 entities
+2024-12-22 21:46:28,464 - INFO - Example 11: Found 6 entities
+2024-12-22 21:46:28,465 - INFO - Example 12: Found 6 entities
+2024-12-22 21:46:28,466 - INFO - Example 13: Found 5 entities
+2024-12-22 21:46:28,467 - INFO - Example 14: Found 6 entities
+2024-12-22 21:46:28,468 - INFO - Example 15: Found 6 entities
+2024-12-22 21:46:28,468 - INFO - Example 16: Found 5 entities
+2024-12-22 21:46:28,469 - INFO - Example 17: Found 6 entities
+2024-12-22 21:46:28,471 - INFO - Example 18: Found 6 entities
+2024-12-22 21:46:28,472 - INFO - Example 19: Found 6 entities
+2024-12-22 21:46:28,473 - INFO - Example 20: Found 6 entities
+2024-12-22 21:46:28,474 - INFO - Example 21: Found 5 entities
+2024-12-22 21:46:28,474 - INFO - Example 22: Found 5 entities
+2024-12-22 21:46:28,475 - INFO - Example 23: Found 5 entities
+2024-12-22 21:46:28,476 - INFO - Example 24: Found 5 entities
+2024-12-22 21:46:28,477 - INFO - Example 25: Found 6 entities
+2024-12-22 21:46:28,478 - INFO - Example 26: Found 6 entities
+2024-12-22 21:46:28,479 - INFO - Example 27: Found 6 entities
+2024-12-22 21:46:28,480 - INFO - Example 28: Found 6 entities
+2024-12-22 21:46:28,481 - INFO - Example 29: Found 5 entities
+2024-12-22 21:46:28,482 - INFO - Example 30: Found 5 entities
+2024-12-22 21:46:28,483 - INFO - Example 31: Found 5 entities
+2024-12-22 21:46:28,483 - INFO - Example 32: Found 5 entities
+2024-12-22 21:46:28,484 - INFO - Example 33: Found 6 entities
+2024-12-22 21:46:28,485 - INFO - Example 34: Found 4 entities
+2024-12-22 21:46:28,486 - INFO - Example 35: Found 5 entities
+2024-12-22 21:46:28,486 - INFO - Example 36: Found 6 entities
+2024-12-22 21:46:28,487 - INFO - Example 37: Found 4 entities
+2024-12-22 21:46:28,488 - INFO - Example 38: Found 6 entities
+2024-12-22 21:46:28,489 - INFO - Example 39: Found 6 entities
+2024-12-22 21:46:28,490 - INFO - Example 40: Found 5 entities
+2024-12-22 21:46:28,491 - INFO - Example 41: Found 5 entities
+2024-12-22 21:46:28,492 - INFO - Example 42: Found 6 entities
+2024-12-22 21:46:28,493 - INFO - Example 43: Found 6 entities
+2024-12-22 21:46:28,493 - INFO - Example 44: Found 5 entities
+2024-12-22 21:46:28,495 - INFO - Example 45: Found 6 entities
+2024-12-22 21:46:28,496 - INFO - Example 46: Found 3 entities
+2024-12-22 21:46:28,496 - INFO - Example 47: Found 5 entities
+2024-12-22 21:46:28,497 - INFO - Example 48: Found 6 entities
+2024-12-22 21:46:28,498 - INFO - Example 49: Found 4 entities
+2024-12-22 21:46:28,499 - INFO - Example 50: Found 5 entities
+2024-12-22 21:46:28,500 - INFO - Example 51: Found 5 entities
+2024-12-22 21:46:28,501 - INFO - Example 52: Found 5 entities
+2024-12-22 21:46:28,502 - INFO - Example 53: Found 5 entities
+2024-12-22 21:46:28,503 - INFO - Example 54: Found 5 entities
+2024-12-22 21:46:28,504 - INFO - Example 55: Found 6 entities
+2024-12-22 21:46:28,505 - INFO - Example 56: Found 6 entities
+2024-12-22 21:46:28,506 - INFO - Example 57: Found 5 entities
+2024-12-22 21:46:28,507 - INFO - Example 58: Found 5 entities
+2024-12-22 21:46:28,508 - INFO - Example 59: Found 5 entities
+2024-12-22 21:46:28,508 - INFO - Example 60: Found 5 entities
+2024-12-22 21:46:28,509 - INFO - Example 61: Found 5 entities
+2024-12-22 21:46:28,510 - INFO - Example 62: Found 4 entities
+2024-12-22 21:46:28,511 - INFO - Example 63: Found 5 entities
+2024-12-22 21:46:28,512 - INFO - Example 64: Found 6 entities
+2024-12-22 21:46:28,513 - INFO - Example 65: Found 5 entities
+2024-12-22 21:46:28,514 - INFO - Example 66: Found 5 entities
+2024-12-22 21:46:28,515 - INFO - Example 67: Found 5 entities
+2024-12-22 21:46:28,516 - INFO - Example 68: Found 4 entities
+2024-12-22 21:46:28,517 - INFO - Example 69: Found 5 entities
+2024-12-22 21:46:28,518 - INFO - Example 70: Found 5 entities
+2024-12-22 21:46:28,519 - INFO - Example 71: Found 5 entities
+2024-12-22 21:46:28,520 - INFO - Example 72: Found 4 entities
+2024-12-22 21:46:28,521 - INFO - Example 73: Found 6 entities
+2024-12-22 21:46:28,523 - INFO - Example 74: Found 6 entities
+2024-12-22 21:46:28,524 - INFO - Example 75: Found 6 entities
+2024-12-22 21:46:28,525 - INFO - Example 76: Found 6 entities
+2024-12-22 21:46:28,526 - INFO - Example 77: Found 5 entities
+2024-12-22 21:46:28,527 - INFO - Example 78: Found 6 entities
+2024-12-22 21:46:28,528 - INFO - Example 79: Found 5 entities
+2024-12-22 21:46:28,529 - INFO - Example 80: Found 6 entities
+2024-12-22 21:46:28,530 - INFO - Example 81: Found 5 entities
+2024-12-22 21:46:28,531 - INFO - Example 82: Found 4 entities
+2024-12-22 21:46:28,532 - INFO - Example 83: Found 6 entities
+2024-12-22 21:46:28,535 - INFO - Example 84: Found 6 entities
+2024-12-22 21:46:28,537 - INFO - Example 85: Found 6 entities
+2024-12-22 21:46:28,538 - INFO - Example 86: Found 5 entities
+2024-12-22 21:46:28,540 - INFO - Example 87: Found 5 entities
+2024-12-22 21:46:28,542 - INFO - Example 88: Found 5 entities
+2024-12-22 21:46:28,544 - INFO - Example 89: Found 5 entities
+2024-12-22 21:46:28,546 - INFO - Example 90: Found 5 entities
+2024-12-22 21:46:28,548 - INFO - Example 91: Found 5 entities
+2024-12-22 21:46:28,549 - INFO - Example 92: Found 6 entities
+2024-12-22 21:46:28,551 - INFO - Example 93: Found 5 entities
+2024-12-22 21:46:28,553 - INFO - Example 94: Found 6 entities
+2024-12-22 21:46:28,554 - INFO - Example 95: Found 6 entities
+2024-12-22 21:46:28,556 - INFO - Example 96: Found 5 entities
+2024-12-22 21:46:28,558 - INFO - Example 97: Found 5 entities
+2024-12-22 21:46:28,560 - INFO - Example 98: Found 6 entities
+2024-12-22 21:46:28,562 - INFO - Example 99: Found 5 entities
+2024-12-22 21:46:28,562 - INFO - Processed 100 examples...
+2024-12-22 21:46:28,562 - INFO - Entity type distribution:
+2024-12-22 21:46:28,562 - INFO -   person: 200
+2024-12-22 21:46:28,562 - INFO -   occupation: 100
+2024-12-22 21:46:28,562 - INFO -   phone: 100
+2024-12-22 21:46:28,563 - INFO -   email: 100
+2024-12-22 21:46:28,563 - INFO -   location: 100
+2024-12-22 21:46:28,563 - INFO - Split dataset into 90 train and 10 test examples
+2024-12-22 21:46:28,563 - INFO - Found 5 entity types: email, location, phone, occupation, person
+2024-12-22 21:46:28,563 - INFO - Setting up data collator...
+2024-12-22 21:46:28,564 - INFO - Training parameters:
+2024-12-22 21:46:28,564 - INFO -   Batch size: 8
+2024-12-22 21:46:28,564 - INFO -   Number of steps: 500
+2024-12-22 21:46:28,564 - INFO -   Number of epochs: 45
+2024-12-22 21:46:28,565 - INFO - Setting up trainer...
+2024-12-22 21:46:29,165 - INFO - Starting training...
+2024-12-22 21:46:29,412 - ERROR - Training failed: Trainer.training_step() takes 3 positional arguments but 4 were given
+2024-12-22 21:48:07,569 - INFO - Using device: cpu
+2024-12-22 21:48:07,569 - INFO - Initializing model and tokenizer...
+2024-12-22 21:48:11,381 - INFO - Loading and preparing data...
+2024-12-22 21:48:11,381 - INFO - Loading dataset from disk...
+2024-12-22 21:48:11,384 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:48:11,384 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:48:11,386 - INFO - Example 0: Found 5 entities
+2024-12-22 21:48:11,386 - INFO - Example 1: Found 6 entities
+2024-12-22 21:48:11,387 - INFO - Example 2: Found 4 entities
+2024-12-22 21:48:11,388 - INFO - Example 3: Found 5 entities
+2024-12-22 21:48:11,388 - INFO - Example 4: Found 4 entities
+2024-12-22 21:48:11,389 - INFO - Example 5: Found 5 entities
+2024-12-22 21:48:11,390 - INFO - Example 6: Found 5 entities
+2024-12-22 21:48:11,390 - INFO - Example 7: Found 5 entities
+2024-12-22 21:48:11,391 - INFO - Example 8: Found 5 entities
+2024-12-22 21:48:11,391 - INFO - Example 9: Found 4 entities
+2024-12-22 21:48:11,392 - INFO - Example 10: Found 6 entities
+2024-12-22 21:48:11,393 - INFO - Example 11: Found 6 entities
+2024-12-22 21:48:11,394 - INFO - Example 12: Found 6 entities
+2024-12-22 21:48:11,395 - INFO - Example 13: Found 5 entities
+2024-12-22 21:48:11,396 - INFO - Example 14: Found 6 entities
+2024-12-22 21:48:11,397 - INFO - Example 15: Found 6 entities
+2024-12-22 21:48:11,398 - INFO - Example 16: Found 5 entities
+2024-12-22 21:48:11,399 - INFO - Example 17: Found 6 entities
+2024-12-22 21:48:11,400 - INFO - Example 18: Found 6 entities
+2024-12-22 21:48:11,401 - INFO - Example 19: Found 6 entities
+2024-12-22 21:48:11,402 - INFO - Example 20: Found 6 entities
+2024-12-22 21:48:11,403 - INFO - Example 21: Found 5 entities
+2024-12-22 21:48:11,403 - INFO - Example 22: Found 5 entities
+2024-12-22 21:48:11,404 - INFO - Example 23: Found 5 entities
+2024-12-22 21:48:11,405 - INFO - Example 24: Found 5 entities
+2024-12-22 21:48:11,406 - INFO - Example 25: Found 6 entities
+2024-12-22 21:48:11,407 - INFO - Example 26: Found 6 entities
+2024-12-22 21:48:11,408 - INFO - Example 27: Found 6 entities
+2024-12-22 21:48:11,409 - INFO - Example 28: Found 6 entities
+2024-12-22 21:48:11,410 - INFO - Example 29: Found 5 entities
+2024-12-22 21:48:11,411 - INFO - Example 30: Found 5 entities
+2024-12-22 21:48:11,412 - INFO - Example 31: Found 5 entities
+2024-12-22 21:48:11,413 - INFO - Example 32: Found 5 entities
+2024-12-22 21:48:11,413 - INFO - Example 33: Found 6 entities
+2024-12-22 21:48:11,414 - INFO - Example 34: Found 4 entities
+2024-12-22 21:48:11,415 - INFO - Example 35: Found 5 entities
+2024-12-22 21:48:11,416 - INFO - Example 36: Found 6 entities
+2024-12-22 21:48:11,417 - INFO - Example 37: Found 4 entities
+2024-12-22 21:48:11,418 - INFO - Example 38: Found 6 entities
+2024-12-22 21:48:11,419 - INFO - Example 39: Found 6 entities
+2024-12-22 21:48:11,419 - INFO - Example 40: Found 5 entities
+2024-12-22 21:48:11,420 - INFO - Example 41: Found 5 entities
+2024-12-22 21:48:11,421 - INFO - Example 42: Found 6 entities
+2024-12-22 21:48:11,422 - INFO - Example 43: Found 6 entities
+2024-12-22 21:48:11,423 - INFO - Example 44: Found 5 entities
+2024-12-22 21:48:11,424 - INFO - Example 45: Found 6 entities
+2024-12-22 21:48:11,425 - INFO - Example 46: Found 3 entities
+2024-12-22 21:48:11,425 - INFO - Example 47: Found 5 entities
+2024-12-22 21:48:11,427 - INFO - Example 48: Found 6 entities
+2024-12-22 21:48:11,427 - INFO - Example 49: Found 4 entities
+2024-12-22 21:48:11,428 - INFO - Example 50: Found 5 entities
+2024-12-22 21:48:11,429 - INFO - Example 51: Found 5 entities
+2024-12-22 21:48:11,430 - INFO - Example 52: Found 5 entities
+2024-12-22 21:48:11,431 - INFO - Example 53: Found 5 entities
+2024-12-22 21:48:11,432 - INFO - Example 54: Found 5 entities
+2024-12-22 21:48:11,433 - INFO - Example 55: Found 6 entities
+2024-12-22 21:48:11,434 - INFO - Example 56: Found 6 entities
+2024-12-22 21:48:11,435 - INFO - Example 57: Found 5 entities
+2024-12-22 21:48:11,436 - INFO - Example 58: Found 5 entities
+2024-12-22 21:48:11,437 - INFO - Example 59: Found 5 entities
+2024-12-22 21:48:11,438 - INFO - Example 60: Found 5 entities
+2024-12-22 21:48:11,438 - INFO - Example 61: Found 5 entities
+2024-12-22 21:48:11,439 - INFO - Example 62: Found 4 entities
+2024-12-22 21:48:11,440 - INFO - Example 63: Found 5 entities
+2024-12-22 21:48:11,441 - INFO - Example 64: Found 6 entities
+2024-12-22 21:48:11,442 - INFO - Example 65: Found 5 entities
+2024-12-22 21:48:11,443 - INFO - Example 66: Found 5 entities
+2024-12-22 21:48:11,444 - INFO - Example 67: Found 5 entities
+2024-12-22 21:48:11,445 - INFO - Example 68: Found 4 entities
+2024-12-22 21:48:11,446 - INFO - Example 69: Found 5 entities
+2024-12-22 21:48:11,447 - INFO - Example 70: Found 5 entities
+2024-12-22 21:48:11,448 - INFO - Example 71: Found 5 entities
+2024-12-22 21:48:11,449 - INFO - Example 72: Found 4 entities
+2024-12-22 21:48:11,450 - INFO - Example 73: Found 6 entities
+2024-12-22 21:48:11,452 - INFO - Example 74: Found 6 entities
+2024-12-22 21:48:11,453 - INFO - Example 75: Found 6 entities
+2024-12-22 21:48:11,454 - INFO - Example 76: Found 6 entities
+2024-12-22 21:48:11,455 - INFO - Example 77: Found 5 entities
+2024-12-22 21:48:11,456 - INFO - Example 78: Found 6 entities
+2024-12-22 21:48:11,457 - INFO - Example 79: Found 5 entities
+2024-12-22 21:48:11,458 - INFO - Example 80: Found 6 entities
+2024-12-22 21:48:11,459 - INFO - Example 81: Found 5 entities
+2024-12-22 21:48:11,460 - INFO - Example 82: Found 4 entities
+2024-12-22 21:48:11,461 - INFO - Example 83: Found 6 entities
+2024-12-22 21:48:11,463 - INFO - Example 84: Found 6 entities
+2024-12-22 21:48:11,464 - INFO - Example 85: Found 6 entities
+2024-12-22 21:48:11,465 - INFO - Example 86: Found 5 entities
+2024-12-22 21:48:11,466 - INFO - Example 87: Found 5 entities
+2024-12-22 21:48:11,467 - INFO - Example 88: Found 5 entities
+2024-12-22 21:48:11,468 - INFO - Example 89: Found 5 entities
+2024-12-22 21:48:11,469 - INFO - Example 90: Found 5 entities
+2024-12-22 21:48:11,470 - INFO - Example 91: Found 5 entities
+2024-12-22 21:48:11,472 - INFO - Example 92: Found 6 entities
+2024-12-22 21:48:11,473 - INFO - Example 93: Found 5 entities
+2024-12-22 21:48:11,474 - INFO - Example 94: Found 6 entities
+2024-12-22 21:48:11,475 - INFO - Example 95: Found 6 entities
+2024-12-22 21:48:11,476 - INFO - Example 96: Found 5 entities
+2024-12-22 21:48:11,477 - INFO - Example 97: Found 5 entities
+2024-12-22 21:48:11,479 - INFO - Example 98: Found 6 entities
+2024-12-22 21:48:11,480 - INFO - Example 99: Found 5 entities
+2024-12-22 21:48:11,480 - INFO - Processed 100 examples...
+2024-12-22 21:48:11,480 - INFO - Entity type distribution:
+2024-12-22 21:48:11,481 - INFO -   person: 200
+2024-12-22 21:48:11,481 - INFO -   occupation: 100
+2024-12-22 21:48:11,481 - INFO -   phone: 100
+2024-12-22 21:48:11,481 - INFO -   email: 100
+2024-12-22 21:48:11,481 - INFO -   location: 100
+2024-12-22 21:48:11,481 - INFO - Split dataset into 90 train and 10 test examples
+2024-12-22 21:48:11,482 - INFO - Found 5 entity types: occupation, email, location, phone, person
+2024-12-22 21:48:11,482 - INFO - Setting up data collator...
+2024-12-22 21:48:11,482 - INFO - Training parameters:
+2024-12-22 21:48:11,482 - INFO -   Batch size: 8
+2024-12-22 21:48:11,482 - INFO -   Number of steps: 500
+2024-12-22 21:48:11,482 - INFO -   Number of epochs: 45
+2024-12-22 21:48:11,485 - INFO - Setting up trainer...
+2024-12-22 21:48:12,091 - INFO - Starting training...
+2024-12-22 21:48:12,352 - ERROR - Training failed: Trainer.training_step() takes 3 positional arguments but 4 were given
+2024-12-22 21:49:11,108 - INFO - Using device: cpu
+2024-12-22 21:49:11,108 - INFO - Initializing model and tokenizer...
+2024-12-22 21:49:15,108 - INFO - Loading and preparing data...
+2024-12-22 21:49:15,108 - INFO - Loading dataset from disk...
+2024-12-22 21:49:15,112 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:49:15,112 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:49:15,113 - INFO - Example 0: Found 5 entities
+2024-12-22 21:49:15,114 - INFO - Example 1: Found 6 entities
+2024-12-22 21:49:15,115 - INFO - Example 2: Found 4 entities
+2024-12-22 21:49:15,115 - INFO - Example 3: Found 5 entities
+2024-12-22 21:49:15,116 - INFO - Example 4: Found 4 entities
+2024-12-22 21:49:15,117 - INFO - Example 5: Found 5 entities
+2024-12-22 21:49:15,117 - INFO - Example 6: Found 5 entities
+2024-12-22 21:49:15,118 - INFO - Example 7: Found 5 entities
+2024-12-22 21:49:15,119 - INFO - Example 8: Found 5 entities
+2024-12-22 21:49:15,119 - INFO - Example 9: Found 4 entities
+2024-12-22 21:49:15,120 - INFO - Example 10: Found 6 entities
+2024-12-22 21:49:15,121 - INFO - Example 11: Found 6 entities
+2024-12-22 21:49:15,122 - INFO - Example 12: Found 6 entities
+2024-12-22 21:49:15,123 - INFO - Example 13: Found 5 entities
+2024-12-22 21:49:15,124 - INFO - Example 14: Found 6 entities
+2024-12-22 21:49:15,125 - INFO - Example 15: Found 6 entities
+2024-12-22 21:49:15,125 - INFO - Example 16: Found 5 entities
+2024-12-22 21:49:15,126 - INFO - Example 17: Found 6 entities
+2024-12-22 21:49:15,128 - INFO - Example 18: Found 6 entities
+2024-12-22 21:49:15,129 - INFO - Example 19: Found 6 entities
+2024-12-22 21:49:15,130 - INFO - Example 20: Found 6 entities
+2024-12-22 21:49:15,130 - INFO - Example 21: Found 5 entities
+2024-12-22 21:49:15,131 - INFO - Example 22: Found 5 entities
+2024-12-22 21:49:15,132 - INFO - Example 23: Found 5 entities
+2024-12-22 21:49:15,133 - INFO - Example 24: Found 5 entities
+2024-12-22 21:49:15,134 - INFO - Example 25: Found 6 entities
+2024-12-22 21:49:15,135 - INFO - Example 26: Found 6 entities
+2024-12-22 21:49:15,136 - INFO - Example 27: Found 6 entities
+2024-12-22 21:49:15,137 - INFO - Example 28: Found 6 entities
+2024-12-22 21:49:15,138 - INFO - Example 29: Found 5 entities
+2024-12-22 21:49:15,139 - INFO - Example 30: Found 5 entities
+2024-12-22 21:49:15,140 - INFO - Example 31: Found 5 entities
+2024-12-22 21:49:15,141 - INFO - Example 32: Found 5 entities
+2024-12-22 21:49:15,141 - INFO - Example 33: Found 6 entities
+2024-12-22 21:49:15,142 - INFO - Example 34: Found 4 entities
+2024-12-22 21:49:15,143 - INFO - Example 35: Found 5 entities
+2024-12-22 21:49:15,144 - INFO - Example 36: Found 6 entities
+2024-12-22 21:49:15,144 - INFO - Example 37: Found 4 entities
+2024-12-22 21:49:15,145 - INFO - Example 38: Found 6 entities
+2024-12-22 21:49:15,146 - INFO - Example 39: Found 6 entities
+2024-12-22 21:49:15,147 - INFO - Example 40: Found 5 entities
+2024-12-22 21:49:15,148 - INFO - Example 41: Found 5 entities
+2024-12-22 21:49:15,149 - INFO - Example 42: Found 6 entities
+2024-12-22 21:49:15,150 - INFO - Example 43: Found 6 entities
+2024-12-22 21:49:15,151 - INFO - Example 44: Found 5 entities
+2024-12-22 21:49:15,152 - INFO - Example 45: Found 6 entities
+2024-12-22 21:49:15,153 - INFO - Example 46: Found 3 entities
+2024-12-22 21:49:15,153 - INFO - Example 47: Found 5 entities
+2024-12-22 21:49:15,154 - INFO - Example 48: Found 6 entities
+2024-12-22 21:49:15,155 - INFO - Example 49: Found 4 entities
+2024-12-22 21:49:15,156 - INFO - Example 50: Found 5 entities
+2024-12-22 21:49:15,157 - INFO - Example 51: Found 5 entities
+2024-12-22 21:49:15,158 - INFO - Example 52: Found 5 entities
+2024-12-22 21:49:15,159 - INFO - Example 53: Found 5 entities
+2024-12-22 21:49:15,160 - INFO - Example 54: Found 5 entities
+2024-12-22 21:49:15,161 - INFO - Example 55: Found 6 entities
+2024-12-22 21:49:15,162 - INFO - Example 56: Found 6 entities
+2024-12-22 21:49:15,163 - INFO - Example 57: Found 5 entities
+2024-12-22 21:49:15,164 - INFO - Example 58: Found 5 entities
+2024-12-22 21:49:15,164 - INFO - Example 59: Found 5 entities
+2024-12-22 21:49:15,165 - INFO - Example 60: Found 5 entities
+2024-12-22 21:49:15,166 - INFO - Example 61: Found 5 entities
+2024-12-22 21:49:15,167 - INFO - Example 62: Found 4 entities
+2024-12-22 21:49:15,168 - INFO - Example 63: Found 5 entities
+2024-12-22 21:49:15,169 - INFO - Example 64: Found 6 entities
+2024-12-22 21:49:15,170 - INFO - Example 65: Found 5 entities
+2024-12-22 21:49:15,171 - INFO - Example 66: Found 5 entities
+2024-12-22 21:49:15,172 - INFO - Example 67: Found 5 entities
+2024-12-22 21:49:15,173 - INFO - Example 68: Found 4 entities
+2024-12-22 21:49:15,174 - INFO - Example 69: Found 5 entities
+2024-12-22 21:49:15,175 - INFO - Example 70: Found 5 entities
+2024-12-22 21:49:15,176 - INFO - Example 71: Found 5 entities
+2024-12-22 21:49:15,177 - INFO - Example 72: Found 4 entities
+2024-12-22 21:49:15,178 - INFO - Example 73: Found 6 entities
+2024-12-22 21:49:15,180 - INFO - Example 74: Found 6 entities
+2024-12-22 21:49:15,181 - INFO - Example 75: Found 6 entities
+2024-12-22 21:49:15,182 - INFO - Example 76: Found 6 entities
+2024-12-22 21:49:15,183 - INFO - Example 77: Found 5 entities
+2024-12-22 21:49:15,184 - INFO - Example 78: Found 6 entities
+2024-12-22 21:49:15,185 - INFO - Example 79: Found 5 entities
+2024-12-22 21:49:15,186 - INFO - Example 80: Found 6 entities
+2024-12-22 21:49:15,187 - INFO - Example 81: Found 5 entities
+2024-12-22 21:49:15,188 - INFO - Example 82: Found 4 entities
+2024-12-22 21:49:15,189 - INFO - Example 83: Found 6 entities
+2024-12-22 21:49:15,190 - INFO - Example 84: Found 6 entities
+2024-12-22 21:49:15,191 - INFO - Example 85: Found 6 entities
+2024-12-22 21:49:15,192 - INFO - Example 86: Found 5 entities
+2024-12-22 21:49:15,193 - INFO - Example 87: Found 5 entities
+2024-12-22 21:49:15,194 - INFO - Example 88: Found 5 entities
+2024-12-22 21:49:15,196 - INFO - Example 89: Found 5 entities
+2024-12-22 21:49:15,197 - INFO - Example 90: Found 5 entities
+2024-12-22 21:49:15,198 - INFO - Example 91: Found 5 entities
+2024-12-22 21:49:15,199 - INFO - Example 92: Found 6 entities
+2024-12-22 21:49:15,200 - INFO - Example 93: Found 5 entities
+2024-12-22 21:49:15,201 - INFO - Example 94: Found 6 entities
+2024-12-22 21:49:15,202 - INFO - Example 95: Found 6 entities
+2024-12-22 21:49:15,204 - INFO - Example 96: Found 5 entities
+2024-12-22 21:49:15,205 - INFO - Example 97: Found 5 entities
+2024-12-22 21:49:15,206 - INFO - Example 98: Found 6 entities
+2024-12-22 21:49:15,207 - INFO - Example 99: Found 5 entities
+2024-12-22 21:49:15,208 - INFO - Processed 100 examples...
+2024-12-22 21:49:15,208 - INFO - Entity type distribution:
+2024-12-22 21:49:15,208 - INFO -   person: 200
+2024-12-22 21:49:15,208 - INFO -   occupation: 100
+2024-12-22 21:49:15,208 - INFO -   phone: 100
+2024-12-22 21:49:15,208 - INFO -   email: 100
+2024-12-22 21:49:15,208 - INFO -   location: 100
+2024-12-22 21:49:15,209 - INFO - Split dataset into 90 train and 10 test examples
+2024-12-22 21:49:15,209 - INFO - Found 5 entity types: occupation, person, email, location, phone
+2024-12-22 21:49:15,209 - INFO - Setting up data collator...
+2024-12-22 21:49:15,209 - INFO - Training parameters:
+2024-12-22 21:49:15,209 - INFO -   Batch size: 8
+2024-12-22 21:49:15,209 - INFO -   Number of steps: 500
+2024-12-22 21:49:15,210 - INFO -   Number of epochs: 45
+2024-12-22 21:49:15,212 - INFO - Setting up trainer...
+2024-12-22 21:49:15,816 - INFO - Starting training...
+2024-12-22 21:51:01,907 - INFO - Using device: cpu
+2024-12-22 21:51:01,908 - INFO - Initializing model and tokenizer...
+2024-12-22 21:51:08,205 - INFO - Loading and preparing data...
+2024-12-22 21:51:08,206 - INFO - Loading dataset from disk...
+2024-12-22 21:51:08,235 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 21:51:08,235 - INFO - Converting dataset to GLiNER format...
+2024-12-22 21:51:08,245 - INFO - Example 0: Found 5 entities
+2024-12-22 21:51:08,246 - INFO - Example 1: Found 6 entities
+2024-12-22 21:51:08,247 - INFO - Example 2: Found 4 entities
+2024-12-22 21:51:08,247 - INFO - Example 3: Found 5 entities
+2024-12-22 21:51:08,248 - INFO - Example 4: Found 4 entities
+2024-12-22 21:51:08,249 - INFO - Example 5: Found 5 entities
+2024-12-22 21:51:08,250 - INFO - Example 6: Found 5 entities
+2024-12-22 21:51:08,250 - INFO - Example 7: Found 5 entities
+2024-12-22 21:51:08,251 - INFO - Example 8: Found 5 entities
+2024-12-22 21:51:08,252 - INFO - Example 9: Found 4 entities
+2024-12-22 21:51:08,252 - INFO - Example 10: Found 6 entities
+2024-12-22 21:51:08,253 - INFO - Example 11: Found 6 entities
+2024-12-22 21:51:08,255 - INFO - Example 12: Found 6 entities
+2024-12-22 21:51:08,255 - INFO - Example 13: Found 5 entities
+2024-12-22 21:51:08,256 - INFO - Example 14: Found 6 entities
+2024-12-22 21:51:08,257 - INFO - Example 15: Found 6 entities
+2024-12-22 21:51:08,258 - INFO - Example 16: Found 5 entities
+2024-12-22 21:51:08,259 - INFO - Example 17: Found 6 entities
+2024-12-22 21:51:08,260 - INFO - Example 18: Found 6 entities
+2024-12-22 21:51:08,262 - INFO - Example 19: Found 6 entities
+2024-12-22 21:51:08,263 - INFO - Example 20: Found 6 entities
+2024-12-22 21:51:08,263 - INFO - Example 21: Found 5 entities
+2024-12-22 21:51:08,264 - INFO - Example 22: Found 5 entities
+2024-12-22 21:51:08,265 - INFO - Example 23: Found 5 entities
+2024-12-22 21:51:08,266 - INFO - Example 24: Found 5 entities
+2024-12-22 21:51:08,267 - INFO - Example 25: Found 6 entities
+2024-12-22 21:51:08,268 - INFO - Example 26: Found 6 entities
+2024-12-22 21:51:08,269 - INFO - Example 27: Found 6 entities
+2024-12-22 21:51:08,270 - INFO - Example 28: Found 6 entities
+2024-12-22 21:51:08,271 - INFO - Example 29: Found 5 entities
+2024-12-22 21:51:08,272 - INFO - Example 30: Found 5 entities
+2024-12-22 21:51:08,273 - INFO - Example 31: Found 5 entities
+2024-12-22 21:51:08,274 - INFO - Example 32: Found 5 entities
+2024-12-22 21:51:08,275 - INFO - Example 33: Found 6 entities
+2024-12-22 21:51:08,275 - INFO - Example 34: Found 4 entities
+2024-12-22 21:51:08,276 - INFO - Example 35: Found 5 entities
+2024-12-22 21:51:08,277 - INFO - Example 36: Found 6 entities
+2024-12-22 21:51:08,278 - INFO - Example 37: Found 4 entities
+2024-12-22 21:51:08,279 - INFO - Example 38: Found 6 entities
+2024-12-22 21:51:08,280 - INFO - Example 39: Found 6 entities
+2024-12-22 21:51:08,281 - INFO - Example 40: Found 5 entities
+2024-12-22 21:51:08,282 - INFO - Example 41: Found 5 entities
+2024-12-22 21:51:08,282 - INFO - Example 42: Found 6 entities
+2024-12-22 21:51:08,283 - INFO - Example 43: Found 6 entities
+2024-12-22 21:51:08,284 - INFO - Example 44: Found 5 entities
+2024-12-22 21:51:08,285 - INFO - Example 45: Found 6 entities
+2024-12-22 21:51:08,286 - INFO - Example 46: Found 3 entities
+2024-12-22 21:51:08,287 - INFO - Example 47: Found 5 entities
+2024-12-22 21:51:08,288 - INFO - Example 48: Found 6 entities
+2024-12-22 21:51:08,289 - INFO - Example 49: Found 4 entities
+2024-12-22 21:51:08,290 - INFO - Example 50: Found 5 entities
+2024-12-22 21:51:08,291 - INFO - Example 51: Found 5 entities
+2024-12-22 21:51:08,292 - INFO - Example 52: Found 5 entities
+2024-12-22 21:51:08,293 - INFO - Example 53: Found 5 entities
+2024-12-22 21:51:08,294 - INFO - Example 54: Found 5 entities
+2024-12-22 21:51:08,295 - INFO - Example 55: Found 6 entities
+2024-12-22 21:51:08,296 - INFO - Example 56: Found 6 entities
+2024-12-22 21:51:08,297 - INFO - Example 57: Found 5 entities
+2024-12-22 21:51:08,298 - INFO - Example 58: Found 5 entities
+2024-12-22 21:51:08,299 - INFO - Example 59: Found 5 entities
+2024-12-22 21:51:08,299 - INFO - Example 60: Found 5 entities
+2024-12-22 21:51:08,300 - INFO - Example 61: Found 5 entities
+2024-12-22 21:51:08,301 - INFO - Example 62: Found 4 entities
+2024-12-22 21:51:08,302 - INFO - Example 63: Found 5 entities
+2024-12-22 21:51:08,303 - INFO - Example 64: Found 6 entities
+2024-12-22 21:51:08,304 - INFO - Example 65: Found 5 entities
+2024-12-22 21:51:08,305 - INFO - Example 66: Found 5 entities
+2024-12-22 21:51:08,306 - INFO - Example 67: Found 5 entities
+2024-12-22 21:51:08,307 - INFO - Example 68: Found 4 entities
+2024-12-22 21:51:08,308 - INFO - Example 69: Found 5 entities
+2024-12-22 21:51:08,309 - INFO - Example 70: Found 5 entities
+2024-12-22 21:51:08,310 - INFO - Example 71: Found 5 entities
+2024-12-22 21:51:08,311 - INFO - Example 72: Found 4 entities
+2024-12-22 21:51:08,312 - INFO - Example 73: Found 6 entities
+2024-12-22 21:51:08,314 - INFO - Example 74: Found 6 entities
+2024-12-22 21:51:08,316 - INFO - Example 75: Found 6 entities
+2024-12-22 21:51:08,317 - INFO - Example 76: Found 6 entities
+2024-12-22 21:51:08,318 - INFO - Example 77: Found 5 entities
+2024-12-22 21:51:08,319 - INFO - Example 78: Found 6 entities
+2024-12-22 21:51:08,320 - INFO - Example 79: Found 5 entities
+2024-12-22 21:51:08,321 - INFO - Example 80: Found 6 entities
+2024-12-22 21:51:08,322 - INFO - Example 81: Found 5 entities
+2024-12-22 21:51:08,323 - INFO - Example 82: Found 4 entities
+2024-12-22 21:51:08,324 - INFO - Example 83: Found 6 entities
+2024-12-22 21:51:08,325 - INFO - Example 84: Found 6 entities
+2024-12-22 21:51:08,326 - INFO - Example 85: Found 6 entities
+2024-12-22 21:51:08,327 - INFO - Example 86: Found 5 entities
+2024-12-22 21:51:08,328 - INFO - Example 87: Found 5 entities
+2024-12-22 21:51:08,330 - INFO - Example 88: Found 5 entities
+2024-12-22 21:51:08,331 - INFO - Example 89: Found 5 entities
+2024-12-22 21:51:08,332 - INFO - Example 90: Found 5 entities
+2024-12-22 21:51:08,333 - INFO - Example 91: Found 5 entities
+2024-12-22 21:51:08,334 - INFO - Example 92: Found 6 entities
+2024-12-22 21:51:08,336 - INFO - Example 93: Found 5 entities
+2024-12-22 21:51:08,337 - INFO - Example 94: Found 6 entities
+2024-12-22 21:51:08,338 - INFO - Example 95: Found 6 entities
+2024-12-22 21:51:08,339 - INFO - Example 96: Found 5 entities
+2024-12-22 21:51:08,340 - INFO - Example 97: Found 5 entities
+2024-12-22 21:51:08,342 - INFO - Example 98: Found 6 entities
+2024-12-22 21:51:08,343 - INFO - Example 99: Found 5 entities
+2024-12-22 21:51:08,343 - INFO - Processed 100 examples...
+2024-12-22 21:51:08,344 - INFO - Entity type distribution:
+2024-12-22 21:51:08,344 - INFO -   person: 200
+2024-12-22 21:51:08,344 - INFO -   occupation: 100
+2024-12-22 21:51:08,344 - INFO -   phone: 100
+2024-12-22 21:51:08,345 - INFO -   email: 100
+2024-12-22 21:51:08,345 - INFO -   location: 100
+2024-12-22 21:51:08,345 - INFO - Split dataset into 90 train and 10 test examples
+2024-12-22 21:51:08,345 - INFO - Found 5 entity types: location, occupation, phone, email, person
+2024-12-22 21:51:08,345 - INFO - Setting up data collator...
+2024-12-22 21:51:08,346 - INFO - Training parameters:
+2024-12-22 21:51:08,346 - INFO -   Batch size: 8
+2024-12-22 21:51:08,346 - INFO -   Number of steps: 500
+2024-12-22 21:51:08,346 - INFO -   Number of epochs: 45
+2024-12-22 21:51:08,350 - INFO - Setting up trainer...
+2024-12-22 21:51:09,176 - INFO - Starting training...

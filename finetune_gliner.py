@@ -2,6 +2,7 @@
 import os
 import json
 import torch
+import jieba
 import logging
 from pathlib import Path
 from typing import List, Dict, Tuple, Set
@@ -10,6 +11,7 @@ from gliner import GLiNER, GLiNERConfig
 from gliner.training.trainer import Trainer, TrainingArguments
 from gliner.data_processing import DataCollator, WordsSplitter
 from gliner.utils import load_config_as_namespace
+from transformers import get_linear_schedule_with_warmup
 
 # Setup logging
 logging.basicConfig(
@@ -77,29 +79,34 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
         entity_types: Set[str] = set()
         entity_counts = {}
         
+        # Map our entity types to GLiNER types
+        type_mapping = {
+            'Name': 'person',
+            'Address': 'location',
+            'Phone': 'phone',
+            'Email': 'email',
+            'Occupation': 'occupation'
+        }
+        
         logger.info("Converting dataset to GLiNER format...")
         for i, example in enumerate(dataset):
             try:
-                # Map our entity types to GLiNER types
-                type_mapping = {
-                    'Name': 'person',
-                    'Address': 'location',
-                    'Phone': 'phone',
-                    'Email': 'email',
-                    'Occupation': 'occupation'
-                }
-                
                 text = example['input']
-                # Get tokenized text and offsets using the model's tokenizer
-                encoding = model.data_processor.transformer_tokenizer(
-                    text, 
-                    return_offsets_mapping=True, 
-                    add_special_tokens=False
-                )
-                tokens = encoding.tokens()
-                offset_mapping = encoding.offset_mapping
                 
-                # Process entities and convert to token spans
+                # Tokenize text using whitespace first
+                words = text.split()
+                tokenized_text = []
+                word_to_tokens = {}  # Map word index to token indices
+                current_token_idx = 0
+                
+                # Tokenize each word and maintain mapping
+                for word_idx, word in enumerate(words):
+                    word_tokens = model.data_processor.transformer_tokenizer.tokenize(word)
+                    word_to_tokens[word_idx] = (current_token_idx, current_token_idx + len(word_tokens) - 1)
+                    tokenized_text.extend(word_tokens)
+                    current_token_idx += len(word_tokens)
+                
+                # Process entities
                 ner_spans = []
                 for entity in example['output']:
                     entity_text = entity['entity_value']
@@ -107,39 +114,33 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                     entity_types.add(entity_type)
                     entity_counts[entity_type] = entity_counts.get(entity_type, 0) + 1
                     
-                    # Find entity in text
-                    start = text.find(entity_text)
-                    if start != -1:
-                        end = start + len(entity_text)
-                        
-                        # Find token spans that contain the entity
-                        token_start = None
-                        token_end = None
-                        for idx, (token_start_char, token_end_char) in enumerate(offset_mapping):
-                            if token_start is None and token_start_char <= start < token_end_char:
-                                token_start = idx
-                            if token_end is None and token_start_char < end <= token_end_char:
-                                token_end = idx
-                                break
-                        
-                        if token_start is not None and token_end is not None:
-                            ner_spans.append([token_start, token_end, entity_type])
+                    # Find entity words in text
+                    entity_words = entity_text.split()
+                    text_words = text.lower().split()
+                    
+                    for i in range(len(text_words) - len(entity_words) + 1):
+                        if all(ew.lower() == tw for ew, tw in zip(entity_words, text_words[i:i+len(entity_words)])):
+                            # Found entity, get token spans
+                            start_token = word_to_tokens[i][0]
+                            end_token = word_to_tokens[i + len(entity_words) - 1][1]
+                            ner_spans.append([start_token, end_token, entity_type])
+                            break
                 
                 # Only add examples with valid entities
                 if ner_spans:
                     logger.info(f"Example {i}: Found {len(ner_spans)} entities")
                     gliner_data.append({
-                        'tokenized_text': tokens,
+                        'tokenized_text': tokenized_text,
                         'ner': ner_spans
                     })
                 else:
-                    logger.warning(f"Example {i}: Skipping - no valid entities found")
+                    logger.warning(f"Example {i}: No valid entities found")
                 
-                if (i + 1) % 100 == 0:
+                if (i + 1) % 10 == 0:
                     logger.info(f"Processed {i + 1} examples...")
                     
             except Exception as e:
-                logger.warning(f"Error processing example {i}: {str(e)}")
+                logger.error(f"Error processing example {i}: {str(e)}")
                 continue
         
         # Log entity statistics
@@ -170,12 +171,22 @@ def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
     logger.info("Initializing model and tokenizer...")
     from transformers import AutoTokenizer
     
-    # Initialize GLiNER with its default configuration
-    model = GLiNER.from_pretrained("urchade/gliner_small", trust_remote_code=True)
-    # Use the model's data processor tokenizer
-    tokenizer = model.data_processor.transformer_tokenizer
-    model.data_processor.transformer_tokenizer = tokenizer
+    # Initialize GLiNER with configuration for Chinese text
+    config = GLiNERConfig(
+        model_name="urchade/gliner_small",
+        words_splitter_type="jieba",  # Use jieba for Chinese text
+        max_len=256,  # Reduced from 384 to handle memory better
+        max_types=25,
+        hidden_size=512,
+        dropout=0.4,
+        has_rnn=True,
+        fine_tune=True
+    )
+    model = GLiNER(config=config)
     model.to(device)
+    
+    # Initialize tokenizer
+    tokenizer = model.data_processor.transformer_tokenizer
     
     # Create output directories
     output_dir = Path("models/pii_detector")
@@ -202,10 +213,12 @@ def main():
         )
         
         # Calculate training parameters
-        batch_size = 8
+        batch_size = 4  # Reduced batch size
+        gradient_accumulation_steps = 4  # Add gradient accumulation
+        effective_batch_size = batch_size * gradient_accumulation_steps
         num_steps = 500
         data_size = len(train_dataset)
-        num_batches = data_size // batch_size
+        num_batches = data_size // effective_batch_size
         num_epochs = max(1, num_steps // num_batches)
         
         logger.info(f"Training parameters:")
@@ -213,7 +226,7 @@ def main():
         logger.info(f"  Number of steps: {num_steps}")
         logger.info(f"  Number of epochs: {num_epochs}")
         
-        # Setup training arguments
+        # Setup training arguments with gradient accumulation and better logging
         training_args = TrainingArguments(
             output_dir=str(output_dir),
             learning_rate=5e-6,
@@ -225,9 +238,14 @@ def main():
             num_train_epochs=num_epochs,
             per_device_train_batch_size=batch_size,
             per_device_eval_batch_size=batch_size,
+            gradient_accumulation_steps=gradient_accumulation_steps,
             dataloader_num_workers=0,
             max_steps=-1,  # No step limit
-            save_steps=1  # Save after each epoch
+            save_steps=50,  # Save more frequently
+            logging_steps=10,
+            logging_first_step=True,
+            max_grad_norm=1.0,
+            warmup_ratio=0.1
         )
         
         # Initialize GLiNER trainer with custom training loop
@@ -243,37 +261,89 @@ def main():
         # Start training with GLiNER's training loop
         logger.info("Starting training...")
         try:
-            # Use GLiNER's training loop
+            # Initialize optimizer with different learning rates for different parameter groups
+            optimizer = torch.optim.AdamW([
+                {'params': model.model.parameters(), 'lr': trainer.args.learning_rate},
+                {'params': model.linear.parameters(), 'lr': trainer.args.others_lr}
+            ])
+            trainer.optimizer = optimizer
+            
+            # Get dataloader and calculate steps
             train_dataloader = trainer.get_train_dataloader()
             num_update_steps_per_epoch = len(train_dataloader)
-            num_update_steps_per_epoch = min(num_update_steps_per_epoch, trainer.args.max_steps)
+            total_steps = int(trainer.args.num_train_epochs * num_update_steps_per_epoch)
+            warmup_steps = int(0.1 * total_steps)
             
+            # Initialize learning rate scheduler
+            scheduler = get_linear_schedule_with_warmup(
+                optimizer,
+                num_warmup_steps=warmup_steps,
+                num_training_steps=total_steps
+            )
+            
+            logger.info(f"Total training steps: {total_steps}")
+            logger.info(f"Warmup steps: {warmup_steps}")
+            
+            # Training loop
             model.train()
             for epoch in range(int(trainer.args.num_train_epochs)):
                 total_loss = 0
+                model.train()
+                
                 for step, inputs in enumerate(train_dataloader):
-                    # Move inputs to device
-                    inputs = {k: v.to(model.device) for k, v in inputs.items()}
-                    
-                    # Forward pass and loss computation
-                    loss = trainer.training_step(model, inputs)
-                    
-                    # Backward pass
-                    loss.backward()
-                    
-                    # Gradient clipping
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), trainer.args.max_grad_norm)
-                    
-                    # Optimizer step
-                    trainer.optimizer.step()
-                    trainer.optimizer.zero_grad()
-                    
-                    total_loss += loss.item()
-                    
-                    if step % 10 == 0:
-                        avg_loss = total_loss / (step + 1)
-                        logger.info(f"Epoch {epoch+1}/{trainer.args.num_train_epochs}, Step {step}/{num_update_steps_per_epoch}, Loss: {avg_loss:.4f}")
-                    
+                    try:
+                        # Log input format for first batch
+                        if epoch == 0 and step == 0:
+                            logger.info("First batch input keys and shapes:")
+                            for k, v in inputs.items():
+                                if isinstance(v, torch.Tensor):
+                                    logger.info(f"  {k}: shape={v.shape}, dtype={v.dtype}")
+                                else:
+                                    logger.info(f"  {k}: type={type(v)}")
+                        
+                        # Move inputs to device
+                        inputs = {k: v.to(model.device) if isinstance(v, torch.Tensor) else v 
+                                for k, v in inputs.items()}
+                        
+                        # Forward pass and loss computation
+                        try:
+                            loss = trainer.training_step(model, inputs)
+                            loss = loss / gradient_accumulation_steps  # Scale loss for accumulation
+                            if step == 0:
+                                logger.info(f"Step {step}: Forward pass successful")
+                        except Exception as e:
+                            logger.error(f"Forward pass failed: {str(e)}")
+                            raise
+                        
+                        # Backward pass
+                        try:
+                            loss.backward()
+                            if step == 0:
+                                logger.info(f"Step {step}: Backward pass successful")
+                        except Exception as e:
+                            logger.error(f"Backward pass failed: {str(e)}")
+                            raise
+                        
+                        # Gradient clipping and optimization steps (only after accumulation)
+                        if (step + 1) % gradient_accumulation_steps == 0:
+                            torch.nn.utils.clip_grad_norm_(model.parameters(), trainer.args.max_grad_norm)
+                            optimizer.step()
+                            scheduler.step()
+                            optimizer.zero_grad()
+                        
+                        total_loss += loss.item() * gradient_accumulation_steps  # Scale loss back for logging
+                        
+                        if step % 10 == 0:
+                            avg_loss = total_loss / (step + 1)
+                            lr = scheduler.get_last_lr()[0]
+                            logger.info(f"Epoch {epoch+1}/{trainer.args.num_train_epochs}, "
+                                      f"Step {step}/{num_update_steps_per_epoch}, "
+                                      f"Loss: {avg_loss:.4f}, LR: {lr:.2e}")
+                            
+                    except Exception as e:
+                        logger.error(f"Error in training step {step}: {str(e)}")
+                        raise
+                        
                     if trainer.args.max_steps > 0 and step >= trainer.args.max_steps:
                         break
                 
