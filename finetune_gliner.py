@@ -88,53 +88,95 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
             'Occupation': 'occupation'
         }
         
+        max_len = model.config.max_len - 2  # Account for [CLS] and [SEP] tokens
         logger.info("Converting dataset to GLiNER format...")
         for i, example in enumerate(dataset):
             try:
                 text = example['input']
+                tokenizer = model.data_processor.transformer_tokenizer
                 
-                # Tokenize text using whitespace first
-                words = text.split()
-                tokenized_text = []
-                word_to_tokens = {}  # Map word index to token indices
-                current_token_idx = 0
+                # Tokenize full text first to get total length
+                full_tokens = tokenizer.tokenize(text)
+                if len(full_tokens) > max_len:
+                    logger.warning(f"Example {i}: Text length {len(full_tokens)} exceeds max_len {max_len}")
                 
-                # Tokenize each word and maintain mapping
-                for word_idx, word in enumerate(words):
-                    word_tokens = model.data_processor.transformer_tokenizer.tokenize(word)
-                    word_to_tokens[word_idx] = (current_token_idx, current_token_idx + len(word_tokens) - 1)
-                    tokenized_text.extend(word_tokens)
-                    current_token_idx += len(word_tokens)
-                
-                # Process entities
-                ner_spans = []
+                # Process entities first to get their positions
+                entities_info = []
                 for entity in example['output']:
                     entity_text = entity['entity_value']
                     entity_type = type_mapping.get(entity['entity_type'].title(), 'other')
                     entity_types.add(entity_type)
-                    entity_counts[entity_type] = entity_counts.get(entity_type, 0) + 1
                     
-                    # Find entity words in text
-                    entity_words = entity_text.split()
-                    text_words = text.lower().split()
+                    # Find entity position in original text
+                    start_pos = text.find(entity_text)
+                    if start_pos != -1:
+                        end_pos = start_pos + len(entity_text)
+                        entities_info.append({
+                            'text': entity_text,
+                            'type': entity_type,
+                            'start': start_pos,
+                            'end': end_pos
+                        })
+                
+                if not entities_info:
+                    logger.warning(f"Example {i}: No entities found in text")
+                    continue
+                
+                # Sort entities by position
+                entities_info.sort(key=lambda x: x['start'])
+                
+                # Find the text window that contains all entities
+                first_entity_start = entities_info[0]['start']
+                last_entity_end = entities_info[-1]['end']
+                
+                # Calculate context window
+                context_size = (max_len - sum(len(tokenizer.tokenize(e['text'])) for e in entities_info)) // 2
+                window_start = max(0, first_entity_start - context_size)
+                window_end = min(len(text), last_entity_end + context_size)
+                
+                # Extract window text
+                window_text = text[window_start:window_end]
+                
+                # Tokenize window text
+                tokenized_text = tokenizer.tokenize(window_text)
+                if len(tokenized_text) > max_len:
+                    tokenized_text = tokenized_text[:max_len]
+                
+                # Adjust entity positions for window
+                ner_spans = []
+                current_pos = 0
+                window_text_lower = window_text.lower()
+                
+                for entity in entities_info:
+                    entity_text = entity['text']
+                    entity_lower = entity_text.lower()
                     
-                    for i in range(len(text_words) - len(entity_words) + 1):
-                        if all(ew.lower() == tw for ew, tw in zip(entity_words, text_words[i:i+len(entity_words)])):
-                            # Found entity, get token spans
-                            start_token = word_to_tokens[i][0]
-                            end_token = word_to_tokens[i + len(entity_words) - 1][1]
-                            ner_spans.append([start_token, end_token, entity_type])
-                            break
+                    # Find entity in window
+                    entity_pos = window_text_lower.find(entity_lower, current_pos)
+                    if entity_pos != -1:
+                        # Get token positions
+                        prefix_tokens = len(tokenizer.tokenize(window_text[:entity_pos]))
+                        entity_tokens = len(tokenizer.tokenize(entity_text))
+                        
+                        # Only add if entity fits in window
+                        if prefix_tokens + entity_tokens <= max_len:
+                            ner_spans.append([
+                                prefix_tokens,
+                                prefix_tokens + entity_tokens - 1,
+                                entity['type']
+                            ])
+                            entity_counts[entity['type']] = entity_counts.get(entity['type'], 0) + 1
+                            current_pos = entity_pos + len(entity_text)
                 
                 # Only add examples with valid entities
                 if ner_spans:
-                    logger.info(f"Example {i}: Found {len(ner_spans)} entities")
+                    logger.info(f"Example {i}: Found {len(ner_spans)} entities in window")
                     gliner_data.append({
                         'tokenized_text': tokenized_text,
                         'ner': ner_spans
                     })
                 else:
-                    logger.warning(f"Example {i}: No valid entities found")
+                    logger.warning(f"Example {i}: No valid entities found in window")
                 
                 if (i + 1) % 10 == 0:
                     logger.info(f"Processed {i + 1} examples...")
@@ -260,12 +302,14 @@ def main():
         # Start training with GLiNER's training loop
         logger.info("Starting training...")
         try:
-            # Initialize optimizer with single learning rate
+            # Initialize optimizer with single learning rate and gradient clipping
             optimizer = torch.optim.AdamW(
                 model.parameters(),
                 lr=trainer.args.learning_rate,
-                weight_decay=trainer.args.weight_decay
+                weight_decay=trainer.args.weight_decay,
+                eps=1e-8
             )
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             trainer.optimizer = optimizer
             
             # Get dataloader and calculate steps
