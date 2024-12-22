@@ -175,17 +175,49 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                     example_span_indices = []
                     span_mask = []
                     
-                    # Generate all possible spans within max_width
-                    for start in range(seq_len):
-                        for width in range(1, min(model.config.max_width + 1, seq_len - start + 1)):
-                            end = start + width - 1  # Inclusive end
+                    # Generate spans more efficiently
+                    max_width = model.config.max_width
+                    min_width = getattr(model.config, 'min_width', 1)
+                    
+                    # First add spans for actual entities
+                    entity_spans = set((start, end) for start, end, _ in ner_spans)
+                    for start, end, _ in ner_spans:
+                        example_span_indices.append([start, end])
+                        span_mask.append(True)
+                    
+                    # Then add a limited number of negative samples around entities
+                    for entity_start, entity_end, _ in ner_spans:
+                        # Add spans before the entity (limited context)
+                        context_start = max(0, entity_start - 2)  # Only 2 tokens before
+                        for start in range(context_start, entity_start):
+                            for width in range(min_width, min(3, entity_start - start + 1)):
+                                end = start + width - 1
+                                if (start, end) not in entity_spans:
+                                    example_span_indices.append([start, end])
+                                    span_mask.append(False)
+                        
+                        # Add spans after the entity (limited context)
+                        context_end = min(seq_len, entity_end + 2)  # Only 2 tokens after
+                        for start in range(entity_end + 1, context_end):
+                            for width in range(min_width, min(3, context_end - start + 1)):
+                                end = start + width - 1
+                                if end < seq_len and (start, end) not in entity_spans:
+                                    example_span_indices.append([start, end])
+                                    span_mask.append(False)
+                    
+                    # Ensure we have at least some spans
+                    if not example_span_indices:
+                        # Add some basic spans if no entities found
+                        for start in range(0, min(seq_len, 3)):
+                            end = start  # Single token spans
                             example_span_indices.append([start, end])
-                            # Mark if this span matches any entity
-                            is_entity = any(
-                                entity_start == start and entity_end == end 
-                                for entity_start, entity_end, _ in ner_spans
-                            )
-                            span_mask.append(is_entity)
+                            span_mask.append(False)
+                            
+                    # Limit total number of spans
+                    max_spans_per_example = 100
+                    if len(example_span_indices) > max_spans_per_example:
+                        example_span_indices = example_span_indices[:max_spans_per_example]
+                        span_mask = span_mask[:max_spans_per_example]
                     
                     # Pad spans to fixed size if needed
                     max_spans = seq_len * model.config.max_width
@@ -194,12 +226,35 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                         example_span_indices.extend(padding)
                         span_mask.extend([False] * (max_spans - len(span_mask)))
                     
+                    # Create span labels for each possible span
+                    num_spans = len(example_span_indices)
+                    entity_type_to_idx = {label: idx for idx, label in enumerate(sorted(entity_types))}
+                    num_labels = len(entity_types)
+                    span_labels = []
+                    
+                    # Generate labels for each span
+                    for span_idx, (start, end) in enumerate(example_span_indices[:num_spans]):
+                        # Initialize label vector
+                        label_vector = [0] * num_labels
+                        # Check if this span matches any entity
+                        for entity_start, entity_end, entity_type in ner_spans:
+                            if start == entity_start and end == entity_end:
+                                label_vector[entity_type_to_idx[entity_type]] = 1
+                        span_labels.append(label_vector)
+                    
+                    # Pad span labels if needed
+                    if len(span_labels) < max_spans:
+                        padding = [[0] * num_labels] * (max_spans - len(span_labels))
+                        span_labels.extend(padding)
+                    
                     # Convert to exact GLiNER format
                     tokenized_example = {
                         'tokenized_text': [t for t in tokenized_text],  # Ensure list format
                         'ner': [[start, end, label] for start, end, label in ner_spans],  # Ensure list format
                         'span_indices': example_span_indices,  # Add span indices
-                        'span_mask': span_mask  # Add span mask
+                        'span_labels': span_labels,  # Add span labels
+                        'span_mask': span_mask,  # Add span mask
+                        'num_spans': num_spans  # Add number of spans
                     }
                     logger.info(f"Example {i}: Found {len(ner_spans)} entities, generated {len(example_span_indices)} spans")
                     logger.info(f"First entity span: {ner_spans[0] if ner_spans else 'None'}")
@@ -252,8 +307,9 @@ def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
         dropout=0.4,
         has_rnn=True,
         fine_tune=True,
-        max_width=50,  # Maximum span width for entity detection
-        span_mode="marker"  # Use marker-based span representation
+        max_width=10,  # Reduced maximum span width to prevent excessive spans
+        span_mode="marker",  # Use marker-based span representation
+        min_width=1  # Add minimum width to filter out invalid spans
     )
     model = GLiNER(config=config)
     model.to(device)
