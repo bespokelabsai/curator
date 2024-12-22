@@ -1,5 +1,6 @@
 """Script to finetune GLiNER model on PII detection dataset."""
 import os
+import re
 import json
 import torch
 import jieba
@@ -12,6 +13,9 @@ from gliner.training.trainer import Trainer, TrainingArguments
 from gliner.data_processing import DataCollator, WordsSplitter
 from gliner.utils import load_config_as_namespace
 from transformers import get_linear_schedule_with_warmup
+
+# Initialize jieba for Chinese text segmentation
+jieba.initialize()
 
 # Setup logging
 logging.basicConfig(
@@ -63,8 +67,27 @@ def validate_dataset(dataset) -> bool:
         logger.error(f"Dataset validation failed: {str(e)}")
         return False
 
+def normalize_text(text: str) -> str:
+    """Normalize text for better matching."""
+    # Remove extra whitespace and lowercase for English text
+    text = ' '.join(text.lower().split())
+    # Remove spaces between Chinese characters
+    text = re.sub(r'(?<=[\u4e00-\u9fff])\s+(?=[\u4e00-\u9fff])', '', text)
+    return text
+
 def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[str]]:
-    """Load dataset and convert to GLiNER format."""
+    """Load dataset and convert to GLiNER format with proper entity alignment."""
+    # Map our entity types to GLiNER types
+    type_mapping = {
+        'Name': 'person',
+        'Address': 'location',
+        'Phone': 'phone',
+        'Email': 'email',
+        'Occupation': 'occupation',
+        'Company': 'organization',
+        'Date': 'date',
+        'ID': 'misc'
+    }
     try:
         logger.info("Loading dataset from disk...")
         dataset = load_from_disk('pii_dataset')
@@ -79,14 +102,10 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
         entity_types: Set[str] = set()
         entity_counts = {}
         
-        # Map our entity types to GLiNER types
-        type_mapping = {
-            'Name': 'person',
-            'Address': 'location',
-            'Phone': 'phone',
-            'Email': 'email',
-            'Occupation': 'occupation'
-        }
+        # Initialize GLiNER dataset
+        gliner_data = []
+        entity_types: Set[str] = set()
+        entity_counts = {}
         
         max_len = model.config.max_len - 2  # Account for [CLS] and [SEP] tokens
         logger.info("Converting dataset to GLiNER format...")
@@ -275,12 +294,28 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                         # Get subword tokens for the entity
                         entity_text = window_text[start:end]
                         entity_tokens = tokenizer.encode(entity_text, add_special_tokens=False)
-                        # Find these tokens in the full encoding
+                        # Find these tokens in the full encoding with robust matching
+                        found = False
                         for i in range(len(input_ids)):
                             if i + len(entity_tokens) <= len(input_ids):
-                                if input_ids[i:i+len(entity_tokens)] == entity_tokens:
+                                current_span = input_ids[i:i+len(entity_tokens)]
+                                # Try exact match
+                                if current_span == entity_tokens:
                                     token_spans.append([i, i+len(entity_tokens)-1, label])
+                                    found = True
                                     break
+                                # Try partial match for subword tokens
+                                elif len(current_span) > 0 and len(entity_tokens) > 0:
+                                    # Decode and compare text
+                                    span_text = tokenizer.decode(current_span)
+                                    entity_text = tokenizer.decode(entity_tokens)
+                                    if span_text.lower().strip() == entity_text.lower().strip():
+                                        token_spans.append([i, i+len(entity_tokens)-1, label])
+                                        found = True
+                                        break
+                        
+                        if not found:
+                            logger.debug(f"Could not find token span for entity: {entity_info['text']}")
                     
                     # Convert data to tensors while preserving required fields
                     tokenized_text = tokenizer.convert_ids_to_tokens(input_ids)
@@ -358,17 +393,28 @@ def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
         model_name="bert-base-chinese",  # Use Chinese BERT as base model
         words_splitter_type="jieba",  # Use jieba for Chinese text
         max_len=256,  # Reduced from 384 to handle memory better
-        max_types=25,
+        max_types=5,  # Match our entity types count
         hidden_size=768,  # Match BERT hidden size
-        dropout=0.4,
+        dropout=0.1,  # Reduced dropout for stability
         has_rnn=True,
         fine_tune=True,
-        max_width=10,  # Reduced maximum span width to prevent excessive spans
+        max_width=10,  # Maximum span width
         span_mode="marker",  # Use marker-based span representation
-        min_width=1  # Add minimum width to filter out invalid spans
+        min_width=1,  # Minimum span width
+        use_focal_loss=True,  # Enable focal loss for imbalanced classes
+        focal_loss_gamma=2.0,  # Focal loss gamma parameter
+        focal_loss_alpha=0.25,  # Focal loss alpha parameter
+        labels_encoder="bert-base-chinese"  # Use same model for labels encoding
     )
+    
+    # Initialize model with proper configuration
     model = GLiNER(config=config)
-    model.to(device)
+    model = model.to(device)
+    
+    # Print model configuration
+    logger.info("Model configuration:")
+    for key, value in config.__dict__.items():
+        logger.info(f"  {key}: {value}")
     
     # Initialize tokenizer
     tokenizer = model.data_processor.transformer_tokenizer
@@ -611,7 +657,98 @@ def main():
                         # Forward pass with detailed error handling
                         try:
                             # Forward pass and loss calculation
-                            outputs = model(**inputs)
+                            model_inputs = {
+                                'input_ids': inputs['input_ids'],
+                                'attention_mask': inputs['attention_mask'],
+                                'token_type_ids': inputs['token_type_ids'],
+                                'span_indices': inputs['span_indices'],
+                                'span_labels': inputs['span_labels'],
+                                'span_mask': inputs['span_mask'],
+                                'words_mask': inputs['words_mask'],
+                                'text_lengths': inputs['text_lengths']
+                            }
+                            # Prepare label inputs for bi-encoder with improved error handling
+                            tokenizer = model.data_processor.transformer_tokenizer
+                            entity_texts = []
+                            
+                            try:
+                                for i in range(inputs['span_labels'].size(0)):
+                                    batch_texts = []
+                                    for j in range(inputs['span_labels'].size(1)):
+                                        if inputs['span_mask'][i, j]:
+                                            # Get label index with bounds checking
+                                            label_tensor = inputs['span_labels'][i, j]
+                                            if label_tensor.dim() == 0:
+                                                continue
+                                            label_idx = label_tensor.argmax().item()
+                                            
+                                            # Safely get entity type
+                                            id2label = list(model.config.id2label.values())
+                                            if 0 <= label_idx < len(id2label):
+                                                entity_type = id2label[label_idx]
+                                            else:
+                                                logger.warning(f"Invalid label index {label_idx}, skipping")
+                                                continue
+                                            
+                                            # Safely get text span
+                                            start, end = inputs['span_indices'][i, j]
+                                            if not (0 <= start <= end < inputs['input_ids'].size(1)):
+                                                logger.warning(f"Invalid span indices ({start}, {end}), skipping")
+                                                continue
+                                            
+                                            # Get entity text
+                                            text_tokens = inputs['input_ids'][i, start:end+1]
+                                            entity_text = tokenizer.decode(text_tokens)
+                                            if entity_text.strip():  # Only add non-empty texts
+                                                batch_texts.append(f"{entity_type}: {entity_text}")
+                                    
+                                    # Add batch texts or placeholder
+                                    entity_texts.extend(batch_texts if batch_texts else ["O"])
+                            except Exception as e:
+                                logger.error(f"Error processing entity texts: {str(e)}")
+                                entity_texts = ["O"] * inputs['span_labels'].size(0)
+                            
+                            # Join entity texts with [SEP] token, ensure at least one entry per batch
+                            labels_text = " [SEP] ".join(entity_texts)
+                            
+                            # Tokenize labels text
+                            labels_tokens = tokenizer(
+                                labels_text,
+                                padding='max_length',
+                                truncation=True,
+                                max_length=128,
+                                return_tensors='pt'
+                            )
+                            
+                            # Move label tensors to device
+                            labels_input_ids = labels_tokens['input_ids'].to(device)
+                            labels_attention_mask = labels_tokens['attention_mask'].to(device)
+                            
+                            # Forward pass with bi-encoder inputs and error handling
+                            try:
+                                outputs = model(
+                                    input_ids=inputs['input_ids'],
+                                    attention_mask=inputs['attention_mask'],
+                                    token_type_ids=inputs['token_type_ids'],
+                                    labels_input_ids=labels_input_ids,
+                                    labels_attention_mask=labels_attention_mask,
+                                    span_indices=inputs['span_indices'],
+                                    span_labels=inputs['span_labels'],
+                                    span_mask=inputs['span_mask'],
+                                    words_mask=inputs['words_mask'],
+                                    text_lengths=inputs['text_lengths']
+                                )
+                                
+                                # Validate outputs
+                                if outputs is None:
+                                    raise ValueError("Model returned None outputs")
+                                if not hasattr(outputs, 'loss'):
+                                    raise ValueError("Model outputs missing loss attribute")
+                                
+                            except Exception as e:
+                                logger.error(f"Forward pass failed with error: {str(e)}")
+                                continue
+                            
                             if outputs is None or not hasattr(outputs, 'loss'):
                                 logger.error("Model outputs invalid or missing loss")
                                 continue
