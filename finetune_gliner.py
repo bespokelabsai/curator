@@ -76,8 +76,8 @@ def normalize_text(text: str) -> str:
     return text
 
 def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[str]]:
-    """Load dataset and convert to GLiNER format with proper entity alignment."""
-    # Map our entity types to GLiNER types
+    """Load dataset and convert to token-level classification format."""
+    # Map our entity types to model types
     type_mapping = {
         'Name': 'person',
         'Address': 'location',
@@ -97,15 +97,13 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
         
         logger.info(f"Dataset loaded successfully with {len(dataset)} examples")
         
-        # Initialize GLiNER dataset
-        gliner_data = []
+        # Initialize dataset structures
+        processed_data: List[Dict] = []
         entity_types: Set[str] = set()
-        entity_counts = {}
+        entity_counts: Dict[str, int] = {}
+        tokenizer = model.data_processor.transformer_tokenizer
         
-        # Initialize GLiNER dataset
-        gliner_data = []
-        entity_types: Set[str] = set()
-        entity_counts = {}
+        logger.info("Converting dataset to token-level classification format...")
         
         max_len = model.config.max_len - 2  # Account for [CLS] and [SEP] tokens
         logger.info("Converting dataset to GLiNER format...")
@@ -273,87 +271,76 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                         padding = [[0] * num_labels] * (max_spans - len(span_labels))
                         span_labels.extend(padding)
                     
-                    # Convert to exact GLiNER format with proper tokenization
-                    # Tokenize text with BERT tokenizer
-                    tokenizer = model.data_processor.transformer_tokenizer
+                    # Tokenize text and get token-level labels
                     encoding = tokenizer(
-                        window_text,
+                        text,
                         padding='max_length',
                         truncation=True,
                         max_length=model.config.max_len,
                         return_tensors='pt'
                     )
                     
-                    # Extract and convert tensors to lists
-                    input_ids = encoding['input_ids'][0].tolist()
-                    attention_mask = encoding['attention_mask'][0].tolist()
+                    # Extract tensors
+                    input_ids = encoding['input_ids'][0]
+                    attention_mask = encoding['attention_mask'][0]
+                    token_type_ids = torch.zeros_like(input_ids)
                     
-                    # Convert token indices to match input_ids
-                    token_spans = []
-                    for start, end, label in ner_spans:
-                        # Get subword tokens for the entity
-                        entity_text = window_text[start:end]
-                        entity_tokens = tokenizer.encode(entity_text, add_special_tokens=False)
-                        # Find these tokens in the full encoding with robust matching
-                        found = False
-                        for i in range(len(input_ids)):
-                            if i + len(entity_tokens) <= len(input_ids):
-                                current_span = input_ids[i:i+len(entity_tokens)]
-                                # Try exact match
-                                if current_span == entity_tokens:
-                                    token_spans.append([i, i+len(entity_tokens)-1, label])
-                                    found = True
-                                    break
-                                # Try partial match for subword tokens
-                                elif len(current_span) > 0 and len(entity_tokens) > 0:
-                                    # Decode and compare text
-                                    span_text = tokenizer.decode(current_span)
-                                    entity_text = tokenizer.decode(entity_tokens)
-                                    if span_text.lower().strip() == entity_text.lower().strip():
-                                        token_spans.append([i, i+len(entity_tokens)-1, label])
-                                        found = True
-                                        break
+                    # Initialize token labels (0 for 'O' tag)
+                    labels = torch.zeros_like(input_ids)
+                    
+                    # Process entities and set token labels
+                    for entity in example['output']:
+                        entity_text = entity['entity_value']
+                        entity_type = type_mapping.get(entity['entity_type'].title(), 'other')
+                        entity_types.add(entity_type)
                         
-                        if not found:
-                            logger.debug(f"Could not find token span for entity: {entity['text']}")
+                        # Find entity position in text
+                        start_pos = text.find(entity_text)
+                        if start_pos != -1:
+                            # Get token positions for entity
+                            prefix_tokens = tokenizer.encode(text[:start_pos], add_special_tokens=False)
+                            entity_tokens = tokenizer.encode(entity_text, add_special_tokens=False)
+                            
+                            # Calculate token positions (account for [CLS] token)
+                            start_token = len(prefix_tokens) + 1
+                            end_token = start_token + len(entity_tokens)
+                            
+                            # Set token labels (use entity type index + 1 as label)
+                            if entity_type in entity_types:
+                                label_id = sorted(list(entity_types)).index(entity_type) + 1
+                                labels[start_token:end_token] = label_id
+                            
+                            entity_counts[entity_type] = entity_counts.get(entity_type, 0) + 1
+                            logger.debug(f"Found entity '{entity_text}' ({entity_type}) at tokens {start_token}:{end_token}")
+                        else:
+                            logger.debug(f"Could not find entity '{entity_text}' in text")
                     
-                    # Convert data to tensors while preserving required fields
-                    tokenized_text = tokenizer.convert_ids_to_tokens(input_ids)
-                    # Create position-aware text lengths
-                    seq_length = len(input_ids)
-                    text_lengths = torch.arange(1, seq_length + 1, dtype=torch.long)
-                    
-                    tokenized_example = {
-                        'input_ids': torch.tensor(input_ids, dtype=torch.long),
-                        'attention_mask': torch.tensor(attention_mask, dtype=torch.long),
-                        'token_type_ids': torch.zeros_like(torch.tensor(input_ids, dtype=torch.long)),
-                        'words_mask': torch.tensor(attention_mask, dtype=torch.long),
-                        'span_indices': torch.tensor(example_span_indices, dtype=torch.long),
-                        'span_labels': torch.tensor(span_labels, dtype=torch.float),
-                        'span_mask': torch.tensor(span_mask, dtype=torch.bool),
-                        'text_lengths': text_lengths,
-                        'tokenized_text': tokenized_text,  # Keep for debugging
-                        'ner': token_spans  # Keep original NER annotations
+                    # Create example dictionary with token-level labels
+                    processed_example = {
+                        'input_ids': input_ids,
+                        'attention_mask': attention_mask,
+                        'token_type_ids': token_type_ids,
+                        'labels': labels
                     }
                     
-                    # Validate tensor shapes
-                    B = 1  # Single example
-                    L = len(input_ids)
-                    S = len(example_span_indices)
-                    T = len(entity_types)
+                    # Add to processed data if we have any entities
+                    if labels.sum() > 0:
+                        processed_data.append(processed_example)
+                        if len(processed_data) % 100 == 0:
+                            logger.info(f"Processed {len(processed_data)} examples")
                     
-                    assert tokenized_example['input_ids'].shape == (L,), f"Expected input_ids shape (L,), got {tokenized_example['input_ids'].shape}"
-                    assert tokenized_example['attention_mask'].shape == (L,), f"Expected attention_mask shape (L,), got {tokenized_example['attention_mask'].shape}"
-                    assert tokenized_example['span_indices'].shape == (S, 2), f"Expected span_indices shape (S,2), got {tokenized_example['span_indices'].shape}"
-                    assert tokenized_example['span_labels'].shape == (S, T), f"Expected span_labels shape (S,T), got {tokenized_example['span_labels'].shape}"
-                    assert tokenized_example['span_mask'].shape == (S,), f"Expected span_mask shape (S,), got {tokenized_example['span_mask'].shape}"
-                    logger.info(f"Example {i}: Found {len(ner_spans)} entities, generated {len(example_span_indices)} spans")
-                    logger.info(f"First entity span: {ner_spans[0] if ner_spans else 'None'}")
-                    gliner_data.append(tokenized_example)
+                    # Validate tensor shapes
+                    L = len(input_ids)
+                    assert input_ids.shape == (L,), f"Expected input_ids shape (L,), got {input_ids.shape}"
+                    assert attention_mask.shape == (L,), f"Expected attention_mask shape (L,), got {attention_mask.shape}"
+                    assert token_type_ids.shape == (L,), f"Expected token_type_ids shape (L,), got {token_type_ids.shape}"
+                    assert labels.shape == (L,), f"Expected labels shape (L,), got {labels.shape}"
+                    
+                    logger.info(f"Example {i}: Found entities with labels {labels.unique().tolist()}")
                 else:
-                    logger.warning(f"Example {i}: No valid entities found")
+                    logger.debug(f"Example {i}: No entities found in text")
                 
-                if (i + 1) % 10 == 0:
+                if (i + 1) % 100 == 0:
                     logger.info(f"Processed {i + 1} examples...")
                     
             except Exception as e:
@@ -365,14 +352,17 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
         for entity_type, count in entity_counts.items():
             logger.info(f"  {entity_type}: {count}")
         
-        # Split into train/test
-        train_size = int(0.9 * len(gliner_data))
-        train_dataset = gliner_data[:train_size]
-        test_dataset = gliner_data[train_size:]
+        # Convert entity types to sorted list for consistent indexing
+        entity_types = sorted(list(entity_types))
+        logger.info(f"Found {len(entity_types)} entity types: {entity_types}")
         
-        logger.info(f"Split dataset into {len(train_dataset)} train and {len(test_dataset)} test examples")
+        # Split into train and validation
+        split_idx = int(len(processed_data) * 0.9)
+        train_data = processed_data[:split_idx]
+        validation_data = processed_data[split_idx:]
         
-        return train_dataset, test_dataset, list(entity_types)
+        logger.info(f"Split dataset into {len(train_data)} train and {len(validation_data)} validation examples")
+        return train_data, validation_data, entity_types
         
     except Exception as e:
         logger.error(f"Failed to load and prepare data: {str(e)}")
@@ -395,32 +385,38 @@ def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
     
     logger.info(f"Initializing model with entity types: {entity_types}")
     
-    # Initialize GLiNER with configuration for Chinese text
+    # Initialize GLiNER with minimal configuration for token classification
     config = GLiNERConfig(
         model_name="bert-base-chinese",  # Use Chinese BERT as base model
         words_splitter_type="jieba",  # Use jieba for Chinese text
-        max_len=256,  # Reduced from 384 to handle memory better
+        max_len=512,  # Increased to handle longer sequences
         max_types=len(entity_types),  # Match our entity types count
         hidden_size=768,  # Match BERT hidden size
         dropout=0.1,  # Reduced dropout for stability
-        has_rnn=False,  # Disable RNN to simplify architecture
+        has_rnn=False,  # Disable RNN
         fine_tune=True,
-        max_width=5,  # Reduced max width for stability
-        span_mode="marker",  # Use marker-based span representation
-        min_width=1,  # Minimum span width
-        use_focal_loss=True,  # Enable focal loss for imbalanced classes
-        focal_loss_gamma=2.0,  # Focal loss gamma parameter
-        focal_loss_alpha=0.25,  # Focal loss alpha parameter
-        labels_encoder="bert-base-chinese",  # Use same model for labels encoding
+        max_width=1,  # Use token-level classification
+        span_mode="token",  # Switch to token-level classification
+        min_width=1,
+        use_focal_loss=False,  # Disable focal loss for initial testing
+        labels_encoder=None,  # Disable separate labels encoder
         id2label=id2label,
         label2id=label2id,
         use_prompt=False,  # Disable prompt-based learning
-        use_type_embeddings=True  # Enable type embeddings for better entity typing
+        use_type_embeddings=False,  # Disable type embeddings
+        use_bi_encoder=False  # Disable bi-encoder architecture
     )
     
-    # Initialize model with proper configuration
-    model = GLiNER(config=config)
-    model = model.to(device)
+    # Initialize model with simplified configuration
+    try:
+        logger.info("Initializing model with simplified token classification architecture...")
+        model = GLiNER(config=config)
+        model.train()  # Ensure model is in training mode
+        model = model.to(device)
+        logger.info("Model initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize model: {str(e)}")
+        raise
     
     # Print model configuration
     logger.info("Model configuration:")
@@ -488,57 +484,50 @@ def main():
                 self.data_processor = data_processor
                 self.entity_types = entity_types
                 self.prepare_labels = prepare_labels
+                self.num_labels = len(entity_types) + 1  # +1 for 'O' tag
                 logger.info(f"Initialized CustomDataCollator with {len(entity_types)} entity types: {entity_types}")
                 
             def __call__(self, features):
-                batch = {}
-                
-                # Get max sequence length in batch
-                max_length = max(len(feature['input_ids']) for feature in features)
-                max_length = min(max_length, self.config.max_len)
-                
-                # Get max number of spans in batch
-                max_spans = max(feature['span_indices'].size(0) for feature in features)
-                
-                # Initialize tensors for batch
-                batch_size = len(features)
-                batch['input_ids'] = torch.zeros((batch_size, max_length), dtype=torch.long)
-                batch['attention_mask'] = torch.zeros((batch_size, max_length), dtype=torch.long)
-                batch['token_type_ids'] = torch.zeros((batch_size, max_length), dtype=torch.long)
-                batch['words_mask'] = torch.zeros((batch_size, max_length), dtype=torch.long)
-                batch['span_indices'] = torch.zeros((batch_size, max_spans, 2), dtype=torch.long)
-                batch['span_labels'] = torch.zeros((batch_size, max_spans, len(self.entity_types)), dtype=torch.float)
-                batch['span_mask'] = torch.zeros((batch_size, max_spans), dtype=torch.bool)
-                batch['text_lengths'] = torch.zeros((batch_size, max_length), dtype=torch.long)
-                
-                # Fill batch tensors
-                for i, feature in enumerate(features):
-                    seq_length = len(feature['input_ids'])
-                    num_spans = feature['span_indices'].size(0)
+                try:
+                    batch = {}
                     
-                    # Sequence tensors
-                    batch['input_ids'][i, :seq_length] = feature['input_ids']
-                    batch['attention_mask'][i, :seq_length] = feature['attention_mask']
-                    batch['token_type_ids'][i, :seq_length] = feature['token_type_ids']
-                    batch['words_mask'][i, :seq_length] = feature['words_mask']
-                    # Set text_lengths to match sequence length for each position
-                    batch['text_lengths'][i, :seq_length] = torch.arange(1, seq_length + 1)
+                    # Get max sequence length in batch
+                    max_length = max(len(feature['input_ids']) for feature in features)
+                    max_length = min(max_length, self.config.max_len)
                     
-                    # Span tensors
-                    batch['span_indices'][i, :num_spans] = feature['span_indices']
-                    batch['span_labels'][i, :num_spans] = feature['span_labels']
-                    batch['span_mask'][i, :num_spans] = feature['span_mask']
-                
-                # Move to device if needed
-                device = next(iter(features[0].values())).device
-                batch = {k: v.to(device) for k, v in batch.items()}
-                
-                # Validate tensor shapes
-                logger.info(f"Batch shapes:")
-                for k, v in batch.items():
-                    logger.info(f"  {k}: {v.shape}")
-                
-                return batch
+                    # Initialize tensors for batch
+                    batch_size = len(features)
+                    batch['input_ids'] = torch.zeros((batch_size, max_length), dtype=torch.long)
+                    batch['attention_mask'] = torch.zeros((batch_size, max_length), dtype=torch.long)
+                    batch['token_type_ids'] = torch.zeros((batch_size, max_length), dtype=torch.long)
+                    batch['labels'] = torch.zeros((batch_size, max_length), dtype=torch.long)
+                    
+                    # Fill batch tensors
+                    for i, feature in enumerate(features):
+                        seq_length = len(feature['input_ids'])
+                        
+                        
+                        # Sequence tensors
+                        batch['input_ids'][i, :seq_length] = feature['input_ids']
+                        batch['attention_mask'][i, :seq_length] = feature['attention_mask']
+                        batch['token_type_ids'][i, :seq_length] = feature['token_type_ids']
+                        batch['labels'][i, :seq_length] = feature['labels']
+                    
+                    # Move to device if needed
+                    device = next(iter(features[0].values())).device
+                    batch = {k: v.to(device) for k, v in batch.items()}
+                    
+                    # Validate tensor shapes
+                    logger.info(f"Batch shapes:")
+                    for k, v in batch.items():
+                        logger.info(f"  {k}: {v.shape}")
+                    
+                    return batch
+                    
+                except Exception as e:
+                    logger.error(f"Error in CustomDataCollator: {str(e)}")
+                    logger.error(f"Feature keys: {features[0].keys()}")
+                    raise
         
         data_collator = CustomDataCollator(
             model.config,
