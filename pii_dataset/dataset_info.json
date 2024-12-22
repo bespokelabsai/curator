@@ -1,0 +1,28 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "input": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "output": [
+      {
+        "entity_source": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "entity_type": {
+          "dtype": "string",
+          "_type": "Value"
+        },
+        "entity_value": {
+          "dtype": "string",
+          "_type": "Value"
+        }
+      }
+    ]
+  },
+  "homepage": "",
+  "license": ""
+}

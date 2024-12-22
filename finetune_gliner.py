@@ -95,8 +95,9 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                 }
                 
                 text = example['input']
-                # Tokenize text using the model's tokenizer
-                tokens = model.tokenizer.tokenize(text)
+                # Tokenize text using the model's data processor tokenizer
+                tokenizer = model.data_processor.transformer_tokenizer
+                tokens = tokenizer.tokenize(text)
                 
                 # Convert character positions to token positions
                 token_spans = []
@@ -105,7 +106,7 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                 
                 for token_idx, token in enumerate(tokens):
                     # Handle special tokens and whitespace
-                    token_text = model.tokenizer.convert_tokens_to_string([token]).strip()
+                    token_text = tokenizer.convert_tokens_to_string([token]).strip()
                     if token_text:
                         token_start = text.find(token_text, current_pos)
                         if token_start != -1:
@@ -179,9 +180,9 @@ def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
     
     # Initialize GLiNER with its default configuration
     model = GLiNER.from_pretrained("urchade/gliner_small", trust_remote_code=True)
-    # Use the model's built-in tokenizer
-    tokenizer = model.tokenizer
-    model.tokenizer = tokenizer
+    # Use the model's data processor tokenizer
+    tokenizer = model.data_processor.transformer_tokenizer
+    model.data_processor.transformer_tokenizer = tokenizer
     model.to(device)
     
     # Create output directories

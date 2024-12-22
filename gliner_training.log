@@ -558,3 +558,6 @@
 2024-12-22 21:37:56,503 - INFO - Using device: cpu
 2024-12-22 21:37:56,503 - INFO - Initializing model and tokenizer...
 2024-12-22 21:38:21,432 - ERROR - Training failed: [Errno 2] No such file or directory: '/home/ubuntu/.cache/huggingface/hub/models--bert-base-uncased/snapshots/86b5e0934494bd15c9632b12f734a8a67f723594/gliner_config.json'
+2024-12-22 21:40:35,890 - INFO - Using device: cpu
+2024-12-22 21:40:35,890 - INFO - Initializing model and tokenizer...
+2024-12-22 21:40:40,834 - ERROR - Training failed: 'GLiNER' object has no attribute 'tokenizer'

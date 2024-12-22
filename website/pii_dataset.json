@@ -1,0 +1,3502 @@
+[
+  {
+    "input": "一慧 解，男性，是一位经验丰富的外汇交易员。自从加入这一专业领域以来，一慧 解运用其深厚的市场洞察力和分析能力，帮助客户在波动的外汇市场中稳健增长资产。若需联络一慧 解，可通过他的电话+86 310-58463151或电子邮箱hypothetical1973@gmail.com寻求专业咨询。他现居住在新华胡同575号，对于外汇市场的各种动态都有自己独到的见解和策略。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "一慧 解"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Fred Chase"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "外汇交易员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 310-58463151"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "hypothetical1973@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "新华胡同575号"
+      }
+    ]
+  },
+  {
+    "input": "涵菡 蔡女士，一位专业的公共关系员，以沟通协调与品牌建设闻名。她在联络不同文化背景的合作伙伴和客户方面表现卓越，积极参与策划和执行各种公关活动。涵菡的工作电话是+86 839-47586735，提供协助和咨询服务;她的电子邮箱地址为satisfied1986@gmail.com。她居住于紫阳街1362号，以其敏锐的市场洞察力和杰出的沟通技巧，帮助公司构建积极的企业形象，并与公众建立稳定长久的关系。Isidra Beasley的专业表现，赢得了业界的广泛尊重和认可。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "涵菡 蔡"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Isidra Beasley"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "公共关系员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 839-47586735"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "satisfied1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "紫阳街1362号"
+      }
+    ]
+  },
+  {
+    "input": "雨杭秋，男性，拥有丰富的文字处理经验和精确的语言品味，目前在业界享有较高的书籍编辑声誉。在文字的海洋中，他犹如一位细心的舵手，能够引领读者走进知识的殿堂。若有编辑方面的咨询，您可以通过电邮enquiry1866@163.com与他取得联系，或拨打+86 934-43164077。此外，如需面对面的商讨，雨杭秋恭候您在七里河大街388号的办公地点。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "雨杭 秋"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Les Lawrence"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "书籍编辑"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 934-43164077"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "enquiry1866@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "七里河大街388号"
+      }
+    ]
+  },
+  {
+    "input": "昂然 支女士是一名才华横溢的陶瓷工，擅长通过她的双手将普通泥土塑造成令人叹为观止的艺术品。甘心坚持传统手工艺，昂然 支女士深知每一件作品都承载着情感与历史的重量。想要联系昂然 支女士讨论合作或是欣赏她的作品，您可以拨打电话+86 358-42410992，或发送电子邮件至cradle1925@163.com。若想亲自访问她的工作室，地址位于繁华的红卫路三条921号，昂然 支女士总是热情欢迎每一位光临的访客。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昂然 支"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Terence Maynard"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "陶瓷工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 358-42410992"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "cradle1925@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红卫路三条921号"
+      }
+    ]
+  },
+  {
+    "input": "欣公羊女士是一名兢兢业业的消防工作人员，她以其勇敢和敬业闻名于行业。她的工作不仅仅是一个职业，更是对社会安全的承诺和贡献。她的联系电话是+86 140-71348680，不论何时的紧急情况，都可以通过这个号码联系到她。除此之外，有关工作的垂询或合作，同样欢迎通过她的官方邮箱median2034@qq.com与她取得联系。欣公羊女士居住于风景秀丽的景山前大街1148号，那里不仅是她的家，也是她休憩和准备再次投入工作的后方基地。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "欣 公羊"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Stasia Solis"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "消防工作人员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 140-71348680"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "median2034@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "景山前大街1148号"
+      }
+    ]
+  },
+  {
+    "input": "军 梁女士是一位杰出的汽车修护工，她拥有着丰富的车辆维护和修复经验。多年来，她以其专业知识和精湛技艺在业界赢得了极佳的声誉。若您需要专业的汽车维护服务，请通过电话+86 762-44941287与她联系，或发邮件至retained1941@163.com咨询详情。军 梁女士位于繁华都市的心脏地带，办公地址是粮道街四条978号，那里的工作坊设备齐全，能为您的爱车提供全方位的高质量服务。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "军 梁"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Bret Ware"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "汽车修护工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 762-44941287"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "retained1941@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "粮道街四条978号"
+      }
+    ]
+  },
+  {
+    "input": "俊博 邓先生是一名资深的心理谘商师，男性，他致力于提供专业的心理健康服务和指导。在多年的从业经验中，俊博已帮助无数客户发现内心的平静与解答心理难题。若您希望建立联系，请拨打他的电话+86 229-08297080或通过邮箱testament2009@163.com与他取得联系。他的咨询室位于繁华的上海市，详细地址为上海六条1376号。自豪地拥有着专业的知识和深厚的同理心，俊博先生期待与您共同探索心灵的奥秘，并助您走向更加美满的人生旅程。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "俊博 邓"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Reynaldo Ingram"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "心理谘商师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 229-08297080"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "testament2009@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "上海六条1376号"
+      }
+    ]
+  },
+  {
+    "input": "堇莎 茹，一位专业的女性精密磨床工，擁有豐富的行業經驗與深厚的技術功底。作為業內素有盛名的技術精英，堇莎女士不僅在機械制造領域有著卓越的成就，更是同儕中的表率。若希望就精密磨床相关技术进行咨询或合作，可以通过她的聯繫方式+86 214-93823211进行联系，或者发送电邮至shell1837@qq.com。堇莎女士居住在邓南街1018号，她的家园不仅是她休憩的港湾，更是她灵感发源地与技术创新的起點。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "堇莎 茹"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Randal Holman"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "精密磨床工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 214-93823211"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "shell1837@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "邓南街1018号"
+      }
+    ]
+  },
+  {
+    "input": "承浠 马，一名资深的女性冷冻空调装修工，以其精湛的技术和敬业精神在行业内享有盛誉。她坐落于建桥侧路218号，致力于为各种商业和居住环境提供优质的空调系统解决方案。如果您需要专业的空调安装或维修服务，可以通过电话+86 744-60520435与她联系，或是发送电子邮件至dropped1962@qq.com。承浠女士一直以客户满意为己任，无论是项目规模大小，她总能提供量身定制的服务，以确保客户获得最舒适、高效的空调体验。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "承浠 马"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rosette Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "冷冻空调装修工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 744-60520435"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "dropped1962@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "建桥侧路218号"
+      }
+    ]
+  },
+  {
+    "input": "长治咸先生，男性，是一位拥有丰富经验的室内设计师。他的设计理念结合了现代审美与实用功能性，致力于打造既美观又舒适的居住与工作空间。若想了解更多长治咸先生的设计作品或是咨询相关服务，您可以通过电话+86 216-63303309与他联系，或是发送电子邮件至functionality1916@gmail.com索取资料。长治先生的设计工作室位于东方山五条1027号，欢迎各界人士预约访问。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "长治 咸"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Zane Cotton"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "室内设计师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 216-63303309"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "functionality1916@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "东方山五条1027号"
+      }
+    ]
+  },
+  {
+    "input": "泊显 璩（Adolfo Pratt）先生是位资深的进出口办事员，他的职业生涯充满了对挑战的热爱与对行业的深刻理解。作为男性领域中的佼佼者，泊显 璩先生精通国际贸易的各个环节，能够流畅地处理复杂的进出口手续，从而确保交易顺畅无误。他的专业素养和对业务的执着追求，使得众多客户对他赞不绝口。若需联系泊显 璩先生，您可以拨打他的电话+86 972-01971019，或是发送电子邮件至woman1979@gmail.com，他总是乐于为客户提供帮助和咨询。若需要亲自会晤或邮寄相关文件，您可以前往他的办公地址：花果八条285号。正是这样一位敬业乐业的进出口专家，无疑是您值得信赖的商业伙伴。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "泊显 璩"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Adolfo Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "进出口办事员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 972-01971019"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "woman1979@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "花果八条285号"
+      }
+    ]
+  },
+  {
+    "input": "昊忆 芮，也被人熟知为Gregorio Campbell，是一位经验丰富的女性房地产经纪人。她对房地产市场的深刻理解以及卓越的谈判技巧，赢得了客户的高度信任与推崇。昊忆 芮提供全面的房产买卖和投资咨询服务，并始终保持客户利益最大化为前提。若您希望联系昊忆 芮，详询房产信息或预约咨询，可通过以下方式：电话 +86 893-96672323 或电子邮箱 vulnerable2072@gmail.com。居住与工作地点为定中门侧路912号，昊忆 芮随时欢迎您前来咨询，共同探讨您的房地产需求。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昊忆 芮"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Gregorio Campbell"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "房地产经纪人"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 893-96672323"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "vulnerable2072@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "定中门侧路912号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to introduce the latest addition to our team, 昊忆 芮, also known as Gregorio Campbell! Joining us as a seasoned 房地产经纪人, she promises to bring a wealth of knowledge and dedication to the role. Don't hesitate to reach out to her for all your real estate needs at +86 893-96672323 or through email at vulnerable2072@gmail.com. Based at our main office located at 定中门侧路912号, she is more than ready to offer expert advice and guidance. Please join us in giving her a warm welcome!\n\n非常高兴宣布我们的新团队成员——昊忆 芮，也即 Gregorio Campbell 将加入我们！作为一名经验丰富的房地产经纪人，她承诺将她的知识和奉献带到这个角色中。如果您有任何房地产需求，欢迎随时拨打她的电话+86 893-96672323，或者通过vulnerable2072@gmail.com给她发送电子邮件。她会在我们位于定中门侧路912号的主办公室为您提供专家建议和指导。请和我们一起热烈欢迎她的加入！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昊忆 芮"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Gregorio Campbell"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "房地产经纪人"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 893-96672323"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "vulnerable2072@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "定中门侧路912号"
+      }
+    ]
+  },
+  {
+    "input": "河沐 惠，男性，是一位资深的律师，以其精湛的法律知识和丰富的行业经验在业内享有盛誉。他坚信法律的力量，并致力于为客户提供最高效的解决方案。有需要法律咨询或服务的个人和企业，可通过电话+86 380-08414732与河律师直接联系。此外，河律师还可通过电子邮件ministry1986@gmail.com接受预约和查询。对于那些希望亲自洽谈的客户，河律师的办公地址位于车站九条405号，他总是欢迎您的光临。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "河沐 惠"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rolland Small"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "律师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 380-08414732"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "ministry1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "车站九条405号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to welcome our newest team member, 承浠 马 (Rosette Pratt), to our family! As an experienced 冷冻空调装修工, her expertise will undoubtedly elevate our service quality. Should you need to reach out to her for business inquiries, you can contact her at +86 744-60520435 or drop an email to dropped1962@qq.com. She will be operating from our main office located at 建桥侧路218号. Rosette’s blend of skills and professionalism is just what we were looking for!\n\n欢迎新同事承浠 马 (Rosette Pratt) 加入我们的大家庭！作为一名资深的冷冻空调装修工，她的专业技能将无疑提升我们的服务质量。如果您需要就业务问题联系她，可以拨打电话+86 744-60520435或发送电子邮件至 dropped1962@qq.com。她将在位于建桥侧路218号的总办公室为您服务。Rosette 凭借她的技能和专业性，正是我们所期望的！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "承浠 马"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rosette Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "冷冻空调装修工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 744-60520435"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "dropped1962@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "建桥侧路218号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to introduce our newest team member, Serafina Head (天琦 杨)! 🌺🌿 As a talented gardener with a passion for cultivating beauty, Serafina is ready to make our green spaces thrive.\n\nPlease feel free to reach out to Serafina for your gardening needs at +86 695-68658098 or via email at parental1915@gmail.com. You can also find her getting her hands in the soil at our office located at 吴家山街道1031号. Let’s give a warm welcome to our new gardener, Serafina!\n\n我们非常高兴地宣布我们的新团队成员 —— 男性花匠天琦 杨 (Serafina Head)! 🌺🌿 他热衷于培育自然之美，天琦 杨准备好让我们的绿地焕发活力。\n\n如您需要园艺服务，请随时联系天琦 杨，电话：+86 695-68658098，或者发电子邮件到 parental1915@gmail.com。您也可以在我们位于吴家山街道1031号的办公室找到他，亲手培育植物。让我们热烈欢迎我们的新花匠，天琦 杨！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "天琦 杨"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Serafina Head"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "花匠"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 695-68658098"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "parental1915@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "吴家山街道1031号"
+      }
+    ]
+  },
+  {
+    "input": "蜜轩 阙，男性，是一位资深的电信工程师。以其深厚的专业知识和丰富的行业经验，蜜轩 阙在电信领域赢得了广泛的认可和尊重。若您需要与他联系，可以拨打他的电话+86 708-37180153，或通过邮箱field1956@qq.com向他咨询相关业务。值得一提的是，蜜轩 阙居住在北京市的前门六条703号，这里不仅为他提供了一个宁静的工作环境，也是他与合作伙伴们交流和创新思想的源泉。在日新月异的电信界，蜜轩 阙先生始终保持着学习的热情和对技术创新的不懈追求。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "蜜轩 阙"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Moses Witt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "电信工程师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 708-37180153"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "field1956@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "前门六条703号"
+      }
+    ]
+  },
+  {
+    "input": "🎉 We are excited to welcome a new member to our dynamic team! Meet Bret Ware (军 梁), our skilled Automotive Technician (汽车修护工), who's bringing her expertise to our garage. You can reach out to Bret at +86 762-44941287 or drop an email at retained1941@163.com for exceptional car care services. Let’s give a warm welcome to Bret and make sure to swing by our shop at 粮道街四条978号 for all your vehicle needs! \n\n🚗 欣然宣布，我们团队迎来了新伙伴！军 梁 (Bret Ware)，一位才华横溢的汽车修护工，即将加入我们的车间，为您带来专业的汽车维修服务。如果您需要车辆护理服务，请拨打电话 +86 762-44941287 或通过邮箱 retained1941@163.com 联系 Bret。让我们热烈欢迎 Bret 的加入，请随时光临我们位于粮道街四条978号的店铺，满足您所有的汽车需求！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "军 梁"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Bret Ware"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "汽车修护工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 762-44941287"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "retained1941@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "粮道街四条978号"
+      }
+    ]
+  },
+  {
+    "input": "🎉 我们非常荣幸地宣布，涵菡 蔡 (Isidra Beasley) 加入我们团队了！Isidra 将担任公共关系员，凭借她丰富的经验，将为我们带来全新的视角和创意想法。欢迎联系她并开始一段美好的合作旅程。\n\n📞 请通过电话 +86 839-47586735 或电子邮箱 satisfied1986@gmail.com 与 Isidra 取得联系。您也可以通过寄信到紫阳街1362号来找到她。一起期待涵菡 蔡以她专业的公共关系技巧为我们开创辉煌的未来！\n\n🎉 We are thrilled to announce that 涵菡 蔡 (Isidra Beasley) has joined our team! Serving as our new Public Relations Officer, Isidra brings a wealth of experience to the table, along with fresh perspectives and innovative ideas. Feel free to reach out to her to embark on an exciting collaborative journey. \n\n📞 She can be contacted at +86 839-47586735 or via email at satisfied1986@gmail.com, and you can also find her at 紫阳街1362号. Let’s look forward to a bright future with Isidra's professional prowess in public relations leading the way!",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "涵菡 蔡"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Isidra Beasley"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "公共关系员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 839-47586735"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "satisfied1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "紫阳街1362号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to announce the newest addition to our team, the talented 诺萁 靳, also known as Jessenia Savage! She joins us as an expert 资讯管理师, bringing her keen eye for detail and a wealth of knowledge to our information management department.\n\nDon't hesitate to reach out to Jessenia if you require assistance or have any inquiries. You can contact her directly at +86 259-72914257 or drop an email at saskatchewan1929@qq.com. For face-to-face consultations, she'll be available at our office located at 琴断口侧路46号.\n\n欢迎诺萁 靳女性加入我们的大家庭！作为一名资深资讯管理师，我们相信她的加入将为我们的信息管理部门带来新的活力和专业知识。如果你有任何问题或需要帮助，请通过电话+86 259-72914257与她联系，或者发送邮件至saskatchewan1929@qq.com。如果您希望当面咨询，她将在位于琴断口侧路46号的办公室为您服务。\n\nPlease join us in welcoming Jessenia to the team and feel free to connect with her!",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "诺萁 靳"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessenia Savage"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "资讯管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 259-72914257"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "saskatchewan1929@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "琴断口侧路46号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to welcome a new addition to our team! Meet Fred Chase (一慧 解) – our new Foreign Exchange Trader (外汇交易员)! Hailing from the dynamic realm of finance, he's geared up to bring fresh insights and strategies to our department.\n\nStay connected with Fred and reach out to him at his work contact:\n📞 Phone: +86 310-58463151\n📧 E-mail: hypothetical1973@gmail.com\n\nYou can find him at his office located at: 新华胡同575号. Let's give a warm welcome to Fred, a talented individual stepping into his new role with enthusiasm and expertise!\n\n我们很高兴宣布团队的最新成员！欢迎一慧 解（Fred Chase）—我们新的外汇交易员！他来自充满活力的金融界，准备带来新的洞察力和策略到我们的部门。\n\n通过以下工作联系方式与一慧 解（Fred Chase）保持联系：\n📞 电话: +86 310-58463151\n📧 邮箱: hypothetical1973@gmail.com\n\n他的办公室位于：新华胡同575号。让我们热烈欢迎一慧 解，一位充满激情和专业知识，踏入新角色的才华横溢的人才！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "一慧 解"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Fred Chase"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "外汇交易员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 310-58463151"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "hypothetical1973@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "新华胡同575号"
+      }
+    ]
+  },
+  {
+    "input": "天琦 杨，一位才华横溢的男性花匠，以其对植物的深刻理解和创新的园艺设计著称。在园艺界内享有盛誉的他，不仅深受客户的信赖，同时也是行业内的风向标。精心培育的每一朵花卉，都是对自然之美的完美诠释。无论是大型花园设计，还是私人住宅的绿化工程，天琦 杨总能以其独到的眼光和精湛的手艺赋予每个空间新的生命。如果您希望联系他，获取专业的园艺咨询或服务，请拨打+86 695-68658098或发送电邮至parental1915@gmail.com。天琦 杨的工作室座落在风景如画的吴家山街道1031号，欢迎您随时预约参观。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "天琦 杨"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Serafina Head"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "花匠"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 695-68658098"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "parental1915@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "吴家山街道1031号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的堇莎 茹女士：\n\n您好！\n\n我是远东精密工业股份有限公司的人力资源部主任李明亮，非常荣幸与您取得联系。在审阅了众多求职者的履历后，我们认为您在精密磨床工领域的丰富经验与技能非常符合我们目前的需求。为此，我们诚挚地邀请您于本月28日星期五，上午10点到我们公司总部进行面试。\n\n以下为面试的详细安排以及联系方式：\n\n日期：本月28日\n时间：上午10点\n地点：邓南街1018号远东精密工业总部\n联系人：李明亮\n电话：+86 214-93823211\n邮箱：shell1837@qq.com\n\n烦请在收到本邮件后，回复确认您的面试时间。如果您有任何疑问或需要进一步的帮助，也请随时通过上述电话或邮箱联系我。\n\n我们期待着与您见面，并有机会详谈您在精密磨床领域的专业经验及未来可能的合作机会。\n\n祝好，\n\n李明亮\n远东精密工业股份有限公司\n人力资源部主任",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "堇莎 茹"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Randal Holman"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "精密磨床工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 214-93823211"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "shell1837@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "邓南街1018号"
+      }
+    ]
+  },
+  {
+    "input": "艳蕴 岑，男性，是一位资深的宠物美容师，在业界内部享有极高的声誉。通过不断地学习和实践，艳蕴 岑精通各种宠物的美容技巧，能够为不同种类的宠物提供专业和定制化的美容服务。艳蕴 岑以其细致入微的工作态度和对宠物深厚的爱意赢得了广大宠物主人的信任与推崇。如果您希望给您的宠物打造一个新的形象，或是为它们提供一个舒适的环境，请不要犹豫，通过电话 +86 188-62647685 联系艳蕴岑。您也可以通过邮箱 falls1971@qq.com 进行咨询或预约服务。欢迎亲临我们位于文津路1257号的宠物美容店，亲身体验艳蕴 岑带来的无与伦比的服务。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "艳蕴 岑"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessia Cline"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "宠物美容师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 188-62647685"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "falls1971@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "文津路1257号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的昂然 支女士：\n\n您好！\n\n我是华翔陶瓷公司的客户关系经理，非常荣幸能够与您进行沟通。我们注意到了您在陶瓷工艺领域的卓越成就，并对您的工作表示崇高的敬意。\n\n我们公司正在寻求有才华的陶瓷工加入我们的创意团队，我们认为您的专业技能和丰富经验能够为我们的新项目带来独特的视角和创新的灵感。如果您对此感兴趣，请您在方便的时候拨打电话+86 358-42410992与我联系，或者通过邮箱cradle1925@163.com与我沟通具体的合作事宜。我们非常期待有机会与您深入讨论并探索合作的可能性。\n\n同时，为了方便后续的书面材料交换和实地参访安排，请您确认下方的地址信息是否准确无误：\n红卫路三条921号\n\n感谢您抽出宝贵的时间阅读这封邮件。我们期望您的积极回应，并预祝合作愉快。\n\n祝商祺！\n\n华翔陶瓷公司\n客户关系经理\n[签名]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昂然 支"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Terence Maynard"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "陶瓷工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 358-42410992"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "cradle1925@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红卫路三条921号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to introduce our newest team member, Terence Maynard (昂然 支), who has joined us as a talented ceramist (陶瓷工)! Terence brings a wealth of creativity and expertise to our artistic collective. Stay tuned for the beautiful pieces that will undoubtedly emerge from her skilled hands.\n\nGet in touch with Terence for collaboration or ceramic inquiries at her phone number +86 358-42410992 or via email cradle1925@163.com. If you’re in the area, feel free to drop by our studio located at 红卫路三条921号 to meet Terence in person. Let's give a warm welcome to her!\n\n我们非常高兴地宣布新团队成员的加入，她的名字是昂然 支 (Terence Maynard)，一位才华横溢的女性陶瓷工！昂然 带着她的创造力和专业技术加盟了我们的艺术集体。敬请期待她那巧手即将带来的美丽陶瓷作品。\n\n欲了解合作或陶瓷相关事宜，请通过电话 +86 358-42410992 联系昂然，或发送电子邮件至 cradle1925@163.com。如果你在附近，也欢迎亲临我们位于红卫路三条921号的工作室，亲自见识昂然的风采。让我们热烈欢迎她的加入！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昂然 支"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Terence Maynard"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "陶瓷工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 358-42410992"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "cradle1925@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红卫路三条921号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to introduce the newest member of our furry friends' styling team, Jessia Cline (艳蕴 岑)! As a skilled pet groomer, Jessia will be bringing her expertise and love for animals to our salon. You can schedule an appointment with her by calling +86 188-62647685 or sending an email to falls1971@qq.com. Visit us at 文津路1257号 and let Jessia pamper your beloved pets with the utmost care and professionalism. Don’t miss out on her exceptional grooming services! \n\n我们非常高兴地宣布，艳蕴 岑 (Jessia Cline) 即将加入我们的宠物造型团队! 作为一位专业的宠物美容师，艳蕴岑将为我们的沙龙带来她对动物的热爱和丰富的专业知识。您可以通过拨打电话 +86 188-62647685 或发送电子邮件至 falls1971@qq.com 与她预约。来我们位于文津路1257号的店铺，让艳蕴岑为您的宠物提供最专业和细心的美容服务。千万不要错过她的专业美容服务哦！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "艳蕴 岑"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessia Cline"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "宠物美容师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 188-62647685"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "falls1971@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "文津路1257号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to announce the newest member of our team! 🎉 Please welcome 蜜轩 阙 (Moses Witt), who will be joining us as our talented 电信工程师 (Telecommunications Engineer). With expertise and a passion for innovation, Moses is ready to contribute to our ongoing projects and success.\n\nFeel free to reach out and introduce yourself to Moses! You can contact him at his phone number +86 708-37180153 or send an email to field1956@qq.com. He will be based at our office located at 前门六条703号. Let’s give Moses a warm welcome!\n\n我们很高兴宣布我们团队的最新成员！ 🌟 请欢迎蜜轩 阙（Moses Witt），他将作为我们才华横溢的电信工程师加入我们。凭借他在创新领域的专业知识和热情，Moses 准备为我们的项目和成功做出贡献。\n\n欢迎大家主动联系并向Moses介绍自己！您可以拨打他的电话 +86 708-37180153 或发送邮件到 field1956@qq.com 与他联系。他将常驻我们位于前门六条703号的办公室。让我们给Moses一个热烈的欢迎吧！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "蜜轩 阙"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Moses Witt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "电信工程师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 708-37180153"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "field1956@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "前门六条703号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to announce the newest addition to our team! Please extend a warm welcome to 珏萱 相, also known in the English-speaking community as Marion Sanders. As our new 配线工, Marion brings a wealth of experience and expertise that we are excited to have on board.\n\nFeel free to reach out and get to know Marion better. He can be contacted via his telephone at +86 835-91233398 or email packets1898@163.com. Should you need to send any work-related correspondences by mail, please use the following address: 五里界八条356号.\n\n欢迎珏萱 相加入我们的团队！Marion Sanders，作为我们新的配线工，他的专业知识和丰富经验将为我们带来无限活力。我们期待他的加入给团队带来新的创意和进步。\n\n大家可以通过电话+86 835-91233398或是电子邮箱packets1898@163.com与Marion取得联系。如果您需要寄送工作相关文件，请使用以下地址：五里界八条356号。\n\n#NewHire #TeamGrowth #WelcomeMarion",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "珏萱 相"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Marion Sanders"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "配线工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 835-91233398"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "packets1898@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "五里界八条356号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的昊忆 芮女士：\n\n您好！\n\n我是中国房产网的市场部经理，贵司的专业形象和显赫业绩一直为业界津津乐道。我们了解到您是一位资深的房地产经纪人，恰巧我们公司现正计划展开一系列的高端房产项目，特此通过邮件希望能与您洽谈合作详情。\n\n根据我们的初步计划，我们需要有经验的专家，如您昊忆 芮女士，来指导我们的销售策略，并为项目提供切实可行的建议。我们相信，您的专业知识和丰富的实战经验将极大助益这一合作项目。\n\n我们期待着与您准备一次会议，以详细讨论合作的可能性。若您有意向进一步了解我们的项目，请通过以下电话+86 893-96672323或邮箱vulnerable2072@gmail.com与我联系，我们将尽快安排与您会晤。另外，如您方便，我们也可以直接安排一位同事拜访您位于定中门侧路912号的办公室。\n\n望能在您方便的时候收到回信，我们非常重视这次合作机会，并期待您的积极回应。\n\n顺颂商祺，\n\n[您的姓名]  \n[您的职务]  \n[您的联系信息]  \n中国房产网",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昊忆 芮"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Gregorio Campbell"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "房地产经纪人"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 893-96672323"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "vulnerable2072@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "定中门侧路912号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的一慧 解先生，\n\n您好！\n\n我是金融顾问公司的黄莉莉，我们是一家专业提供外汇交易咨询的公司。了解到您是一位经验丰富的外汇交易员，我本人非常希望能有机会与您共同探讨行业发展动态与合作机会。我们公司近期有一些创新的外汇交易策略和工具，相信对您的工作会有所帮助。\n\n为了进一步交流，我希望能邀请您参加我们下周举办的一个线上研讨会，届时将会有多位业界专家参加，并分享他们对市场走向的见解。如果您有兴趣，我可以将具体的日程及参会方式发送给您的邮箱：hypothetical1973@gmail.com，以便您提前做好安排。\n\n同时，如果您方便的话，我也希望能够在近期拨通您的电话 +86 310-58463151 与您进行更深入的交流。即使电话占线或未能接听，我也会通过邮件尽快与您联系。\n\n最后，若您需有任何资料邮寄给您，请您放心，我会运用最快速和安全的方式，确保邮件直达您位于新华胡同575号的地址。\n\n感谢您抽出宝贵时间阅读此邮件。期待您的回复，并且非常期待与您合作的机会。\n\n祝商祺！\n\n黄莉莉\n金融顾问公司",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "一慧 解"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Fred Chase"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "外汇交易员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 310-58463151"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "hypothetical1973@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "新华胡同575号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的泊显 璩先生：\n\n您好！\n\n我名叫李娜，是承兴国际贸易公司的客户经理。很高兴在上周的行业交流会中与您简短交谈。根据您提供的个人信息，我已经更新了我们的客户数据库，以确保在今后的合作中能够提供高效准确的服务。\n\n作为一名经验丰富的进出口办事员，您对于业内标准流程及相关法规肯定有着深入的理解和实操经验，这对您我双方无疑都是一大财富。如果在您的工作中有需要我们公司提供任何支持或服务，请随时通过以下方式与我联系：\n\n电话: +86 972-01971019\n邮箱: woman1979@gmail.com\n地址: 花果八条285号\n\n我们期待未来能与您有更多的交流与合作，共同探索更广阔的市场机遇。如果有任何项目或信息需要更新，请及时通知我，以便我们能更好地服务于您。\n\n顺祝商祺，\n\n李娜\n承兴国际贸易公司",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "泊显 璩"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Adolfo Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "进出口办事员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 972-01971019"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "woman1979@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "花果八条285号"
+      }
+    ]
+  },
+  {
+    "input": "在最近的一次引人瞩目的商业活动中，一个公共安全领域的科技创新公司与一名知名的消防工作人员欣 公羊签署了一项合作协议。本次交易旨在通过提供高级技术支持，进一步提高消防队伍的救援能力和效率。\n\n欣 公羊女性，是一位资深的消防工作人员，拥有丰富的现场救援经验和技术知识。她在本次合作中，将担当技术顾问的角色，以她个人专业的角度来指导该科技公司发展出更适合实际救援操作的设备。\n\n据了解，这项交易是在北京景山前大街1148号签署的。当事双方对此次合作都表示了高度的期待，并相信欣 公羊女性的专业知识和经验将为应急救援领域带来重要的进步。\n\n有意联系欣 公羊了解更多详情的个人或机构，可以通过电话 +86 140-71348680 或邮箱 median2034@qq.com 与她直接沟通。\n\n这个合作案例再次证明了个人专业能力与科技创新结合的重要性，同时也为其他公共安全领域的合作提供了一个成功的范例。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "欣 公羊"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Stasia Solis"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "消防工作人员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 140-71348680"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "median2034@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "景山前大街1148号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to announce the newest addition to our team, 堇莎 茹 (Randal Holman)! Bringing her expertise as a 精密磨床工, she is poised to elevate our technical capabilities to new heights. Get in touch with Randal via phone at +86 214-93823211 or email at shell1837@qq.com. She'll be the brilliant mind operating from our office located at 邓南街1018号. Welcome aboard, Randal!\n\n我们非常高兴地宣布，堇莎 茹 (Randal Holman) 加入了我们的团队！作为一名经验丰富的精密磨床工，她准备好将我们的技术能力提升到一个新的高度。您可以通过电话+86 214-93823211或者邮箱shell1837@qq.com与Randal联系。她将成为我们位于邓南街1018号办公室的技术精英。欢迎你，Randal！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "堇莎 茹"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Randal Holman"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "精密磨床工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 214-93823211"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "shell1837@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "邓南街1018号"
+      }
+    ]
+  },
+  {
+    "input": "云天竺女士是一名资深的病历管理师，以她深厚的专业知识和细致入微的工作态度，在医疗记录管理领域取得了显著成就。竺女士毕业于国内知名医学院校，凭借她对病历整理、分类与保密等方面的专业能力，赢得了业界同行的广泛赞誉。她目前居住在老下陆条1341号，这个宁静的社区为她提供了一个温馨的家庭环境和一个舒适的工作空间。您可以通过电话+86 883-24006525与她联系，也可以发送电子邮件至poor2025@qq.com, 云天竺女士随时欢迎各界专业人士的咨询与合作，期待与您共同探索医疗记录管理的无限可能。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "云天 竺"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Delmar Blake"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "病历管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 883-24006525"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "poor2025@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "老下陆条1341号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的谨叶 於女士：\n\n您好！\n\n我是国际商务有限公司的市场部经理王蕾。在此，我想就我们即将举办的年度产品展销会，邀请您担任我们的宣传大使。贵公司的商誉及您个人在商品售货员行业中的专业精神和卓越表现，是我们选择您的重要原因。\n\n请您在下周一（9月15日）之前，回复确认您是否有兴趣参与。若您有疑问或需要更多信息，可通过以下联系方式与我联系：\n\n电话：+86 826-74079550\n邮箱：promoting1861@qq.com\n\n我们的地址是红钢城四条1063号，期待着在将来与您有更多的合作机会。\n\n衷心感谢您的关注，并期待您的积极回应。\n\n祝好，\n\n王蕾\n市场部经理\n国际商务有限公司",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "谨叶 於"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Ayana Downs"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "商品售货员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 826-74079550"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "promoting1861@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红钢城四条1063号"
+      }
+    ]
+  },
+  {
+    "input": "资讯管理领域的新星，诺萁 靳（Jessenia Savage）女士在此行业的深耕已非昙花一现。作为一名业内资深的资讯管理师，诺萁 靳凭借其卓越的技能和丰富的经验，帮助企业和组织高效地解析和组织数据资讯。她对信息技术的深入理解和对保密原则的严格遵循，让她在业内收获了极高的评价和信任。联系诺萁 靳并不困难，您可以通过她的电话 +86 259-72914257，或是发送电子邮件至 saskatchewan1929@qq.com。如果需要面对面交流或书面往来，她的工作地点是琴断口侧路46号。无论是通过电话、电子邮件还是亲自拜访，诺萁 靳都期待着与您分享她的专业见解，并为您的资讯管理需求提供解决方案。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "诺萁 靳"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessenia Savage"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "资讯管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 259-72914257"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "saskatchewan1929@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "琴断口侧路46号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的艳蕴 岑 先生：\n\n您好！\n\n我是来自宠物服务网的客户关系经理。首先，我想对您在宠物美容行业内所取得的令人瞩目成就表示由衷的敬意。我们一直在寻找才华横溢的专业人士，希望与他们合作，提升我们的服务质量。\n\n通过我们的研究，我发现您的专业技能与我们所提倡的高标准完美契合。我们非常希望有机会与您讨论可能的合作事宜。我相信，您的加入能够让我们的团队更加强大，同时也能够带给您更多的客户和事业发展机会。\n\n为了方便沟通，请允许我确认一下您的联系方式。据我所知，您的电话是+86 188-62647685，邮箱地址是falls1971@qq.com，办公地址位于文津路1257号。\n\n请您在收到此邮件后，告知我何时方便与您进行进一步沟通。我将根据您的时间表作出安排。希望不久的将来能有机会亲自与您见面，讨论我们之间的合作可能性。\n\n再次感谢您抽出宝贵时间阅读此邮件，期待您的回复。\n\n祝好！\n\n[您的姓名]\n[您的职位]\n[您的联系方式]\n[公司名称]\n[公司地址]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "艳蕴 岑"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessia Cline"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "宠物美容师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 188-62647685"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "falls1971@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "文津路1257号"
+      }
+    ]
+  },
+  {
+    "input": "We're thrilled to announce a new brilliant mind joining our team—Meet Les Lawrence (雨杭 秋), our new Book Editor! With his expertise and passion, he is sure to bring fresh ideas and innovations to our editorial line-up. 👏📚\n\nFor any book-related inquiries, feel free to reach out to him at his contact below:\n📞 Phone: +86 934-43164077\n📧 Email: enquiry1866@163.com\n🏢 Address: 七里河大街388号\n\n欢迎雨杭 秋 (Les Lawrence) 加入我们的团队，他是我们新的书籍编辑！他的专业知识和热情定能为我们的编辑部带来新鲜的想法和创新。👏📚\n\n如果您有关于书籍的任何疑问，欢迎通过以下方式联系他：\n📞 电话: +86 934-43164077\n📧 邮箱: enquiry1866@163.com\n🏢 地址: 七里河大街388号\n\nLet's give Les a warm welcome and support him as he embarks on this new journey with us!\n\n让我们给雨杭 秋 (Les Lawrence) 一个热烈的欢迎，并在他和我们一起开始这个新旅程时给予他支持！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "雨杭 秋"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Les Lawrence"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "书籍编辑"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 934-43164077"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "enquiry1866@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "七里河大街388号"
+      }
+    ]
+  },
+  {
+    "input": "We're thrilled to welcome a new member to our creative team! Meet 长治 咸, or as we call him, Zane Cotton, our talented new 室内设计师. With a keen eye for aesthetics and an innovative approach, Zane is set to transform spaces with his vision.\n\nGot a project that could use Zane's expertise? Reach out to him at +86 216-63303309 or drop an email to functionality1916@gmail.com. He's excited to embark on this journey with us from our office located at 东方山五条1027号.\n\n不要错过与我们新聘请的创意团队成员见面的机会！欢迎长治 咸——我们称呼他为 Zane Cotton，他是我们团队中才华横溢的新室内设计师。长治 咸具有敏锐的美感和创新的设计方法，准备用自己的视角来变革空间。\n\n如果您有项目需要Zane的专业技能，可以通过他的电话 +86 216-63303309 联系他，或者发送电子邮件至 functionality1916@gmail.com。Zane 很高兴能从我们位于东方山五条1027号的办公室开始他的新征程。\n\n#NewHire #InteriorDesigner #ZaneCotton #DesignInspiration",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "长治 咸"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Zane Cotton"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "室内设计师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 216-63303309"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "functionality1916@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "东方山五条1027号"
+      }
+    ]
+  },
+  {
+    "input": "谨叶 於女士是我们公司的核心商品售货员，凭借她的敬业精神与卓越能力，为我们团队赢得了客户的广泛赞誉。她精通中英双语，拥有丰富的产品知识和卓越的销售技巧，能迅速准确地满足顾客的需求。如果您想要了解更多商品信息或者有任何购买需求，请通过+86 826-74079550与她联系，或者发送邮件至promoting1861@qq.com，谨叶 於女士将为您提供最专业的服务。她目前居住于红钢城四条1063号，那里也是她日复一日努力工作的地方。无论是客户服务还是商品咨询，谨叶 於总能以她热情洋溢、专业高效的工作态度，给予客户最满意的体验。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "谨叶 於"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Ayana Downs"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "商品售货员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 826-74079550"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "promoting1861@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红钢城四条1063号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的涵菡 蔡女士，\n\n您好！我希望此邮件能在您百忙之中，为您带来一丝愉悦。\n\n本人负责贵公司近期将要举办的产品发布会的统筹安排。鉴于您在公共关系领域的专业经验和卓越能力，我们非常希望能有幸邀请您担任此次活动的公共关系员。\n\n为确保后续沟通的顺畅，特此核实您的联系信息如下：\n\n- 电 话：+86 839-47586735\n- 邮 箱：satisfied1986@gmail.com\n- 地 址：紫阳街1362号\n\n请您在收到邮件后，于三个工作日内确认以上信息的准确性以及是否能接受我们的邀请，以便我们尽快为您安排相关事宜。\n\n期待着与您的优秀团队合作，共同打造一场精彩纷呈的发布会。\n\n祝好，\n\n[您的名字]\n[您的职务]\n[您的联系信息]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "涵菡 蔡"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Isidra Beasley"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "公共关系员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 839-47586735"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "satisfied1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "紫阳街1362号"
+      }
+    ]
+  },
+  {
+    "input": "近日，琴断口侧路46号的资讯管理师，诺萁 靳女士（英文名：Jessenia Savage），成功签署了一项重要的跨国业务合作协议。这位女性资讯专家不仅以其出色的专业知识获得了同行的广泛赞赏，而且此次商业交易的成功更是将她的职业生涯推向了一个新高度。\n\n据悉，诺萁 靳女士与一家国际知名企业进行了多轮紧密的商务谈判，并在细节考量上展现了她作为资讯管理师的卓越能力。在经过深思熟虑后，双方最终达成了共识，并签订了合同。\n\n有意与诺萁 靳女士进一步商谈合作的企业或个人，可以通过以下方式与她联系。电话：+86 259-72914257，邮箱：saskatchewan1929@qq.com。诺萁 靳女士已经表示，她期待着探索更多的合作机会，以实现共同的业务目标并创造新的市场价值。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "诺萁 靳"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessenia Savage"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "资讯管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 259-72914257"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "saskatchewan1929@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "琴断口侧路46号"
+      }
+    ]
+  },
+  {
+    "input": "🎉 We're excited to announce a new member of our team! Join us in welcoming Adolfo Pratt (泊显 璩), the latest talent to come aboard as our Import-Export Administrator. We look forward to accomplishing great things together!\n\n👤 Name: 泊显 璩 / Adolfo Pratt\n🚹 Gender: 男性\n📋 Occupation: 进出口办事员\n📞 Phone: +86 972-01971019\n📧 Email: woman1979@gmail.com\n🏠 Address: 花果八条285号\n\nFeel free to reach out to Adolfo for any import/export inquiries. His wealth of knowledge and experience is a true asset to our team!\n\n#NewHire #TeamGrowth #WelcomeAdolfo\n\n🎉 欢迎新成员！我们很荣幸地宣布Adolfo Pratt (泊显 璩)成为我们团队的一份子，他将担任我们的进出口办事员。让我们一起期待与他携手创造佳绩！\n\n👤 姓名: 泊显 璩 / Adolfo Pratt\n🚹 性别: 男性\n📋 职业: 进出口办事员\n📞 电话: +86 972-01971019\n📧 邮箱: woman1979@gmail.com\n🏠 地址: 花果八条285号\n\n欢迎随时联系Adolfo处理各项进出口事宜，他的丰富知识和经验对我们团队来说是宝贵的财富！\n\n#新员工 #团队成长 #欢迎Adolfo",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "泊显 璩"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Adolfo Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "进出口办事员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 972-01971019"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "woman1979@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "花果八条285号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的云天 竺女士，\n\n您好！\n\n我是杨林，华东地区健康管理委员会的代表。经过细致的资料审查，我们对您作为一名病历管理师的专业背景深感兴趣。我们正在寻找负责且经验丰富的个人参与我们即将启动的电子健康记录系统项目。\n\n如您方便，我希望能在下周安排一次电话会议，讨论潜在的合作机会，并详细了解您在病历管理领域的专业知识。请您确认以下联系方式正确无误，并告知您具体的空闲时间：\n\n- 电话号码: +86 883-24006525\n- 电子邮箱: poor2025@qq.com\n- 通讯地址: 老下陆条1341号\n\n我们希望与您共同探讨如何利用您的专长来提升我们的服务效率与品质。如果有任何问题，或需进一步信息，请随时联系我。\n\n谢谢您的考虑，并期待您的回复。\n\n祝好，\n\n杨林\n华东地区健康管理委员会",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "云天 竺"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Delmar Blake"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "病历管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 883-24006525"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "poor2025@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "老下陆条1341号"
+      }
+    ]
+  },
+  {
+    "input": "🚒🎉【新队伍成员欢迎仪式】🎉🚒\n\n我们非常高兴地宣布：一个全新的力量已经加入我们这个大家庭！欣 公羊（Stasia Solis），一位经验丰富的女性消防工作人员，将从今天起与我们并肩作战。执着于生命安全与火灾预防的她，是我们团队不可或缺的一份子。\n\n请记下她的联系方式，以便于未来工作中的沟通与协调：\n📞 电话: +86 140-71348680\n📧 邮箱: median2034@qq.com\n🏢 地址: 景山前大街1148号\n\n让我们共同欢迎Stasia的加入，并祝愿她在消防队的工作充满成就与快乐！\n\n🚒🎉【New Team Member Welcome Announcement】🎉🚒\n\nWe are thrilled to announce that a new force has joined our big family! Stasia Solis (欣 公羊), an experienced female firefighter, will be fighting fires alongside us starting today. Dedicated to life safety and fire prevention, she is an indispensable part of our team.\n\nPlease note her contact details for future communication and coordination:\n📞 Phone: +86 140-71348680\n📧 Email: median2034@qq.com\n🏢 Address: 1148 Jingshan Qian Jie\n\nLet's all warmly welcome Stasia to the team and wish her a fulfilling and joyful journey with the fire brigade!",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "欣 公羊"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Stasia Solis"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "消防工作人员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 140-71348680"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "median2034@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "景山前大街1148号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的长治咸先生，\n\n您好！\n\n我是华美设计有限公司的市场拓展经理林晓丽。经过详细了解您在室内设计行业中的声誉和才能，我们公司非常希望能与您合作。我们相信，长治先生以您丰富的经验和独到的设计眼光，定能为我们即将进行的项目增光添彩。\n\n鉴于您的专业背景，我们特别想请您担任我们新项目的主要室内设计顾问。若此提议对您有兴趣，请您利用以下联系方式与我们沟通，以便我们可以详细讨论合作详情。\n\n联系电话：+86 216-63303309\n电子邮箱：functionality1916@gmail.com\n\n另外，我们计划近期对该项目进行初步会议讨论，若您方便我们也欢迎您莅临我公司进行面对面的交谈。以下是我们的办公地址：\n\n东方山五条1027号\n\n我们期待着与您一起创造更加卓越和独特的空间设计。请您在收到此邮件后，尽快回复，以便我们能够尽早开始这段激动人心的合作旅程。\n\n祝商祺，\n\n林晓丽\n市场拓展经理\n华美设计有限公司",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "长治 咸"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Zane Cotton"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "室内设计师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 216-63303309"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "functionality1916@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "东方山五条1027号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的雨杭秋先生：\n\n您好！我是中山出版社的人力资源部经理李婷。非常感谢您愿意接受我们的采访，同时对于能在未来有机会与您这样资深的书籍编辑合作，我们感到非常荣幸。\n\n关于下周的面试，我想确认一下您的个人信息，确保我们记录的准确无误。以下是我们从简历中获取并整理的相关信息，请您过目：\n\n- 姓名：雨杭 秋\n- 性别：男性\n- 职业：书籍编辑\n- 电话：+86 934-43164077\n- 邮箱：enquiry1866@163.com\n- 地址：七里河大街388号\n\n请您核对以上信息，如果有任何更正，欢迎随时通过以上电话或邮箱与我们联系。我们期待与您的合作，并相信您的专业经验能够为我们出版社带来新的活力。\n\n最后，祝您工作顺利，期待您的回信。\n\n此致，\n\n李婷\n中山出版社人力资源部经理",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "雨杭 秋"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Les Lawrence"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "书籍编辑"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 934-43164077"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "enquiry1866@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "七里河大街388号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to introduce our new team member, Reynaldo Ingram (俊博 邓), a skilled Mental Health Counselor (心理谘商师) who has just joined us! Reynaldo brings a wealth of experience in psychology and a compassionate approach to counseling. He’s already eager to get to know everyone and start making a positive impact.\n\nFeel free to reach out to him at +86 229-08297080 or send an email to testament2009@163.com for any mental health inquiries. Reynaldo is excited to provide support and expert advice from our office located at 上海六条1376号.\n\nWelcome aboard, Reynaldo! Let's give him our warmest welcome and support. 👏🎉\n\n我们非常高兴地宣布，俊博 邓(Reynaldo Ingram)加入我们团队，担任心理谘商师的职位！俊博拥有丰富的心理学经验和富有同情心的咨询方法。他已经迫不及待地想要认识每个人，并开始发挥积极的影响。\n\n如果你有任何心理健康的问题，随时给他打电话 +86 229-08297080 或者发送电邮至 testament2009@163.com。俊博很高兴能在位于上海六条1376号的办公室提供支持和专业建议。\n\n欢迎俊博的加入！让我们给他最热烈的欢迎和支持。👏🎉",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "俊博 邓"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Reynaldo Ingram"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "心理谘商师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 229-08297080"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "testament2009@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "上海六条1376号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的军梁女士：\n\n您好！\n\n我是李嘉，专业汽车维修公司的客户经理。很高兴知道您是一名汽车修护工，并对您在汽车维修行业的专业技能和贡献表示衷心的敬意。\n\n目前，我们公司正在招聘经验丰富的汽车修护技师加入我们的团队。基于您在汽车修护方面的宝贵经验，我认为您会是我们团队中的宝贵资产。我相信，您的加入将极大地提高我们的服务质量，并进一步满足客户的需求。\n\n为了深入探讨此事，我们希望安排一次会面，以便更详细了解您的专业技能和职业规划。请您在方便的时间内通过下面的联系方式与我取得联系，我们定能找到合适的时间进行面谈。\n\n电话：+86 762-44941287\n邮箱：retained1941@163.com\n地址：粮道街四条978号\n\n诚挚期盼您的答复。如有任何疑问或需要更多信息，请随时与我联系。\n\n祝您事业顺利，期待您的回音！\n\n此致\n敬礼\n\n李嘉\n客户经理\n专业汽车维修公司",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "军 梁"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Bret Ware"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "汽车修护工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 762-44941287"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "retained1941@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "粮道街四条978号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的诺萁 靳女士，\n\n您好！\n\n我是来自海明威商业咨询有限公司的客户经理张林。我们公司近期正在寻找资深的资讯管理师，以优化我们的信息管理系统。在业界得知贵公司设有出色的资讯管理团队后，特此与您联络，希望能有机会与您详细讨论潜在的合作项目。\n\n请问诺萁 靳女士在下周是否方便安排一次会议？我相信您丰富的经验和专业知识定能为我们提供极具价值的指导。若您有兴趣，我们可以安排一次线上或面对面会议，讨论下一步具体的合作模式与细节。\n\n为了后续我们能更好地进行沟通，请允许我确认下所留的联系方式是否正确：\n\n电话：+86 259-72914257\n邮箱：saskatchewan1929@qq.com\n地址：琴断口侧路46号\n\n如您有任何疑问，或是希望马上开始商讨合作，请随时通过上述任一方式联系我。我们诚挚期待您的回复，并希望能早日与您取得联系。\n\n谢谢，预祝工作愉快！\n\n此致\n敬礼\n\n张林\n海明威商业咨询有限公司",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "诺萁 靳"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessenia Savage"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "资讯管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 259-72914257"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "saskatchewan1929@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "琴断口侧路46号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的天琦 杨先生：\n\n您好！\n\n我是杭州绿野园艺公司的业务经理张伟，很荣幸与您取得联系。我们公司专注于提供专业园艺设计与维护服务，致力于为客户打造美丽、可持续的绿色空间。\n\n通过同行的推荐，我了解到您是一位拥有卓越才华的花匠。我们公司当前在寻找拥有精湛技艺的团队成员，能够为我们的客户提供高质量的庭院打造和植物护理服务。我相信，您的专业技能和我们公司的资源将能相得益彰，创造出美丽的园林作品。\n\n我们希望有机会进一步了解您的工作经验，并讨论可能的合作机会。如果您对与我们公司合作感兴趣，我将非常乐意安排一次会面，进一步交流。请您在方便的时候，通过下述电话号码或Email与我联系，以确定会面的具体时间和地点。\n\n电话号码：+86 695-68658098\nEmail地址：parental1915@gmail.com\n\n您也可参考我们的公司地址前来公司参观洽谈，了解我们的工作环境和文化：\n公司地址：吴家山街道1031号\n\n期待着您的回复，并希望未来能有机会与您进行面对面的交流。感谢您抽出宝贵时间阅读此邮件，请保持联系。\n\n祝好，\n\n张伟\n业务经理\n杭州绿野园艺公司",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "天琦 杨"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Serafina Head"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "花匠"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 695-68658098"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "parental1915@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "吴家山街道1031号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的蜜轩 阙先生，\n\n您好！\n\n我是贵公司合作伙伴的联络人，很荣幸能够与您建立业务联系。了解到您作为一名专业的电信工程师在行业内享有盛誉，我相信贵公司及您个人的专业技能对我们的项目将是极大的助益。\n\n为了进一步讨论合作细节，我希望能预约一次电话会议或是线下会面，那么我们可以详细讨论相关的技术需求及合作事宜。依照您提供的联系信息，我将先通过手机+86 708-37180153或电子邮箱field1956@qq.com与您取得联系，以确定您方便的时间。\n\n此外，方便的话，我们也可以直接前往您的办公地址前门六条703号拜访。如果有任何需要调整的地方，欢迎您随时通知我。\n\n期待您的回复，并祝愿合作愉快及事业更上一层楼。\n\n最好的问候，\n\n[您的姓名]\n[您的职务]\n[公司名称]\n[公司联系信息]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "蜜轩 阙"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Moses Witt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "电信工程师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 708-37180153"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "field1956@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "前门六条703号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的俊博 邓先生：\n\n您好！我是贵司的常客，一直对俊博 邓先生您作为一名心理谘商师的专业服务印象深刻。\n\n近日，我公司计划举办一系列员工心理健康提升研讨会，特此邀请俊博 邓先生担纲主讲嘉宾。基于此前的合作经验，我们相信您的参与将对会议成果起到决定性的作用。\n\n请查看以下会议详情并恢复是否方便参加：\n\n会议日期：[具体日期]\n会议地点：[具体地点]\n预期出席人数：[具体人数]\n讲题主题：[具体主题]\n\n如俊博 邓先生能够允诺参与，我们将深感荣幸。您可通过以下联系方式同我确认或提出您的任何要求与建议：\n\n电话：+86 229-08297080\n邮箱：testament2009@163.com\n地址：上海六条1376号\n\n恳请俊博 邓先生在收到此邮件后尽快回复，以便我们安排后续的工作。如您有任何疑问或需要进一步的信息，欢迎随时与我联系。\n\n期待俊博 邓先生的回音，并预祝研讨会圆满成功。\n\n诚挚问候，\n\n[您的姓名]\n[您的职位]\n[您的公司名]\n[您的电话]\n[您的邮箱]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "俊博 邓"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Reynaldo Ingram"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "心理谘商师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 229-08297080"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "testament2009@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "上海六条1376号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的承浠 马女士：\n\n您好！我代表我司联系您，感谢您近期对我们空调冷冻设备维修项目的关注。基于您在冷冻空调装修工方面的专业知识和经验，我们认为与您进行深入交流以探讨未来可能的合作机会将是相当有益的。\n\n为便于我们的沟通，请确认以下的个人信息无误：\n\n- 姓名：承浠 马\n- 性别：女性\n- 职业：冷冻空调装修工\n- 联系电话：+86 744-60520435\n- 电子邮箱：dropped1962@qq.com\n- 通讯地址：建桥侧路218号\n\n如果上述信息均正确无误，请您于下周一（或您方便的时间）通过电话或邮件与我们确认，以便我们尽快安排后续交流会议的具体时间。\n\n若有任何疑问或需要进一步信息，随时欢迎您通过邮件或电话联系我们。我们期待着与您展开有效果的对话，并希望我们能够寻找到互利合作的机遇。\n\n谢谢您的宝贵时间，期待您的回复！\n\n祝商祺，\n\n[您的姓名]\n[您的职位]\n[您的公司名]\n[今日日期]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "承浠 马"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rosette Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "冷冻空调装修工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 744-60520435"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "dropped1962@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "建桥侧路218号"
+      }
+    ]
+  },
+  {
+    "input": "🎉 We are thrilled to introduce our newest team member, Ayana Downs (谨叶 於)! As an outstanding merchandise sales associate (商品售货员), she brings enthusiasm and expertise to our store. Connect with her at +86 826-74079550 or via email at promoting1861@qq.com. Ayana will be greeting you from our location at 1063号, 红钢城四条. Drop by to say hello! 🛍🌟\n\n📢 我们非常高兴地宣布谨叶 於 (Ayana Downs) 加入我们的团队！作为一名优秀的商品售货员, 她将为我们的商店带来激情和专业技能。您可以通过电话+86 826-74079550或电子邮箱promoting1861@qq.com与她联系。谨叶将在我们位于红钢城四条1063号的店铺迎接您的到来。快来跟她打个招呼吧！🛍🌟",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "谨叶 於"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Ayana Downs"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "商品售货员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 826-74079550"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "promoting1861@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红钢城四条1063号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to welcome our new team member, Rolland Small (河沐 惠)! As our dedicated in-house counsel, Rolland joins us with a strong legal background and a commitment to excellence. Get to know him better and do not hesitate to reach out!\n\n👤 Name: 河沐 惠 / Rolland Small\n👔 Occupation: 律师 / Lawyer\n📞 Phone: +86 380-08414732\n📧 Email: ministry1986@gmail.com\n\nShould you need any legal assistance or have inquiries, please contact Rolland at the address below:\n📍 405 Chezhan Jiu Jie (车站九条405号)\n\nLet's give a warm welcome to Rolland as he begins his journey with our team!\n\n我们非常高兴地宣布新团队成员河沐 惠（Rolland Small）的加盟！作为我们敬业的法律顾问，河沐 惠律师拥有扎实的法律背景和对卓越的不懈追求。欢迎大家了解更多关于他的信息，并且随时联系！\n\n👤 姓名：河沐 惠 / Rolland Small\n👔 职业：律师\n📞 电话：+86 380-08414732\n📧 邮箱：ministry1986@gmail.com\n\n如果您需要任何法律协助或有任何咨询，请通过以下地址联系河沐 惠律师：\n📍 地址：车站九条405号\n\n让我们热烈欢迎Rolland加入我们的团队，并开始他的新征程！\n\n#NewHire #RollandSmall #TeamWelcome #LegalExpert",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "河沐 惠"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rolland Small"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "律师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 380-08414732"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "ministry1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "车站九条405号"
+      }
+    ]
+  },
+  {
+    "input": "在今日的商业领域中，跨国合作日趋频繁，促成了一系列影响深远的商业合作案。近日，备受瞩目的一宗合作案终于尘埃落定。进出口行业内的华人面孔，泊显 璩先生，已成功促成了一起重量级的国际贸易协议，为他所在的公司开辟了新的贸易通道，并巩固了公司在全球市场上的影响力。\n\n泊显 璩先生，作为一名经验丰富的进出口办事员，以其敏锐的商业洞察力和精通双语的能力，在谈判桌上发挥了关键作用。在过去的数月中，泊显 璩与多方利益相关者进行了密集的沟通和谈判，终于达成了双方都认为可喜的结果。\n\n据了解，该贸易协议涉及的产品多种多样，从电子商品到日用消费品，其贸易总额预计将为双方带来数百万美元的业务增长。有分析认为，这将极大提升泊显 璩所在公司在相关领域的竞争力。\n\n泊显 璩先生的联络方式对于寻求更多商业合作的同行及利益相关者极为重要。有意了解更多合作细节的同行可以通过以下方式与他取得联系，电话: +86 972-01971019，或是通过他的个人邮件woman1979@gmail.com。泊显 璩先生的工作地址位于花果八条285号，他表示欢迎任何形式的合作咨询和讨论。\n\n除了刚刚达成的这项卓有成效的贸易协议外，泊显 璩先生还在积极寻求新的商机，并希望通过不断的学习和自我提升，为公司打造更加光明的未来。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "泊显 璩"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Adolfo Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "进出口办事员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 972-01971019"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "woman1979@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "花果八条285号"
+      }
+    ]
+  },
+  {
+    "input": "在中国出版界引起广泛关注的大型业务交易中，影响深远的书籍编辑雨杭 秋成功牵头促成了一项重要出版合作。\n\n雨杭 秋, 一位在业界备受尊敬的男性编辑，他凭借其敏锐的市场洞察力和卓越的谈判技巧，为他所在的出版社带来了一次与国际出版巨头的合作机会，这将有利于中文图书市场的繁荣。雨杭 秋表示，这次合作是出版社历史上的一个里程碑，他相信此举将加强中外文化的交流与互动。\n\n有意联系雨杭 秋讨论进一步的合作详情，可以通过电话+86 934-43164077与他取得联系，或者发送电子邮件至enquiry1866@163.com进一步咨询。对于想要直接拜访并探讨业务合作的伙伴可以前往他的办公室，地址位于七里河大街388号。\n\n该业务交易预计将大幅增加中文版图书的海外销量，同时为外文书籍在中国市场的传播开启新篇章。雨杭 秋与其团队致力于推广有教育意义的高质量内容，这一愿景在业界获得了广泛的认可和支持。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "雨杭 秋"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Les Lawrence"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "书籍编辑"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 934-43164077"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "enquiry1866@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "七里河大街388号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的珏萱 相先生：\n\n您好！\n\n我是来自五星电器公司的客服经理，贵公司介绍您是一位经验丰富的配线工，对此，我们深感荣幸。目前，我们正急需一位专业人士协助我们完成一个大型配线项目，我们相信您的专业技能和经验将对我们的项目产生莫大的帮助。\n\n在评估了多位候选人后，我们认为您的背景与我们的需求高度匹配。因此，我们诚挚希望能与您进一步沟通此项目的可能合作。为了便于进一步的联系和沟通，我们已经记录下了您的电话号码 +86 835-91233398，同时也注意到了您提供的邮箱地址packets1898@163.com，接下来的工作中我们会通过这些方式与您保持沟通。\n\n如果您对此感兴趣，并愿意了解更多项目细节，我们诚意邀请您尽快与我们联系。您可以回复此邮件，也可以直接拨打我们的联系电话。我们非常期待您的回音，并希望能在不久的将来在我们的办公室见到您，地址位于五里界八条356号。\n\n感谢您的时间与关注，盼望能听到您的佳音。\n\n此致\n\n敬礼\n\n[您的姓名]\n[职位]\n[公司名称]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "珏萱 相"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Marion Sanders"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "配线工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 835-91233398"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "packets1898@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "五里界八条356号"
+      }
+    ]
+  },
+  {
+    "input": "在今天的商业新闻中，我们注意到了一个非常有趣的重大合作事项。著名公共关系员涵菡 蔡女士，因其在传媒行业中的卓越表现，成功促成轰动业界的一笔交易。这位具有国际视野的公关专家，凭借她的专业能力和人脉资源，巧妙地将两家企业牵线搭桥，达成共赢。\n\n据我们获得的信息，涵菡 蔡女士作为过去一年来备受瞩目的新星，在公共关系领域的成就不容小觑。她一直在为加强品牌形象和企业间的沟通协作不懈努力，这次的成果再次证明了她不凡的策略眼光。此次的谈判不仅对双方企业意义重大，也彰显了涵菡 蔡女士在行业内的重要地位。\n\n为了进一步了解这笔业务合作的详情，有兴趣的合作伙伴或媒体可以直接与涵菡 蔡女士取得联系。她的联系电话为+86 839-47586735，或者通过她的电子邮箱satisfied1986@gmail.com进行电子邮件沟通。更多关于该项业务合作的信息和涵菡 蔡女士的职业历程，请关注后续报道或者前往位于紫阳街1362号的办公室进行访问。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "涵菡 蔡"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Isidra Beasley"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "公共关系员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 839-47586735"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "satisfied1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "紫阳街1362号"
+      }
+    ]
+  },
+  {
+    "input": "珏萱 相，男性，是一位技艺精湛的配线工，拥有着丰富的工作经验和卓越的职业技能。他的敬业和专注在业内获得了广泛的认可。与此同时，珏萱 相还是一位对技术进步保持持续关注的专业人士，始终走在行业前沿。如需联络珏萱 相，可以拨打他的电话号码 +86 835-91233398，或通过邮箱packets1898@163.com与他取得联系。他目前居住于五里界八条356号，无论是专业合作还是行业交流，珏萱 相都欢迎各界人士的来信垂询。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "珏萱 相"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Marion Sanders"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "配线工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 835-91233398"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "packets1898@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "五里界八条356号"
+      }
+    ]
+  },
+  {
+    "input": "昂然 支女士，一位著名的陶瓷工，近日在红卫路三条的921号工作室，与国际艺术品公司签订了一项重要的商业合同。昂然 支女士以其独特的艺术风格和精湛的制陶技术，赢得了国际市场的广泛认可。这份合同将使她设计的陶瓷产品能够更广泛地分销至海外市场。\n\n据悉，公司的选材标准极其严格，而昂然 支女士却能一次通过审核，足见其艺术作品的魅力。商业合同的详情尚未向公众完全披露，但业内专业人士预计，此举将大大促进本地陶瓷工艺的国际化进程。\n\n合作协议的具体签订过程与布署，均在她位于红卫路三条的工作室里紧锣密鼓地进行。有意向了解更多详情的合作伙伴，可以通过电话+86 358-42410992，或是发送邮件至cradle1925@163.com与昂然 支女士联系。\n\n昂然 支女士表示，她期待通过这次的商业合作，能够让更多热爱陶瓷的人士欣赏到中国的传统工艺之美，并且促进文化的交流与分享。她也希望通过自己的创作，激励更多年轻艺术家追求艺术梦想。\n\n这场商业合作的成功签约，显然将为昂然 支女士未来的职业生涯开辟新的道路，并为传统陶瓷工艺的发扬光大做出积极贡献。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昂然 支"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Terence Maynard"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "陶瓷工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 358-42410992"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "cradle1925@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红卫路三条921号"
+      }
+    ]
+  },
+  {
+    "input": "外汇交易界传来震撼消息，备受瞩目的天才外汇交易员一慧 解，和业内一家知名公司签订了一项划时代的战略合作协议。\n\n一慧 解，男性，一直以其在外汇市场的深厚经验和卓越业绩备受业界赞誉。此次合作，标志着他职业生涯中的一个新的跳跃点。一慧 解在签约仪式上谈及此次合作的重要意义时表示：“这不仅仅是一份工作上的合约，更是我不断学习和成长，追求行业卓越的一个全新起点。”\n\n据悉，一慧 解与该公司的谈判持续了数周，最终在共同诉求和发展愿景中取得共识。该协议的签订为双方带来了更为广阔的合作空间，预计将在未来的外汇市场中掀起新的波澜。\n\n公开资料显示，一慧 解的联系方式为电话 +86 310-58463151 ，邮箱 hypothetical1973@gmail.com。他目前居住在新华胡同575号，这也是他进行外汇交易及研究的主要场所。\n\n一慧 解以其专业的外汇交易技巧和敏锐的市场洞察力，赢得了同行的尊敬和媒体的广泛关注。分析人士认为，通过这次合作一慧 解不仅将为公司带来新鲜的战略思路，也将极大提升公司在市场上的竞争力。\n\n各界人士均对一慧 解先生的未来发展充满期待，相信他将继续在外汇交易领域书写辉煌。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "一慧 解"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Fred Chase"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "外汇交易员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 310-58463151"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "hypothetical1973@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "新华胡同575号"
+      }
+    ]
+  },
+  {
+    "input": "We are thrilled to introduce our newest team member, 云天 竺 (Delmar Blake)! Joining us as a highly skilled 病历管理师, Delmar brings a wealth of expertise and passion to our healthcare organization.\n\n🎉 Let's give a warm welcome to Delmar! Feel free to reach out and say hello via phone at +86 883-24006525 or email at poor2025@qq.com.\n\n📍 Delmar will be based at our main office on 老下陆条1341号 and is looking forward to contributing to our mission of delivering outstanding care to our community. Welcome aboard, Delmar!\n\n我们非常兴奋地宣布，新成员云天 竺 (Delmar Blake) 正式加入我们团队！作为一位技术娴熟的病历管理师，Delmar 为我们的医疗机构带来了丰富的专业知识和热情。\n\n🎉 让我们热烈欢迎 Delmar！欢迎通过电话 +86 883-24006525 或电子邮箱 poor2025@qq.com 与她联系，打个招呼。\n\n📍 Delmar 将在我们位于 老下陆条1341号 的主办公室工作，她期待着为我们的使命 - 为社区提供卓越的照顾 - 做出贡献。欢迎加入，Delmar！",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "云天 竺"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Delmar Blake"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "病历管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 883-24006525"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "poor2025@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "老下陆条1341号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的欣 公羊女士：\n\n您好！\n\n首先允许我对您作为一名勇敢的消防工作人员表示最深的敬意。贵单位一直是社会安全的守护者，您个人无疑是这一光荣职业群体中的杰出代表。我们公司一直致力于与像您这样热心公益事业的专业人士合作，推进社区安全项目的实施。\n\n如需进一步了解我们的服务或有任何合作提议，请通过以下联系方式与我取得联系：电话 +86 140-71348680 或电子邮件 median2034@qq.com。我期待着与您就如何为我们的社区提供更安全的环境交换想法。\n\n此外，如果方便的话，我希望能够亲自拜访您，以便更详细地讨论可能的合作机会。您的办公地点位于景山前大街1148号，不知道您大致的空闲时间是怎样的？这样我可以提前安排会议，确保不会干扰到您紧张的工作。\n\n期待您的回信确认，再次感谢您对社区的无私奉献以及您可能给予的指导和帮助。\n\n祝您工作顺利，平安健康！\n\n此致\n[您的名字]\n[您的职位]\n[您的公司名]\n[日期]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "欣 公羊"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Stasia Solis"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "消防工作人员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 140-71348680"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "median2034@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "景山前大街1148号"
+      }
+    ]
+  },
+  {
+    "input": "北京2023年3月31日电 - 在中国通信行业引人瞩目的一次交易中，蜜轩 阙先生因其在电信行业的广泛经验和专业技术水平而成为了这场事件的关键人物。蜜轩 阙，男性，身为资深的电信工程师，与某国际知名的电信设备供应商签署了重要合同。\n\n业内专家指出，蜜轩 阙的专业技能和创新思维有望在未来几年内极大地促进我国电信网络的现代化和升级改造。据了解，该合同的签署是经过数月谨慎评估与深度洽谈之后达成的，蜜轩 阙及其团队在行业中的良好声誉因这次成功的交易更是声名鹊起。\n\n有意向深入了解此次交易详情的合作伙伴可以直接通过电话联系蜜轩 阙先生，电话号码为+86 708-37180153。同时，他也欢迎通过电子邮件交流合作机会，邮箱地址为field1956@qq.com。业内人士亦可选择亲自访问其办公地点，地址为北京市前门六条703号，以便更详细地探讨合作内容。\n\n本次商业合作不仅展示了中国在全球电信领域的实力，同时也证明了蜜轩 阙先生作为行业精英的独特商业眼光与领先优势。未来，蜜轩 阙先生所在的公司预计将与更多国内外企业建立战略合作关系，共同推动电信技术的创新发展。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "蜜轩 阙"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Moses Witt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "电信工程师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 708-37180153"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "field1956@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "前门六条703号"
+      }
+    ]
+  },
+  {
+    "input": "在最近的商业领域内引起广泛关注的一则新闻，是一位名为云天 竺的病历管理师成功向一家私人医疗机构出售了她开发的创新医疗数据管理方案。云天 竺女士的这一举措被业界看作是医疗管理领域的一个重要进步。\n\n据悉，这位女性病历管理师拥有多年的工作经验和卓越的技能，这次交易为云天 竺女士带来了相当可观的报酬，同时也为医疗数据管理领域开辟了新的道路。交易细节尚未完全公开，但已知云天 竺女士将继续以顾问的角色参与后续的项目开发工作。\n\n与会议相关的所有通信，包括合同谈判和技术协商，均通过云天 竺女士的官方联系方式进行，即电话 +86 883-24006525 与电子邮箱 poor2025@qq.com。业界人士或相关方面的咨询，也可以通过这些联系方式直接与云天 竺女士取得联系。\n\n云天 竺女士现居住在老下陆条1341号，这起成功的商业交易再次证明了居住地点并不会限制行业内有才华人士的发展。目前，业内许多同行和分析师都在密切关注云天 竺女士接下来的职业规划以及她将如何继续影响医疗数据管理行业的未来。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "云天 竺"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Delmar Blake"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "病历管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 883-24006525"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "poor2025@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "老下陆条1341号"
+      }
+    ]
+  },
+  {
+    "input": "尊敬的河沐惠先生：\n\n您好！希望此封邮件能在您繁忙的律师工作中，给您带来一丝愉悦。\n\n我是远景法律顾问有限公司的张荣，负责公司的国际法律合作项目。经过仔细考虑，我认为您的专业知识和经验与我们目前的需求非常契合。因此，我谨代表我司，诚挚地邀请您参与我们即将启动的一项跨境商业法律咨询项目。\n\n关于项目的具体内容和合作模式，我相信双方能够进行深入的沟通，以确保最终达成一个对两边都有益的协议。如您对此提议感兴趣，请利用以下联系方式与我取得联系：\n\n电话: +86 380-08414732\n邮箱: ministry1986@gmail.com\n\n我们期待着与您一同推动该项目的成功实施。另外，请确认您的办公地址是不是车站九条405号，以便我们将有关文件及资料邮寄给您。\n\n谢谢您的宝贵时间和考虑，期待您的积极回复。\n\n祝好，\n\n张荣\n远景法律顾问有限公司",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "河沐 惠"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rolland Small"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "律师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 380-08414732"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "ministry1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "车站九条405号"
+      }
+    ]
+  },
+  {
+    "input": "兹有合同书\n\n甲方：一慧 解\n性别：男性\n职业：外汇交易员\n电话：+86 310-58463151\n邮箱：hypothetical1973@gmail.com\n地址：新华胡同575号\n\n乙方：[乙方姓名]\n性别：[乙方性别]\n职业：[乙方职业]\n电话：[乙方电话]\n邮箱：[乙方邮箱]\n地址：[乙方地址]\n\n鉴于甲乙双方同意在平等、自愿的基础上就相关事务进行合作，特达成如下协议：\n\n一、合作内容\n甲方同意委托乙方就外汇交易事宜提供专业服务。乙方承诺按甲方提出的要求和标准提供服务，并确保服务质量。\n\n二、服务期限\n本协议自双方签字盖章之日起有效，有效期为一年。除非一方提前三十天书面通知另一方终止协议。\n\n三、服务费用\n乙方提供的服务费用将根据双方另行签订的补充协议确定。\n\n四、保密协议\n甲乙双方均须对在合作期间获得的一方的商业秘密和个人隐私予以保密。未经对方书面同意，任何一方不得向第三方透露。\n\n五、违约责任\n如一方违反本合同的条款，应负责赔偿因此给对方造成的一切损失。\n\n六、争议解决\n因执行本合同所发生的一切争议，双方应友好协商解决；协商不成时，任一方可向甲方所在地有管辖权的人民法院提起诉讼。\n\n本合同一式两份，甲乙双方各持一份，两份具有同等法律效力。\n\n甲方签名：_____________\n\n乙方签名：_____________\n\n签订日期：____年__月__日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "一慧 解"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Fred Chase"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "外汇交易员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 310-58463151"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "hypothetical1973@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "新华胡同575号"
+      }
+    ]
+  },
+  {
+    "input": "公司与个人服务合同\n\n甲方（雇主）：_______________\n乙方（承包人）：艳蕴 岑 / Jessica Cline\n性别：男性\n职业：宠物美容师\n电话：+86 188-62647685\n邮箱：falls1971@qq.com\n地址：文津路1257号\n\n合同条款与条件：\n\n一、服务内容\n甲方同意聘请乙方提供专业的宠物美容服务，服务详细内容如甲方和乙方另行商定。\n\n二、服务期限\n本合同服务期限自____年___月___日起至____年___月___日止。\n\n三、服务费用\n甲方同意按照乙方提供的服务内容向乙方支付费用，具体金额根据双方的进一步协商确定。\n\n四、支付方式\n甲方应在每次服务完成后的五个工作日内，通过银行转账方式将服务费用支付给乙方。\n\n五、合同变更与解除\n1. 任何一方需变更或解除合同，应提前三十日书面通知对方。\n2. 若乙方未能提供约定服务，甲方有权解除合同，并要求乙方赔偿因此而造成的损失。\n\n六、保密条款\n双方应对在履行合同过程中获知的对方信息负有保密责任，未经对方书面同意，不得向第三方透露。\n\n七、争议解决\n因履行本合同所产生的争议，双方应通过友好协商解决；协商不成时，应提交____仲裁委员会按照其仲裁规则进行仲裁。\n\n八、其他\n1. 本合同一式两份，甲、乙双方各执一份。\n2. 双方在此确认，所提供的个人信息真实、准确，本合同附件为合同不可分割的一部分。\n\n甲方签字：_____________________     日期：____年___月___日\n\n乙方签字：艳蕴 岑 / Jessica Cline     日期：____年___月___日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "艳蕴 岑"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessia Cline"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "宠物美容师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 188-62647685"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "falls1971@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "文津路1257号"
+      }
+    ]
+  },
+  {
+    "input": "近日，一家知名冷冻空调公司迎来了改革的新风潮。该公司宣布，与承浠 马女士签订了一份重要的业务合作协议。承浠 马，职业生涯中不断突破的冷冻空调装修工，她的加入无疑将为公司的技术和服务更新注入一股强劲的力量。\n\n承浠 马女士对于此次合作持非常积极和认真的态度。她表示，自己拥有将近20年的行业经验，对于冷冻空调的安装、维修及升级有着独到的理解和丰富的实践。她相信，自己的经验能够帮助公司更好地满足市场的需求，同时为客户提供更为专业和个性化的服务。\n\n在新的职位上，承浠 马女士将直接参与冷冻空调项目的设计与实施，并将负责监督各项装修工程的质量。对于想了解更多详情或是希望与承浠 马女士直接联系的个人和企业，可以通过以下方式与她取得联络：电话 +86 744-60520435，或电邮dropped1962@qq.com。她的办公地址位于建桥侧路218号，便于客户前来咨询和洽谈业务。\n\n多方业界人士对于承浠 马女士的加盟表示出了浓厚的兴趣，并对前景给予了乐观的预期。业内人士相信，承浠 马女士的专业技能和丰富经验将使得她成为公司中的核心力量，为公司带来更深远的发展和合作机会。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "承浠 马"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rosette Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "冷冻空调装修工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 744-60520435"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "dropped1962@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "建桥侧路218号"
+      }
+    ]
+  },
+  {
+    "input": "珏萱相与国际公司签署大型商业交易，引领行业新趋势\n\n在今日的商业新闻中，我们有激动人心的消息要报告：著名的配线工珏萱相与一家知名国际公司达成了一项具有里程碑意义的商业交易。这笔交易被看作是本季度最具影响力的行业动态之一，标志着珏萱相在技术创新和商务合作领域的又一重大突破。\n\n据悉，珏萱相利用其在配线领域多年的深厚经验以及出色的技术专长，研发出了一种革命性的配线解决方案，使数据传输更为高效、安全。该项技术一经推出便受到业界的高度评价，并迅速吸引了国际公司的注意。\n\n交易的详细条款尚未对外公布，但这一合作无疑将会使珏萱相的事业步入一个新的阶段。作为行业内一股不容忽视的新生力量，珏萱相体现了勤奋和创新的精神，并相信这次合作会促进科技以及配线领域的前进。\n\n对于任何希望了解更多详情或与珏萱相就此次合作进行进一步沟通的个人或企业，可以通过以下方式联系到他：电话 +86 835-91233398 或是电邮：packets1898@163.com。如需亲自访问或寄送相关文件，请前往珏萱相的办公地址：五里界八条356号。\n\n我们预计，珏萱相与国际公司的这一成功合作将会为其他从事配线工作的专业人员树立典范，并激励同行业的其他人不断追求卓越，不断革新。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "珏萱 相"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Marion Sanders"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "配线工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 835-91233398"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "packets1898@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "五里界八条356号"
+      }
+    ]
+  },
+  {
+    "input": "兹有，以下称为“甲方”：\n\n姓名：昊忆 芮 / Gregorio Campbell\n性别：女性\n职业：房地产经纪人\n电话：+86 893-96672323\n邮箱：vulnerable2072@gmail.com\n地址：定中门侧路912号\n\n和以下称为“乙方”：\n\n[乙方个人信息及联系方式]\n\n甲乙双方同意按照下列条款和条件签订本合同：\n\n第一条：合同目的\n乙方同意聘请甲方作为其房地产经纪人，进行房产买卖相关事宜的代理服务。\n\n第二条：服务范围\n甲方将为乙方提供以下服务：（1）房产市场分析及咨询；（2）房产展示与营销；（3）谈判与合同谈理；（4）交易的完成及相关手续的办理。\n\n第三条：代理费用\n乙方同意按照甲方完成交易额的___%支付代理服务费用，具体数额将在交易完成后结算。\n\n第四条：合同期限\n本合同自签字之日起生效，有效期为____年/月/日，除非提前终止。\n\n第五条：终止条款\n任何一方可在提前___天书面通知对方的情况下终止本合同。\n\n第六条：争议解决\n甲乙双方在履行合同过程中如发生争议，应友好协商解决；协商不成的，双方同意提交给___人民法院通过诉讼方式解决。\n\n第七条：附则\n本合同中未尽事宜，双方应协商一致后以书面形式补充。\n\n第八条：其他\n本合同一式两份，甲乙双方各执一份，双方签字盖章后具有同等法律效力。\n\n甲方签字：____________\n\n乙方签字：____________\n\n签订日期：____年__月__日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昊忆 芮"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Gregorio Campbell"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "房地产经纪人"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 893-96672323"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "vulnerable2072@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "定中门侧路912号"
+      }
+    ]
+  },
+  {
+    "input": "兹有本合同由以下各方签订：\n\n甲方：雨杭 秋（Les Lawrence）\n性别：男性\n职业：书籍编辑\n电话：+86 934-43164077\n邮箱：enquiry1866@163.com\n地址：中国七里河大街388号\n\n乙方： ______________________\n性别：______________________\n职业：______________________\n电话：______________________\n邮箱：______________________\n地址：_________________________________________________________\n\n根据中华人民共和国的有关法律、法规，甲乙双方本着平等自愿、协商一致的原则，就_________________________________________________________服务的提供、接受及付款等相关事宜，经友好协商，达成如下合同条款：\n\n第一条 合同目的\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第二条 服务范围和标准\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第三条 服务费用及支付方式\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第四条 甲方的权利和义务\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第五条 乙方的权利和义务\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第六条 合同期限、履行和修改\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第七条 违约责任\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第八条 合同解除和终止\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第九条 不可抗力\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n第十条 争议解决方式\n_________________________________________________________\n_________________________________________________________\n_________________________________________________________\n\n甲方签字：______________________\n乙方签字：______________________\n\n签订日期：______________________\n\n以上各项条款，由甲乙双方共同遵守，任何一方不得违反。未尽事宜，双方协商解决。本合同一式两份，甲乙双方各持一份，具有同等法律效力。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "雨杭 秋"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Les Lawrence"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "书籍编辑"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 934-43164077"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "enquiry1866@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "七里河大街388号"
+      }
+    ]
+  },
+  {
+    "input": "上海市，2023年4月5日。\n\n在金融界引起巨大轰动的新闻，心理谘商师俊博 邓（Reynaldo Ingram）于本周成功签订了一笔重量级跨国业务合作协议。男性谘商师俊博 邓，拥有多年的职业经验，他以其独特的心理学专业背景和商业洞察力在谈判桌上大放异彩。\n\n据悉，俊博 邓先生与一家国际知名企业在电话会议上初步达成了共识。会后双方迅速行动，俊博 邓先生通过其电话+86 229-08297080和电子邮箱testament2009@163.com与合作方保持了密切的沟通，并最终敲定了合作详情。\n\n在经过长时间的精心准备和谈判之后，双方在上海六条1376号的办公室举行了正式签约仪式。详情周密的合同击中了各方的共同利益点，得到了与会者的一致好评。此项合作预计将大大提升双方的业务范围及市场竞争力。\n\n业内专家表示，俊博 邓的非凡洞察和协商能力是促成此次合作的关键因素。他们相信这次合作将为心理咨询领域带来新的商业模式及发展机遇。俊博 邓先生表示，他期待着在新的职业旅程中继续实现目标，并为行业注入源源不断的创新和活力。\n\n关于俊博 邓先生的更多信息，可通过电话+86 229-08297080或邮件testament2009@163.com与他取得联系，或亲临其位于上海六条1376号的办公室了解详情。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "俊博 邓"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Reynaldo Ingram"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "心理谘商师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 229-08297080"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "testament2009@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "上海六条1376号"
+      }
+    ]
+  },
+  {
+    "input": "吴家山新花卉盛事：天琦 杨签下重大商业合作协议\n\n在吴家山街道1031号，一位不平凡的男性花匠，天琦 杨（Serafina Head）凭借着对花卉匠艺的精湛和对细节的执着追求，签署了一项备受瞩目的商业合作协议。此次合作将彻底改写当地的花卉市场格局。\n\n天琦 杨，以其非凡的专业技能和独特的艺术感而名声鹊起。他的园艺作品不仅仅是修剪和种植，更是一种对自然和谐之美的完美诠释。据悉，这份合作协议不仅将加强其个人花卉品牌的市场地位，而且也将为吴家山带来一份新的生机与活力。\n\n人们可以通过+86 695-68658098与天琦 杨取得联系，或通过parental1915@gmail.com向他咨询揽约花卉设计、园艺服务等相关业务。天琦 杨表示，他期盼与更多爱好者分享他的花卉艺术，并借此机会将他的园艺事业推向一个新的高度。\n\n业内专家表示，天琦 杨的成功在于他的热情和专业知识，以及他总是不断探索和创新的精神。此次商业交易无疑将增加他作为花匠的社会影响力，并带动整个行业的可持续发展。\n\n有了他的绿色指尖，吴家山的每一角落都将焕发勃勃生机。天琦 杨和他的团队已经准备好，迎接更多的挑战，并将他们对生态美的追寻带给更广泛的观众。\n\n随着春季的脚步逐渐临近，我们有理由相信天琦 杨将会为我们展示更多色彩斑斓的世界，并通过他的硕果累累，证明花匠这个职业的非凡魅力和无限可能。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "天琦 杨"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Serafina Head"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "花匠"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 695-68658098"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "parental1915@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "吴家山街道1031号"
+      }
+    ]
+  },
+  {
+    "input": "兹有，本合同由以下双方签署：\n\n甲方：诺萁 靳（性别：女性，职业：资讯管理师）\n电话：+86 259-72914257\n邮箱：saskatchewan1929@qq.com\n地址：琴断口侧路46号\n\n乙方：[公司/个人全称]\n电话：[乙方电话]\n邮箱：[乙方邮箱]\n地址：[乙方地址]\n\n鉴于甲方愿意提供资讯管理服务，乙方愿意接受甲方的服务，并按约定支付报酬。现双方本着平等自愿、诚实信用的原则，依据《中华人民共和国合同法》的相关规定，经协商一致，订立本合同，并共同遵守以下条款：\n\n1. 服务内容及要求\n甲方同意依据本合同规定，为乙方提供职业范围内的资讯管理相关的服务。具体服务内容、范围和要求等由双方进一步明确并在附件中列明。\n\n2. 服务期限与地点\n甲方的服务期限自 __年 __月 __日起至 __年 __月 __日止。服务地点在乙方指定地或双方另行约定的其他地点进行。\n\n3. 报酬及支付方式\n对于甲方提供的服务，乙方应支付报酬总额人民币（RMB）[报酬金额]，支付方式为[支付方式，例如：一次性支付/分期支付等]。\n\n4. 合同的变更与解除\n任何一方需要变更或解除合同，须提前__天以书面形式通知对方。经双方协商一致，可变更或解除合同。\n\n5. 违约责任\n如一方违反合同条款，应承担违约责任。违约责任的认定及处理应依据相关法律法规，亦可依据本合同内容协商解决。\n\n6. 争议解决方式\n本合同在履行过程中如发生争议，双方应首先通过友好协商解决；协商不成的，任何一方均可向甲方所在地人民法院提起诉讼。\n\n7. 其他\n本合同自双方授权代表签字盖章之日起生效。本合同一式两份，双方各执一份，具有同等法律效力。\n\n甲方签字：___________\n\n乙方签字：___________\n\n签订日期：____年____月____日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "诺萁 靳"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessenia Savage"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "资讯管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 259-72914257"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "saskatchewan1929@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "琴断口侧路46号"
+      }
+    ]
+  },
+  {
+    "input": "近日，上海市场上涌现出一个引人关注的商业合作案例。堇莎 茹（Randal Holman），一名女性精密磨床工，成功地将其独特的技艺转化为可观的经济利益。经过数个月的谈判，堇莎 茹与国内知名的机械加工企业签订了一份合作协议。\n\n根据该协议，堇莎 茹将负责培训企业员工使用精密磨床的高级技术，以提高产品质量和生产效率。此外，她还将提供技术咨询服务，协助企业解决生产中的磨床相关难题。据悉，双方合作的初步结果已显示出显著的生产提升。\n\n堇莎 茹表示：“我很高兴能将我的技能用于这样的合作，这不仅带来了新的职业机会，也为我带来了更广泛的行业认可。” 如果您需要联系堇莎 茹，了解更多关于她的专业服务，她可以通过电话 +86 214-93823211 或通过邮箱 shell1837@qq.com 接受咨询。此外，她的工作地点是邓南街1018号，非工作时间也可在此地址找到她。\n\n这一则商业案例再次证实，技术专长和专业知识在当今商业环境中不容忽视。堇莎 茹的成功不仅为自己赢得了声誉，也为那些寻求将手艺转化为事业发展的工匠们提供了宝贵的范例。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "堇莎 茹"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Randal Holman"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "精密磨床工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 214-93823211"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "shell1837@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "邓南街1018号"
+      }
+    ]
+  },
+  {
+    "input": "商界快讯：红钢城零售行业迎来转机\n\n红钢城，中国 — 2023年的商业圈又一则引人注目的消息。来自本地的商品售货员谨叶 於女士，近日成功牵线一笔让人瞩目的商业合作。此次合作不仅为谨叶 於女士本人的职业生涯带来了新的发展机遇，更为整个红钢城的零售行业注入了新鲜活力。\n\n谨叶 於女士，依靠着敏锐的市场洞察能力和丰富的行业经验，在与多家知名企业的紧密洽谈中，成功斡旋并推进了这项令人期待的交易。业界专家分析，此举将极大地提升红钢城本地的零售环境，带动区域经济的共同增长。\n\n值得一提的是，谨叶 於女士在交易中扮演了关键角色，她的联系方式成为了各方沟通的重要纽带。她的电话+86 826-74079550以及邮箱promoting1861@qq.com提供了有效而高效的联络路径。通过她的努力，众多细节得以顺利协商，并且在行业内建立起了良好的声誉。\n\n谨叶 於女士居住在红钢城四条1063号，如今这个地址也成为了很多业界人士关注的焦点。作为当地零售业的一股清流，她的职业履历及此次成就让她在同行中脱颖而出。\n\n此次交易成功的消息一经宣布，便在各大商业频道和社交平台上引起了广泛关注，人们纷纷表示对谨叶 於女士的敬佩以及对红钢城未来零售发展的期待。专家们一致认为，随着像谨叶 於女士这样有远见的职业人才的涌现，红钢城零售市场将迎来更多创新发展的机遇。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "谨叶 於"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Ayana Downs"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "商品售货员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 826-74079550"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "promoting1861@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红钢城四条1063号"
+      }
+    ]
+  },
+  {
+    "input": "合同书\n\n甲方（委托方）：涵菡 蔡 / Isidra Beasley\n性别：女性\n职业：公共关系员\n电话：+86 839-47586735\n邮箱：satisfied1986@gmail.com\n地址：紫阳街1362号\n\n乙方（受托方）：[乙方姓名]\n性别：[乙方性别]\n职业：[乙方职业]\n电话：[乙方电话]\n邮箱：[乙方邮箱]\n地址：[乙方地址]\n\n根据中华人民共和国相关法律法规，甲乙双方本着平等自愿、诚实信用的原则，经友好协商一致，就[合同名称]事宜订立本合同，共同遵照执行：\n\n第一条 合同目的\n甲方委托乙方提供[具体服务或产品]，乙方同意根据甲方的需求完成相应服务或产品的提供。\n\n第二条 合同有效期\n本合同自双方签字盖章之日起生效，有效期至[结束日期]或双方另有约定。\n\n第三条 服务内容和要求\n1. 乙方应于[具体交付日期]前，根据甲方提供的要求和标准提供[具体服务或产品]。\n2. 乙方保证其提供的[服务或产品]符合甲方提出的质量标准及相关规定。\n\n第四条 价款与支付方式\n1. 甲方应向乙方支付合同总金额[合同金额]。\n2. 付款方式：[付款方式说明]。\n\n第五条 违约责任\n甲乙双方均须履行合同规定的义务。任何一方违反合同规定，应承担违约责任并赔偿对方因此遭受的损失。\n\n第六条 其他约定\n[可按实际需要设定其他条件或条款]\n\n第七条 解决争议的方式\n本合同在执行过程中，如发生争议，双方应首先通过友好协商解决；协商不成的，任意一方可向[具体地点]人民法院提起诉讼。\n\n第八条 本合同一式两份，甲乙双方各执一份，具有同等法律效力。\n\n甲方签字：____________\n\n乙方签字：____________\n\n签订日期：____年__月__日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "涵菡 蔡"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Isidra Beasley"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "公共关系员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 839-47586735"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "satisfied1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "紫阳街1362号"
+      }
+    ]
+  },
+  {
+    "input": "兹有甲方：堇莎 茹，性别：女性，职业：精密磨床工，电话：+86 214-93823211，邮箱：shell1837@qq.com，地址：邓南街1018号，与乙方就以下事项达成合同如下：\n\n第一条 合同目的\n根据双方协定，甲方同意根据本合同条款，委托乙方在约定时限内，完成相关精密磨床工作。\n\n第二条 合同期限\n本合同有效期为签订之日起计算，至甲方所有服务要求得到乙方满意即完全履行完毕之日止。\n\n第三条 服务条款和交付\n1.甲方必须提供必要和准确的工作信息，以保证乙方完成职责；\n2.乙方需按甲方提供的规格要求，精准完成磨床工作；\n3.交付的产品必须达到甲方要求的质量标准。\n\n第四条 费用和支付方式\n任何因本合同产生的费用，将由甲方和乙方按照事先商定的价格和付款方式进行结算。\n\n第五条 保密和知识产权\n任何一方不得泄露与本合同有关的商业机密和技术信息，除非得到另一方书面同意。\n\n第六条 违约责任\n任一方违反合同条款，需要承担相应的违约责任，赔偿对方因此遭受的损失。\n\n第七条 争议解决方式\n合同在履行过程中所发生的一切争议，双方应协商解决，协商不成时，提交甲方所在地人民法院诉讼解决。\n\n本合同一式两份，甲乙双方各执一份。\n\n甲方：堇莎 茹\n电话：+86 214-93823211\n邮箱：shell1837@qq.com\n地址：邓南街1018号\n\n乙方：\n\n日期：",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "堇莎 茹"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Randal Holman"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "精密磨床工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 214-93823211"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "shell1837@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "邓南街1018号"
+      }
+    ]
+  },
+  {
+    "input": "室内设计行业再迎重磅消息，业界知名的室内设计师长治咸先生刚刚与当地著名的建筑公司签署了数百万项目合作协议，为城市的建筑美学再添一笔。长治咸先生，作为国内外多个知名设计大奖的得主，他的作品集合了实用与创新，每一处设计都透露出无与伦比的美学追求。\n\n在最新的设计项目中，长治咸先生将运用其超前的设计理念和丰富的实战经验。据悉，项目将在东方山五条1027号新成立的设计工作室里进行初步构思和客户沟通。该工作室不久前刚刚由长治咸先生设立，旨在为客户提供更为个性化和高效的设计服务。\n\n通过独特的视角和精湛的设计技艺，长治咸先生赢得了广泛赞誉，并通过这一次的合作机会进一步扩大其商业版图。对于潜在合作伙伴及对设计感兴趣的客户，长治咸先生在业界的声名及专业度无疑是一个信心保证。\n\n有意向与长治咸先生合作的企业和个人可以通过以下联系方式与他取得联系。他的电话是+86 216-63303309，邮箱地址是functionality1916@gmail.com。作为先锋设计师的长治咸先生相信，通过不断的合作和交流，不仅能带来商业上的成功，还能推动整个设计行业的持续发展和进步。本次商业交易的成功签约再次证明了长治咸先生在室内设计领域的专业地位和商业前瞻性。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "长治 咸"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Zane Cotton"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "室内设计师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 216-63303309"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "functionality1916@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "东方山五条1027号"
+      }
+    ]
+  },
+  {
+    "input": "北京市消息：经过激烈的竞争与深入谈判，一宗令人瞩目的商业地产交易近日在定中门成交，引起业内外的广泛关注。女性房地产经纪人昊忆 芮（Gregorio Campbell），凭借她丰富的行业经验和专业的谈判技巧，成功促成这桩价值数亿元的地产交易。\n\n昊忆 芮小姐目前就职于本市一家著名的房地产公司，在房地产圈内享有较高的声誉。她此次代表卖方，在这场耗时数月的交易中发挥了核心作用。据悉，这次交易的地段位于城市中心，具有很高的开发潜力，对方投资者对此地块的未来规划充满信心。\n\n相关行业分析师表示，昊忆 芮对市场趋势的精准把握和对客户需求的细致照顾，是她在激烈竞争中脱颖而出的关键因素。业内人士普遍认为，她的成功将对女性在房地产行业中的地位产生积极影响。\n\n有意向了解更多交易细节或寻求房地产咨询服务的客户，可以通过电话+86 893-96672323与昊忆 芮联系。同样地，她也可以通过电子邮箱vulnerable2072@gmail.com接受相关咨询。昊忆 芮办公的地址是北京市定中门侧路912号，非常欢迎各界人士前来交流合作。\n\n昊忆 芮女士展现了中国女性在商业领域日益增长的影响力和她们专业、坚韧的工作态度。她本人亦表示，她将继续致力于为客户提供优质服务，打造更多的成功案例。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昊忆 芮"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Gregorio Campbell"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "房地产经纪人"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 893-96672323"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "vulnerable2072@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "定中门侧路912号"
+      }
+    ]
+  },
+  {
+    "input": "合同协议书\n\n甲方(雇主)：____________________\n乙方(雇员)：昂然 支\n\n根据中华人民共和国相关法律法规，甲乙双方本着平等、自愿的原则，就乙方提供陶瓷工艺服务事宜达成如下合同协议：\n\n一、服务内容\n乙方同意根据甲方需求，提供专业的陶瓷制作及设计服务。\n\n二、服务期限\n本合同服务期限自签订之日起至____年____月____日止。\n\n三、报酬\n甲方同意按照乙方的服务内容支付相应的报酬。服务报酬将在服务完成后的七个工作日内支付给乙方。\n\n四、双方权利与义务\n1. 乙方负责按时提供高质量的陶瓷作品，确保作品的质量达到甲方要求的标准。\n2. 甲方应按时支付乙方的劳务费用，并提供必要的工作条件和材料。\n3. 乙方应妥善保管因工作获得的甲方资料，未经甲方许可，不得对外泄露。\n4. 如遇不可抗力因素导致无法履行合同，双方应协商解决。\n\n五、解约与违约\n如任何一方需提前终止合同，应提前___天书面通知对方。逾期未履行或不履行合同内容的一方，需向守约方支付违约金。\n\n六、争议解决\n因执行本合同而发生的任何争议，双方应先通过友好协商解决；协商不成时，可提交双方同意的仲裁委员会仲裁。\n\n七、其他\n本合同未尽事宜，可由双方另行协商填写。\n\n八、本合同一式两份，甲乙双方各执一份，经双方签字盖章后生效。\n\n乙方信息：\n姓名：昂然 支 / Terence Maynard\n性别：女性\n职业：陶瓷工\n电话：+86 358-42410992\n邮箱：cradle1925@163.com\n地址：红卫路三条921号\n\n甲方签字：____________________\n\n乙方签字：昂然 支 / Terence Maynard\n\n签约日期：____年____月____日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "昂然 支"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Terence Maynard"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "陶瓷工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 358-42410992"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "cradle1925@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红卫路三条921号"
+      }
+    ]
+  },
+  {
+    "input": "兹有本合同由以下二方签署：\n\n甲方（雇主）信息：\n【甲方姓名未填写】\n【甲方性别未填写】\n【甲方职业未填写】\n【甲方电话未填写】\n【甲方邮箱未填写】\n【甲方地址未填写】\n\n乙方（雇员）信息：\n姓名: 天琦 杨\n性别: 男性\n职业: 花匠\n电话: +86 695-68658098\n邮箱: parental1915@gmail.com\n地址: 吴家山街道1031号\n\n第一条 合同目的\n甲乙双方根据平等、自愿的原则，本着互利互惠的精神，特签订本合同。以明确彼此在园艺维护与管理服务中的权利与义务。\n\n第二条 工作范围\n乙方(天琦 杨/Serafina Head)同意根据甲方的需求提供专业的园艺服务，包括但不限于植物的种植、修剪、浇水等。\n\n第三条 合同期限\n本合同自双方签字之日起生效，有效期为一年。期满后，双方可商议决定是否续签。\n\n第四条 工作报酬\n乙方完成规定的园艺工作后，甲方应在每月的最后一个工作日向乙方支付工资。具体金额双方另行协商确定。\n\n第五条 双方权利与义务\n乙方应保证提供的园艺服务质量，按时完成甲方交待的任务。甲方应按时支付乙方工资，并为乙方提供必要的工作条件。\n\n第六条 违约责任\n如任何一方未能履行本合同中的任何一项义务，违反方需对守约方支付违约金。违约金的具体数额根据违反情况双方协商确定。\n\n第七条 其他\n任何由于本合同引起或与本合同有关的争议，双方应友好协商解决。协商不成时，可提交甲方所在地有管辖权的人民法院诉讼解决。\n\n甲方签字: __________________\n乙方签字: 天琦 杨 / Serafina Head\n\n日期: __________________",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "天琦 杨"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Serafina Head"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "花匠"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 695-68658098"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "parental1915@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "吴家山街道1031号"
+      }
+    ]
+  },
+  {
+    "input": "在最近的商业交流中，知名公司龙腾集团宣布与资深律师河沐 惠达成了一项战略合作协议。河沐惠先生，也是国际法律界的佼佼者，将会为龙腾集团提供全面的法律咨询服务。\n\n河沐 惠先生毕业于国内顶尖法律院校，并在多个知名律所任职过，积累了丰富的处理商业交易和国际争端的经验。他的专业背景和扎实的法律功底让他在行业内享有很高的声誉。\n\n在本次合作签约仪式结束后，河沐惠先生表示，他期待能够帮助龙腾集团在各种复杂商业环境中稳健发展。“我的目标是利用我的专业知识来支持龙腾集团，在各种法律挑战面前保持竞争优势。”河沐惠先生说。\n\n龙腾集团方面，对于能够与河沐惠律师这样的行业精英合作，表示出了极高的期待和信心。集团董事会认为他的加入将对公司的风险管控和法律事务产生深远影响。\n\n对于希望联系河沐惠先生的企业或个人，可以通过电话 +86 380-08414732 或邮箱 ministry1986@gmail.com 与他取得联系。他的办公室位于车站九条405号，非常欢迎各界朋友前来咨询法律事宜。\n\n龙腾集团和河沐惠律师的这次联手，无疑将开启双方合作的新篇章，也必将在商业领域产生一系列积极的效应。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "河沐 惠"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rolland Small"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "律师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 380-08414732"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "ministry1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "车站九条405号"
+      }
+    ]
+  },
+  {
+    "input": "甲方：军 梁\n性别：女性\n职业：汽车修护工\n电话：+86 762-44941287\n邮箱：retained1941@163.com\n地址：粮道街四条978号\n\n乙方：[乙方名称]\n\n服务合同\n\n第一条： 根据中华人民共和国相关法律规定，甲乙双方在平等、自愿的基础上，就汽车修护服务事宜，本着诚信合作的原则，达成以下合同条款：\n\n第二条：甲方军 梁（女性），作为职业汽车修护工，同意按照乙方的要求提供汽车修护服务。乙方需确保所需服务的汽车状况如实告知甲方，并协助提供必要的工作条件。\n\n第三条：服务时间及地点根据乙方需求经双方协商确定。甲方于服务过程中需确保提供的服务质量符合行业标准。\n\n第四条：服务费用根据甲方提供的服务实际工时及所需材料费，按照市场合理价格标准由甲乙双方协商确定。乙方应在服务完成后三日内全额支付费用至甲方指定账户。\n\n第五条：甲方保证提供的汽车修护服务符合安全操作规程，若因甲方原因导致服务质量问题，应负责免费返工或赔偿相应的损失。\n\n第六条：本合同自双方签字盖章之日起生效，合同有效期为一年，期满后如需续约，双方应提前三十天进行协商。\n\n第七条：本合同未尽事宜，双方应友好协商解决。如协商不成，任何一方均可向甲方所在地人民法院提起诉讼。\n\n甲方签字：___________\n\n乙方签字：___________\n\n签订日期：______年______月______日\n\n附件：甲方身份证复印件，乙方身份证复印件及其它相关附件",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "军 梁"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Bret Ware"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "汽车修护工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 762-44941287"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "retained1941@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "粮道街四条978号"
+      }
+    ]
+  },
+  {
+    "input": "委托服务合同书\n\n甲方（委托方）：______________________\n乙方（受托方）：河沐 惠\n\n根据中华人民共和国相关法律法规，甲乙双方在平等、自愿的基础上，针对甲方委托乙方提供法律服务之事宜，经协商一致，特订立本合同，以资遵照。\n\n一、委托内容与服务范围\n1.1 甲方同意委托乙方河沐 惠（性别：男性，职业：律师）为甲方提供法律服务。\n1.2 乙方应根据甲方的委托要求，提供专业的法律咨询、起草和修改合同、代理诉讼及其他法律服务。\n\n二、合同期限\n2.1 本合同自双方签字之日起生效，至法律服务任务完成之日终止。\n\n三、费用及支付方式\n3.1 法律服务费具体金额及支付方式，由甲乙双方另行协商确定，签署《法律服务费付款确认书》。\n\n四、乙方的权利与义务\n4.1 乙方应遵守法律法规，按照律师职业标准提供高质量的法律服务。\n4.2 乙方应保守甲方的商业秘密及其他任何形式的保密信息。\n\n五、甲方的权利与义务\n5.1 甲方应按照约定向乙方支付法律服务费。\n5.2 甲方应提供乙方提供法律服务所必须的资料和信息。\n\n六、违约责任\n6.1 如任何一方违反本合同的约定，应按照本合同的条款承担违约责任。\n6.2 因不可抗力事件导致无法履行合同，应及时通知对方并提供相应的证明，双方应协商解决。\n\n七、其他\n7.1 本合同的更改、终止或解除，必须以书面形式经双方同意后方可生效。\n7.2 本合同的解释及争议的解决，应适用中华人民共和国法律，并由乙方所在地的人民法院管辖。\n\n八、联系方式\n乙方姓名：河沐 惠\n电话：+86 380-08414732\n邮箱：ministry1986@gmail.com\n地址：车站九条405号\n\n本合同一式两份，甲乙双方各执一份，具有同等法律效力。\n甲方（签字）：________________      日期：____年__月__日\n乙方（签字）：河沐 惠              日期：____年__月__日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "河沐 惠"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rolland Small"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "律师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 380-08414732"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "ministry1986@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "车站九条405号"
+      }
+    ]
+  },
+  {
+    "input": "甲方（委托方）信息：\n姓名：云天 竺\n性别：女性\n职业：病历管理师\n电话：+86 883-24006525\n邮箱：poor2025@qq.com\n地址：老下陆条1341号\n\n乙方（受托方）信息：\n[注：此处待填写乙方的相关信息]\n\n合同编号：____________\n\n服务合同\n\n第一条：合同目的\n为明确双方的权利与义务，本着平等互利的原则，特签订本服务合同。\n\n第二条：服务内容\n甲方委托乙方提供以下服务：[具体服务内容]。\n\n第三条：服务期限\n本合同自双方签字盖章之日起生效，服务期限为____年，至____年____月____日终止。\n\n第四条：服务费用及支付方式\n甲方应向乙方支付服务费用，总额为____元。支付方式为[请填写支付方式，如一次性支付、分期支付等]。\n\n第五条：双方权利与义务\n1. 甲方权利与义务：\n   a) 甲方有权监督乙方服务质量；\n   b) 甲方应按合同约定支付相关费用；\n   c) 甲方应提供乙方服务所需的相关资料和条件。\n2. 乙方权利与义务：\n   a) 乙方应按约定的服务要求完成任务；\n   b) 乙方有权按合同约定收取服务费用；\n   c) 乙方应保护甲方资料的隐私性。\n\n第六条：违约责任\n双方应遵守本合同条款。如一方违约，应承担相应违约责任。\n\n第七条：解决争议的方式\n因履行本合同所发生的一切争议，双方应友好协商解决。协商不成时，可依法向甲方所在地人民法院提起诉讼。\n\n第八条：其他\n1. 本合同一式两份，双方各执一份，具有同等法律效力。\n2. 双方在合同中未尽事宜，可另行商讨并以书面形式补充本合同。\n3. 任何一方对本合同的修改和补充，必须经双方共同书面同意。\n\n甲方签字：________________\n\n乙方签字：________________\n\n签订日期：____年____月____日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "云天 竺"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Delmar Blake"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "病历管理师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 883-24006525"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "poor2025@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "老下陆条1341号"
+      }
+    ]
+  },
+  {
+    "input": "汽车行业又传来新的消息，在经过数月紧张洽谈之后，本地著名汽车修护工军 梁与顶级汽车制造商签署了一项划时代的合作协议。据悉，军 梁女士因其专业技术精湛，创新意识超前而获得了合作方的高度认可。\n\n根据协议内容，军 梁将担任该汽车制造商的技术顾问，并负责协助开发新型汽车修护工具和设备。合作双方均表示，这次业务合作将大大提升车辆的维护效率，对汽车产业的发展起到积极推动作用。\n\n军 梁拥有多年汽车修护经验，备受业内人士推崇。她个人的联系方式在业内也是众所周知，电话为 +86 762-44941287，邮箱则是 retained1941@163.com。更加难得的是，虽然她的职业生涯如日中天，但军 梁一直保持谦逊低调，她所在的修理工作室位于粮道街四条978号，门常开放，欢迎各界人士前来交流。\n\n此次业务合作一经宣布，便立即在汽车产业界及媒体中引发热烈反响。专家认为，军 梁的加入不仅能够为汽车制造商带来技术革新，同时也为女性在传统男性行业中担任重要角色树立了典范。\n\n双方期望通过此次合作，能为消费者提供更为出色和可靠的汽车维修服务。随着业务合作的不断深入，我们相信军 梁的事业将会有更加辉煌的成就。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "军 梁"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Bret Ware"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "汽车修护工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 762-44941287"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "retained1941@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "粮道街四条978号"
+      }
+    ]
+  },
+  {
+    "input": "兹有泊显 璩（性别：男性，职业：进出口办事员）与第二方甲方签订本合同，以下是甲方的详细信息：\n\n姓名: 泊显 璩\n性别: 男性\n职业: 进出口办事员\n电话: +86 972-01971019\n邮箱: woman1979@gmail.com\n地址: 花果八条285号\n\n甲乙双方本着平等自愿、协商一致的原则，就乙方提供的服务内容和甲方的权利义务等事宜，经友好协商，达成如下合同条款：\n\n第一条 合同标的\n乙方同意根据甲方提出的需求，向甲方提供符合合同所规定标准的服务。\n\n第二条 合同金额\n本合同规定的服务费用总额为人民币 [请填写具体金额]，甲方应于合同生效之日起 [请填写具体天数] 天内支付给乙方。\n\n第三条 支付方式\n甲方应通过银行转账的方式向乙方支付服务费用。付款账户信息务必与甲方预留的银行账户信息相一致，以确保款项能正确无误地汇入乙方账户。\n\n第四条 合同期限\n本合同自双方签字盖章之日起生效，至服务完毕之日止。\n\n第五条 甲方义务\n甲方必须在约定的时间内完成付款，并提供必要的协助和配合，以使乙方能够顺利完成服务。\n\n第六条 乙方义务\n乙方必须按照合同约定提供质量符合标准的服务，并保证服务的及时性与有效性。\n\n第七条 违约责任\n如甲方未能履行合同约定的付款义务，应视情况向乙方支付违约金。如乙方未能按合同约定提供服务，应承担相应的违约责任。\n\n第八条 争议解决\n本合同在履行过程中发生任何争议，双方应首先协商解决。协商不成的，可提交甲方所在地有管辖权的人民法院诉讼解决。\n\n本合同一式两份，甲乙双方各执一份，具有同等法律效力。\n\n甲方（签字）: ______________________\n日期: [请填写签字日期]\n\n乙方（签字）: ______________________\n日期: [请填写签字日期]",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "泊显 璩"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Adolfo Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "进出口办事员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 972-01971019"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "woman1979@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "花果八条285号"
+      }
+    ]
+  },
+  {
+    "input": "甲方：珏萱 相 / Marion Sanders\n性别：男性\n职业：配线工\n电话：+86 835-91233398\n邮箱：packets1898@163.com\n地址：五里界八条356号\n\n乙方：[公司/个人名称]\n\n合同编号：____________\n\n根据中华人民共和国相关法律法规，甲乙双方在平等，自愿，公平的基础上，就甲方提供配线工作务给乙方，乙方支付相应劳务费用的事项，经友好协商，达成如下合同条款：\n\n一、合同期限\n本合同自____年____月____日起至____年____月____日止。\n\n二、工作内容\n1. 甲方负责的具体工作内容包括但不限于_______________________________。\n2. 乙方应保证提供符合安全标准的工作环境，并供甲方施工所需的相关信息和材料。\n\n三、劳务报酬\n1. 对于甲方提供的配线服务，乙方应按照合同约定支付劳务费用，本合同确定的费用为人民币____元。\n2. 乙方应于每次服务完成后____天内，通过转账方式将款项支付至甲方指定的银行账户。\n\n四、合同的变更与终止\n1. 合同一经双方签字盖章后生效，任何变更或补充均须以书面形式确认，并经双方代表签字盖章后方能生效。\n2. 如果甲方珏萱 相 / Marion Sanders因故无法继续履行合同，须至少提前____日书面通知乙方，并协商解决后续事宜。\n\n五、违约责任\n1. 若甲方无正当理由迟延履行合同，应每延迟一日向乙方支付合同金额____%的违约金。\n2. 若乙方迟延支付劳务费，应根据逾期天数向甲方支付应付款项____%的滞纳金。\n\n六、争议解决\n本合同在履行过程中，如发生争议，双方应通过协商解决。协商不成时，任何一方可向甲方珏萱 相 / Marion Sanders所在地人民法院提起诉讼。\n\n七、其他\n1. 本合同一式两份，甲乙双方各执一份，具有同等法律效力。\n2. 未尽事宜，双方可另行商议解决，所作补充协议视为本合同不可分割的一部分。\n\n甲方签字：________________        乙方签字：________________\n日期：____年____月____日           日期：____年____月____日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "珏萱 相"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Marion Sanders"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "配线工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 835-91233398"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "packets1898@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "五里界八条356号"
+      }
+    ]
+  },
+  {
+    "input": "合同编号：______________\n\n甲方（委托方）：[请输入甲方名称]\n乙方（受托方）：谨叶 於\n\n根据中华人民共和国有关法律、法规，双方在平等、自愿、公平及诚实信用的基础上，就乙方提供商品售货服务事宜，经协商一致，达成如下合同：\n\n第一条 合同期限\n本合同自签字之日起生效，有效期为一年，自_______年___月___日至_______年___月___日。\n\n第二条 服务内容\n乙方职责为商品售货员，负责甲方指定地点内的商品销售服务。\n\n第三条 权利与义务\n1. 甲方须按时支付乙方报酬，并提供必要的销售设备与环境。\n2. 乙方必须遵守甲方店铺的工作规章制度，保证销售任务的完成质量。\n\n第四条 报酬\n甲方须按月向乙方支付报酬，具体金额按双方另行约定。\n\n第五条 合同变更和解除\n双方可以书面形式协商变更或解除合同，任意一方不得单方面变更或解除合同。\n\n第六条 违约责任\n如一方未能履行合同义务或违约行为，必须向另一方支付违约金。\n\n第七条 争议解决\n因履行合同发生争议，双方应协商解决；协商不成，可提交_____人民法院诉讼解决。\n\n第八条 其他事宜\n1. 合同未尽事宜，双方可另行商定补充条款。\n2. 本合同一式两份，甲乙双方各执一份，具有同等法律效力。\n\n第九条 乙方信息\n姓名：谨叶 於\n性别：女性\n职业：商品售货员\n电话：+86 826-74079550\n邮箱：promoting1861@qq.com\n地址：红钢城四条1063号\n\n甲方（签字）：_________\n\n乙方（签字）：谨叶 於\n\n签订日期：_______年___月___日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "谨叶 於"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Ayana Downs"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "商品售货员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 826-74079550"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "promoting1861@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "红钢城四条1063号"
+      }
+    ]
+  },
+  {
+    "input": "致：欣 公羊女士\n\n身份信息：\n姓名：欣 公羊 / Stasia Solis\n性别：女性\n职业：消防工作人员\n电话：+86 140-71348680\n邮箱：median2034@qq.com\n地址：景山前大街1148号\n\n合同编号：[填写合同编号]\n签订日期：[填写签订日期]\n\n尊敬的欣 公羊女士：\n\n根据本合同，甲方同意聘请乙方（欣 公羊女士/Stasia Solis），担任消防工作人员。甲方赞赏乙方之前的工作经历，相信您的专业技能和经验将对甲方的服务质量产生积极的影响。\n\n第一条 工作范围\n乙方应根据甲方的安排，完成消防安全检查、紧急救援等工作职责。乙方需确保工作的质量和效率，按时完成甲方布置的工作任务。\n\n第二条 工资待遇\n甲方同意按月支付乙方工资，具体数额及支付方式依据甲方规定的薪酬制度执行。\n\n第三条 工作时间与休假\n双方同意，乙方的标准工作时间为每周不超过40小时，超出部分按照相关法律法规执行加班支付。乙方享有国家法定假日及按公司规定的带薪年假。\n\n第四条 合同期限\n本合同的有效期为两年，自[填写合同起始日期]起至[填写合同结束日期]止。合同期满，双方可协商续签事宜。\n\n第五条 保密协议\n乙方需对在任职期间获知的甲方商业秘密和敏感信息予以保密，不得泄露给第三方或用于个人利益。\n\n第六条 解约及赔偿\n如任何一方需要提前解除本合同，应至少提前一个月书面通知对方。违反合同规定的一方需向另一方支付相应的违约金。\n\n本合同一式两份，双方各执一份，具有同等法律效力。甲、乙双方在了解和认可本合同所有条款的基础上，自愿签署并遵守。\n\n甲方（签章）：_____________________\n乙方（欣 公羊/Stasia Solis）（签章）：_____________________\n\n签约地点：_____________________\n签约日期：_____________________",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "欣 公羊"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Stasia Solis"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "消防工作人员"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 140-71348680"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "median2034@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "景山前大街1148号"
+      }
+    ]
+  },
+  {
+    "input": "宠物美容行业迎来新星——艳蕴 岑与国际品牌达成独家合作\n\n在宠物行业不断蓬勃发展的今天，中国市场上涌现出了许多杰出的宠物美容师。日前，备受瞩目的宠物美容师艳蕴 岑（Jessia Cline），以其精湛的技艺与对宠物美容潮流的敏锐洞察力，在业界赢得了声誉。令人振奋的消息是，艳蕴 岑最近与一家知名的国际宠物美容品牌签署了一个重要的商业合作协议。据悉，该品牌选择艳蕴 岑作为独家合作伙伴，标志着这位才华横溢的男性美容师在全球市场的脚步又向前迈进了一大步。\n\n作为协议的一部分，艳蕴 岑将担任品牌的宠物美容技术顾问，并在其位于文津路1257号的美容工作室中使用并推广品牌产品。消费者可以通过拨打+86 188-62647685或发送邮件至falls1971@qq.com来预订服务，也可直接到店体验艳蕴 岑的专业宠物美容服务。\n\n艳蕴 岑在接受记者采访时表达了自己的激动与期望：“对于一个宠物美容师来说，能够得到国际品牌的认可并与之合作，意义重大。我期待着将更多高品质的产品和服务带给我们的顾客，为他们的爱宠营造一场美的盛宴。”\n\n业内专家认为，艳蕴 岑的成就不仅仅是个人的荣誉，也是中国宠物美容师水平提升的象征。他们预计，这次商业合作将对国内宠物美容行业产生积极影响，推动行业整体朝着更加国际化的方向发展。\n\n详情请咨询：\n艳蕴 岑宠物美容\n地址：文津路1257号\n电话：+86 188-62647685\n邮箱：falls1971@qq.com",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "艳蕴 岑"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Jessia Cline"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "宠物美容师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 188-62647685"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "falls1971@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "文津路1257号"
+      }
+    ]
+  },
+  {
+    "input": "合同书\n\n甲方（委托方）：俊博 邓\n乙方（受托方）：\n\n本合同由以下双方于中华人民共和国上海市签订，甲方为：俊博 邓，男性，心理谘商师，电话：+86 229-08297080，邮箱：testament2009@163.com，居住地点：上海六条1376号；乙方为：\n\n鉴于甲方从事心理谘商工作，现甲乙双方基于平等、自愿的原则，达成以下合作协议：\n\n一、服务内容\n1.1 乙方同意按照甲方的要求，提供相应的服务内容。\n1.2 甲方应根据乙方的服务情况及时给予反馈和指导。\n\n二、合同期限\n2.1 本合同自签订之日起生效，有效期为一年，到期后双方可根据实际情况协商续约。\n\n三、服务费用及支付方式\n3.1 双方约定的服务费用为____元，乙方提供的服务结束后，甲方应当在____天内支付完毕。\n3.2 付款方式为____。（银行转账/现金支付/其他方式）\n\n四、双方权利与义务\n4.1 甲方有权要求乙方提供的服务达到约定质量标准，有权在合同执行过程中提出合理要求和建议。\n4.2 乙方应保证提供服务的专业水平，确保服务质量满足甲方要求。\n4.3 甲方应按合同规定支付相关服务费用。\n4.4 乙方应秉持诚信原则，保守商业秘密。\n\n五、违约责任\n5.1 如甲方违反合同规定，未能按时付款，应向乙方支付违约金，违约金为应付款项的____%。\n5.2 如乙方未能按合同规定提供服务或服务质量不符合标准，应当退还甲方支付的服务费，并支付违约金，违约金为已收取服务费的____%。\n\n六、其他\n6.1 双方应严格遵守本合同条款，未经双方一致书面同意，任何一方不得擅自修改、解除本合同。\n6.2 因履行本合同产生的争议，双方应先行友好协商解决，协商不成的，可提交签约地人民法院诉讼解决。\n\n七、附则\n7.1 本合同一式两份，甲乙双方各执一份，具有同等法律效力。\n7.2 本合同中未尽事宜，甲乙双方应通过协商一致后另行书面约定。\n\n甲方（签字）：\n\n乙方（签字）：\n\n签约日期：",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "俊博 邓"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Reynaldo Ingram"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "心理谘商师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 229-08297080"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "testament2009@163.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "上海六条1376号"
+      }
+    ]
+  },
+  {
+    "input": "甲方（雇主）信息：\n姓名：蜜轩 阙\n性别：男性\n职业：电信工程师\n电话：+86 708-37180153\n邮箱：field1956@qq.com\n地址：前门六条703号\n\n乙方（服务提供者）信息：\n姓名：_______________\n性别：_______________\n职业：_______________\n电话：_______________\n邮箱：_______________\n地址：_______________\n\n服务合同\n\n本合同由甲方蜜轩 阙（电话：+86 708-37180153，邮箱：field1956@qq.com，地址：前门六条703号），作为电信工程师，与乙方（以下填写乙方详细信息）订立。\n\n鉴于甲方因业务需要，希望聘请乙方提供专业服务；乙方同意根据甲方的要求提供该等服务。根据《中华人民共和国合同法》及相关法律法规的规定，双方本着平等自愿、公平诚信的原则，经协商一致，就乙方向甲方提供服务的条款和条件达成如下合同：\n\n第一条 合同期限\n本合同自____年__月__日起至____年__月__日止。\n\n第二条 服务内容与要求\n1. 乙方须根据甲方提出的具体业务需求，提供专业的电信工程相关服务。\n2. 乙方须确保服务质量满足甲方要求，并努力在规定时间内完成任务。\n\n第三条 付款条款\n1. 甲方应按照合同商定的金额向乙方支付服务费用。\n2. 支付方式：_____。\n3. 付款时间及流程：_____。\n\n第四条 违约责任\n双方应严格遵守合同约定，如一方违反合同，需承担违约责任并补偿对方因此遭受的损失。\n\n第五条 保密条款\n乙方应对在服务期间获知的甲方商业秘密及其他相关信息保密，未经甲方同意，不得向任何第三方透露。\n\n第六条 合同变更与解除\n任何关于本合同的变更与解除，必须经双方协商一致，并以书面形式确认。\n\n第七条 法律适用与争议解决\n本合同的订立、有效性、解释、执行和争议解决均适用中华人民共和国法律。双方因本合同发生的任何争议，应首先通过友好协商解决；协商不成时，任何一方均可提交甲方所在地人民法院诉讼解决。\n\n本合同一式两份，甲乙双方各持一份，自双方签字盖章之日起生效。\n\n甲方签章：_______________\n乙方签章：_______________\n签订日期：____年__月__日",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "蜜轩 阙"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Moses Witt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "电信工程师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 708-37180153"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "field1956@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "前门六条703号"
+      }
+    ]
+  },
+  {
+    "input": "服务合同书\n\n甲方（服务提供方）信息\n单位名称：\n联系人：\n地址：\n电话：\n邮箱：\n\n乙方（服务接收方）信息\n姓名：承浠 马 / Rosette Pratt\n性别：女性\n职业：冷冻空调装修工\n电话：+86 744-60520435\n邮箱：dropped1962@qq.com\n地址：建桥侧路218号\n\n鉴于甲方是一家专业的服务公司，乙方是一位从业于冷冻空调装修行业的专业技术工人；甲乙双方基于平等自愿的原则，依照《中华人民共和国民法通则》及相关法律规定，就甲方向乙方提供的专业服务内容、服务质量、服务费用等事宜达成如下合作协议：\n\n一、服务范围\n1. 甲方根据乙方提供的需求，提供以下服务：[详细服务内容]。\n2. 乙方承浠 马 / Rosette Pratt 必须保证提供准确的服务需求说明及相关配合。\n\n二、服务周期\n1. 本合同服务周期为：自___年___月___日起至___年___月___日止。\n2. 任何一方提出变更服务周期，需提前___天通知对方。\n\n三、服务费用及支付方式\n1. 双方约定的服务费用总额为人民币[金额]元。\n2. 乙方需在签署本合同后___日内支付___%的服务费用，余额在服务完成后支付。\n3. 乙方承浠 马 / Rosette Pratt 应通过银行转账至甲方指定账号，或其他双方约定的支付方式支付服务费用。\n\n四、双方权利与义务\n1. 乙方应保证提供的个人信息真实有效，若因乙方提供虚假信息而导致的一切后果，由乙方承担。\n2. 甲方需按照约定提供优质服务，并对服务内容负责。\n\n五、违约责任\n1. 任何一方违反本合同约定，应承担违约责任，并赔偿对方因此所遭受的损失。\n2. 因不可抗力导致任一方不能履行本合同，受影响一方应及时通知对方，双方可协商解决。\n\n六、合同的变更和终止\n1. 本合同生效后，未经双方书面同意，任何一方不得擅自变更或解除本合同。\n2. 若乙方承浠 马 / Rosette Pratt 因故需终止合同，应至少提前___天书面通知甲方。\n\n七、其他约定\n1. 本合同一式两份，甲乙双方各执一份，自双方签字盖章之日起生效。\n2. 本合同的任何争议，双方应友好协商解决；协商不成时，提交甲方所在地人民法院诉讼解决。\n\n甲方（盖章）：\n\n乙方签字：承浠 马 / Rosette Pratt\n日期：\n\n本合同中文版与英文版如有歧义，以中文版为准。",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "承浠 马"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Rosette Pratt"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "冷冻空调装修工"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 744-60520435"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "dropped1962@qq.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "建桥侧路218号"
+      }
+    ]
+  },
+  {
+    "input": "合同编号：________\n\n甲方：长治 咸\n性别：男性\n职业：室内设计师\n电话：+86 216-63303309\n邮箱：functionality1916@gmail.com\n住址：东方山五条1027号\n\n乙方：[乙方名字]\n乙方联系方式：[乙方联系信息]\n\n合同类型：室内设计服务合同\n\n根据中华人民共和国相关法律法规，甲乙双方在平等、自愿、公平、诚信的基础上，就乙方委托甲方提供室内设计服务事宜，经协商一致，达成如下合同条款：\n\n第一条 合同目的\n乙方因自身需求，委托甲方提供专业的室内设计方案及相关服务。\n\n第二条 服务内容\n甲方应按乙方要求，提供包括但不限于设计咨询、制图、空间规划在内的室内设计服务，并保证设计成果的创新性与实用性。\n\n第三条 合同价格及支付方式\n1. 设计费用为人民币[具体金额]元整。\n2. 乙方应依下列支付方式支付设计费用：首次支付比例为合同总额的30%，甲方提供初步设计方案后支付；余款在最终方案确定后付清。\n3. 付款方式为银行转账至甲方指定账户或其他双方协商一致的方式。\n\n第四条 甲方权利与义务\n1. 甲方应保证所提供设计服务的质量，确保设计方案符合国家相关标准和安全规范。\n2. 甲方应在约定时间内完成设计任务，如遇特殊情况需变更时间的，应及时告知乙方并取得同意。\n3. 甲方有权按照本合同规定获得相应的设计费用。\n\n第五条 乙方权利与义务\n1. 乙方负责向甲方提供清晰的设计需求和相关信息。\n2. 乙方应按合同约定，及时足额支付设计费用。\n3. 乙方有权要求甲方提供符合约定要求的设计成果。\n\n第六条 保密条款\n甲乙双方应严格保密各自的商业秘密及本合同内容，未经另一方书面同意，不得向任何第三方泄露。\n\n第七条 合同的变更与终止\n任一方需变更或终止本合同的，应提前三十天书面通知对方。经双方协商一致，可以变更或解除合同。\n\n第八条 违约责任\n如任一方违约，应按照相关法律法规和本合同的约定承担相应的违约责任。\n\n第九条 争议解决方式\n因执行本合同所产生的争议，双方应通过友好协商解决。协商不成时，任何一方均可向甲方所在地人民法院提起诉讼。\n\n第十条 其他事项\n1. 本合同的签订和生效以双方法定代表人或授权代表签字盖章后生效。\n2. 本合同一式两份，甲乙双方各执一份，具有同等法律效力。\n\n甲方签名：_____\n\n乙方签名：_____\n\n签订日期：_____",
+    "output": [
+      {
+        "entity_source": "chinese",
+        "entity_type": "name",
+        "entity_value": "长治 咸"
+      },
+      {
+        "entity_source": "english",
+        "entity_type": "name",
+        "entity_value": "Zane Cotton"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "occupation",
+        "entity_value": "室内设计师"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "phone",
+        "entity_value": "+86 216-63303309"
+      },
+      {
+        "entity_source": "mixed",
+        "entity_type": "email",
+        "entity_value": "functionality1916@gmail.com"
+      },
+      {
+        "entity_source": "chinese",
+        "entity_type": "address",
+        "entity_value": "东方山五条1027号"
+      }
+    ]
+  }
+]
