@@ -73,10 +73,6 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
         
         logger.info(f"Dataset loaded successfully with {len(dataset)} examples")
         
-        # Initialize WordsSplitter with jieba for Chinese text
-        logger.info("Setting up jieba tokenizer...")
-        processor = WordsSplitter(splitter_type="jieba")
-        
         # Initialize GLiNER dataset
         gliner_data = []
         entity_types: Set[str] = set()
@@ -95,25 +91,14 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                 }
                 
                 text = example['input']
-                # Tokenize text using the model's data processor tokenizer
-                tokenizer = model.data_processor.transformer_tokenizer
-                tokens = tokenizer.tokenize(text)
-                
-                # Convert character positions to token positions
-                token_spans = []
-                char_to_token = {}
-                current_pos = 0
-                
-                for token_idx, token in enumerate(tokens):
-                    # Handle special tokens and whitespace
-                    token_text = tokenizer.convert_tokens_to_string([token]).strip()
-                    if token_text:
-                        token_start = text.find(token_text, current_pos)
-                        if token_start != -1:
-                            token_end = token_start + len(token_text)
-                            for char_pos in range(token_start, token_end):
-                                char_to_token[char_pos] = token_idx
-                            current_pos = token_end
+                # Get tokenized text and offsets using the model's tokenizer
+                encoding = model.data_processor.transformer_tokenizer(
+                    text, 
+                    return_offsets_mapping=True, 
+                    add_special_tokens=False
+                )
+                tokens = encoding.tokens()
+                offset_mapping = encoding.offset_mapping
                 
                 # Process entities and convert to token spans
                 ner_spans = []
@@ -127,10 +112,18 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                     start = text.find(entity_text)
                     if start != -1:
                         end = start + len(entity_text)
-                        # Convert character spans to token spans
-                        if start in char_to_token and (end-1) in char_to_token:
-                            token_start = char_to_token[start]
-                            token_end = char_to_token[end-1]
+                        
+                        # Find token spans that contain the entity
+                        token_start = None
+                        token_end = None
+                        for idx, (token_start_char, token_end_char) in enumerate(offset_mapping):
+                            if token_start is None and token_start_char <= start < token_end_char:
+                                token_start = idx
+                            if token_end is None and token_start_char < end <= token_end_char:
+                                token_end = idx
+                                break
+                        
+                        if token_start is not None and token_end is not None:
                             ner_spans.append([token_start, token_end, entity_type])
                 
                 # Only add examples with valid entities
@@ -201,8 +194,8 @@ def main():
         train_dataset, test_dataset, entity_types = load_and_prepare_data(model)
         logger.info(f"Found {len(entity_types)} entity types: {', '.join(entity_types)}")
         
-        # Setup data collator and validate format
-        logger.info("Setting up data collator and validating format...")
+        # Setup data collator
+        logger.info("Setting up data collator...")
         data_collator = DataCollator(
             model.config,
             data_processor=model.data_processor,
@@ -235,7 +228,6 @@ def main():
             focal_loss_alpha=0.75,  # For handling class imbalance
             focal_loss_gamma=2,
             num_train_epochs=num_epochs,
-            evaluation_strategy="steps",
             save_steps=100,
             save_total_limit=10,
             dataloader_num_workers=0,
@@ -243,16 +235,6 @@ def main():
             report_to="none",
         )
         
-        # Test data format with a small batch
-        try:
-            logger.info("Testing data format with a small batch...")
-            test_batch = train_dataset[:2]
-            test_collated = data_collator([test_batch[0]])
-            logger.info("Data format validation successful")
-        except Exception as e:
-            logger.error(f"Data format validation failed: {str(e)}")
-            raise ValueError("Failed to process test batch. Please check data format.") from e
-            
         # Initialize trainer
         logger.info("Setting up trainer...")
         trainer = Trainer(
@@ -260,7 +242,6 @@ def main():
             args=training_args,
             train_dataset=train_dataset,
             eval_dataset=test_dataset,
-            tokenizer=model.data_processor.transformer_tokenizer,
             data_collator=data_collator,
         )
         
