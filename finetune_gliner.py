@@ -284,6 +284,10 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                     
                     # Convert data to tensors while preserving required fields
                     tokenized_text = tokenizer.convert_ids_to_tokens(input_ids)
+                    # Create position-aware text lengths
+                    seq_length = len(input_ids)
+                    text_lengths = torch.arange(1, seq_length + 1, dtype=torch.long)
+                    
                     tokenized_example = {
                         'input_ids': torch.tensor(input_ids, dtype=torch.long),
                         'attention_mask': torch.tensor(attention_mask, dtype=torch.long),
@@ -292,7 +296,7 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                         'span_indices': torch.tensor(example_span_indices, dtype=torch.long),
                         'span_labels': torch.tensor(span_labels, dtype=torch.float),
                         'span_mask': torch.tensor(span_mask, dtype=torch.bool),
-                        'text_lengths': torch.tensor([sum(attention_mask)], dtype=torch.long),
+                        'text_lengths': text_lengths,
                         'tokenized_text': tokenized_text,  # Keep for debugging
                         'ner': token_spans  # Keep original NER annotations
                     }
@@ -396,9 +400,15 @@ def main():
             for key, value in example.items():
                 if isinstance(value, torch.Tensor):
                     logger.info(f"{key}: shape={value.shape}, dtype={value.dtype}")
+                    # Check for NaN or Inf values
+                    if torch.isnan(value).any():
+                        logger.error(f"NaN values found in {key}")
+                    if torch.isinf(value).any():
+                        logger.error(f"Inf values found in {key}")
                 elif isinstance(value, list):
                     if key == 'tokenized_text':
                         logger.info(f"{key}: length={len(value)}")
+                        logger.info(f"First 10 tokens: {value[:10]}")
                     elif key == 'ner':
                         logger.info(f"{key}: {len(value)} entities")
                         if value:
@@ -406,6 +416,12 @@ def main():
                 else:
                     logger.info(f"{key}: type={type(value)}")
             logger.info("=" * 50)
+            
+            # Validate required fields for GLiNER
+            required_fields = {'tokenized_text', 'ner'}
+            missing_fields = required_fields - set(example.keys())
+            if missing_fields:
+                raise ValueError(f"Missing required fields: {missing_fields}")
         
         # Setup custom data collator with proper batching
         logger.info("Setting up data collator...")
@@ -436,7 +452,7 @@ def main():
                 batch['span_indices'] = torch.zeros((batch_size, max_spans, 2), dtype=torch.long)
                 batch['span_labels'] = torch.zeros((batch_size, max_spans, len(self.entity_types)), dtype=torch.float)
                 batch['span_mask'] = torch.zeros((batch_size, max_spans), dtype=torch.bool)
-                batch['text_lengths'] = torch.zeros(batch_size, dtype=torch.long)
+                batch['text_lengths'] = torch.zeros((batch_size, max_length), dtype=torch.long)
                 
                 # Fill batch tensors
                 for i, feature in enumerate(features):
@@ -448,7 +464,8 @@ def main():
                     batch['attention_mask'][i, :seq_length] = feature['attention_mask']
                     batch['token_type_ids'][i, :seq_length] = feature['token_type_ids']
                     batch['words_mask'][i, :seq_length] = feature['words_mask']
-                    batch['text_lengths'][i] = feature['text_lengths']
+                    # Set text_lengths to match sequence length for each position
+                    batch['text_lengths'][i, :seq_length] = torch.arange(1, seq_length + 1)
                     
                     # Span tensors
                     batch['span_indices'][i, :num_spans] = feature['span_indices']
