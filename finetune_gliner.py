@@ -8,9 +8,8 @@ from typing import List, Dict, Tuple, Set
 from datasets import load_from_disk
 from gliner import GLiNER, GLiNERConfig
 from gliner.training import Trainer, TrainingArguments
-from gliner.data_processing.collator import DataCollator
+from gliner.data_processing import DataCollator, WordsSplitter
 from gliner.utils import load_config_as_namespace
-from gliner.data_processing import WordsSplitter, GLiNERDataset
 
 # Setup logging
 logging.basicConfig(
@@ -225,24 +224,23 @@ def main():
             warmup_ratio=0.1,
             per_device_train_batch_size=batch_size,
             per_device_eval_batch_size=batch_size,
-            focal_loss_alpha=0.75,  # For handling class imbalance
+            focal_loss_alpha=0.75,
             focal_loss_gamma=2,
             num_train_epochs=num_epochs,
             save_steps=100,
             save_total_limit=10,
             dataloader_num_workers=0,
-            use_cpu=device.type == 'cpu',
-            report_to="none",
+            use_cpu=device.type == 'cpu'
         )
         
-        # Initialize trainer
+        # Initialize GLiNER trainer
         logger.info("Setting up trainer...")
         trainer = Trainer(
             model=model,
             args=training_args,
-            train_dataset=train_dataset,
-            eval_dataset=test_dataset,
             data_collator=data_collator,
+            train_dataset=train_dataset,
+            eval_dataset=test_dataset
         )
         
         # Start training
