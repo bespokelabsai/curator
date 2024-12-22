@@ -231,8 +231,7 @@ def main():
             output_dir=str(output_dir),
             learning_rate=5e-6,
             weight_decay=0.01,
-            others_lr=1e-5,
-            others_weight_decay=0.01,
+
             focal_loss_alpha=0.75,
             focal_loss_gamma=2,
             num_train_epochs=num_epochs,
@@ -261,11 +260,12 @@ def main():
         # Start training with GLiNER's training loop
         logger.info("Starting training...")
         try:
-            # Initialize optimizer with different learning rates for different parameter groups
-            optimizer = torch.optim.AdamW([
-                {'params': model.model.parameters(), 'lr': trainer.args.learning_rate},
-                {'params': model.linear.parameters(), 'lr': trainer.args.others_lr}
-            ])
+            # Initialize optimizer with single learning rate
+            optimizer = torch.optim.AdamW(
+                model.parameters(),
+                lr=trainer.args.learning_rate,
+                weight_decay=trainer.args.weight_decay
+            )
             trainer.optimizer = optimizer
             
             # Get dataloader and calculate steps

@@ -1307,3 +1307,134 @@
 2024-12-22 21:51:08,346 - INFO -   Number of epochs: 45
 2024-12-22 21:51:08,350 - INFO - Setting up trainer...
 2024-12-22 21:51:09,176 - INFO - Starting training...
+2024-12-22 22:06:14,714 - INFO - Using device: cpu
+2024-12-22 22:06:14,715 - INFO - Initializing model and tokenizer...
+2024-12-22 22:06:15,211 - ERROR - Training failed: Unrecognized model in urchade/gliner_small. Should have a `model_type` key in its config.json, or contain one of the following strings in its name: albert, align, altclip, audio-spectrogram-transformer, autoformer, bark, bart, beit, bert, bert-generation, big_bird, bigbird_pegasus, biogpt, bit, blenderbot, blenderbot-small, blip, blip-2, bloom, bridgetower, bros, camembert, canine, chameleon, chinese_clip, chinese_clip_vision_model, clap, clip, clip_text_model, clip_vision_model, clipseg, clvp, code_llama, codegen, cohere, conditional_detr, convbert, convnext, convnextv2, cpmant, ctrl, cvt, dac, data2vec-audio, data2vec-text, data2vec-vision, dbrx, deberta, deberta-v2, decision_transformer, deformable_detr, deit, depth_anything, deta, detr, dinat, dinov2, distilbert, donut-swin, dpr, dpt, efficientformer, efficientnet, electra, encodec, encoder-decoder, ernie, ernie_m, esm, falcon, falcon_mamba, fastspeech2_conformer, flaubert, flava, fnet, focalnet, fsmt, funnel, fuyu, gemma, gemma2, git, glm, glpn, gpt-sw3, gpt2, gpt_bigcode, gpt_neo, gpt_neox, gpt_neox_japanese, gptj, gptsan-japanese, granite, granitemoe, graphormer, grounding-dino, groupvit, hiera, hubert, ibert, idefics, idefics2, idefics3, ijepa, imagegpt, informer, instructblip, instructblipvideo, jamba, jetmoe, jukebox, kosmos-2, layoutlm, layoutlmv2, layoutlmv3, led, levit, lilt, llama, llava, llava_next, llava_next_video, llava_onevision, longformer, longt5, luke, lxmert, m2m_100, mamba, mamba2, marian, markuplm, mask2former, maskformer, maskformer-swin, mbart, mctct, mega, megatron-bert, mgp-str, mimi, mistral, mixtral, mllama, mobilebert, mobilenet_v1, mobilenet_v2, mobilevit, mobilevitv2, moshi, mpnet, mpt, mra, mt5, musicgen, musicgen_melody, mvp, nat, nemotron, nezha, nllb-moe, nougat, nystromformer, olmo, olmo2, olmoe, omdet-turbo, oneformer, open-llama, openai-gpt, opt, owlv2, owlvit, paligemma, patchtsmixer, patchtst, pegasus, pegasus_x, perceiver, persimmon, phi, phi3, phimoe, pix2struct, pixtral, plbart, poolformer, pop2piano, prophetnet, pvt, pvt_v2, qdqbert, qwen2, qwen2_audio, qwen2_audio_encoder, qwen2_moe, qwen2_vl, rag, realm, recurrent_gemma, reformer, regnet, rembert, resnet, retribert, roberta, roberta-prelayernorm, roc_bert, roformer, rt_detr, rt_detr_resnet, rwkv, sam, seamless_m4t, seamless_m4t_v2, segformer, seggpt, sew, sew-d, siglip, siglip_vision_model, speech-encoder-decoder, speech_to_text, speech_to_text_2, speecht5, splinter, squeezebert, stablelm, starcoder2, superpoint, swiftformer, swin, swin2sr, swinv2, switch_transformers, t5, table-transformer, tapas, time_series_transformer, timesformer, timm_backbone, trajectory_transformer, transfo-xl, trocr, tvlt, tvp, udop, umt5, unispeech, unispeech-sat, univnet, upernet, van, video_llava, videomae, vilt, vipllava, vision-encoder-decoder, vision-text-dual-encoder, visual_bert, vit, vit_hybrid, vit_mae, vit_msn, vitdet, vitmatte, vits, vivit, wav2vec2, wav2vec2-bert, wav2vec2-conformer, wavlm, whisper, xclip, xglm, xlm, xlm-prophetnet, xlm-roberta, xlm-roberta-xl, xlnet, xmod, yolos, yoso, zamba, zoedepth
+2024-12-22 22:06:50,121 - INFO - Using device: cpu
+2024-12-22 22:06:50,122 - INFO - Initializing model and tokenizer...
+2024-12-22 22:06:54,903 - INFO - Loading and preparing data...
+2024-12-22 22:06:54,903 - INFO - Loading dataset from disk...
+2024-12-22 22:06:55,676 - INFO - Dataset loaded successfully with 100 examples
+2024-12-22 22:06:55,677 - INFO - Converting dataset to GLiNER format...
+2024-12-22 22:06:55,709 - WARNING - Example 4: No valid entities found
+2024-12-22 22:06:55,711 - WARNING - Example 3: No valid entities found
+2024-12-22 22:06:55,712 - WARNING - Example 1: No valid entities found
+2024-12-22 22:06:55,713 - WARNING - Example 5: No valid entities found
+2024-12-22 22:06:55,714 - WARNING - Example 1: No valid entities found
+2024-12-22 22:06:55,715 - WARNING - Example 3: No valid entities found
+2024-12-22 22:06:55,717 - WARNING - Example 2: No valid entities found
+2024-12-22 22:06:55,718 - WARNING - Example 2: No valid entities found
+2024-12-22 22:06:55,719 - WARNING - Example 2: No valid entities found
+2024-12-22 22:06:55,720 - WARNING - Example 1: No valid entities found
+2024-12-22 22:06:55,721 - WARNING - Example 5: No valid entities found
+2024-12-22 22:06:55,726 - INFO - Example 9: Found 1 entities
+2024-12-22 22:06:55,727 - INFO - Processed 10 examples...
+2024-12-22 22:06:55,774 - INFO - Example 91: Found 2 entities
+2024-12-22 22:06:55,775 - WARNING - Example 2: No valid entities found
+2024-12-22 22:06:55,782 - INFO - Example 83: Found 2 entities
+2024-12-22 22:06:55,792 - INFO - Example 93: Found 2 entities
+2024-12-22 22:06:55,794 - WARNING - Example 5: No valid entities found
+2024-12-22 22:06:55,800 - INFO - Example 66: Found 4 entities
+2024-12-22 22:06:55,814 - INFO - Example 106: Found 3 entities
+2024-12-22 22:06:55,823 - INFO - Example 102: Found 1 entities
+2024-12-22 22:06:55,828 - INFO - Example 105: Found 3 entities
+2024-12-22 22:06:55,829 - WARNING - Example 4: No valid entities found
+2024-12-22 22:06:55,830 - WARNING - Example 17: No valid entities found
+2024-12-22 22:06:55,831 - INFO - Example 9: Found 2 entities
+2024-12-22 22:06:55,832 - INFO - Processed 10 examples...
+2024-12-22 22:06:55,833 - INFO - Example 7: Found 1 entities
+2024-12-22 22:06:55,837 - INFO - Example 82: Found 3 entities
+2024-12-22 22:06:55,841 - INFO - Example 56: Found 4 entities
+2024-12-22 22:06:55,845 - INFO - Example 100: Found 4 entities
+2024-12-22 22:06:55,849 - INFO - Example 95: Found 1 entities
+2024-12-22 22:06:55,851 - WARNING - Example 13: No valid entities found
+2024-12-22 22:06:55,852 - INFO - Example 13: Found 1 entities
+2024-12-22 22:06:55,854 - INFO - Example 11: Found 3 entities
+2024-12-22 22:06:55,855 - INFO - Example 13: Found 2 entities
+2024-12-22 22:06:55,858 - INFO - Example 66: Found 2 entities
+2024-12-22 22:06:55,859 - WARNING - Example 2: No valid entities found
+2024-12-22 22:06:55,860 - WARNING - Example 13: No valid entities found
+2024-12-22 22:06:55,861 - WARNING - Example 8: No valid entities found
+2024-12-22 22:06:55,863 - WARNING - Example 15: No valid entities found
+2024-12-22 22:06:55,867 - INFO - Example 62: Found 4 entities
+2024-12-22 22:06:55,871 - INFO - Example 94: Found 1 entities
+2024-12-22 22:06:55,872 - WARNING - Example 4: No valid entities found
+2024-12-22 22:06:55,874 - WARNING - Example 20: No valid entities found
+2024-12-22 22:06:55,875 - WARNING - Example 8: No valid entities found
+2024-12-22 22:06:55,880 - INFO - Example 59: Found 6 entities
+2024-12-22 22:06:55,880 - INFO - Processed 60 examples...
+2024-12-22 22:06:55,882 - INFO - Example 14: Found 3 entities
+2024-12-22 22:06:55,886 - INFO - Example 14: Found 4 entities
+2024-12-22 22:06:55,888 - INFO - Example 8: Found 1 entities
+2024-12-22 22:06:55,889 - WARNING - Example 21: No valid entities found
+2024-12-22 22:06:55,894 - INFO - Example 108: Found 3 entities
+2024-12-22 22:06:55,895 - WARNING - Example 15: No valid entities found
+2024-12-22 22:06:55,897 - WARNING - Example 16: No valid entities found
+2024-12-22 22:06:55,899 - WARNING - Example 15: No valid entities found
+2024-12-22 22:06:55,900 - WARNING - Example 12: No valid entities found
+2024-12-22 22:06:55,902 - WARNING - Example 26: No valid entities found
+2024-12-22 22:06:55,904 - WARNING - Example 25: No valid entities found
+2024-12-22 22:06:55,907 - INFO - Example 64: Found 2 entities
+2024-12-22 22:06:55,912 - INFO - Example 124: Found 5 entities
+2024-12-22 22:06:55,913 - WARNING - Example 13: No valid entities found
+2024-12-22 22:06:55,915 - WARNING - Example 10: No valid entities found
+2024-12-22 22:06:55,916 - WARNING - Example 13: No valid entities found
+2024-12-22 22:06:55,918 - WARNING - Example 8: No valid entities found
+2024-12-22 22:06:55,919 - WARNING - Example 6: No valid entities found
+2024-12-22 22:06:55,920 - WARNING - Example 11: No valid entities found
+2024-12-22 22:06:55,922 - INFO - Example 17: Found 1 entities
+2024-12-22 22:06:55,929 - INFO - Example 67: Found 4 entities
+2024-12-22 22:06:55,930 - INFO - Example 16: Found 1 entities
+2024-12-22 22:06:55,932 - WARNING - Example 13: No valid entities found
+2024-12-22 22:06:55,934 - INFO - Example 15: Found 1 entities
+2024-12-22 22:06:55,935 - INFO - Example 13: Found 2 entities
+2024-12-22 22:06:55,938 - WARNING - Example 31: No valid entities found
+2024-12-22 22:06:55,940 - WARNING - Example 43: No valid entities found
+2024-12-22 22:06:55,942 - WARNING - Example 12: No valid entities found
+2024-12-22 22:06:55,943 - INFO - Example 8: Found 1 entities
+2024-12-22 22:06:55,946 - INFO - Example 33: Found 1 entities
+2024-12-22 22:06:55,951 - WARNING - Example 71: No valid entities found
+2024-12-22 22:06:55,953 - WARNING - Example 15: No valid entities found
+2024-12-22 22:06:55,955 - WARNING - Example 16: No valid entities found
+2024-12-22 22:06:55,958 - WARNING - Example 41: No valid entities found
+2024-12-22 22:06:55,959 - INFO - Example 16: Found 2 entities
+2024-12-22 22:06:55,961 - WARNING - Example 15: No valid entities found
+2024-12-22 22:06:55,964 - INFO - Example 50: Found 1 entities
+2024-12-22 22:06:55,967 - WARNING - Example 34: No valid entities found
+2024-12-22 22:06:55,968 - WARNING - Example 4: No valid entities found
+2024-12-22 22:06:55,970 - WARNING - Example 12: No valid entities found
+2024-12-22 22:06:55,975 - INFO - Example 45: Found 1 entities
+2024-12-22 22:06:55,979 - INFO - Example 22: Found 6 entities
+2024-12-22 22:06:55,981 - INFO - Example 12: Found 2 entities
+2024-12-22 22:06:55,983 - WARNING - Example 22: No valid entities found
+2024-12-22 22:06:55,986 - WARNING - Example 49: No valid entities found
+2024-12-22 22:06:55,986 - INFO - Processed 50 examples...
+2024-12-22 22:06:55,990 - WARNING - Example 51: No valid entities found
+2024-12-22 22:06:55,991 - WARNING - Example 14: No valid entities found
+2024-12-22 22:06:55,994 - INFO - Example 15: Found 5 entities
+2024-12-22 22:06:55,998 - INFO - Example 54: Found 1 entities
+2024-12-22 22:06:56,001 - WARNING - Example 48: No valid entities found
+2024-12-22 22:06:56,004 - INFO - Example 45: Found 1 entities
+2024-12-22 22:06:56,006 - WARNING - Example 21: No valid entities found
+2024-12-22 22:06:56,009 - WARNING - Example 47: No valid entities found
+2024-12-22 22:06:56,013 - WARNING - Example 53: No valid entities found
+2024-12-22 22:06:56,018 - INFO - Example 79: Found 1 entities
+2024-12-22 22:06:56,018 - INFO - Processed 80 examples...
+2024-12-22 22:06:56,025 - WARNING - Example 63: No valid entities found
+2024-12-22 22:06:56,026 - INFO - Entity type distribution:
+2024-12-22 22:06:56,026 - INFO -   person: 200
+2024-12-22 22:06:56,026 - INFO -   occupation: 100
+2024-12-22 22:06:56,026 - INFO -   phone: 100
+2024-12-22 22:06:56,027 - INFO -   email: 100
+2024-12-22 22:06:56,027 - INFO -   location: 100
+2024-12-22 22:06:56,027 - INFO - Split dataset into 38 train and 5 test examples
+2024-12-22 22:06:56,027 - INFO - Found 5 entity types: phone, location, email, person, occupation
+2024-12-22 22:06:56,027 - INFO - Setting up data collator...
+2024-12-22 22:06:56,027 - INFO - Training parameters:
+2024-12-22 22:06:56,027 - INFO -   Batch size: 4
+2024-12-22 22:06:56,027 - INFO -   Number of steps: 500
+2024-12-22 22:06:56,027 - INFO -   Number of epochs: 250
+2024-12-22 22:06:56,033 - INFO - Setting up trainer...
+2024-12-22 22:06:56,048 - INFO - Starting training...
+2024-12-22 22:06:56,048 - ERROR - Training failed with error: 'GLiNER' object has no attribute 'linear'
+2024-12-22 22:06:56,048 - ERROR - Training failed: 'GLiNER' object has no attribute 'linear'
