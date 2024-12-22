@@ -225,10 +225,12 @@ def main():
             num_train_epochs=num_epochs,
             per_device_train_batch_size=batch_size,
             per_device_eval_batch_size=batch_size,
-            dataloader_num_workers=0
+            dataloader_num_workers=0,
+            max_steps=-1,  # No step limit
+            save_steps=1  # Save after each epoch
         )
         
-        # Initialize GLiNER trainer
+        # Initialize GLiNER trainer with custom training loop
         logger.info("Setting up trainer...")
         trainer = Trainer(
             model=model,
@@ -238,10 +240,35 @@ def main():
             eval_dataset=test_dataset
         )
         
-        # Start training
+        # Start training with GLiNER's training loop
         logger.info("Starting training...")
-        trainer.train()
-        logger.info("Training completed!")
+        try:
+            # Override HuggingFace's default training loop
+            trainer._inner_training_loop = lambda *args, **kwargs: None
+            trainer.train()
+            
+            # Use GLiNER's training loop
+            train_dataloader = trainer.get_train_dataloader()
+            num_update_steps_per_epoch = len(train_dataloader)
+            num_update_steps_per_epoch = min(num_update_steps_per_epoch, trainer.args.max_steps)
+            
+            for epoch in range(int(trainer.args.num_train_epochs)):
+                for step, inputs in enumerate(train_dataloader):
+                    loss = trainer.training_step(model, inputs)
+                    if step % 10 == 0:
+                        logger.info(f"Epoch {epoch+1}/{trainer.args.num_train_epochs}, Step {step}/{num_update_steps_per_epoch}, Loss: {loss.item():.4f}")
+                    
+                    if trainer.args.max_steps > 0 and step >= trainer.args.max_steps:
+                        break
+                        
+                # Save checkpoint after each epoch
+                if (epoch + 1) % trainer.args.save_steps == 0:
+                    trainer.save_model(output_dir / f"checkpoint-{epoch+1}")
+                    
+            logger.info("Training completed!")
+        except Exception as e:
+            logger.error(f"Training failed with error: {str(e)}")
+            raise
         
         # Save final model
         final_model_path = output_dir / "final"
