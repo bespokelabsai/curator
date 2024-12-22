@@ -170,13 +170,25 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                 
                 # Only add examples with valid entities
                 if ner_spans:
-                    logger.info(f"Example {i}: Found {len(ner_spans)} entities in window")
-                    gliner_data.append({
-                        'tokenized_text': tokenized_text,
-                        'ner': ner_spans
-                    })
+                    # Generate span indices for this example
+                    seq_len = len(tokenized_text)
+                    example_span_indices = []
+                    for start in range(seq_len):
+                        for width in range(min(model.config.max_width, seq_len - start)):
+                            end = start + width
+                            example_span_indices.append([start, end])
+                    
+                    # Convert to exact GLiNER format
+                    tokenized_example = {
+                        'tokenized_text': [t for t in tokenized_text],  # Ensure list format
+                        'ner': [[start, end, label] for start, end, label in ner_spans],  # Ensure list format
+                        'span_indices': example_span_indices  # Add span indices
+                    }
+                    logger.info(f"Example {i}: Found {len(ner_spans)} entities, generated {len(example_span_indices)} spans")
+                    logger.info(f"First entity span: {ner_spans[0] if ner_spans else 'None'}")
+                    gliner_data.append(tokenized_example)
                 else:
-                    logger.warning(f"Example {i}: No valid entities found in window")
+                    logger.warning(f"Example {i}: No valid entities found")
                 
                 if (i + 1) % 10 == 0:
                     logger.info(f"Processed {i + 1} examples...")
@@ -222,7 +234,9 @@ def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
         hidden_size=768,  # Match BERT hidden size
         dropout=0.4,
         has_rnn=True,
-        fine_tune=True
+        fine_tune=True,
+        max_width=50,  # Maximum span width for entity detection
+        span_mode="marker"  # Use marker-based span representation
     )
     model = GLiNER(config=config)
     model.to(device)
@@ -246,7 +260,16 @@ def main():
         train_dataset, test_dataset, entity_types = load_and_prepare_data(model)
         logger.info(f"Found {len(entity_types)} entity types: {', '.join(entity_types)}")
         
-        # Setup data collator
+        # Log example data format
+        if train_dataset:
+            example = train_dataset[0]
+            logger.info("Example data format:")
+            logger.info(f"Keys: {list(example.keys())}")
+            logger.info(f"Tokenized text length: {len(example['tokenized_text'])}")
+            logger.info(f"Number of entities: {len(example['ner'])}")
+            logger.info(f"First entity: {example['ner'][0] if example['ner'] else 'None'}")
+        
+        # Setup data collator with span processing
         logger.info("Setting up data collator...")
         data_collator = DataCollator(
             model.config,
