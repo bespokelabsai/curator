@@ -247,14 +247,43 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                         padding = [[0] * num_labels] * (max_spans - len(span_labels))
                         span_labels.extend(padding)
                     
-                    # Convert to exact GLiNER format
+                    # Convert to exact GLiNER format with proper tokenization
+                    # Tokenize text with BERT tokenizer
+                    tokenizer = model.data_processor.transformer_tokenizer
+                    encoding = tokenizer(
+                        window_text,
+                        padding='max_length',
+                        truncation=True,
+                        max_length=model.config.max_len,
+                        return_tensors='pt'
+                    )
+                    
+                    # Extract and convert tensors to lists
+                    input_ids = encoding['input_ids'][0].tolist()
+                    attention_mask = encoding['attention_mask'][0].tolist()
+                    
+                    # Convert token indices to match input_ids
+                    token_spans = []
+                    for start, end, label in ner_spans:
+                        # Get subword tokens for the entity
+                        entity_text = window_text[start:end]
+                        entity_tokens = tokenizer.encode(entity_text, add_special_tokens=False)
+                        # Find these tokens in the full encoding
+                        for i in range(len(input_ids)):
+                            if i + len(entity_tokens) <= len(input_ids):
+                                if input_ids[i:i+len(entity_tokens)] == entity_tokens:
+                                    token_spans.append([i, i+len(entity_tokens)-1, label])
+                                    break
+                    
                     tokenized_example = {
-                        'tokenized_text': [t for t in tokenized_text],  # Ensure list format
-                        'ner': [[start, end, label] for start, end, label in ner_spans],  # Ensure list format
-                        'span_indices': example_span_indices,  # Add span indices
-                        'span_labels': span_labels,  # Add span labels
-                        'span_mask': span_mask,  # Add span mask
-                        'num_spans': num_spans  # Add number of spans
+                        'input_ids': input_ids,
+                        'attention_mask': attention_mask,
+                        'tokenized_text': tokenizer.convert_ids_to_tokens(input_ids),
+                        'ner': token_spans,
+                        'span_indices': example_span_indices,
+                        'span_labels': span_labels,
+                        'span_mask': span_mask,
+                        'num_spans': num_spans
                     }
                     logger.info(f"Example {i}: Found {len(ner_spans)} entities, generated {len(example_span_indices)} spans")
                     logger.info(f"First entity span: {ner_spans[0] if ner_spans else 'None'}")
