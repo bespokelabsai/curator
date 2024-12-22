@@ -315,7 +315,7 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                                         break
                         
                         if not found:
-                            logger.debug(f"Could not find token span for entity: {entity_info['text']}")
+                            logger.debug(f"Could not find token span for entity: {entity['text']}")
                     
                     # Convert data to tensors while preserving required fields
                     tokenized_text = tokenizer.convert_ids_to_tokens(input_ids)
@@ -388,23 +388,34 @@ def setup_training_environment() -> Tuple[GLiNER, torch.device, Path]:
     logger.info("Initializing model and tokenizer...")
     from transformers import AutoTokenizer
     
+    # Define our entity types
+    entity_types = ['person', 'location', 'phone', 'email', 'occupation']
+    id2label = {i: label for i, label in enumerate(entity_types)}
+    label2id = {label: i for i, label in id2label.items()}
+    
+    logger.info(f"Initializing model with entity types: {entity_types}")
+    
     # Initialize GLiNER with configuration for Chinese text
     config = GLiNERConfig(
         model_name="bert-base-chinese",  # Use Chinese BERT as base model
         words_splitter_type="jieba",  # Use jieba for Chinese text
         max_len=256,  # Reduced from 384 to handle memory better
-        max_types=5,  # Match our entity types count
+        max_types=len(entity_types),  # Match our entity types count
         hidden_size=768,  # Match BERT hidden size
         dropout=0.1,  # Reduced dropout for stability
-        has_rnn=True,
+        has_rnn=False,  # Disable RNN to simplify architecture
         fine_tune=True,
-        max_width=10,  # Maximum span width
+        max_width=5,  # Reduced max width for stability
         span_mode="marker",  # Use marker-based span representation
         min_width=1,  # Minimum span width
         use_focal_loss=True,  # Enable focal loss for imbalanced classes
         focal_loss_gamma=2.0,  # Focal loss gamma parameter
         focal_loss_alpha=0.25,  # Focal loss alpha parameter
-        labels_encoder="bert-base-chinese"  # Use same model for labels encoding
+        labels_encoder="bert-base-chinese",  # Use same model for labels encoding
+        id2label=id2label,
+        label2id=label2id,
+        use_prompt=False,  # Disable prompt-based learning
+        use_type_embeddings=True  # Enable type embeddings for better entity typing
     )
     
     # Initialize model with proper configuration
