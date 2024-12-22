@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List, Dict, Tuple, Set
 from datasets import load_from_disk
 from gliner import GLiNER, GLiNERConfig
-from gliner.training import Trainer, TrainingArguments
+from gliner.training.trainer import Trainer, TrainingArguments
 from gliner.data_processing import DataCollator, WordsSplitter
 from gliner.utils import load_config_as_namespace
 
@@ -220,17 +220,12 @@ def main():
             weight_decay=0.01,
             others_lr=1e-5,
             others_weight_decay=0.01,
-            lr_scheduler_type="linear",
-            warmup_ratio=0.1,
-            per_device_train_batch_size=batch_size,
-            per_device_eval_batch_size=batch_size,
             focal_loss_alpha=0.75,
             focal_loss_gamma=2,
             num_train_epochs=num_epochs,
-            save_steps=100,
-            save_total_limit=10,
-            dataloader_num_workers=0,
-            use_cpu=device.type == 'cpu'
+            per_device_train_batch_size=batch_size,
+            per_device_eval_batch_size=batch_size,
+            dataloader_num_workers=0
         )
         
         # Initialize GLiNER trainer
