@@ -243,26 +243,43 @@ def main():
         # Start training with GLiNER's training loop
         logger.info("Starting training...")
         try:
-            # Override HuggingFace's default training loop
-            trainer._inner_training_loop = lambda *args, **kwargs: None
-            trainer.train()
-            
             # Use GLiNER's training loop
             train_dataloader = trainer.get_train_dataloader()
             num_update_steps_per_epoch = len(train_dataloader)
             num_update_steps_per_epoch = min(num_update_steps_per_epoch, trainer.args.max_steps)
             
+            model.train()
             for epoch in range(int(trainer.args.num_train_epochs)):
+                total_loss = 0
                 for step, inputs in enumerate(train_dataloader):
+                    # Move inputs to device
+                    inputs = {k: v.to(model.device) for k, v in inputs.items()}
+                    
+                    # Forward pass and loss computation
                     loss = trainer.training_step(model, inputs)
+                    
+                    # Backward pass
+                    loss.backward()
+                    
+                    # Gradient clipping
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), trainer.args.max_grad_norm)
+                    
+                    # Optimizer step
+                    trainer.optimizer.step()
+                    trainer.optimizer.zero_grad()
+                    
+                    total_loss += loss.item()
+                    
                     if step % 10 == 0:
-                        logger.info(f"Epoch {epoch+1}/{trainer.args.num_train_epochs}, Step {step}/{num_update_steps_per_epoch}, Loss: {loss.item():.4f}")
+                        avg_loss = total_loss / (step + 1)
+                        logger.info(f"Epoch {epoch+1}/{trainer.args.num_train_epochs}, Step {step}/{num_update_steps_per_epoch}, Loss: {avg_loss:.4f}")
                     
                     if trainer.args.max_steps > 0 and step >= trainer.args.max_steps:
                         break
-                        
+                
                 # Save checkpoint after each epoch
                 if (epoch + 1) % trainer.args.save_steps == 0:
+                    logger.info(f"Saving checkpoint for epoch {epoch+1}")
                     trainer.save_model(output_dir / f"checkpoint-{epoch+1}")
                     
             logger.info("Training completed!")
