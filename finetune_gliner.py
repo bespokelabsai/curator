@@ -610,7 +610,17 @@ def main():
                         
                         # Forward pass with detailed error handling
                         try:
-                            loss = trainer.training_step(model, inputs)
+                            # Forward pass and loss calculation
+                            outputs = model(**inputs)
+                            if outputs is None or not hasattr(outputs, 'loss'):
+                                logger.error("Model outputs invalid or missing loss")
+                                continue
+                            
+                            loss = outputs.loss
+                            if loss is None:
+                                logger.error("Model returned None loss")
+                                continue
+                                
                             if torch.isnan(loss):
                                 logger.error("Loss is NaN, skipping batch")
                                 continue
@@ -618,7 +628,8 @@ def main():
                                 logger.error("Loss is Inf, skipping batch")
                                 continue
                                 
-                            loss = loss / gradient_accumulation_steps  # Scale loss for accumulation
+                            # Scale loss for gradient accumulation
+                            loss = loss / gradient_accumulation_steps
                             if step % 10 == 0:
                                 logger.info(f"Step {step}: Loss before scaling = {loss.item() * gradient_accumulation_steps:.4f}")
                         except Exception as e:
