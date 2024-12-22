@@ -173,16 +173,33 @@ def load_and_prepare_data(model: GLiNER) -> Tuple[List[Dict], List[Dict], List[s
                     # Generate span indices for this example
                     seq_len = len(tokenized_text)
                     example_span_indices = []
+                    span_mask = []
+                    
+                    # Generate all possible spans within max_width
                     for start in range(seq_len):
-                        for width in range(min(model.config.max_width, seq_len - start)):
-                            end = start + width
+                        for width in range(1, min(model.config.max_width + 1, seq_len - start + 1)):
+                            end = start + width - 1  # Inclusive end
                             example_span_indices.append([start, end])
+                            # Mark if this span matches any entity
+                            is_entity = any(
+                                entity_start == start and entity_end == end 
+                                for entity_start, entity_end, _ in ner_spans
+                            )
+                            span_mask.append(is_entity)
+                    
+                    # Pad spans to fixed size if needed
+                    max_spans = seq_len * model.config.max_width
+                    if len(example_span_indices) < max_spans:
+                        padding = [[0, 0]] * (max_spans - len(example_span_indices))
+                        example_span_indices.extend(padding)
+                        span_mask.extend([False] * (max_spans - len(span_mask)))
                     
                     # Convert to exact GLiNER format
                     tokenized_example = {
                         'tokenized_text': [t for t in tokenized_text],  # Ensure list format
                         'ner': [[start, end, label] for start, end, label in ner_spans],  # Ensure list format
-                        'span_indices': example_span_indices  # Add span indices
+                        'span_indices': example_span_indices,  # Add span indices
+                        'span_mask': span_mask  # Add span mask
                     }
                     logger.info(f"Example {i}: Found {len(ner_spans)} entities, generated {len(example_span_indices)} spans")
                     logger.info(f"First entity span: {ner_spans[0] if ner_spans else 'None'}")
@@ -260,14 +277,20 @@ def main():
         train_dataset, test_dataset, entity_types = load_and_prepare_data(model)
         logger.info(f"Found {len(entity_types)} entity types: {', '.join(entity_types)}")
         
-        # Log example data format
+        # Log example data format and tensor shapes
         if train_dataset:
             example = train_dataset[0]
-            logger.info("Example data format:")
+            logger.info("\nData format analysis:")
+            logger.info("=" * 50)
             logger.info(f"Keys: {list(example.keys())}")
             logger.info(f"Tokenized text length: {len(example['tokenized_text'])}")
             logger.info(f"Number of entities: {len(example['ner'])}")
             logger.info(f"First entity: {example['ner'][0] if example['ner'] else 'None'}")
+            logger.info(f"Number of spans: {example['num_spans']}")
+            logger.info(f"Span indices shape: {len(example['span_indices'])}x2")
+            logger.info(f"Span labels shape: {len(example['span_labels'])}x{len(example['span_labels'][0])}")
+            logger.info(f"Span mask length: {len(example['span_mask'])}")
+            logger.info("=" * 50)
         
         # Setup data collator with span processing
         logger.info("Setting up data collator...")
