@@ -193,7 +193,8 @@ class OpenAIBatchRequestProcessor(BaseRequestProcessor):
                         f"this response."
                     )
                     continue
-
+                # Map to the right generic request object that corresponds to the response.
+                generic_request = generic_request_map[request_idx]
                 if raw_response["response"]["status_code"] != 200:
                     logger.warning(
                         f"Request {generic_request} failed with status code {raw_response['response']['status_code']}"

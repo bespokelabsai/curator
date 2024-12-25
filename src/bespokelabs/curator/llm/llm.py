@@ -231,7 +231,7 @@ class LLM:
                 str(prompt_func_hash),
                 str(self.prompt_formatter.model_name),
                 str(
-                    self.prompt_formatter.response_format.schema_json()
+                    self.prompt_formatter.response_format.model_json_schema()
                     if self.prompt_formatter.response_format
                     else "text"
                 ),
