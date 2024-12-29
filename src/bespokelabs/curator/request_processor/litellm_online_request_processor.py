@@ -66,9 +66,10 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             max_retries=max_retries,
         )
         self.client = instructor.from_litellm(litellm.acompletion)
-        self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = (
-            self.get_header_based_rate_limits()
-        )
+        (
+            self.header_based_max_requests_per_minute,
+            self.header_based_max_tokens_per_minute,
+        ) = self.get_header_based_rate_limits()
 
     def check_structured_output_support(self):
         """Verify if the model supports structured output via instructor.
@@ -265,12 +266,13 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         # Get response directly without extra logging
         try:
             if request.generic_request.response_format:
-                response, completion_obj = (
-                    await self.client.chat.completions.create_with_completion(
-                        **request.api_specific_request,
-                        response_model=request.prompt_formatter.response_format,
-                        timeout=self.timeout,
-                    )
+                (
+                    response,
+                    completion_obj,
+                ) = await self.client.chat.completions.create_with_completion(
+                    **request.api_specific_request,
+                    response_model=request.prompt_formatter.response_format,
+                    timeout=self.timeout,
                 )
                 response_message = (
                     response.model_dump() if hasattr(response, "model_dump") else response
@@ -286,8 +288,10 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             # because handle_single_request_with_retries will double count otherwise
             status_tracker.num_api_errors -= 1
             # Get retry-after from error headers or use default
-            retry_after = float(getattr(e, "retry_after", None) or 
-                              getattr(e, "headers", {}).get("retry-after", SECONDS_TO_PAUSE_ON_RATE_LIMIT))
+            retry_after = float(
+                getattr(e, "retry_after", None)
+                or getattr(e, "headers", {}).get("retry-after", SECONDS_TO_PAUSE_ON_RATE_LIMIT)
+            )
             status_tracker.retry_after_seconds = retry_after
             logger.warning(f"Rate limit reached. Will retry after {retry_after} seconds")
             raise e

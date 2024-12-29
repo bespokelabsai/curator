@@ -755,7 +755,6 @@ class BatchManager:
                         existing_submitted_batches[request_file_name] = batch_object
 
         for request_file_name, batch_object in existing_submitted_batches.items():
-
             output_file_id = batch_object.output_file_id
             if output_file_id is not None:
                 try:

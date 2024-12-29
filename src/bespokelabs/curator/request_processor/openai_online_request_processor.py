@@ -99,9 +99,10 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
         self.url = url
         self.api_key = api_key
         self.token_encoding = tiktoken.get_encoding(get_token_encoding_name(model))
-        self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = (
-            self.get_header_based_rate_limits()
-        )
+        (
+            self.header_based_max_requests_per_minute,
+            self.header_based_max_tokens_per_minute,
+        ) = self.get_header_based_rate_limits()
 
     def get_header_based_rate_limits(self) -> tuple[int, int]:
         """Get rate limits from OpenAI API headers.
@@ -293,7 +294,9 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
                     # because handle_single_request_with_retries will double count otherwise
                     status_tracker.num_other_errors -= 1
                     # Get retry-after from headers or use default
-                    retry_after = float(response_obj.headers.get("retry-after", SECONDS_TO_PAUSE_ON_RATE_LIMIT))
+                    retry_after = float(
+                        response_obj.headers.get("retry-after", SECONDS_TO_PAUSE_ON_RATE_LIMIT)
+                    )
                     status_tracker.retry_after_seconds = retry_after
                     logger.warning(f"Rate limit reached. Will retry after {retry_after} seconds")
                 raise Exception(f"API error: {error}")
