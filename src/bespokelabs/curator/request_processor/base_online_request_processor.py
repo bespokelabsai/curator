@@ -51,6 +51,7 @@ class StatusTracker:
     time_of_last_rate_limit_error: float = field(
         default=time.time() - SECONDS_TO_PAUSE_ON_RATE_LIMIT
     )
+    retry_after_seconds: float = field(default=SECONDS_TO_PAUSE_ON_RATE_LIMIT)
 
     def __str__(self):
         return (
@@ -373,9 +374,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     seconds_since_rate_limit_error = (
                         time.time() - status_tracker.time_of_last_rate_limit_error
                     )
-                    if seconds_since_rate_limit_error < SECONDS_TO_PAUSE_ON_RATE_LIMIT:
+                    if seconds_since_rate_limit_error < status_tracker.retry_after_seconds:
                         remaining_seconds_to_pause = (
-                            SECONDS_TO_PAUSE_ON_RATE_LIMIT - seconds_since_rate_limit_error
+                            status_tracker.retry_after_seconds - seconds_since_rate_limit_error
                         )
                         await asyncio.sleep(remaining_seconds_to_pause)
                         logger.warn(

@@ -15,6 +15,7 @@ from bespokelabs.curator.request_processor.base_online_request_processor import 
     BaseOnlineRequestProcessor,
     APIRequest,
     StatusTracker,
+    SECONDS_TO_PAUSE_ON_RATE_LIMIT,
 )
 from bespokelabs.curator.request_processor.generic_request import GenericRequest
 from bespokelabs.curator.request_processor.generic_response import TokenUsage, GenericResponse
@@ -291,6 +292,10 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
                     status_tracker.num_api_errors -= 1
                     # because handle_single_request_with_retries will double count otherwise
                     status_tracker.num_other_errors -= 1
+                    # Get retry-after from headers or use default
+                    retry_after = float(response_obj.headers.get("retry-after", SECONDS_TO_PAUSE_ON_RATE_LIMIT))
+                    status_tracker.retry_after_seconds = retry_after
+                    logger.warning(f"Rate limit reached. Will retry after {retry_after} seconds")
                 raise Exception(f"API error: {error}")
 
             if response_obj.status != 200:

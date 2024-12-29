@@ -9,6 +9,7 @@ from bespokelabs.curator.request_processor.base_online_request_processor import 
     BaseOnlineRequestProcessor,
     APIRequest,
     StatusTracker,
+    SECONDS_TO_PAUSE_ON_RATE_LIMIT,
 )
 from bespokelabs.curator.request_processor.generic_request import GenericRequest
 from bespokelabs.curator.request_processor.generic_response import TokenUsage, GenericResponse
@@ -284,6 +285,11 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             status_tracker.num_rate_limit_errors += 1
             # because handle_single_request_with_retries will double count otherwise
             status_tracker.num_api_errors -= 1
+            # Get retry-after from error headers or use default
+            retry_after = float(getattr(e, "retry_after", None) or 
+                              getattr(e, "headers", {}).get("retry-after", SECONDS_TO_PAUSE_ON_RATE_LIMIT))
+            status_tracker.retry_after_seconds = retry_after
+            logger.warning(f"Rate limit reached. Will retry after {retry_after} seconds")
             raise e
 
         # Extract token usage
