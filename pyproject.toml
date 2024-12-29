@@ -37,7 +37,7 @@ tiktoken = ">=0.7.0,<0.8.0"
 aiofiles = ">=22.0,<24.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.2.0"
+black = "<24.0.0"
 twine = "^5.0.0"
 
 [build-system]
