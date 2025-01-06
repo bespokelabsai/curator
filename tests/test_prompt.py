@@ -98,10 +98,10 @@ def test_single_completion_batch(prompter: LLM):
     # Create a prompter with batch=True
     def simple_prompt_func(row: _DictOrBaseModel) -> _DictOrBaseModel:
         """Generate a simple prompt for testing.
-        
+
         Args:
             row: The input row (unused in this test)
-            
+
         Returns:
             A list of messages for the LLM
         """
@@ -155,10 +155,10 @@ def test_single_completion_no_batch(prompter: LLM):
     # Create a prompter without batch parameter
     def simple_prompt_func(row: _DictOrBaseModel) -> _DictOrBaseModel:
         """Generate a simple prompt for testing.
-        
+
         Args:
             row: The input row (unused in this test)
-            
+
         Returns:
             A list of messages for the LLM
         """

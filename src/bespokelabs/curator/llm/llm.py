@@ -284,7 +284,7 @@ class LLM:
 
 def _get_function_hash(func) -> str:
     """Get a hash of a function's source code.
-    
+
     Uses cloudpickle to properly handle functions with type annotations and closure variables.
     """
     if func is None:

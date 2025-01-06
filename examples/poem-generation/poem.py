@@ -40,13 +40,14 @@ from typing import Any, Dict, List, Union
 # Type alias for input/output types
 _DictOrBaseModel = Union[Dict[str, Any], BaseModel]
 
+
 def parse_poems(row: _DictOrBaseModel, poems: _DictOrBaseModel) -> _DictOrBaseModel:
     """Parse the poems from the LLM response.
-    
+
     Args:
         row: The input row containing the topic
         poems: The structured output from the LLM (Poems model)
-    
+
     Returns:
         A list of dictionaries containing the topic and poem
     """
