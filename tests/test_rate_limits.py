@@ -29,11 +29,11 @@ class TestRateLimits:
         mock_test_call.return_value = {
             "x-ratelimit-limit-requests": "5000",
             "x-ratelimit-limit-tokens": "480000",  # Combined limit
-            "llm_provider-anthropic-ratelimit-output-tokens-limit": "80000",  # Output limit
+            "llm_provider-anthropic-ratelimit-tokens-limit": "80000",  # Output limit
         }
         rpm, tpm = processor.get_header_based_rate_limits()
         assert rpm == 5000, "Request limit should be 5000"
-        assert tpm == 80000, "Token limit should use Anthropic output limit (80k)"
+        assert tpm == 80000, "Token limit should use Anthropic-specific token limit (80k)"
 
         # Test case 2: When Anthropic-specific header is not present
         mock_test_call.return_value = {

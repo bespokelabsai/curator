@@ -159,8 +159,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         # For Anthropic models, prioritize the output token limit header
         # This is critical because Anthropic has separate input (400k) and output (80k) limits
         output_limit_str = headers.get(
-            "llm_provider-anthropic-ratelimit-output-tokens-limit",
-            headers.get("x-ratelimit-limit-tokens", "0"),
+            "llm_provider-anthropic-ratelimit-tokens-limit",  # Anthropic-specific header
+            headers.get("x-ratelimit-limit-tokens", "0"),  # Fallback to OpenAI-style header
         )
         tpm = int(output_limit_str)
 
