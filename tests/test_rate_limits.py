@@ -1,11 +1,14 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from bespokelabs.curator.request_processor.online.litellm_online_request_processor import LiteLLMOnlineRequestProcessor
+from bespokelabs.curator.request_processor.online.litellm_online_request_processor import (
+    LiteLLMOnlineRequestProcessor,
+)
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 
+
 class TestRateLimits:
-    @patch('litellm.completion')
-    @patch.object(LiteLLMOnlineRequestProcessor, 'test_call')
+    @patch("litellm.completion")
+    @patch.object(LiteLLMOnlineRequestProcessor, "test_call")
     def test_anthropic_rate_limits(self, mock_test_call, mock_completion):
         """Test that Anthropic-specific rate limits are correctly parsed."""
         # Setup mock completion response for initialization
@@ -16,7 +19,7 @@ class TestRateLimits:
         # Setup initial test_call response for initialization
         mock_test_call.return_value = {
             "x-ratelimit-limit-requests": "5000",
-            "x-ratelimit-limit-tokens": "480000"
+            "x-ratelimit-limit-tokens": "480000",
         }
 
         config = OnlineRequestProcessorConfig(model="claude-3-opus-20240229")
@@ -26,7 +29,7 @@ class TestRateLimits:
         mock_test_call.return_value = {
             "x-ratelimit-limit-requests": "5000",
             "x-ratelimit-limit-tokens": "480000",  # Combined limit
-            "llm_provider-anthropic-ratelimit-output-tokens-limit": "80000"  # Output limit
+            "llm_provider-anthropic-ratelimit-output-tokens-limit": "80000",  # Output limit
         }
         rpm, tpm = processor.get_header_based_rate_limits()
         assert rpm == 5000, "Request limit should be 5000"
@@ -35,7 +38,7 @@ class TestRateLimits:
         # Test case 2: When Anthropic-specific header is not present
         mock_test_call.return_value = {
             "x-ratelimit-limit-requests": "5000",
-            "x-ratelimit-limit-tokens": "480000"
+            "x-ratelimit-limit-tokens": "480000",
         }
         rpm, tpm = processor.get_header_based_rate_limits()
         assert rpm == 5000, "Request limit should be 5000"

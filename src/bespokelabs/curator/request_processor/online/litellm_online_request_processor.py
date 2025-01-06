@@ -160,7 +160,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         # This is critical because Anthropic has separate input (400k) and output (80k) limits
         output_limit_str = headers.get(
             "llm_provider-anthropic-ratelimit-output-tokens-limit",
-            headers.get("x-ratelimit-limit-tokens", "0")
+            headers.get("x-ratelimit-limit-tokens", "0"),
         )
         tpm = int(output_limit_str)
 
