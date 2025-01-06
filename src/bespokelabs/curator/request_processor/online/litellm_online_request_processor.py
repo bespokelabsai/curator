@@ -148,12 +148,21 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Note:
             - Makes a test request to get rate limit information from response headers.
             - Some providers (e.g., Claude) require non-empty messages
+            - For Anthropic models, uses the output token limit (80k) instead of combined limit (480k)
+            - Falls back to x-ratelimit-limit-tokens for non-Anthropic models or if specific header missing
         """
         logger.info(f"Getting rate limits for model: {self.config.model}")
 
         headers = self.test_call()
         rpm = int(headers.get("x-ratelimit-limit-requests", 0))
-        tpm = int(headers.get("x-ratelimit-limit-tokens", 0))
+
+        # For Anthropic models, prioritize the output token limit header
+        # This is critical because Anthropic has separate input (400k) and output (80k) limits
+        output_limit_str = headers.get(
+            "llm_provider-anthropic-ratelimit-output-tokens-limit",
+            headers.get("x-ratelimit-limit-tokens", "0")
+        )
+        tpm = int(output_limit_str)
 
         return rpm, tpm
 
