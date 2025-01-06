@@ -73,8 +73,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
     def __init__(
         self,
         model: str = "gpt-4o-mini",
-        api_key: str = os.getenv("OPENAI_API_KEY"),
         url: str = "https://api.openai.com/v1/chat/completions",
+        api_key: Optional[str] = None,
         temperature: Optional[float] = None,
         top_p: Optional[float] = None,
         presence_penalty: Optional[float] = None,
@@ -96,7 +96,12 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor):
             max_retries=max_retries,
         )
         self.url = url
-        self.api_key = api_key
+
+        if api_key is None:
+            self.api_key = os.getenv("OPENAI_API_KEY")
+        else:
+            self.api_key = api_key
+
         self.token_encoding = tiktoken.get_encoding(get_token_encoding_name(model))
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = (
             self.get_header_based_rate_limits()
