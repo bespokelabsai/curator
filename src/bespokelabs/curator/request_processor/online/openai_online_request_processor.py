@@ -87,7 +87,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             return 0
 
     def estimate_total_tokens(self, messages: list) -> int:
-        """Estimate total tokens for a request using OpenAI's token counting rules.
+        """Estimate total tokens for a request using unified token counting.
 
         Args:
             messages (list): List of message dictionaries with role and content
@@ -96,29 +96,13 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             int: Estimated total tokens including message formatting tokens
 
         Note:
-            Includes:
-            - 4 tokens per message for formatting
-            - Role/name tokens
-            - Content tokens
-            - 2 tokens for assistant reply priming
+            Uses the unified token counting implementation for consistency
+            across different request processors.
         """
-        num_tokens = 0
-        for message in messages:
-            num_tokens += 4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
-            for key, value in message.items():
-                try:
-                    num_tokens += len(self.token_encoding.encode(str(value)))
-                except TypeError:
-                    logger.warning(
-                        f"Failed to encode value {value} with tiktoken. Assuming 1 token per 4 chars."
-                    )
-                    num_tokens += len(str(value)) // 4
-                if key == "name":  # if there's a name, the role is omitted
-                    num_tokens -= 1  # role is always required and always 1 token
-
-        num_tokens += 2  # every reply is primed with <im_start>assistant
+        from bespokelabs.curator.request_processor.token_utils import unified_token_count
+        input_tokens = unified_token_count(self.config.model, messages)
         output_tokens = self.estimate_output_tokens()
-        return num_tokens + output_tokens
+        return input_tokens + output_tokens
 
     def check_structured_output_support(self) -> bool:
         """Check if the model supports structured output based on model name and date.

@@ -108,8 +108,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     def estimate_total_tokens(self, messages: list) -> int:
         """Calculate the total token usage for a request.
 
-        Uses LiteLLM's token_counter for accurate input token counting
-        and adds estimated output tokens.
+        Uses unified token counting implementation for consistent counting
+        across different request processors.
 
         Args:
             messages (list): List of message dictionaries
@@ -117,7 +117,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Returns:
             int: Total estimated tokens (input + output)
         """
-        input_tokens = litellm.token_counter(model=self.config.model, messages=messages)
+        from bespokelabs.curator.request_processor.token_utils import unified_token_count
+        input_tokens = unified_token_count(self.config.model, messages)
         output_tokens = self.estimate_output_tokens()
         return input_tokens + output_tokens
 
