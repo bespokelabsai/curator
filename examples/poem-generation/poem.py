@@ -35,6 +35,26 @@ class Poems(BaseModel):
     poems_list: List[str] = Field(description="A list of poems.")
 
 
+from typing import Any, Dict, List, Union
+
+# Type alias for input/output types
+_DictOrBaseModel = Union[Dict[str, Any], BaseModel]
+
+def parse_poems(row: _DictOrBaseModel, poems: _DictOrBaseModel) -> _DictOrBaseModel:
+    """Parse the poems from the LLM response.
+    
+    Args:
+        row: The input row containing the topic
+        poems: The structured output from the LLM (Poems model)
+    
+    Returns:
+        A list of dictionaries containing the topic and poem
+    """
+    if isinstance(poems, Poems):
+        return [{"topic": row["topic"], "poem": p} for p in poems.poems_list]
+    return []  # Handle edge case where poems is not a Poems instance
+
+
 # We define an `LLM` object that generates poems which gets applied to the topics dataset.
 poet = curator.LLM(
     # The prompt_func takes a row of the dataset as input.
@@ -42,8 +62,8 @@ poet = curator.LLM(
     prompt_func=lambda row: f"Write two poems about {row['topic']}.",
     model_name="gpt-4o-mini",
     response_format=Poems,
-    # `row` is the input row, and `poems` is the Poems class which is parsed from the structured output from the LLM.
-    parse_func=lambda row, poems: [{"topic": row["topic"], "poem": p} for p in poems.poems_list],
+    # Use the module-level parse function which supports type annotations
+    parse_func=parse_poems,
 )
 
 # We apply the prompter to the topics dataset.

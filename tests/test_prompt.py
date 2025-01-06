@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Any, Dict, Optional, Union
 from unittest.mock import patch, MagicMock
 
 import pytest
@@ -7,6 +7,9 @@ from datasets import Dataset
 from pydantic import BaseModel
 
 from bespokelabs.curator import LLM
+
+# Type alias for input/output types
+_DictOrBaseModel = Union[Dict[str, Any], BaseModel]
 
 
 class MockResponseFormat(BaseModel):
@@ -93,7 +96,15 @@ def test_single_completion_batch(prompter: LLM):
     """
 
     # Create a prompter with batch=True
-    def simple_prompt_func():
+    def simple_prompt_func(row: _DictOrBaseModel) -> _DictOrBaseModel:
+        """Generate a simple prompt for testing.
+        
+        Args:
+            row: The input row (unused in this test)
+            
+        Returns:
+            A list of messages for the LLM
+        """
         return [
             {
                 "role": "user",
@@ -142,7 +153,15 @@ def test_single_completion_no_batch(prompter: LLM):
     """
 
     # Create a prompter without batch parameter
-    def simple_prompt_func():
+    def simple_prompt_func(row: _DictOrBaseModel) -> _DictOrBaseModel:
+        """Generate a simple prompt for testing.
+        
+        Args:
+            row: The input row (unused in this test)
+            
+        Returns:
+            A list of messages for the LLM
+        """
         return [
             {
                 "role": "user",

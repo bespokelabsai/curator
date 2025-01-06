@@ -7,8 +7,8 @@ from datetime import datetime
 from io import BytesIO
 from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
 
+import cloudpickle
 from datasets import Dataset
-from datasets.utils._dill import Pickler
 from pydantic import BaseModel
 from xxhash import xxh64
 
@@ -62,7 +62,9 @@ class LLM:
             prompt_func: A function that takes a single row
                 and returns either a string (assumed to be a user prompt) or messages list
             parse_func: A function that takes the input row and
-                response object and returns the parsed output
+                response object and returns the parsed output. Can use type annotations
+                (e.g., `def parse_func(row, response: ResponseModel) -> OutputType`)
+                as the function is serialized using cloudpickle for proper type annotation support.
             response_format: A Pydantic model specifying the
                 response format from the LLM.
             backend: The backend to use ("openai" or "litellm"). If None, will be auto-determined
@@ -281,12 +283,15 @@ class LLM:
 
 
 def _get_function_hash(func) -> str:
-    """Get a hash of a function's source code."""
+    """Get a hash of a function's source code.
+    
+    Uses cloudpickle to properly handle functions with type annotations and closure variables.
+    """
     if func is None:
         return xxh64("").hexdigest()
 
     file = BytesIO()
-    Pickler(file, recurse=True).dump(func)
+    file.write(cloudpickle.dumps(func))
     return xxh64(file.getvalue()).hexdigest()
 
 

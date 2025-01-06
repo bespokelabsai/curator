@@ -127,7 +127,10 @@ poet = curator.LLM(
 Here:
 * `prompt_func` takes a row of the dataset as input and returns the prompt for the LLM.
 * `response_format` is the structured output class we defined above.
-* `parse_func` takes the input (`row`) and the structured output (`poems`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object.
+* `parse_func` takes the input (`row`) and the structured output (`poems`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object. For best practices with type annotations:
+  * Define `parse_func` as a module-level function rather than a lambda to ensure proper serialization
+  * Use the `_DictOrBaseModel` type alias for input/output types: `def parse_func(row: _DictOrBaseModel, response: _DictOrBaseModel) -> _DictOrBaseModel`
+  * Type annotations are now fully supported thanks to cloudpickle serialization
 
 Now we can apply the `LLM` object to the dataset, which reads very pythonic.
 ```python
@@ -201,4 +204,4 @@ npm -v # should print `10.9.0`
 ```
 
 ## Contributing
-Contributions are welcome! 
+Contributions are welcome!       
