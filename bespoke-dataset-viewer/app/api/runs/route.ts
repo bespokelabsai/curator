@@ -9,7 +9,8 @@ export async function GET(request: Request): Promise<Response>  {
     const { searchParams } = new URL(request.url)
     const lastCreatedTime = searchParams.get('lastCreatedTime')
     
-    const dbPath = join(homedir(), '.cache', 'curator', 'metadata.db')
+    const cacheDir = process.env.CURATOR_CACHE_DIR || join(homedir(), '.cache', 'curator')
+    const dbPath = join(cacheDir, 'metadata.db')
     
     if (!existsSync(dbPath)) {
       console.error(`Database file not found at: ${dbPath}`)
