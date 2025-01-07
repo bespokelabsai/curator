@@ -222,6 +222,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
 
         Args:
             file_content (bytes): The encoded file content to upload
+            num_retries (int): The number of retries to attempt
 
         Returns:
             str: The uploaded file object from OpenAI
