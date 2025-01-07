@@ -11,8 +11,10 @@ from datasets import Dataset
 from pydantic import BaseModel, Field
 from bespokelabs import curator
 
+
 class NegotiationTranscript(BaseModel):
     """Model for a negotiation transcript between a coach and client."""
+
     transcript_text: str = Field(
         description="The full text of the negotiation transcript."
     )
@@ -20,9 +22,9 @@ class NegotiationTranscript(BaseModel):
         description="The principle being subtly violated in this transcript."
     )
 
-
 class NegotiationAnalysis(BaseModel):
     """Model for analyzing a negotiation transcript."""
+
     analysis_text: str = Field(
         description="Detailed analysis of how the transcript violates the specified principle."
     )
@@ -101,6 +103,7 @@ analysis_generator = curator.LLM(
 
 def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
     """Generate a transcript and its analysis for a given principle."""
+
     # Create input dataset with the principle
     input_data = Dataset.from_dict({"principle": [principle]})
 
