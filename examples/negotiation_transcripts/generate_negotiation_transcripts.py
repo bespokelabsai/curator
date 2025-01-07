@@ -11,7 +11,6 @@ from datasets import Dataset
 from pydantic import BaseModel, Field
 from bespokelabs import curator
 
-
 class NegotiationTranscript(BaseModel):
     """Model for a negotiation transcript between a coach and client."""
     transcript_text: str = Field(
@@ -20,6 +19,7 @@ class NegotiationTranscript(BaseModel):
     violated_principle: str = Field(
         description="The principle being subtly violated in this transcript."
     )
+
 
 class NegotiationAnalysis(BaseModel):
     """Model for analyzing a negotiation transcript."""
