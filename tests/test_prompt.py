@@ -105,7 +105,7 @@ def test_single_completion_batch(prompter: LLM):
         Returns:
             A list of messages for the LLM
         """
-        return [
+        messages = [
             {
                 "role": "user",
                 "content": "Write a test message",
@@ -115,7 +115,10 @@ def test_single_completion_batch(prompter: LLM):
                 "content": "You are a helpful assistant.",
             },
         ]
+        return {"messages": messages}
 
+    # Set dummy OpenAI API key for testing
+    os.environ["OPENAI_API_KEY"] = "test-key"
     batch_prompter = LLM(
         model_name="gpt-4o-mini",
         prompt_func=simple_prompt_func,
@@ -162,7 +165,7 @@ def test_single_completion_no_batch(prompter: LLM):
         Returns:
             A list of messages for the LLM
         """
-        return [
+        messages = [
             {
                 "role": "user",
                 "content": "Write a test message",
@@ -172,7 +175,10 @@ def test_single_completion_no_batch(prompter: LLM):
                 "content": "You are a helpful assistant.",
             },
         ]
+        return {"messages": messages}
 
+    # Set dummy OpenAI API key for testing
+    os.environ["OPENAI_API_KEY"] = "test-key"
     non_batch_prompter = LLM(
         model_name="gpt-4o-mini",
         prompt_func=simple_prompt_func,
