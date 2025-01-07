@@ -5,11 +5,10 @@ where each transcript subtly violates one or two negotiation principles while
 maintaining natural dialogue flow.
 '''
 
-from datasets import Dataset
-from pydantic import BaseModel, Field
-
 import os
 
+from datasets import Dataset
+from pydantic import BaseModel, Field
 from bespokelabs import curator
 
 
@@ -21,7 +20,6 @@ class NegotiationTranscript(BaseModel):
     violated_principle: str = Field(
         description='The principle being subtly violated in this transcript.'
     )
-
 
 
 class NegotiationAnalysis(BaseModel):
@@ -46,36 +44,35 @@ NEGOTIATION_PRINCIPLES = [
 ]
 
 # Prompt template for generating transcripts
-TRANSCRIPT_PROMPT_TEMPLATE = '''Generate a natural dialogue between a negotiation coach ('Coach') and a client ('Client') that subtly violates the principle: '{principle}'.
-
-The dialogue should:
-1. Maintain a natural conversation flow
-2. Only ask one question at a time
-3. Show the coach's expertise while subtly violating the principle
-4. Keep other negotiation principles intact
-5. Use 'Start of Transcript' and 'End of Transcript' markers
-
-The violation should be subtle - the coach should still appear professional and competent.
-
-Principle to violate: {principle}
-'''
+TRANSCRIPT_PROMPT_TEMPLATE = (
+    "Generate a natural dialogue between a negotiation coach ('Coach') and a "
+    "client ('Client') that subtly violates the principle: '{principle}'.\n\n"
+    "The dialogue should:\n"
+    "1. Maintain a natural conversation flow\n"
+    "2. Only ask one question at a time\n"
+    "3. Show the coach's expertise while subtly violating the principle\n"
+    "4. Keep other negotiation principles intact\n"
+    "5. Use 'Start of Transcript' and 'End of Transcript' markers\n\n"
+    "The violation should be subtle - the coach should still appear professional "
+    "and competent.\n\n"
+    "Principle to violate: {principle}"
+)
 
 # Prompt template for generating analysis
-ANALYSIS_PROMPT_TEMPLATE = '''Analyze the following negotiation transcript, focusing on how it violates the principle: '{principle}'.
-
-Transcript:
-{transcript}
-
-Provide a detailed analysis that includes:
-1. The primary principle violated
-2. Specific examples of violations
-3. Why the violation is subtle
-4. Principles successfully followed
-5. Impact of the violation
-6. Learning points
-
-Format the analysis with clear sections and bullet points.
-'''
+ANALYSIS_PROMPT_TEMPLATE = (
+    "Analyze the following negotiation transcript, focusing on how it violates "
+    "the principle: '{principle}'.\n\n"
+    "Transcript:\n"
+    "{transcript}\n\n"
+    "Provide a detailed analysis that includes:\n"
+    "1. The primary principle violated\n"
+    "2. Specific examples of violations\n"
+    "3. Why the violation is subtle\n"
+    "4. Principles successfully followed\n"
+    "5. Impact of the violation\n"
+    "6. Learning points\n\n"
+    "Format the analysis with clear sections and bullet points."
+)
 
 # LLM for transcript generation
 transcript_generator = curator.LLM(
