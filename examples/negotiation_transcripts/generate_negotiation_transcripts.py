@@ -5,7 +5,6 @@ where each transcript subtly violates one or two negotiation principles while
 maintaining natural dialogue flow.
 """
 
-from typing import List, Dict
 from pydantic import BaseModel, Field
 from datasets import Dataset
 
@@ -126,21 +125,21 @@ def main():
     # Create output directory if it doesn't exist
     output_dir = os.path.join(os.path.dirname(__file__), "generated")
     os.makedirs(output_dir, exist_ok=True)
-    
+
     # Generate transcripts for each principle
     for i, principle in enumerate(NEGOTIATION_PRINCIPLES[:10], 1):
         transcript, analysis = generate_transcript_and_analysis(principle)
-        
+
         # Save transcript
         transcript_path = os.path.join(output_dir, f"transcript{i}.txt")
         with open(transcript_path, "w") as f:
             f.write(transcript)
-            
+
         # Save analysis
         analysis_path = os.path.join(output_dir, f"transcript{i}-graded.txt")
         with open(analysis_path, "w") as f:
             f.write(analysis)
-        
+
         print(f"Generated transcript {i} violating principle: {principle}")
 
 
