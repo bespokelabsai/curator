@@ -44,6 +44,10 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             litellm.api_base = self.config.base_url
         self.client = instructor.from_litellm(litellm.acompletion)
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+    
+    @property
+    def backend(self):
+        return 'litellm'
 
     def check_structured_output_support(self):
         """Verify if the model supports structured output via instructor.

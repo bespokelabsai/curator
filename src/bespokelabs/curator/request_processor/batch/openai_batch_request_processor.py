@@ -40,6 +40,10 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         self.web_dashboard = "https://platform.openai.com/batches"
 
     @property
+    def backend(self):
+        return 'openai'
+
+    @property
     def max_requests_per_batch(self) -> int:
         """The maximum number of requests that can be processed in a batch."""
         return 50_000

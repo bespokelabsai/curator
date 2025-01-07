@@ -46,6 +46,10 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         self.web_dashboard = "https://console.anthropic.com/settings/workspaces/default/batches"
 
     @property
+    def backend(self):
+        return 'anthropic'
+
+    @property
     def max_requests_per_batch(self) -> int:
         """Maximum number of requests allowed in a single Anthropic batch.
 

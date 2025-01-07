@@ -53,6 +53,10 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         """
         super().__init__(config)
 
+    @property
+    def backend(self) -> str:
+        return 'base'
+
     def requests_to_responses(self, generic_request_files: list[str]) -> None:
         """Process multiple request files using batch API operations.
 

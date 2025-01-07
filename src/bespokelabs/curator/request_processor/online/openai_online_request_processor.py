@@ -41,7 +41,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         if self.config.base_url is None:
             if 'OPENAI_BASE_URL' in os.environ:
-                key_url = os.environ['OPENAI_BASE_URL'].strip()
+                key_url = os.environ['OPENAI_BASE_URL'].strip().rstrip('/')
                 self.url = key_url + self._DEFAULT_COMPLETION_SUFFIX
             else:
                 self.url = _DEFAULT_OPENAI_URL
@@ -51,6 +51,11 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         self.api_key = os.getenv("OPENAI_API_KEY")
         self.token_encoding = self.get_token_encoding()
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+
+    @property
+    def backend(self):
+        return 'openai'
+
 
     def get_header_based_rate_limits(self) -> tuple[int, int]:
         """Get rate limits from OpenAI API headers.
