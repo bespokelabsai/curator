@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from bespokelabs import curator
 
 
+# We use Pydantic and structured outputs to define the format of the response.
 class NegotiationTranscript(BaseModel):
     """Model for a negotiation transcript between a coach and client."""
 
@@ -22,12 +23,14 @@ class NegotiationTranscript(BaseModel):
         description="The principle being subtly violated in this transcript."
     )
 
+
 class NegotiationAnalysis(BaseModel):
     """Model for analyzing a negotiation transcript."""
 
     analysis_text: str = Field(
         description="Detailed analysis of how the transcript violates the specified principle."
     )
+
 
 # List of principles that can be violated
 NEGOTIATION_PRINCIPLES = [
@@ -101,6 +104,7 @@ analysis_generator = curator.LLM(
 )
 
 
+# We define a function to generate both transcript and analysis
 def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
     """Generate a transcript and its analysis for a given principle."""
 
@@ -118,6 +122,7 @@ def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
     return transcript, analysis
 
 
+# Main function to generate all transcripts
 def main():
     """Generate 10 transcript-analysis pairs."""
     # Create output directory if it doesn't exist
