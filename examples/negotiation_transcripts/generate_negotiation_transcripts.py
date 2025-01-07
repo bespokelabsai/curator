@@ -9,23 +9,21 @@ from pydantic import BaseModel, Field
 from datasets import Dataset
 
 from bespokelabs import curator
-
-
 class NegotiationTranscript(BaseModel):
     """Model for a negotiation transcript between a coach and client."""
     transcript_text: str = Field(
-        description="The full text of the negotiation transcript."
+        description='The full text of the negotiation transcript.'
     )
     violated_principle: str = Field(
-        description="The principle being subtly violated in this transcript."
+        description='The principle being subtly violated in this transcript.'
     )
 
 
 class NegotiationAnalysis(BaseModel):
     """Model for analyzing a negotiation transcript."""
     analysis_text: str = Field(
-        description="Detailed analysis of how the transcript violates the specified "
-        "principle."
+        description='Detailed analysis of how the transcript violates the specified '
+        'principle.'
     )
 
 
@@ -78,26 +76,26 @@ Format the analysis with clear sections and bullet points.
 # LLM for transcript generation
 transcript_generator = curator.LLM(
     prompt_func=lambda row: TRANSCRIPT_PROMPT_TEMPLATE.format(
-        principle=row["principle"]
+        principle=row['principle']
     ),
-    model_name="gpt-4",
+    model_name='gpt-4',
     response_format=NegotiationTranscript,
     parse_func=lambda row, response: {
-        "transcript_text": str(response),  # Convert full response to string
-        "violated_principle": row["principle"]
+        'transcript_text': str(response),  # Convert full response to string
+        'violated_principle': row['principle']
     }
 )
 
 # LLM for analysis generation
 analysis_generator = curator.LLM(
     prompt_func=lambda row: ANALYSIS_PROMPT_TEMPLATE.format(
-        principle=row["violated_principle"],
-        transcript=row["transcript_text"]
+        principle=row['violated_principle'],
+        transcript=row['transcript_text']
     ),
-    model_name="gpt-4",
+    model_name='gpt-4',
     response_format=NegotiationAnalysis,
     parse_func=lambda row, response: {
-        "analysis_text": str(response)  # Convert full response to string
+        'analysis_text': str(response)  # Convert full response to string
     }
 )
 
@@ -105,15 +103,15 @@ analysis_generator = curator.LLM(
 def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
     """Generate a transcript and its analysis for a given principle."""
     # Create input dataset with the principle
-    input_data = Dataset.from_dict({"principle": [principle]})
+    input_data = Dataset.from_dict({'principle': [principle]})
 
     # Generate transcript
     transcript_dataset = transcript_generator(input_data)
-    transcript = transcript_dataset[0]["transcript_text"]
+    transcript = transcript_dataset[0]['transcript_text']
 
     # Generate analysis
     analysis_dataset = analysis_generator(transcript_dataset)
-    analysis = analysis_dataset[0]["analysis_text"]
+    analysis = analysis_dataset[0]['analysis_text']
 
     return transcript, analysis
 
@@ -131,16 +129,16 @@ def main():
         transcript, analysis = generate_transcript_and_analysis(principle)
 
         # Save transcript
-        transcript_path = os.path.join(output_dir, f"transcript{i}.txt")
-        with open(transcript_path, "w") as f:
+        transcript_path = os.path.join(output_dir, f'transcript{i}.txt')
+        with open(transcript_path, 'w') as f:
             f.write(transcript)
 
         # Save analysis
-        analysis_path = os.path.join(output_dir, f"transcript{i}-graded.txt")
-        with open(analysis_path, "w") as f:
+        analysis_path = os.path.join(output_dir, f'transcript{i}-graded.txt')
+        with open(analysis_path, 'w') as f:
             f.write(analysis)
 
-        print(f"Generated transcript {i} violating principle: {principle}")
+        print(f'Generated transcript {i} violating principle: {principle}')
 
 
 if __name__ == "__main__":
