@@ -1,20 +1,20 @@
-"""Script to generate negotiation transcripts using Curator.
+'''Script to generate negotiation transcripts using Curator.
 
 This script generates pairs of negotiation transcripts and their analyses,
 where each transcript subtly violates one or two negotiation principles while
 maintaining natural dialogue flow.
-"""
+'''
+
+from datasets import Dataset
+from pydantic import BaseModel, Field
 
 import os
-
-from pydantic import BaseModel, Field
-from datasets import Dataset
 
 from bespokelabs import curator
 
 
 class NegotiationTranscript(BaseModel):
-    """Model for a negotiation transcript between a coach and client."""
+    '''Model for a negotiation transcript between a coach and client.'''
     transcript_text: str = Field(
         description='The full text of the negotiation transcript.'
     )
@@ -25,10 +25,9 @@ class NegotiationTranscript(BaseModel):
 
 
 class NegotiationAnalysis(BaseModel):
-    """Model for analyzing a negotiation transcript."""
+    '''Model for analyzing a negotiation transcript.'''
     analysis_text: str = Field(
-        description='Detailed analysis of how the transcript violates the specified '
-        'principle.'
+        description='Detailed analysis of how the transcript violates the specified principle.'
     )
 
 
@@ -47,22 +46,22 @@ NEGOTIATION_PRINCIPLES = [
 ]
 
 # Prompt template for generating transcripts
-TRANSCRIPT_PROMPT_TEMPLATE = """Generate a natural dialogue between a negotiation coach ("Coach") and a client ("Client") that subtly violates the principle: "{principle}".
+TRANSCRIPT_PROMPT_TEMPLATE = '''Generate a natural dialogue between a negotiation coach ('Coach') and a client ('Client') that subtly violates the principle: '{principle}'.
 
 The dialogue should:
 1. Maintain a natural conversation flow
 2. Only ask one question at a time
 3. Show the coach's expertise while subtly violating the principle
 4. Keep other negotiation principles intact
-5. Use "Start of Transcript" and "End of Transcript" markers
+5. Use 'Start of Transcript' and 'End of Transcript' markers
 
 The violation should be subtle - the coach should still appear professional and competent.
 
 Principle to violate: {principle}
-"""
+'''
 
 # Prompt template for generating analysis
-ANALYSIS_PROMPT_TEMPLATE = """Analyze the following negotiation transcript, focusing on how it violates the principle: "{principle}".
+ANALYSIS_PROMPT_TEMPLATE = '''Analyze the following negotiation transcript, focusing on how it violates the principle: '{principle}'.
 
 Transcript:
 {transcript}
@@ -76,7 +75,7 @@ Provide a detailed analysis that includes:
 6. Learning points
 
 Format the analysis with clear sections and bullet points.
-"""
+'''
 
 # LLM for transcript generation
 transcript_generator = curator.LLM(
@@ -106,7 +105,7 @@ analysis_generator = curator.LLM(
 
 
 def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
-    """Generate a transcript and its analysis for a given principle."""
+    '''Generate a transcript and its analysis for a given principle.'''
     # Create input dataset with the principle
     input_data = Dataset.from_dict({'principle': [principle]})
 
@@ -122,7 +121,7 @@ def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
 
 
 def main():
-    """Generate 10 transcript-analysis pairs."""
+    '''Generate 10 transcript-analysis pairs.'''
     # Create output directory if it doesn't exist
     output_dir = os.path.join(os.path.dirname(__file__), 'generated')
     os.makedirs(output_dir, exist_ok=True)
