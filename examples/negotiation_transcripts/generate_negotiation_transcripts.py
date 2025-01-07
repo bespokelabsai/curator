@@ -5,10 +5,14 @@ where each transcript subtly violates one or two negotiation principles while
 maintaining natural dialogue flow.
 """
 
+import os
+
 from pydantic import BaseModel, Field
 from datasets import Dataset
 
 from bespokelabs import curator
+
+
 class NegotiationTranscript(BaseModel):
     """Model for a negotiation transcript between a coach and client."""
     transcript_text: str = Field(
@@ -17,6 +21,7 @@ class NegotiationTranscript(BaseModel):
     violated_principle: str = Field(
         description='The principle being subtly violated in this transcript.'
     )
+
 
 
 class NegotiationAnalysis(BaseModel):
@@ -29,16 +34,16 @@ class NegotiationAnalysis(BaseModel):
 
 # List of principles that can be violated
 NEGOTIATION_PRINCIPLES = [
-    "Delay Immediate Advice-Giving",
-    "Gather Comprehensive Information",
-    "Frame Advice as Questions",
-    "Encourage Reflective Dialogue",
-    "Avoid Assumptions",
-    "Maintain Credibility",
-    "Promise of Finality Builds Trust",
-    "Leverage Closure for Concessions",
-    "Timing of Closure is Key",
-    "Universal Application"
+    'Delay Immediate Advice-Giving',
+    'Gather Comprehensive Information',
+    'Frame Advice as Questions',
+    'Encourage Reflective Dialogue',
+    'Avoid Assumptions',
+    'Maintain Credibility',
+    'Promise of Finality Builds Trust',
+    'Leverage Closure for Concessions',
+    'Timing of Closure is Key',
+    'Universal Application'
 ]
 
 # Prompt template for generating transcripts
@@ -118,10 +123,8 @@ def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
 
 def main():
     """Generate 10 transcript-analysis pairs."""
-    import os
-
     # Create output directory if it doesn't exist
-    output_dir = os.path.join(os.path.dirname(__file__), "generated")
+    output_dir = os.path.join(os.path.dirname(__file__), 'generated')
     os.makedirs(output_dir, exist_ok=True)
 
     # Generate transcripts for each principle
@@ -141,5 +144,5 @@ def main():
         print(f'Generated transcript {i} violating principle: {principle}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
