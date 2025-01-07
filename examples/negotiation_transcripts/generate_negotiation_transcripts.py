@@ -25,7 +25,8 @@ class NegotiationTranscript(BaseModel):
 class NegotiationAnalysis(BaseModel):
     """Model for analyzing a negotiation transcript."""
     analysis_text: str = Field(
-        description="Detailed analysis of how the transcript violates the specified principle."
+        description="Detailed analysis of how the transcript violates the specified "
+        "principle."
     )
 
 
@@ -106,22 +107,22 @@ def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
     """Generate a transcript and its analysis for a given principle."""
     # Create input dataset with the principle
     input_data = Dataset.from_dict({"principle": [principle]})
-    
+
     # Generate transcript
     transcript_dataset = transcript_generator(input_data)
     transcript = transcript_dataset[0]["transcript_text"]
-    
+
     # Generate analysis
     analysis_dataset = analysis_generator(transcript_dataset)
     analysis = analysis_dataset[0]["analysis_text"]
-    
+
     return transcript, analysis
 
 
 def main():
     """Generate 10 transcript-analysis pairs."""
     import os
-    
+
     # Create output directory if it doesn't exist
     output_dir = os.path.join(os.path.dirname(__file__), "generated")
     os.makedirs(output_dir, exist_ok=True)
