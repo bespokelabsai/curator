@@ -8,10 +8,10 @@ def test_special_token_handling():
     """Test that special tokens like <|endoftext|> are handled correctly in token estimation."""
     config = OnlineRequestProcessorConfig(model="gpt-4")
     processor = OpenAIOnlineRequestProcessor(config)
-    
+
     # Test message containing special token
     messages = [{"role": "user", "content": "Testing <|endoftext|> token"}]
-    
+
     try:
         total_tokens = processor.estimate_total_tokens(messages)
         assert total_tokens > 0, "Token estimation should return a positive number"
