@@ -15,17 +15,11 @@ from xxhash import xxh64
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor import (
-    AnthropicBatchRequestProcessor,
-    LiteLLMOnlineRequestProcessor,
     OpenAIBatchRequestProcessor,
     OpenAIOnlineRequestProcessor,
     VLLMOfflineRequestProcessor,
 )
-from bespokelabs.curator.request_processor.config import (
-    BatchRequestProcessorConfig,
-    OfflineRequestProcessorConfig,
-    OnlineRequestProcessorConfig,
-)
+from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -99,25 +93,7 @@ class LLM:
         self.prompt_formatter = PromptFormatter(model_name, prompt_func, parse_func, response_format, generation_params)
         self.batch_mode = batch
 
-        if backend is not None:
-            self.backend = backend
-        else:
-            self.backend = self._determine_backend(model_name, response_format, batch)
-
-        if self.backend == "vllm":
-            config_params = {
-                "model": model_name,
-                "generation_params": generation_params,
-                "tensor_parallel_size": tensor_parallel_size,
-                "enforce_eager": enforce_eager,
-                "max_model_length": max_model_length,
-                "max_tokens": max_tokens,
-                "gpu_memory_utilization": gpu_memory_utilization,
-                "batch_size": batch_size if batch_size is not None else 256,
-            }
-            config = OfflineRequestProcessorConfig(**_remove_none_values(config_params))
-
-        elif batch:
+        if batch:
             config_params = {
                 "model": model_name,
                 "base_url": base_url,
@@ -129,7 +105,6 @@ class LLM:
                 "require_all_responses": require_all_responses,
                 "generation_params": generation_params,
             }
-            config = BatchRequestProcessorConfig(**_remove_none_values(config_params))
         else:
             config_params = {
                 "model": model_name,
@@ -141,60 +116,7 @@ class LLM:
                 "generation_params": generation_params,
                 "seconds_to_pause_on_rate_limit": seconds_to_pause_on_rate_limit,
             }
-            config = OnlineRequestProcessorConfig(**_remove_none_values(config_params))
-
-        if self.backend == "openai" and not batch:
-            self._request_processor = OpenAIOnlineRequestProcessor(config)
-        elif self.backend == "openai" and batch:
-            self._request_processor = OpenAIBatchRequestProcessor(config)
-        elif self.backend == "anthropic" and batch:
-            self._request_processor = AnthropicBatchRequestProcessor(config)
-        elif self.backend == "anthropic" and not batch:
-            raise ValueError("Online mode is not currently supported with Anthropic backend.")
-        elif self.backend == "litellm" and batch:
-            raise ValueError("Batch mode is not supported with LiteLLM backend")
-        elif self.backend == "litellm":
-            self._request_processor = LiteLLMOnlineRequestProcessor(config)
-        elif self.backend == "vllm":
-            self._request_processor = VLLMOfflineRequestProcessor(config)
-        else:
-            raise ValueError(f"Unknown backend: {self.backend}")
-
-    @staticmethod
-    def _check_openai_structured_output_support(model_name: str) -> bool:
-        config = OnlineRequestProcessorConfig(model=model_name)
-        return OpenAIOnlineRequestProcessor(config).check_structured_output_support()
-
-    @staticmethod
-    def _determine_backend(model_name: str, response_format: Optional[Type[BaseModel]] = None, batch: bool = False) -> str:
-        """Determine which backend to use based on model name and response format.
-
-        Args:
-            model_name (str): Name of the model
-            response_format (Optional[Type[BaseModel]]): Response format if specified
-            batch (bool): Whether to use batch mode
-        Returns:
-            str: Backend to use ("openai" or "litellm")
-        """
-        model_name = model_name.lower()
-
-        # GPT-4o models with response format should use OpenAI
-        if response_format and LLM._check_openai_structured_output_support(model_name):
-            logger.info(f"Requesting structured output from {model_name}, using OpenAI backend")
-            return "openai"
-
-        # GPT models and O1 models without response format should use OpenAI
-        if not response_format and any(x in model_name for x in ["gpt-", "o1-preview", "o1-mini"]):
-            logger.info(f"Requesting text output from {model_name}, using OpenAI backend")
-            return "openai"
-
-        if batch and "claude" in model_name:
-            logger.info(f"Requesting output from {model_name}, using Anthropic backend")
-            return "anthropic"
-
-        # Default to LiteLLM for all other cases
-        logger.info(f"Requesting {'structured' if response_format else 'text'} output from {model_name}, using LiteLLM backend")
-        return "litellm"
+        self._request_processor = _RequestProcessorFactory.create(config_params, batch=batch, response_format=response_format, backend=backend)
 
     def __call__(
         self,
@@ -238,7 +160,7 @@ class LLM:
                 str(self.prompt_formatter.model_name),
                 str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
                 str(self.batch_mode),
-                str(self.backend),
+                str(self._request_processor.backend),
             ]
         )
 
