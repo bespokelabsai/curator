@@ -20,7 +20,8 @@ export async function GET(
 ): Promise<Response> {
   try {
     const { runHash } = await params
-    const runDir = join(homedir(), '.cache', 'curator', runHash)
+    const cacheDir = process.env.CURATOR_CACHE_DIR || join(homedir(), '.cache', 'curator')
+    const runDir = join(cacheDir, runHash)
 
     const searchParams = request.nextUrl.searchParams
     const lastLineNumber = parseInt(searchParams.get('lastLine') || '0')
