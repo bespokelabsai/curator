@@ -1,9 +1,9 @@
-'''Script to generate negotiation transcripts using Curator.
+"""Script to generate negotiation transcripts using Curator.
 
 This script generates pairs of negotiation transcripts and their analyses,
 where each transcript subtly violates one or two negotiation principles while
 maintaining natural dialogue flow.
-'''
+"""
 
 import os
 
@@ -13,34 +13,32 @@ from bespokelabs import curator
 
 
 class NegotiationTranscript(BaseModel):
-    '''Model for a negotiation transcript between a coach and client.'''
+    """Model for a negotiation transcript between a coach and client."""
     transcript_text: str = Field(
-        description='The full text of the negotiation transcript.'
+        description="The full text of the negotiation transcript."
     )
     violated_principle: str = Field(
-        description='The principle being subtly violated in this transcript.'
+        description="The principle being subtly violated in this transcript."
     )
-
 
 class NegotiationAnalysis(BaseModel):
-    '''Model for analyzing a negotiation transcript.'''
+    """Model for analyzing a negotiation transcript."""
     analysis_text: str = Field(
-        description='Detailed analysis of how the transcript violates the specified principle.'
+        description="Detailed analysis of how the transcript violates the specified principle."
     )
-
 
 # List of principles that can be violated
 NEGOTIATION_PRINCIPLES = [
-    'Delay Immediate Advice-Giving',
-    'Gather Comprehensive Information',
-    'Frame Advice as Questions',
-    'Encourage Reflective Dialogue',
-    'Avoid Assumptions',
-    'Maintain Credibility',
-    'Promise of Finality Builds Trust',
-    'Leverage Closure for Concessions',
-    'Timing of Closure is Key',
-    'Universal Application'
+    "Delay Immediate Advice-Giving",
+    "Gather Comprehensive Information",
+    "Frame Advice as Questions",
+    "Encourage Reflective Dialogue",
+    "Avoid Assumptions",
+    "Maintain Credibility",
+    "Promise of Finality Builds Trust",
+    "Leverage Closure for Concessions",
+    "Timing of Closure is Key",
+    "Universal Application"
 ]
 
 # Prompt template for generating transcripts
@@ -77,48 +75,48 @@ ANALYSIS_PROMPT_TEMPLATE = (
 # LLM for transcript generation
 transcript_generator = curator.LLM(
     prompt_func=lambda row: TRANSCRIPT_PROMPT_TEMPLATE.format(
-        principle=row['principle']
+        principle=row["principle"]
     ),
-    model_name='gpt-4',
+    model_name="gpt-4",
     response_format=NegotiationTranscript,
     parse_func=lambda row, response: {
-        'transcript_text': str(response),  # Convert full response to string
-        'violated_principle': row['principle']
+        "transcript_text": str(response),  # Convert full response to string
+        "violated_principle": row["principle"]
     }
 )
 
 # LLM for analysis generation
 analysis_generator = curator.LLM(
     prompt_func=lambda row: ANALYSIS_PROMPT_TEMPLATE.format(
-        principle=row['violated_principle'],
-        transcript=row['transcript_text']
+        principle=row["violated_principle"],
+        transcript=row["transcript_text"]
     ),
-    model_name='gpt-4',
+    model_name="gpt-4",
     response_format=NegotiationAnalysis,
     parse_func=lambda row, response: {
-        'analysis_text': str(response)  # Convert full response to string
+        "analysis_text": str(response)  # Convert full response to string
     }
 )
 
 
 def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
-    '''Generate a transcript and its analysis for a given principle.'''
+    """Generate a transcript and its analysis for a given principle."""
     # Create input dataset with the principle
-    input_data = Dataset.from_dict({'principle': [principle]})
+    input_data = Dataset.from_dict({"principle": [principle]})
 
     # Generate transcript
     transcript_dataset = transcript_generator(input_data)
-    transcript = transcript_dataset[0]['transcript_text']
+    transcript = transcript_dataset[0]["transcript_text"]
 
     # Generate analysis
     analysis_dataset = analysis_generator(transcript_dataset)
-    analysis = analysis_dataset[0]['analysis_text']
+    analysis = analysis_dataset[0]["analysis_text"]
 
     return transcript, analysis
 
 
 def main():
-    '''Generate 10 transcript-analysis pairs.'''
+    """Generate 10 transcript-analysis pairs."""
     # Create output directory if it doesn't exist
     output_dir = os.path.join(os.path.dirname(__file__), 'generated')
     os.makedirs(output_dir, exist_ok=True)
