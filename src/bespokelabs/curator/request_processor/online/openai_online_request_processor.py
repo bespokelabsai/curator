@@ -19,6 +19,7 @@ from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsa
 T = TypeVar("T")
 logger = logger = logging.getLogger(__name__)
 
+_DEFAULT_OPENAI_URL: str = "https://api.openai.com/v1/chat/completions"
 
 class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixin):
     """OpenAI-specific implementation of the OnlineRequestProcessor.
@@ -32,14 +33,21 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         - Handles token counting using tiktoken
         - Supports structured output via JSON schema
     """
+    _DEFAULT_COMPLETION_SUFFIX = "/chat/completions"
 
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the OpenAIOnlineRequestProcessor."""
         super().__init__(config)
+
         if self.config.base_url is None:
-            self.url = "https://api.openai.com/v1/chat/completions"
+            if 'OPENAI_BASE_URL' in os.environ:
+                key_url = os.environ['OPENAI_BASE_URL'].strip()
+                self.url = key_url + self._DEFAULT_COMPLETION_SUFFIX
+            else:
+                self.url = _DEFAULT_OPENAI_URL
         else:
-            self.url = self.config.base_url + "/chat/completions"
+            self.url = self.config.base_url + self._DEFAULT_COMPLETION_SUFFIX
+
         self.api_key = os.getenv("OPENAI_API_KEY")
         self.token_encoding = self.get_token_encoding()
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
