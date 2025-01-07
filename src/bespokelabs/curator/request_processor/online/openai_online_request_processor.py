@@ -10,16 +10,12 @@ import litellm
 import requests
 import tiktoken
 
-from bespokelabs.curator.request_processor import (APIRequest,
-                                                   BaseOnlineRequestProcessor)
-from bespokelabs.curator.request_processor.config import \
-    OnlineRequestProcessorConfig
-from bespokelabs.curator.request_processor.openai_request_mixin import \
-    OpenAIRequestMixin
+from bespokelabs.curator.request_processor import APIRequest, BaseOnlineRequestProcessor
+from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
+from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
 from bespokelabs.curator.status_tracker import OnlineStatusTracker
 from bespokelabs.curator.types.generic_request import GenericRequest
-from bespokelabs.curator.types.generic_response import (GenericResponse,
-                                                        TokenUsage)
+from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsage
 
 T = TypeVar("T")
 logger = logger = logging.getLogger(__name__)
