@@ -50,6 +50,11 @@ class BaseRequestProcessor(ABC):
         resource.setrlimit(resource.RLIMIT_NOFILE, (desired_limit, hard))
         self.config = config
 
+    @property
+    @abstractmethod
+    def backend(self) -> str:
+        return 'base'
+
     @abstractmethod
     def requests_to_responses(self, generic_request_files: list[str]) -> None:
         """Process request files and generate responses.
