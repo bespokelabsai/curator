@@ -19,12 +19,14 @@ if t.TYPE_CHECKING:
     from bespokelabs.curator.request_processor.config import (
         RequestProcessorConfig,
     )
-    from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor 
+    from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 
-#TODO: Redundant move to misc module.
+
+# TODO: Redundant move to misc module.
 def _remove_none_values(d: dict) -> dict:
     """Remove all None values from a dictionary."""
     return {k: v for k, v in d.items() if v is not None}
+
 
 class _RequestProcessorFactory:
     @classmethod
@@ -32,20 +34,24 @@ class _RequestProcessorFactory:
         if batch:
             return BatchRequestProcessorConfig(**_remove_none_values(params))
         return OnlineRequestProcessorConfig(**_remove_none_values(params))
-    
+
     @staticmethod
     def _check_openai_structured_output_support(config) -> bool:
         return OpenAIOnlineRequestProcessor(config).check_structured_output_support()
-    
+
     @staticmethod
     def _determine_backend(
-        config: 'RequestProcessorConfig', response_format: t.Optional['BaseModel'] = None, batch: bool = False
+        config: "RequestProcessorConfig",
+        response_format: t.Optional["BaseModel"] = None,
+        batch: bool = False,
     ) -> str:
         model_name = config.model.lower()
-        
+
         # TODO: Move the following logic to corresponding client implementation
         # GPT-4o models with response format should use OpenAI
-        if response_format and _RequestProcessorFactory._check_openai_structured_output_support(config):
+        if response_format and _RequestProcessorFactory._check_openai_structured_output_support(
+            config
+        ):
             logger.info(f"Requesting structured output from {model_name}, using OpenAI backend")
             return "openai"
 
@@ -63,9 +69,9 @@ class _RequestProcessorFactory:
             f"Requesting {'structured' if response_format else 'text'} output from {model_name}, using LiteLLM backend"
         )
         return "litellm"
-    
+
     @classmethod
-    def create(cls, params, batch: bool, backend, response_format) -> 'BaseRequestProcessor':
+    def create(cls, params, batch: bool, backend, response_format) -> "BaseRequestProcessor":
         """Create appropriate processor instance based on config params"""
         config = cls._create_config(params, batch)
 

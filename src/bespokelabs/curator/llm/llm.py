@@ -116,7 +116,10 @@ class LLM:
                 "generation_params": generation_params,
                 "seconds_to_pause_on_rate_limit": seconds_to_pause_on_rate_limit,
             }
-        self._request_processor = _RequestProcessorFactory.create(config_params, batch=batch, response_format=response_format, backend=backend)
+
+        self._request_processor = _RequestProcessorFactory.create(
+            config_params, batch=batch, response_format=response_format, backend=backend
+        )
 
     def __call__(
         self,

@@ -53,7 +53,7 @@ class BaseRequestProcessor(ABC):
     @property
     @abstractmethod
     def backend(self) -> str:
-        return 'base'
+        return "base"
 
     @abstractmethod
     def requests_to_responses(self, generic_request_files: list[str]) -> None:

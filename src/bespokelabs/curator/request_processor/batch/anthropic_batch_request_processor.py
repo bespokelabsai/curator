@@ -47,7 +47,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
 
     @property
     def backend(self):
-        return 'anthropic'
+        return "anthropic"
 
     @property
     def max_requests_per_batch(self) -> int:

@@ -75,7 +75,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
     @property
     def backend(self) -> str:
-        return 'base'
+        return "base"
 
     @property
     def max_requests_per_minute(self) -> int:

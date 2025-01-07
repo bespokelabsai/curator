@@ -47,7 +47,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     
     @property
     def backend(self):
-        return 'litellm'
+        return "litellm"
 
     def check_structured_output_support(self):
         """Verify if the model supports structured output via instructor.

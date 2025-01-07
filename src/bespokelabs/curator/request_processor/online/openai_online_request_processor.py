@@ -21,6 +21,7 @@ logger = logger = logging.getLogger(__name__)
 
 _DEFAULT_OPENAI_URL: str = "https://api.openai.com/v1/chat/completions"
 
+
 class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixin):
     """OpenAI-specific implementation of the OnlineRequestProcessor.
 
@@ -33,6 +34,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         - Handles token counting using tiktoken
         - Supports structured output via JSON schema
     """
+
     _DEFAULT_COMPLETION_SUFFIX = "/chat/completions"
 
     def __init__(self, config: OnlineRequestProcessorConfig):
@@ -40,8 +42,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         super().__init__(config)
 
         if self.config.base_url is None:
-            if 'OPENAI_BASE_URL' in os.environ:
-                key_url = os.environ['OPENAI_BASE_URL'].strip().rstrip('/')
+            if "OPENAI_BASE_URL" in os.environ:
+                key_url = os.environ["OPENAI_BASE_URL"].strip().rstrip("/")
                 self.url = key_url + self._DEFAULT_COMPLETION_SUFFIX
             else:
                 self.url = _DEFAULT_OPENAI_URL
@@ -54,8 +56,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
     @property
     def backend(self):
-        return 'openai'
-
+        return "openai"
 
     def get_header_based_rate_limits(self) -> tuple[int, int]:
         """Get rate limits from OpenAI API headers.

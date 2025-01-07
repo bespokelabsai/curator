@@ -41,7 +41,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
 
     @property
     def backend(self):
-        return 'openai'
+        return "openai"
 
     @property
     def max_requests_per_batch(self) -> int:
