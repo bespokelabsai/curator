@@ -37,26 +37,28 @@ def test_custom_pickler_path_normalization():
         # Create a module file in the package directory
         module_path = pkg_dir / "test_module.py"
         with open(module_path, "w") as f:
-            f.write("""
+            f.write(
+                """
 def func():
     path = os.path.join("/home", "user", "file.txt")
     return path
-""")
+"""
+            )
 
         # Import the function from the file
         import importlib.util
         from types import ModuleType
-        
+
         spec = importlib.util.spec_from_file_location("test_module", str(module_path))
         if spec is None or spec.loader is None:
             raise ImportError(f"Could not load module from {module_path}")
-            
+
         module: ModuleType = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        
+
         if not hasattr(module, "func"):
             raise AttributeError(f"Module {module_path} does not have 'func' attribute")
-            
+
         return module.func
 
     # Create two identical functions in different Ray-like package directories
