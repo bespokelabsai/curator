@@ -2,7 +2,7 @@ import logging
 import litellm
 import instructor
 
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic, APIConnectionError
 from anthropic.types.messages import MessageBatch
 from anthropic.types.messages import MessageBatchRequestCounts
 from anthropic.types.shared.not_found_error import NotFoundError
@@ -261,13 +261,16 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             response_cost=cost,
         )
 
-    async def submit_batch(self, requests: list[dict], metadata: dict) -> GenericBatch:
+    async def submit_batch(
+        self, requests: list[dict], metadata: dict, num_retries: int = 3
+    ) -> GenericBatch:
         """
         Handles the complete batch submission process.
 
         Args:
             requests (list[dict]): List of API-specific requests to submit
             metadata (dict): Metadata to be included with the batch
+            num_retries (int): The number of retries to attempt
 
         Returns:
             Batch: The created batch object from OpenAI
@@ -276,7 +279,21 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             - Updates tracker with submitted batch status
         """
         async with self.semaphore:
-            batch = await self.client.messages.batches.create(requests=requests)
+            for retry_id in range(num_retries + 1):
+                try:
+                    batch = await self.client.messages.batches.create(requests=requests)
+                    break
+
+                except APIConnectionError as e:
+                    logger.error(
+                        f"Failed to connect to Anthropic API. Please check your internet connection."
+                    )
+                    if retry_id == num_retries:
+                        raise e
+                    else:
+                        logger.error(
+                            f"Retrying batch submission (attempt {retry_id+1}/{num_retries})"
+                        )
             return self.parse_api_specific_batch_object(
                 batch, request_file=metadata["request_file"]
             )

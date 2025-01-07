@@ -5,7 +5,7 @@ import logging
 import litellm
 
 from typing import Optional
-from openai import AsyncOpenAI, NotFoundError
+from openai import AsyncOpenAI, NotFoundError, APIConnectionError
 from openai.types.batch import Batch
 from openai.types.file_object import FileObject
 from openai.types.batch_request_counts import BatchRequestCounts
@@ -216,7 +216,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
 
         return request
 
-    async def upload_batch_file(self, file_content: bytes) -> FileObject:
+    async def upload_batch_file(self, file_content: bytes, num_retries: int = 3) -> FileObject:
         """
         Uploads a batch file to OpenAI and waits until ready.
 
@@ -227,7 +227,22 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             str: The uploaded file object from OpenAI
         """
         try:
-            batch_file_upload = await self.client.files.create(file=file_content, purpose="batch")
+            for retry_id in range(num_retries + 1):
+                try:
+                    batch_file_upload = await self.client.files.create(
+                        file=file_content, purpose="batch"
+                    )
+                    break
+                except APIConnectionError as e:
+                    logger.error(
+                        f"Failed to connect to OpenAI API. Please check here for more information: https://help.openai.com/en/articles/6897191-apiconnectionerror."
+                    )
+                    if retry_id == num_retries:
+                        raise e
+                    else:
+                        logger.error(
+                            f"Retrying batch file upload (attempt {retry_id+1}/{num_retries})"
+                        )
         except Exception as e:
             logger.error(f"Error uploading batch file: {e}")
             raise e
