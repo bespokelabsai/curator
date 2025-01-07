@@ -107,7 +107,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             num_tokens += 4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
             for key, value in message.items():
                 try:
-                    num_tokens += len(self.token_encoding.encode(str(value)))
+                    num_tokens += len(self.token_encoding.encode(str(value), disallowed_special=()))
                 except TypeError:
                     logger.warning(
                         f"Failed to encode value {value} with tiktoken. Assuming 1 token per 4 chars."
