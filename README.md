@@ -70,7 +70,7 @@ print(poems)
 ```
 Note that retries and caching are enabled by default.
 So now if you run the same prompt again, you will get the same response, pretty much instantly.
-You can delete the cache at `~/.cache/curator`.
+You can delete the cache at the path specified by `os.path.join(os.path.expanduser("~"), ".cache", "curator")`.
 
 #### Use LiteLLM backend for calling other models
 You can use the [LiteLLM](https://docs.litellm.ai/docs/providers) backend for calling other models.
@@ -127,10 +127,11 @@ poet = curator.LLM(
 Here:
 * `prompt_func` takes a row of the dataset as input and returns the prompt for the LLM.
 * `response_format` is the structured output class we defined above.
-* `parse_func` takes the input (`row`) and the structured output (`poems`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object. For best practices with type annotations:
+* `parse_func` takes the input (`row`) and the structured output (`poems`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object. For best practices:
   * Define `parse_func` as a module-level function rather than a lambda to ensure proper serialization
   * Use the `_DictOrBaseModel` type alias for input/output types: `def parse_func(row: _DictOrBaseModel, response: _DictOrBaseModel) -> _DictOrBaseModel`
-  * Type annotations are now fully supported thanks to cloudpickle serialization
+  * Type annotations are fully supported through our CustomPickler implementation
+  * Function hashing is path-independent, ensuring consistent caching across different environments (e.g., Ray clusters)
 
 Now we can apply the `LLM` object to the dataset, which reads very pythonic.
 ```python
@@ -145,8 +146,8 @@ print(poem.to_pandas())
 ```
 Note that `topics` can be created with `curator.LLM` as well,
 and we can scale this up to create tens of thousands of diverse poems.
-You can see a more detailed example in the [examples/poem.py](https://github.com/bespokelabsai/curator/blob/mahesh/update_doc/examples/poem.py) file,
-and other examples in the [examples](https://github.com/bespokelabsai/curator/blob/mahesh/update_doc/examples) directory.
+You can see a more detailed example in the [examples/poem-generation/poem.py](https://github.com/bespokelabsai/curator/blob/main/examples/poem-generation/poem.py) file,
+and other examples in the [examples](https://github.com/bespokelabsai/curator/blob/main/examples) directory.
 
 See the [docs](https://docs.bespokelabs.ai/) for more details as well as 
 for troubleshooting information.
@@ -204,4 +205,4 @@ npm -v # should print `10.9.0`
 ```
 
 ## Contributing
-Contributions are welcome!       
+Contributions are welcome!          

@@ -7,10 +7,11 @@ from datetime import datetime
 from io import BytesIO
 from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
 
-import cloudpickle
 from datasets import Dataset
 from pydantic import BaseModel
 from xxhash import xxh64
+
+from bespokelabs.curator.utils.custom_pickler import CustomPickler
 
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
@@ -285,13 +286,15 @@ class LLM:
 def _get_function_hash(func) -> str:
     """Get a hash of a function's source code.
 
-    Uses cloudpickle to properly handle functions with type annotations and closure variables.
+    Uses CustomPickler to properly handle both:
+    1. Path normalization (from HuggingFace's Pickler)
+    2. Type annotations and closure variables (from cloudpickle)
     """
     if func is None:
         return xxh64("").hexdigest()
 
     file = BytesIO()
-    file.write(cloudpickle.dumps(func))
+    CustomPickler(file, recurse=True).dump(func)
     return xxh64(file.getvalue()).hexdigest()
 
 
