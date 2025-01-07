@@ -118,7 +118,7 @@ def generate_transcript_and_analysis(principle: str) -> tuple[str, str]:
 def main():
     """Generate 10 transcript-analysis pairs."""
     # Create output directory if it doesn't exist
-    output_dir = os.path.join(os.path.dirname(__file__), 'generated')
+    output_dir = os.path.join(os.path.dirname(__file__), "generated")
     os.makedirs(output_dir, exist_ok=True)
 
     # Generate transcripts for each principle
@@ -126,17 +126,17 @@ def main():
         transcript, analysis = generate_transcript_and_analysis(principle)
 
         # Save transcript
-        transcript_path = os.path.join(output_dir, f'transcript{i}.txt')
-        with open(transcript_path, 'w') as f:
+        transcript_path = os.path.join(output_dir, f"transcript{i}.txt")
+        with open(transcript_path, "w") as f:
             f.write(transcript)
 
         # Save analysis
-        analysis_path = os.path.join(output_dir, f'transcript{i}-graded.txt')
-        with open(analysis_path, 'w') as f:
+        analysis_path = os.path.join(output_dir, f"transcript{i}-graded.txt")
+        with open(analysis_path, "w") as f:
             f.write(analysis)
 
-        print(f'Generated transcript {i} violating principle: {principle}')
+        print(f"Generated transcript {i} violating principle: {principle}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
