@@ -1,7 +1,9 @@
 import pytest
 
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
-from bespokelabs.curator.request_processor.online.openai_online_request_processor import OpenAIOnlineRequestProcessor
+from bespokelabs.curator.request_processor.online.openai_online_request_processor import (
+    OpenAIOnlineRequestProcessor,
+)
 
 
 def test_special_token_handling():
@@ -19,3 +21,4 @@ def test_special_token_handling():
         if "<|endoftext|>" in str(e):
             pytest.fail("Special token <|endoftext|> should not raise ValueError")
         raise  # Re-raise if it is a different ValueError
+
