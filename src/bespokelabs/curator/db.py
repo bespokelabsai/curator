@@ -30,6 +30,9 @@ class MetadataDB:
             RuntimeError: If there is a mismatch between the current schema and expected schema,
                         with instructions to clear the cache.
         """
+        # IMPORTANT: If you modify the CREATE TABLE statement in store_metadata(),
+        # you must update this expected_columns list to match the new schema.
+        # Otherwise, schema validation will fail and users will need to clear their cache.
         expected_columns = [
             "run_hash",
             "dataset_hash",
