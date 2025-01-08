@@ -6,7 +6,8 @@ import os
 import shutil
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
+from typing import (Any, Callable, Dict, Iterable, Optional, Type, TypeVar,
+                    Union)
 
 from datasets import Dataset
 from datasets.utils._dill import Pickler
@@ -16,15 +17,10 @@ from xxhash import xxh64
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor import (
-    LiteLLMOnlineRequestProcessor,
-    OpenAIOnlineRequestProcessor,
-    AnthropicBatchRequestProcessor,
-    OpenAIBatchRequestProcessor,
-)
+    AnthropicBatchRequestProcessor, LiteLLMOnlineRequestProcessor,
+    OpenAIBatchRequestProcessor, OpenAIOnlineRequestProcessor)
 from bespokelabs.curator.request_processor.config import (
-    BatchRequestProcessorConfig,
-    OnlineRequestProcessorConfig,
-)
+    BatchRequestProcessorConfig, OnlineRequestProcessorConfig)
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -235,8 +231,11 @@ class LLM:
         logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
         logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
 
+        # Check if cache is disabled
+        cache_disabled = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
+
         # Only create metadata if caching is enabled
-        if not os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]:
+        if not cache_disabled:
             metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
             metadata_db = MetadataDB(metadata_db_path)
 
@@ -262,27 +261,24 @@ class LLM:
                 "batch_mode": self.batch_mode,
             }
             metadata_db.store_metadata(metadata_dict)
-
-        import tempfile
-
-        # Check if cache is disabled
-        cache_disabled = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
-        if cache_disabled:
-            logger.info("Cache disabled by CURATOR_DISABLE_CACHE env variable.")
-            # Create a temporary directory that will be automatically cleaned up
-            run_cache_dir = tempfile.mkdtemp()
-            logger.debug(f"Created temporary directory for non-cached run: {run_cache_dir}")
-            # Skip metadata storage when cache is disabled
-            metadata_db = None
         else:
-            run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
+            logger.info("Cache disabled by CURATOR_DISABLE_CACHE env variable.")
+            metadata_db = None
+
+        # Use the same directory structure but clean it up later if cache is disabled
+        run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
+
+        # Check for invalid combination of batch_cancel and cache_disabled
+        if batch_cancel and cache_disabled:
+            raise ValueError("Cannot use batch_cancel when CURATOR_DISABLE_CACHE is set.")
 
         try:
             if batch_cancel:
                 if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
                     raise ValueError("batch_cancel can only be used with batch mode")
 
-                from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+                from bespokelabs.curator.request_processor.event_loop import \
+                    run_in_event_loop
 
                 dataset = run_in_event_loop(self._request_processor.cancel_batches())
             else:
@@ -293,10 +289,10 @@ class LLM:
                     prompt_formatter=self.prompt_formatter,
                 )
         finally:
-            # Clean up temporary directory if cache is disabled
+            # Clean up cache directory if caching is disabled
             if cache_disabled:
                 shutil.rmtree(run_cache_dir, ignore_errors=True)
-                logger.debug(f"Cleaned up temporary directory: {run_cache_dir}")
+                logger.debug(f"Cleaned up directory for non-cached run: {run_cache_dir}")
 
         return dataset
 
