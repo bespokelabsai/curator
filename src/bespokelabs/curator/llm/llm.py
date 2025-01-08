@@ -237,37 +237,35 @@ class LLM:
 
         # Check if cache is disabled
         cache_disabled = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
-
-        # Only create metadata if caching is enabled
-        if not cache_disabled:
-            metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
-            metadata_db = MetadataDB(metadata_db_path)
-
-            # Get the source code of the prompt function
-            prompt_func_source = _get_function_source(self.prompt_formatter.prompt_func)
-            if self.prompt_formatter.parse_func is not None:
-                parse_func_source = _get_function_source(self.prompt_formatter.parse_func)
-            else:
-                parse_func_source = ""
-
-            metadata_dict = {
-                "timestamp": datetime.now().isoformat(),
-                "dataset_hash": dataset_hash,
-                "prompt_func": prompt_func_source,
-                "parse_func": parse_func_source,
-                "model_name": self.prompt_formatter.model_name,
-                "response_format": (
-                    str(self.prompt_formatter.response_format.model_json_schema())
-                    if self.prompt_formatter.response_format
-                    else "text"
-                ),
-                "run_hash": fingerprint,
-                "batch_mode": self.batch_mode,
-            }
-            metadata_db.store_metadata(metadata_dict)
-        else:
+        if cache_disabled:
             logger.info("Cache disabled by CURATOR_DISABLE_CACHE env variable.")
-            metadata_db = None
+
+        # Always create metadata
+        metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
+        metadata_db = MetadataDB(metadata_db_path)
+
+        # Get the source code of the prompt function
+        prompt_func_source = _get_function_source(self.prompt_formatter.prompt_func)
+        if self.prompt_formatter.parse_func is not None:
+            parse_func_source = _get_function_source(self.prompt_formatter.parse_func)
+        else:
+            parse_func_source = ""
+
+        metadata_dict = {
+            "timestamp": datetime.now().isoformat(),
+            "dataset_hash": dataset_hash,
+            "prompt_func": prompt_func_source,
+            "parse_func": parse_func_source,
+            "model_name": self.prompt_formatter.model_name,
+            "response_format": (
+                str(self.prompt_formatter.response_format.model_json_schema())
+                if self.prompt_formatter.response_format
+                else "text"
+            ),
+            "run_hash": fingerprint,
+            "batch_mode": self.batch_mode,
+        }
+        metadata_db.store_metadata(metadata_dict)
 
         # Use the same directory structure but clean it up later if cache is disabled
         run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
