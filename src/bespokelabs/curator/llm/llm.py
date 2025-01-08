@@ -6,7 +6,8 @@ import os
 import shutil
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
+from typing import (Any, Callable, Dict, Iterable, Optional, Type, TypeVar,
+                    Union)
 
 from datasets import Dataset
 from datasets.utils._dill import Pickler
@@ -16,15 +17,10 @@ from xxhash import xxh64
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor import (
-    AnthropicBatchRequestProcessor,
-    LiteLLMOnlineRequestProcessor,
-    OpenAIBatchRequestProcessor,
-    OpenAIOnlineRequestProcessor,
-)
+    AnthropicBatchRequestProcessor, LiteLLMOnlineRequestProcessor,
+    OpenAIBatchRequestProcessor, OpenAIOnlineRequestProcessor)
 from bespokelabs.curator.request_processor.config import (
-    BatchRequestProcessorConfig,
-    OnlineRequestProcessorConfig,
-)
+    BatchRequestProcessorConfig, OnlineRequestProcessorConfig)
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -267,33 +263,38 @@ class LLM:
         }
         metadata_db.store_metadata(metadata_dict)
 
-        # Use the same directory structure but clean it up later if cache is disabled
+        # Set up the cache directory
         run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
 
         # Check for invalid combination of batch_cancel and cache_disabled
         if batch_cancel and cache_disabled:
             raise ValueError("Cannot use batch_cancel when CURATOR_DISABLE_CACHE is set.")
 
-        try:
-            if batch_cancel:
-                if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
-                    raise ValueError("batch_cancel can only be used with batch mode")
+        # Clean up existing cache directory if cache is disabled
+        if cache_disabled and os.path.exists(run_cache_dir):
+            shutil.rmtree(run_cache_dir, ignore_errors=True)
+            logger.debug(f"Cleaned up existing cache directory: {run_cache_dir}")
 
-                from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+        if batch_cancel:
+            if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
+                raise ValueError("batch_cancel can only be used with batch mode")
 
-                dataset = run_in_event_loop(self._request_processor.cancel_batches())
-            else:
-                dataset = self._request_processor.run(
-                    dataset=dataset,
-                    working_dir=run_cache_dir,
-                    parse_func_hash=parse_func_hash,
-                    prompt_formatter=self.prompt_formatter,
-                )
-        finally:
-            # Clean up cache directory if caching is disabled
-            if cache_disabled:
-                shutil.rmtree(run_cache_dir, ignore_errors=True)
-                logger.debug(f"Cleaned up directory for non-cached run: {run_cache_dir}")
+            from bespokelabs.curator.request_processor.event_loop import \
+                run_in_event_loop
+
+            dataset = run_in_event_loop(self._request_processor.cancel_batches())
+        else:
+            dataset = self._request_processor.run(
+                dataset=dataset,
+                working_dir=run_cache_dir,
+                parse_func_hash=parse_func_hash,
+                prompt_formatter=self.prompt_formatter,
+            )
+
+        # Clean up new cache directory if cache is disabled
+        if cache_disabled:
+            shutil.rmtree(run_cache_dir, ignore_errors=True)
+            logger.debug(f"Cleaned up directory for non-cached run: {run_cache_dir}")
 
         return dataset
 
