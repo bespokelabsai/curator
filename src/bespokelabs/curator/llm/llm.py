@@ -17,8 +17,11 @@ from xxhash import xxh64
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor import (
-    AnthropicBatchRequestProcessor, LiteLLMOnlineRequestProcessor,
-    OpenAIBatchRequestProcessor, OpenAIOnlineRequestProcessor)
+    LiteLLMOnlineRequestProcessor, OpenAIOnlineRequestProcessor)
+from bespokelabs.curator.request_processor.batch.anthropic_batch_request_processor import \
+    AnthropicBatchRequestProcessor
+from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import \
+    OpenAIBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import (
     BatchRequestProcessorConfig, OnlineRequestProcessorConfig)
 
