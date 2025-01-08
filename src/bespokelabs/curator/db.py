@@ -30,9 +30,6 @@ class MetadataDB:
             RuntimeError: If there is a mismatch between the current schema and expected schema,
                         with instructions to clear the cache.
         """
-        # IMPORTANT: If you modify the CREATE TABLE statement in store_metadata(),
-        # you must update this expected_columns list to match the new schema.
-        # Otherwise, schema validation will fail and users will need to clear their cache.
         expected_columns = [
             "run_hash",
             "dataset_hash",
@@ -70,6 +67,10 @@ class MetadataDB:
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
+            # IMPORTANT: If you modify the CREATE TABLE schema below,
+            # you must update the expected_columns list in validate_schema()
+            # to match the new schema. Otherwise, schema validation will fail
+            # and users will need to clear their cache.
             cursor.execute(
                 """
                 CREATE TABLE IF NOT EXISTS runs (
