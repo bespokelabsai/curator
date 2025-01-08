@@ -115,10 +115,10 @@ def test_nested_call_caching(tmp_path):
     assert len(cache_dirs) == 2, f"Expected 2 cache directory but found {len(cache_dirs)}"
 
 
-def test_disable_cache_env_var(tmp_path, monkeypatch, caplog):
-    """Test that setting CURATOR_DISABLE_CACHE prevents cache usage."""
-    # Set environment variable to disable cache
-    monkeypatch.setenv("CURATOR_DISABLE_CACHE", "true")
+def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
+    """Test that setting CURATOR_OVERWRITE_CACHE overwrites cache directory."""
+    # Set environment variable to overwrite cache
+    monkeypatch.setenv("CURATOR_OVERWRITE_CACHE", "true")
 
     # Create a simple dataset with one instruction
     dataset = Dataset.from_list([{"instruction": "Say 'test'. Do not explain."}])
@@ -131,24 +131,29 @@ def test_disable_cache_env_var(tmp_path, monkeypatch, caplog):
         model_name="gpt-4o-mini",
     )
 
-    # First run with cache disabled
+    # First run with cache overwrite enabled
     with caplog.at_level("INFO"):
         result = prompter(dataset=dataset, working_dir=str(tmp_path))
         response = result.to_pandas().iloc[0]["response"].lower().rstrip(".")
         assert response == "test", f"Expected 'test', got '{response}'"
-        # Verify no cache usage messages in logs
-        assert "Using cached" not in caplog.text, "Cache should not be used when disabled"
+        
+        # Verify cache directory exists and overwrite message is logged
+        cache_dirs = [d for d in tmp_path.glob("*") if d.name != "metadata.db"]
+        assert len(cache_dirs) > 0, "Cache directory should be created"
+        assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
         caplog.clear()
 
-    # Second run to verify consistent behavior and no cache usage
+    # Second run to verify cache is overwritten
     with caplog.at_level("INFO"):
         result = prompter(dataset=dataset, working_dir=str(tmp_path))
         response = result.to_pandas().iloc[0]["response"].lower().rstrip(".")
         assert response == "test", f"Expected 'test', got '{response}'"
-        # Verify no cache usage messages in logs
-        assert (
-            "Using cached" not in caplog.text
-        ), "Cache should not be used when disabled (second run)"
+        
+        # Verify cache directory still exists and is overwritten
+        cache_dirs = [d for d in tmp_path.glob("*") if d.name != "metadata.db"]
+        assert len(cache_dirs) > 0, "Cache directory should still exist"
+        assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
+        assert "Using cached" not in caplog.text, "Cache should not be reused when overwrite is enabled"
 
 
 def test_function_hash_dir_change():

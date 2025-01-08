@@ -239,10 +239,10 @@ class LLM:
         logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
         logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
 
-        # Check if cache is disabled
-        cache_disabled = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
-        if cache_disabled:
-            logger.info("Cache disabled by CURATOR_DISABLE_CACHE env variable.")
+        # Check if cache should be overwritten
+        cache_overwrite = os.getenv("CURATOR_OVERWRITE_CACHE", "").lower() in ["true", "1"]
+        if cache_overwrite:
+            logger.info("Cache will be overwritten due to CURATOR_OVERWRITE_CACHE env variable.")
 
         # Always create metadata
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
@@ -273,15 +273,22 @@ class LLM:
 
         # Set up the cache directory
         run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
+        os.makedirs(run_cache_dir, exist_ok=True)
+        logger.debug(f"Created cache directory: {run_cache_dir}")
 
-        # Check for invalid combination of batch_cancel and cache_disabled
-        if batch_cancel and cache_disabled:
-            raise ValueError("Cannot use batch_cancel when CURATOR_DISABLE_CACHE is set.")
+        # Check for invalid combination of batch_cancel and cache_overwrite
+        if batch_cancel and cache_overwrite:
+            raise ValueError("Cannot use batch_cancel when CURATOR_OVERWRITE_CACHE is set.")
 
-        # Clean up existing cache directory if cache is disabled
-        if cache_disabled and os.path.exists(run_cache_dir):
-            shutil.rmtree(run_cache_dir, ignore_errors=True)
-            logger.debug(f"Cleaned up existing cache directory: {run_cache_dir}")
+        # Clean up existing cache directory contents if cache overwrite is enabled
+        if cache_overwrite:
+            for item in os.listdir(run_cache_dir):
+                item_path = os.path.join(run_cache_dir, item)
+                if os.path.isfile(item_path):
+                    os.unlink(item_path)
+                elif os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+            logger.debug(f"Cleaned up contents of cache directory: {run_cache_dir}")
 
         if batch_cancel:
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
@@ -298,10 +305,10 @@ class LLM:
                 prompt_formatter=self.prompt_formatter,
             )
 
-        # Clean up new cache directory if cache is disabled
-        if cache_disabled:
+        # Clean up new cache directory if cache overwrite is enabled
+        if cache_overwrite:
             shutil.rmtree(run_cache_dir, ignore_errors=True)
-            logger.debug(f"Cleaned up directory for non-cached run: {run_cache_dir}")
+            logger.debug(f"Cleaned up directory for overwritten cache: {run_cache_dir}")
 
         return dataset
 
