@@ -115,6 +115,40 @@ def test_nested_call_caching(tmp_path):
     assert len(cache_dirs) == 2, f"Expected 2 cache directory but found {len(cache_dirs)}"
 
 
+def test_disable_cache_env_var(tmp_path, monkeypatch, caplog):
+    """Test that setting CURATOR_DISABLE_CACHE prevents cache usage."""
+    # Set environment variable to disable cache
+    monkeypatch.setenv("CURATOR_DISABLE_CACHE", "true")
+
+    # Create a simple dataset with one instruction
+    dataset = Dataset.from_list([{"instruction": "Say 'test'. Do not explain."}])
+    
+    def prompt_func(x):
+        return x["instruction"]
+
+    prompter = curator.LLM(
+        prompt_func=prompt_func,
+        model_name="gpt-4o-mini",
+    )
+
+    # First run with cache disabled
+    with caplog.at_level("INFO"):
+        result = prompter(dataset=dataset, working_dir=str(tmp_path))
+        response = result.to_pandas().iloc[0]["response"].lower().rstrip('.')
+        assert response == "test", f"Expected 'test', got '{response}'"
+        # Verify no cache usage messages in logs
+        assert "Using cached" not in caplog.text, "Cache should not be used when disabled"
+        caplog.clear()
+
+    # Second run to verify consistent behavior and no cache usage
+    with caplog.at_level("INFO"):
+        result = prompter(dataset=dataset, working_dir=str(tmp_path))
+        response = result.to_pandas().iloc[0]["response"].lower().rstrip('.')
+        assert response == "test", f"Expected 'test', got '{response}'"
+        # Verify no cache usage messages in logs
+        assert "Using cached" not in caplog.text, "Cache should not be used when disabled (second run)"
+
+
 def test_function_hash_dir_change():
     """Test that identical functions in different directories but same base filename produce the same hash."""
     import logging

@@ -3,6 +3,7 @@
 import inspect
 import logging
 import os
+import shutil
 from datetime import datetime
 from io import BytesIO
 from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
@@ -175,7 +176,7 @@ class LLM:
     def __call__(
         self,
         dataset: Optional[Iterable] = None,
-        working_dir: str = None,
+        working_dir: Optional[str] = None,
         batch_cancel: bool = False,
     ) -> Dataset:
         """
@@ -234,48 +235,67 @@ class LLM:
         logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
         logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
 
-        metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
-        metadata_db = MetadataDB(metadata_db_path)
+        # Only create metadata if caching is enabled
+        if not os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]:
+            metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
+            metadata_db = MetadataDB(metadata_db_path)
 
-        # Get the source code of the prompt function
-        prompt_func_source = _get_function_source(self.prompt_formatter.prompt_func)
-        if self.prompt_formatter.parse_func is not None:
-            parse_func_source = _get_function_source(self.prompt_formatter.parse_func)
+            # Get the source code of the prompt function
+            prompt_func_source = _get_function_source(self.prompt_formatter.prompt_func)
+            if self.prompt_formatter.parse_func is not None:
+                parse_func_source = _get_function_source(self.prompt_formatter.parse_func)
+            else:
+                parse_func_source = ""
+
+            metadata_dict = {
+                "timestamp": datetime.now().isoformat(),
+                "dataset_hash": dataset_hash,
+                "prompt_func": prompt_func_source,
+                "parse_func": parse_func_source,
+                "model_name": self.prompt_formatter.model_name,
+                "response_format": (
+                    str(self.prompt_formatter.response_format.model_json_schema())
+                    if self.prompt_formatter.response_format
+                    else "text"
+                ),
+                "run_hash": fingerprint,
+                "batch_mode": self.batch_mode,
+            }
+            metadata_db.store_metadata(metadata_dict)
+
+        import tempfile
+
+        # Check if cache is disabled
+        cache_disabled = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
+        if cache_disabled:
+            logger.info("Cache disabled by CURATOR_DISABLE_CACHE env variable.")
+            # Create a temporary directory that will be automatically cleaned up
+            run_cache_dir = tempfile.mkdtemp()
+            logger.debug(f"Created temporary directory for non-cached run: {run_cache_dir}")
+            # Skip metadata storage when cache is disabled
+            metadata_db = None
         else:
-            parse_func_source = ""
+            run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
 
-        metadata_dict = {
-            "timestamp": datetime.now().isoformat(),
-            "dataset_hash": dataset_hash,
-            "prompt_func": prompt_func_source,
-            "parse_func": parse_func_source,
-            "model_name": self.prompt_formatter.model_name,
-            "response_format": (
-                str(self.prompt_formatter.response_format.model_json_schema())
-                if self.prompt_formatter.response_format
-                else "text"
-            ),
-            "run_hash": fingerprint,
-            "batch_mode": self.batch_mode,
-        }
-        metadata_db.store_metadata(metadata_dict)
+        try:
+            if batch_cancel:
+                if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
+                    raise ValueError("batch_cancel can only be used with batch mode")
 
-        run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
-
-        if batch_cancel:
-            if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
-                raise ValueError("batch_cancel can only be used with batch mode")
-
-            dataset = self._request_processor.cancel_batches(
-                working_dir=run_cache_dir,
-            )
-        else:
-            dataset = self._request_processor.run(
-                dataset=dataset,
-                working_dir=run_cache_dir,
-                parse_func_hash=parse_func_hash,
-                prompt_formatter=self.prompt_formatter,
-            )
+                from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+                dataset = run_in_event_loop(self._request_processor.cancel_batches())
+            else:
+                dataset = self._request_processor.run(
+                    dataset=dataset,
+                    working_dir=run_cache_dir,
+                    parse_func_hash=parse_func_hash,
+                    prompt_formatter=self.prompt_formatter,
+                )
+        finally:
+            # Clean up temporary directory if cache is disabled
+            if cache_disabled:
+                shutil.rmtree(run_cache_dir, ignore_errors=True)
+                logger.debug(f"Cleaned up temporary directory: {run_cache_dir}")
 
         return dataset
 
