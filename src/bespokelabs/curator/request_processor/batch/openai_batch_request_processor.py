@@ -11,15 +11,16 @@ from openai.types.batch_request_counts import BatchRequestCounts
 from openai.types.file_object import FileObject
 
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
-from bespokelabs.curator.request_processor.batch.base_batch_request_processor import \
-    BaseBatchRequestProcessor
-from bespokelabs.curator.request_processor.config import \
-    BatchRequestProcessorConfig
-from bespokelabs.curator.request_processor.openai_request_mixin import \
-    OpenAIRequestMixin
-from bespokelabs.curator.types.generic_batch import (GenericBatch,
-                                                     GenericBatchRequestCounts,
-                                                     GenericBatchStatus)
+from bespokelabs.curator.request_processor.batch.base_batch_request_processor import (
+    BaseBatchRequestProcessor,
+)
+from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
+from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
+from bespokelabs.curator.types.generic_batch import (
+    GenericBatch,
+    GenericBatchRequestCounts,
+    GenericBatchStatus,
+)
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import TokenUsage

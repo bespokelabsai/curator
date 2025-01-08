@@ -6,8 +6,7 @@ import os
 import shutil
 from datetime import datetime
 from io import BytesIO
-from typing import (Any, Callable, Dict, Iterable, Optional, Type, TypeVar,
-                    Union)
+from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
 
 from datasets import Dataset
 from datasets.utils._dill import Pickler
@@ -17,13 +16,19 @@ from xxhash import xxh64
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor import (
-    LiteLLMOnlineRequestProcessor, OpenAIOnlineRequestProcessor)
-from bespokelabs.curator.request_processor.batch.anthropic_batch_request_processor import \
-    AnthropicBatchRequestProcessor
-from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import \
-    OpenAIBatchRequestProcessor
+    LiteLLMOnlineRequestProcessor,
+    OpenAIOnlineRequestProcessor,
+)
+from bespokelabs.curator.request_processor.batch.anthropic_batch_request_processor import (
+    AnthropicBatchRequestProcessor,
+)
+from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import (
+    OpenAIBatchRequestProcessor,
+)
 from bespokelabs.curator.request_processor.config import (
-    BatchRequestProcessorConfig, OnlineRequestProcessorConfig)
+    BatchRequestProcessorConfig,
+    OnlineRequestProcessorConfig,
+)
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -282,8 +287,7 @@ class LLM:
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
                 raise ValueError("batch_cancel can only be used with batch mode")
 
-            from bespokelabs.curator.request_processor.event_loop import \
-                run_in_event_loop
+            from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
             dataset = run_in_event_loop(self._request_processor.cancel_batches())
         else:
