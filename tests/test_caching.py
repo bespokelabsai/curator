@@ -122,7 +122,7 @@ def test_disable_cache_env_var(tmp_path, monkeypatch, caplog):
 
     # Create a simple dataset with one instruction
     dataset = Dataset.from_list([{"instruction": "Say 'test'. Do not explain."}])
-    
+
     def prompt_func(x):
         return x["instruction"]
 
@@ -134,7 +134,7 @@ def test_disable_cache_env_var(tmp_path, monkeypatch, caplog):
     # First run with cache disabled
     with caplog.at_level("INFO"):
         result = prompter(dataset=dataset, working_dir=str(tmp_path))
-        response = result.to_pandas().iloc[0]["response"].lower().rstrip('.')
+        response = result.to_pandas().iloc[0]["response"].lower().rstrip(".")
         assert response == "test", f"Expected 'test', got '{response}'"
         # Verify no cache usage messages in logs
         assert "Using cached" not in caplog.text, "Cache should not be used when disabled"
@@ -143,10 +143,12 @@ def test_disable_cache_env_var(tmp_path, monkeypatch, caplog):
     # Second run to verify consistent behavior and no cache usage
     with caplog.at_level("INFO"):
         result = prompter(dataset=dataset, working_dir=str(tmp_path))
-        response = result.to_pandas().iloc[0]["response"].lower().rstrip('.')
+        response = result.to_pandas().iloc[0]["response"].lower().rstrip(".")
         assert response == "test", f"Expected 'test', got '{response}'"
         # Verify no cache usage messages in logs
-        assert "Using cached" not in caplog.text, "Cache should not be used when disabled (second run)"
+        assert (
+            "Using cached" not in caplog.text
+        ), "Cache should not be used when disabled (second run)"
 
 
 def test_function_hash_dir_change():

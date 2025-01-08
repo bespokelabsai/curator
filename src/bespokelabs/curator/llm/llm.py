@@ -283,6 +283,7 @@ class LLM:
                     raise ValueError("batch_cancel can only be used with batch mode")
 
                 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+
                 dataset = run_in_event_loop(self._request_processor.cancel_batches())
             else:
                 dataset = self._request_processor.run(
