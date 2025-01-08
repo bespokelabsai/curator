@@ -35,7 +35,7 @@ litellm = "1.55.4"
 isort = "^5.13.2"
 tiktoken = ">=0.7.0,<0.8.0"
 aiofiles = ">=22.0,<24.0"
-vllm = "^0.6.0"
+vllm = "^0.6.3"
 anthropic = "^0.42.0"
 
 [tool.poetry.group.dev.dependencies]
