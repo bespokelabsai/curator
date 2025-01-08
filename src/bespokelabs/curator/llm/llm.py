@@ -242,7 +242,8 @@ class LLM:
         # Check if cache should be overwritten
         cache_overwrite = os.getenv("CURATOR_OVERWRITE_CACHE", "").lower() in ["true", "1"]
         if cache_overwrite:
-            logger.info("Cache will be overwritten due to CURATOR_OVERWRITE_CACHE env variable.")
+            # Use root logger to ensure message is captured
+            logging.info("Cache will be overwritten due to CURATOR_OVERWRITE_CACHE env variable.")
 
         # Always create metadata
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
@@ -282,13 +283,14 @@ class LLM:
 
         # Clean up existing cache directory contents if cache overwrite is enabled
         if cache_overwrite:
-            for item in os.listdir(run_cache_dir):
-                item_path = os.path.join(run_cache_dir, item)
-                if os.path.isfile(item_path):
-                    os.unlink(item_path)
-                elif os.path.isdir(item_path):
-                    shutil.rmtree(item_path)
-            logger.debug(f"Cleaned up contents of cache directory: {run_cache_dir}")
+            if os.path.exists(run_cache_dir):
+                for item in os.listdir(run_cache_dir):
+                    item_path = os.path.join(run_cache_dir, item)
+                    if os.path.isfile(item_path):
+                        os.unlink(item_path)
+                    elif os.path.isdir(item_path):
+                        shutil.rmtree(item_path)
+                logger.debug(f"Cleaned up contents of cache directory: {run_cache_dir}")
 
         if batch_cancel:
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
@@ -304,11 +306,6 @@ class LLM:
                 parse_func_hash=parse_func_hash,
                 prompt_formatter=self.prompt_formatter,
             )
-
-        # Clean up new cache directory if cache overwrite is enabled
-        if cache_overwrite:
-            shutil.rmtree(run_cache_dir, ignore_errors=True)
-            logger.debug(f"Cleaned up directory for overwritten cache: {run_cache_dir}")
 
         return dataset
 

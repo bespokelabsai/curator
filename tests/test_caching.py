@@ -1,3 +1,5 @@
+import os
+import logging
 from datasets import Dataset
 
 from bespokelabs import curator
@@ -132,28 +134,37 @@ def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
     )
 
     # First run with cache overwrite enabled
-    with caplog.at_level("INFO"):
+    with caplog.at_level(logging.DEBUG):  # Capture all log levels
         result = prompter(dataset=dataset, working_dir=str(tmp_path))
-        response = result.to_pandas().iloc[0]["response"].lower().rstrip(".")
+        # Get response from the first row of the dataset
+        first_row = result[0]
+        response = first_row["response"].lower().rstrip(".")
         assert response == "test", f"Expected 'test', got '{response}'"
-        
-        # Verify cache directory exists and overwrite message is logged
-        cache_dirs = [d for d in tmp_path.glob("*") if d.name != "metadata.db"]
-        assert len(cache_dirs) > 0, "Cache directory should be created"
+
+        # Get the cache directory from the logs
+        cache_dir = None
+        for record in caplog.records:
+            if "Results saved to" in record.message:
+                cache_dir = os.path.dirname(record.message.split("Results saved to ")[1])
+                break
+        assert cache_dir is not None, "Cache directory path not found in logs"
+        assert os.path.exists(cache_dir), f"Cache directory {cache_dir} should be created"
         assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
         caplog.clear()
 
     # Second run to verify cache is overwritten
-    with caplog.at_level("INFO"):
+    with caplog.at_level(logging.DEBUG):  # Capture all log levels
         result = prompter(dataset=dataset, working_dir=str(tmp_path))
-        response = result.to_pandas().iloc[0]["response"].lower().rstrip(".")
+        first_row = result[0]
+        response = first_row["response"].lower().rstrip(".")
         assert response == "test", f"Expected 'test', got '{response}'"
-        
+
         # Verify cache directory still exists and is overwritten
-        cache_dirs = [d for d in tmp_path.glob("*") if d.name != "metadata.db"]
-        assert len(cache_dirs) > 0, "Cache directory should still exist"
+        assert os.path.exists(cache_dir), "Cache directory should still exist"
         assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
-        assert "Using cached" not in caplog.text, "Cache should not be reused when overwrite is enabled"
+        assert (
+            "Using cached" not in caplog.text
+        ), "Cache should not be reused when overwrite is enabled"
 
 
 def test_function_hash_dir_change():
