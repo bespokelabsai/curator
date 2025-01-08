@@ -242,10 +242,8 @@ class LLM:
         # Check if cache should be overwritten
         cache_overwrite = os.getenv("CURATOR_OVERWRITE_CACHE", "").lower() in ["true", "1"]
         if cache_overwrite:
-            # Use root logger to ensure message is captured
-            logging.info("Cache will be overwritten due to CURATOR_OVERWRITE_CACHE env variable.")
+            logger.info("Cache will be overwritten due to CURATOR_OVERWRITE_CACHE env variable.")
 
-        # Always create metadata
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
         metadata_db = MetadataDB(metadata_db_path)
 
@@ -274,28 +272,25 @@ class LLM:
 
         # Set up the cache directory
         run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
-        os.makedirs(run_cache_dir, exist_ok=True)
-        logger.debug(f"Created cache directory: {run_cache_dir}")
 
         # Check for invalid combination of batch_cancel and cache_overwrite
         if batch_cancel and cache_overwrite:
             raise ValueError("Cannot use batch_cancel when CURATOR_OVERWRITE_CACHE is set.")
 
-        # Clean up existing cache directory contents if cache overwrite is enabled
-        if cache_overwrite:
-            if os.path.exists(run_cache_dir):
-                for item in os.listdir(run_cache_dir):
-                    item_path = os.path.join(run_cache_dir, item)
-                    if os.path.isfile(item_path):
-                        os.unlink(item_path)
-                    elif os.path.isdir(item_path):
-                        shutil.rmtree(item_path)
-                logger.debug(f"Cleaned up contents of cache directory: {run_cache_dir}")
+        # Clean up existing directory if cache overwrite is enabled
+        if cache_overwrite and os.path.exists(run_cache_dir):
+            shutil.rmtree(run_cache_dir)
+            logger.debug(f"Cleaned up cache directory: {run_cache_dir}")
+
+        # Create cache directory
+        os.makedirs(run_cache_dir, exist_ok=True)
+        logger.debug(f"Created cache directory: {run_cache_dir}")
 
         if batch_cancel:
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
                 raise ValueError("batch_cancel can only be used with batch mode")
 
+            # Use run_in_event_loop to properly handle async batch cancellation
             from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
             dataset = run_in_event_loop(self._request_processor.cancel_batches())
