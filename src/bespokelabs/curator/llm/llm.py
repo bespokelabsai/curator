@@ -3,6 +3,17 @@
 import inspect
 import logging
 import os
+
+# Configure module logger with proper handler setup
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.propagate = True  # Ensure logs propagate to parent loggers
 import shutil
 from datetime import datetime
 from io import BytesIO
@@ -241,8 +252,11 @@ class LLM:
 
         # Check if cache should be overwritten
         cache_overwrite = os.getenv("CURATOR_OVERWRITE_CACHE", "").lower() in ["true", "1"]
+        logger.debug(f"Cache overwrite setting: {cache_overwrite}")
         if cache_overwrite:
-            logger.info("Cache will be overwritten due to CURATOR_OVERWRITE_CACHE env variable.")
+            logger.info("Cache will be overwritten")
+            logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
+            logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
 
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
         metadata_db = MetadataDB(metadata_db_path)

@@ -119,6 +119,9 @@ def test_nested_call_caching(tmp_path):
 
 def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
     """Test that setting CURATOR_OVERWRITE_CACHE overwrites cache directory."""
+    # Configure root logger to ensure all child loggers are captured
+    logging.getLogger().setLevel(logging.DEBUG)
+    
     # Set environment variable to overwrite cache
     monkeypatch.setenv("CURATOR_OVERWRITE_CACHE", "true")
 
