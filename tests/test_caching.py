@@ -132,14 +132,16 @@ def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
     with caplog.at_level(logging.DEBUG):
         # Clear any existing logs
         caplog.clear()
-        
+
         # Verify environment variable is set
-        assert os.getenv("CURATOR_OVERWRITE_CACHE") == "true", "CURATOR_OVERWRITE_CACHE should be set to 'true'"
-        
+        assert (
+            os.getenv("CURATOR_OVERWRITE_CACHE") == "true"
+        ), "CURATOR_OVERWRITE_CACHE should be set to 'true'"
+
         # Initialize logger for this module
         logger = logging.getLogger(__name__)
         logger.debug("Test logger initialized")
-        
+
         prompter = curator.LLM(
             prompt_func=prompt_func,
             model_name="gpt-3.5-turbo",
@@ -170,7 +172,9 @@ def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
         # Verify cache directory still exists and is overwritten
         assert os.path.exists(cache_dir), "Cache directory should still exist"
         assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
-        assert "Using cached" not in caplog.text, "Cache should not be reused when overwrite is enabled"
+        assert (
+            "Using cached" not in caplog.text
+        ), "Cache should not be reused when overwrite is enabled"
 
 
 def test_function_hash_dir_change():
