@@ -28,11 +28,14 @@ from bespokelabs.curator.request_processor.batch.anthropic_batch_request_process
 )
 from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import (
     OpenAIBatchRequestProcessor,
+    VLLMOfflineRequestProcessor,
 )
 from bespokelabs.curator.request_processor.config import (
     BatchRequestProcessorConfig,
     OnlineRequestProcessorConfig,
+    OfflineRequestProcessorConfig,
 )
+
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -61,6 +64,11 @@ class LLM:
         require_all_responses: bool | None = None,
         generation_params: dict | None = None,
         seconds_to_pause_on_rate_limit: int | None = None,
+        tensor_parallel_size: int | None = None,
+        enforce_eager: bool | None = None,
+        max_model_length: int | None = None,
+        max_tokens: int | None = None,
+        gpu_memory_utilization: float | None = None,
     ):
         """Initialize a LLM.
 
@@ -80,8 +88,12 @@ class LLM:
             delete_failed_batch_files: Whether to delete failed batch files, only used if batch is True
             max_retries: The maximum number of retries to use for the LLM
             require_all_responses: Whether to require all responses
-            generation_params: The generation kwargs to use for the LLM
-            seconds_to_pause_on_rate_limit: The number of seconds to pause for if a rate limit error occurs
+            tensor_parallel_size: The tensor parallel size to use for the VLLM backend
+            enforce_eager: Whether to enforce eager execution for the VLLM backend
+            max_model_length: The maximum model length to use for the VLLM backend
+            max_tokens: The maximum tokens to use for the VLLM backend
+            min_tokens: The minimum tokens to use for the VLLM backend
+            gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
         """
         if generation_params is None:
             generation_params = {}
@@ -98,7 +110,20 @@ class LLM:
         else:
             self.backend = self._determine_backend(model_name, response_format, batch)
 
-        if batch:
+        if self.backend == "vllm":
+            config_params = {
+                "model": model_name,
+                "generation_params": generation_params,
+                "tensor_parallel_size": tensor_parallel_size,
+                "enforce_eager": enforce_eager,
+                "max_model_length": max_model_length,
+                "max_tokens": max_tokens,
+                "gpu_memory_utilization": gpu_memory_utilization,
+                "batch_size": batch_size if batch_size is not None else 256,
+            }
+            config = OfflineRequestProcessorConfig(**_remove_none_values(config_params))
+
+        elif batch:
             config_params = {
                 "model": model_name,
                 "base_url": base_url,
@@ -136,6 +161,8 @@ class LLM:
             raise ValueError("Batch mode is not supported with LiteLLM backend")
         elif self.backend == "litellm":
             self._request_processor = LiteLLMOnlineRequestProcessor(config)
+        elif self.backend == "vllm":
+            self._request_processor = VLLMOfflineRequestProcessor(config)
         else:
             raise ValueError(f"Unknown backend: {self.backend}")
 

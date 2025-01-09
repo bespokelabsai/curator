@@ -1,0 +1,2 @@
+bespokelabs-curator
+vllm

@@ -43,3 +43,18 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
     max_requests_per_minute: int | None = Field(default=None, gt=0)
     max_tokens_per_minute: int | None = Field(default=None, gt=0)
     seconds_to_pause_on_rate_limit: int = Field(default=10, gt=0)
+
+
+class OfflineRequestProcessorConfig(RequestProcessorConfig):
+    """Additional configuration specific to offline processors."""
+
+    max_model_length: int = Field(default=4096, gt=0)
+    max_tokens: int = Field(default=4096, gt=0)
+    min_tokens: int = Field(default=1, gt=0)
+    enforce_eager: bool = False
+    tensor_parallel_size: int = Field(default=1, gt=0)
+    batch_size: int = Field(default=256, gt=0)
+    gpu_memory_utilization: float = Field(default=0.95, gt=0, le=1)
+
+    def __post_init__(self):
+        pass

@@ -17,6 +17,12 @@ Shows how to use `curator` along with the litellm backend to generate diverse re
 5. [Reannotation](./reannotation/)
 Shows how to use `curator` to take an existing dataset and reannotate it with a new model.
 
+6. [Use a vLLM hosted local model for data generation](./vllm-online/)
+Shows how to setup a vLLM OpenAI compatible server to serve a local model and use it for online generation in curator.
+
+7. [Use a local model for offline inference via vLLM](./vllm-offline/)
+Shows how to run curator with a local model offline.
+
 
 ## How to run
 

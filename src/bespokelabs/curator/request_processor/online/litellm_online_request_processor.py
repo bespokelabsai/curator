@@ -134,7 +134,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             litellm.completion_cost(completion_response=completion.model_dump())
         except Exception as e:
             # We should ideally not catch a catch-all exception here. But litellm is not throwing any specific error.
-            logger.warning(f"LiteLLM does not support cost estimation for model {self.model}: {e}")
+            logger.warning(f"LiteLLM does not support cost estimation for model: {e}")
 
         headers = completion._hidden_params.get("additional_headers", {})
         logger.info(f"Test call headers: {headers}")
