@@ -160,7 +160,8 @@ def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
                 break
         assert cache_dir is not None, "Cache directory path not found in logs"
         assert os.path.exists(cache_dir), f"Cache directory {cache_dir} should be created"
-        assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
+        expected_log = f"Cache directory will be overwritten for run {cache_dir}"
+        assert expected_log in caplog.text, f"Expected log message '{expected_log}' not found"
         caplog.clear()
 
         # Second run to verify cache is overwritten
@@ -171,7 +172,8 @@ def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
 
         # Verify cache directory still exists and is overwritten
         assert os.path.exists(cache_dir), "Cache directory should still exist"
-        assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
+        expected_log = f"Cache directory will be overwritten for run {cache_dir}"
+        assert expected_log in caplog.text, f"Expected log message '{expected_log}' not found"
         assert (
             "Using cached" not in caplog.text
         ), "Cache should not be reused when overwrite is enabled"

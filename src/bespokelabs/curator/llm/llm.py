@@ -241,20 +241,6 @@ class LLM:
 
         # Check if cache should be overwritten
         cache_overwrite = os.getenv("CURATOR_OVERWRITE_CACHE", "").lower() in ["true", "1"]
-        logger.debug(
-            f"CURATOR_OVERWRITE_CACHE environment variable: {os.getenv('CURATOR_OVERWRITE_CACHE', '')}"
-        )
-        logger.debug(f"Cache overwrite setting: {cache_overwrite}")
-        logger.debug(f"Logger name: {logger.name}")
-        logger.debug(f"Logger level: {logger.level}")
-        logger.debug(f"Logger propagate: {logger.propagate}")
-
-        if cache_overwrite:
-            # Log at multiple levels to help diagnose capture issues
-            logger.debug("Cache overwrite flag is True")
-            logger.info("Cache will be overwritten")
-            logger.warning("Cache directory will be cleared")
-            logger.debug(f"Cache overwrite enabled for directory: {curator_cache_dir}")
 
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
         metadata_db = MetadataDB(metadata_db_path)
@@ -292,7 +278,7 @@ class LLM:
         # Clean up and create cache directory
         if cache_overwrite and os.path.exists(run_cache_dir):
             shutil.rmtree(run_cache_dir)
-            logger.info(f"Recreating cache directory: {run_cache_dir}")
+            logger.info(f"Cache directory will be overwritten for run {run_cache_dir}")
         os.makedirs(run_cache_dir, exist_ok=True)
 
         if batch_cancel:
