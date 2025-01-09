@@ -5,8 +5,6 @@ import os
 from abc import abstractmethod
 from typing import Optional
 
-from tqdm import tqdm
-
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
@@ -14,6 +12,7 @@ from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusT
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +54,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
     @property
     def backend(self) -> str:
+        """Backend property."""
         return "base"
 
     def requests_to_responses(self, generic_request_files: list[str]) -> None:

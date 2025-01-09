@@ -6,9 +6,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 
-from pydantic import BaseModel, ValidationError
-
 from bespokelabs.curator.types.generic_request import GenericRequest
+from pydantic import BaseModel, ValidationError
 
 T = TypeVar("T")
 _DictOrBaseModel = Union[Dict[str, Any], BaseModel]

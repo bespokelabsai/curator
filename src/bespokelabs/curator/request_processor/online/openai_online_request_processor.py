@@ -8,11 +8,10 @@ import aiohttp
 import litellm
 import requests
 import tiktoken
-
-from bespokelabs.curator.request_processor import APIRequest, BaseOnlineRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
+from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
 from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
-from bespokelabs.curator.status_tracker import OnlineStatusTracker
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsage
 
@@ -56,6 +55,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
     @property
     def backend(self):
+        """Backend property."""
         return "openai"
 
     def get_header_based_rate_limits(self) -> tuple[int, int]:

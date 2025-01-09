@@ -5,14 +5,13 @@ import time
 import aiohttp
 import instructor
 import litellm
-from pydantic import BaseModel
-
-from bespokelabs.curator.request_processor import APIRequest, BaseOnlineRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.status_tracker import OnlineStatusTracker
+from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsage
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -44,9 +43,10 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             litellm.api_base = self.config.base_url
         self.client = instructor.from_litellm(litellm.acompletion)
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
-    
+
     @property
     def backend(self):
+        """Backend property."""
         return "litellm"
 
     def check_structured_output_support(self):

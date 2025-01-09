@@ -53,6 +53,7 @@ class BaseRequestProcessor(ABC):
     @property
     @abstractmethod
     def backend(self) -> str:
+        """Backend property."""
         return "base"
 
     @abstractmethod

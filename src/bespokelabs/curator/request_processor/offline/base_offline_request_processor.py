@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OfflineRequestProcessorConfig
-from bespokelabs.curator.status_tracker import OfflineStatusTracker
+from bespokelabs.curator.status_tracker.offline_status_tracker import OfflineStatusTracker
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 
@@ -66,6 +66,11 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         self.min_tokens: int = config.min_tokens
         self.batch_size: int = config.batch_size
         self.generation_params = config.generation_params
+
+    @property
+    def backend(self):
+        """Backend property."""
+        return 'base'
 
     def load_offline_model(self):
         """Load the offline model into memory.

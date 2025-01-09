@@ -3,12 +3,7 @@ import json
 import logging
 
 import litellm
-from openai import AsyncOpenAI, NotFoundError
-from openai.types.batch import Batch
-from openai.types.batch_request_counts import BatchRequestCounts
-from openai.types.file_object import FileObject
-
-from bespokelabs.curator.request_processor import BaseBatchRequestProcessor
+from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
 from bespokelabs.curator.types.generic_batch import (
@@ -19,6 +14,10 @@ from bespokelabs.curator.types.generic_batch import (
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import TokenUsage
+from openai import AsyncOpenAI, NotFoundError
+from openai.types.batch import Batch
+from openai.types.batch_request_counts import BatchRequestCounts
+from openai.types.file_object import FileObject
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +40,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
 
     @property
     def backend(self):
+        """Backend property."""
         return "openai"
 
     @property
