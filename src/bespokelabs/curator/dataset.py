@@ -106,8 +106,9 @@ class Dataset:
                                 row = row.model_dump()
                             writer.write(row)
 
-            logging.info(f"Read {total_responses_count} responses, {failed_responses_count} failed")
-            logging.info("Finalizing writer")
+            logger = logging.getLogger(__name__)
+            logger.info(f"Read {total_responses_count} responses, {failed_responses_count} failed")
+            logger.info("Finalizing writer")
 
             if failed_responses_count == total_responses_count:
                 raise ValueError("All requests failed")

@@ -22,7 +22,6 @@ from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 @dataclass

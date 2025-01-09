@@ -37,11 +37,8 @@ def ensure_dependencies():
 
 
 def _setup_logging(level):
-    logging.basicConfig(
-        format="%(asctime)s %(levelname)-8s] %(message)s",
-        level=level,
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+    logger = logging.getLogger(__name__)
+    logger.setLevel(level)
 
 
 def check_node_installed():

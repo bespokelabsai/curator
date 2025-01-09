@@ -4,18 +4,11 @@ import inspect
 import logging
 import os
 
-# Configure module logger with proper handler setup
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-if not logger.handlers:
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    logger.propagate = True  # Ensure logs propagate to parent loggers
 import shutil
 from datetime import datetime
+
+# Initialize module logger
+logger = logging.getLogger(__name__)
 from io import BytesIO
 from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
 
@@ -45,7 +38,7 @@ _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
 _DictOrBaseModel = Dict[str, Any] | BaseModel
 
-logger = logging.getLogger(__name__)
+
 
 
 class LLM:
@@ -247,16 +240,21 @@ class LLM:
             fingerprint_str += f"_{generation_params_str}"
 
         fingerprint = xxh64(fingerprint_str.encode("utf-8")).hexdigest()
-        logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
-        logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
 
         # Check if cache should be overwritten
         cache_overwrite = os.getenv("CURATOR_OVERWRITE_CACHE", "").lower() in ["true", "1"]
+        logger.debug(f"CURATOR_OVERWRITE_CACHE environment variable: {os.getenv('CURATOR_OVERWRITE_CACHE', '')}")
         logger.debug(f"Cache overwrite setting: {cache_overwrite}")
+        logger.debug(f"Logger name: {logger.name}")
+        logger.debug(f"Logger level: {logger.level}")
+        logger.debug(f"Logger propagate: {logger.propagate}")
+        
         if cache_overwrite:
+            # Log at multiple levels to help diagnose capture issues
+            logger.debug("Cache overwrite flag is True")
             logger.info("Cache will be overwritten")
-            logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
-            logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
+            logger.warning("Cache directory will be cleared")
+            logger.debug(f"Cache overwrite enabled for directory: {curator_cache_dir}")
 
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
         metadata_db = MetadataDB(metadata_db_path)
@@ -291,14 +289,11 @@ class LLM:
         if batch_cancel and cache_overwrite:
             raise ValueError("Cannot use batch_cancel when CURATOR_OVERWRITE_CACHE is set.")
 
-        # Clean up existing directory if cache overwrite is enabled
+        # Clean up and create cache directory
         if cache_overwrite and os.path.exists(run_cache_dir):
             shutil.rmtree(run_cache_dir)
-            logger.debug(f"Cleaned up cache directory: {run_cache_dir}")
-
-        # Create cache directory
+            logger.info(f"Recreating cache directory: {run_cache_dir}")
         os.makedirs(run_cache_dir, exist_ok=True)
-        logger.debug(f"Created cache directory: {run_cache_dir}")
 
         if batch_cancel:
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):

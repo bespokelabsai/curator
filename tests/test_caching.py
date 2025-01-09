@@ -119,9 +119,6 @@ def test_nested_call_caching(tmp_path):
 
 def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
     """Test that setting CURATOR_OVERWRITE_CACHE overwrites cache directory."""
-    # Configure root logger to ensure all child loggers are captured
-    logging.getLogger().setLevel(logging.DEBUG)
-
     # Set environment variable to overwrite cache
     monkeypatch.setenv("CURATOR_OVERWRITE_CACHE", "true")
 
@@ -131,15 +128,24 @@ def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
     def prompt_func(x):
         return x["instruction"]
 
-    prompter = curator.LLM(
-        prompt_func=prompt_func,
-        model_name="gpt-4o-mini",
-    )
-
-    # First run with cache overwrite enabled
-    with caplog.at_level(logging.DEBUG):  # Capture all log levels
+    # Set DEBUG level for the entire test
+    with caplog.at_level(logging.DEBUG):
+        # Clear any existing logs
+        caplog.clear()
+        
+        # Verify environment variable is set
+        assert os.getenv("CURATOR_OVERWRITE_CACHE") == "true", "CURATOR_OVERWRITE_CACHE should be set to 'true'"
+        
+        # Initialize logger for this module
+        logger = logging.getLogger(__name__)
+        logger.debug("Test logger initialized")
+        
+        prompter = curator.LLM(
+            prompt_func=prompt_func,
+            model_name="gpt-3.5-turbo",
+        )
+        # First run
         result = prompter(dataset=dataset, working_dir=str(tmp_path))
-        # Get response from the first row of the dataset
         first_row = result[0]
         response = first_row["response"].lower().rstrip(".")
         assert response == "test", f"Expected 'test', got '{response}'"
@@ -155,8 +161,7 @@ def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
         assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
         caplog.clear()
 
-    # Second run to verify cache is overwritten
-    with caplog.at_level(logging.DEBUG):  # Capture all log levels
+        # Second run to verify cache is overwritten
         result = prompter(dataset=dataset, working_dir=str(tmp_path))
         first_row = result[0]
         response = first_row["response"].lower().rstrip(".")
@@ -165,9 +170,7 @@ def test_overwrite_cache_env_var(tmp_path, monkeypatch, caplog):
         # Verify cache directory still exists and is overwritten
         assert os.path.exists(cache_dir), "Cache directory should still exist"
         assert "Cache will be overwritten" in caplog.text, "Cache overwrite should be logged"
-        assert (
-            "Using cached" not in caplog.text
-        ), "Cache should not be reused when overwrite is enabled"
+        assert "Using cached" not in caplog.text, "Cache should not be reused when overwrite is enabled"
 
 
 def test_function_hash_dir_change():
