@@ -1,9 +1,10 @@
-import pytest
-import subprocess
-import time
-import shutil
 import os
 import re
+import shutil
+import subprocess
+import time
+
+import pytest
 
 
 @pytest.fixture

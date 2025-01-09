@@ -1,6 +1,8 @@
-from bespokelabs.curator.llm.llm import LLM
+from typing import List, Union
+
 from datasets import Dataset
-from typing import Union, List
+
+from bespokelabs.curator.llm.llm import LLM
 
 
 class SimpleLLM:

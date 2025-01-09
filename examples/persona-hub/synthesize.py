@@ -6,9 +6,11 @@ Use `curator-viewer` to view the output.
 """
 
 import argparse
-from bespokelabs import curator
-from datasets import load_dataset
+
 import prompt_templates
+from datasets import load_dataset
+
+from bespokelabs import curator
 
 
 def get_template(template_name):

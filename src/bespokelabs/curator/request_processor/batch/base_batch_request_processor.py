@@ -1,24 +1,26 @@
+import asyncio
 import datetime
 import json
 import logging
 import os
-import asyncio
-
-from typing import Optional
-from tqdm import tqdm
 from abc import abstractmethod
+from typing import Optional
+
+from tqdm import tqdm
 
 from bespokelabs.curator.dataset import Dataset
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
-from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
-from bespokelabs.curator.types.generic_batch import GenericBatchRequestCounts
+from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
+from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
+from bespokelabs.curator.types.generic_batch import (
+    GenericBatch,
+    GenericBatchRequestCounts,
+    GenericBatchStatus,
+)
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
-from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
-
 
 logger = logging.getLogger(__name__)
 

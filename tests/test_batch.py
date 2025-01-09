@@ -1,9 +1,11 @@
-from typing import List, Dict
+from typing import Dict, List
+
+import pandas as pd
 import pytest
 from datasets import Dataset
-from bespokelabs import curator
 from pydantic import BaseModel, Field
-import pandas as pd
+
+from bespokelabs import curator
 
 
 class Answer(BaseModel):

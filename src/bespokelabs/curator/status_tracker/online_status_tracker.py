@@ -1,8 +1,8 @@
 import logging
 import time
-import tqdm
-
 from dataclasses import dataclass, field
+
+import tqdm
 
 logger = logging.getLogger(__name__)
 

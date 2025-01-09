@@ -1,6 +1,7 @@
 import logging
 
 from pydantic import BaseModel, Field
+
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
 
 logger = logging.getLogger(__name__)

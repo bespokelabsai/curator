@@ -1,8 +1,9 @@
-import pytest
-import time
 import os
-from tests.helpers import run_script
-from tests.helpers import clear_test_cache
+import time
+
+import pytest
+
+from tests.helpers import clear_test_cache, run_script
 
 """
 USAGE:

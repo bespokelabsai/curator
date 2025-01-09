@@ -3,10 +3,12 @@
 Demonstrates how to use a structured output format with Litellm.
 """
 
-from typing import List
-from pydantic import BaseModel, Field
-from bespokelabs import curator
 import logging
+from typing import List
+
+from pydantic import BaseModel, Field
+
+from bespokelabs import curator
 
 logger = logging.getLogger(__name__)
 

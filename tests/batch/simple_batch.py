@@ -1,7 +1,9 @@
-from bespokelabs.curator import LLM
-from datasets import Dataset
-import logging
 import argparse
+import logging
+
+from datasets import Dataset
+
+from bespokelabs.curator import LLM
 
 # python tests/batch/simple_batch.py --log-level DEBUG --n-requests 3 --batch-size 1 --batch-check-interval 10 --model gpt-4o-mini
 # python tests/batch/simple_batch.py --log-level DEBUG --n-requests 3 --batch-size 1 --batch-check-interval 10 --model claude-3-5-haiku-20241022

@@ -1,6 +1,6 @@
 import os
 from typing import Optional
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from datasets import Dataset

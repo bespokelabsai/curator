@@ -1,7 +1,8 @@
 """Generate synthetic recipes for different cuisines."""
 
-from bespokelabs import curator
 from datasets import Dataset
+
+from bespokelabs import curator
 
 
 def main():

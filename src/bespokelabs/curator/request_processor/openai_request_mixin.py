@@ -1,4 +1,5 @@
 from typing import Any
+
 from bespokelabs.curator.types.generic_request import GenericRequest
 
 

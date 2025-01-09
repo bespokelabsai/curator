@@ -1,8 +1,10 @@
 import os
-import sys
-import pytest
-from pathlib import Path
 import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
 from tests.helpers import clear_test_cache
 
 examples_dir = Path(__file__).parent.parent / "examples"
