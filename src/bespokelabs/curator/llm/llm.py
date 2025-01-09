@@ -7,13 +7,14 @@ from datetime import datetime
 from io import BytesIO
 from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar
 
-from bespokelabs.curator.db import MetadataDB
-from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
-from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
 from datasets import Dataset
 from datasets.utils._dill import Pickler
 from pydantic import BaseModel
 from xxhash import xxh64
+
+from bespokelabs.curator.db import MetadataDB
+from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
+from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -88,28 +89,26 @@ class LLM:
         self.batch_mode = batch
 
         backend_params = {
-                "model": model_name,
-                "base_url": base_url,
-                "batch_size": batch_size,
-                "batch_check_interval": batch_check_interval,
-                "delete_successful_batch_files": delete_successful_batch_files,
-                "delete_failed_batch_files": delete_failed_batch_files,
-                "require_all_responses": require_all_responses,
-                "generation_params": generation_params,
-                "max_requests_per_minute": max_requests_per_minute,
-                "max_tokens_per_minute": max_tokens_per_minute,
-                "max_retries": max_retries,
-                "seconds_to_pause_on_rate_limit": seconds_to_pause_on_rate_limit,
-                "tensor_parallel_size": tensor_parallel_size,
-                "enforce_eager": enforce_eager,
-                "max_model_length": max_model_length,
-                "max_tokens": max_tokens,
-                "gpu_memory_utilization": gpu_memory_utilization
-            }
+            "model": model_name,
+            "base_url": base_url,
+            "batch_size": batch_size,
+            "batch_check_interval": batch_check_interval,
+            "delete_successful_batch_files": delete_successful_batch_files,
+            "delete_failed_batch_files": delete_failed_batch_files,
+            "require_all_responses": require_all_responses,
+            "generation_params": generation_params,
+            "max_requests_per_minute": max_requests_per_minute,
+            "max_tokens_per_minute": max_tokens_per_minute,
+            "max_retries": max_retries,
+            "seconds_to_pause_on_rate_limit": seconds_to_pause_on_rate_limit,
+            "tensor_parallel_size": tensor_parallel_size,
+            "enforce_eager": enforce_eager,
+            "max_model_length": max_model_length,
+            "max_tokens": max_tokens,
+            "gpu_memory_utilization": gpu_memory_utilization,
+        }
 
-        self._request_processor = _RequestProcessorFactory.create(
-            backend_params, batch=batch, response_format=response_format, backend=backend
-        )
+        self._request_processor = _RequestProcessorFactory.create(backend_params, batch=batch, response_format=response_format, backend=backend)
 
     def __call__(
         self,
@@ -191,6 +190,7 @@ class LLM:
 
         if batch_cancel:
             from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
+
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
                 raise ValueError("batch_cancel can only be used with batch mode")
 

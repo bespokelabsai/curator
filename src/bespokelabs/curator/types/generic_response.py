@@ -1,9 +1,10 @@
 import datetime
 from typing import Any, Dict, List, Optional
 
+from pydantic import BaseModel
+
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.token_usage import TokenUsage
-from pydantic import BaseModel
 
 """A generic response model for LLM API requests.
 

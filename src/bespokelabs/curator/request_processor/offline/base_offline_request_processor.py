@@ -70,7 +70,7 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
     @property
     def backend(self):
         """Backend property."""
-        return 'base'
+        return "base"
 
     def load_offline_model(self):
         """Load the offline model into memory.

@@ -5,15 +5,16 @@ import logging
 
 import torch
 import vllm
+from pydantic import BaseModel
+from vllm.distributed import destroy_distributed_environment, destroy_model_parallel
+from vllm.sampling_params import GuidedDecodingParams
+
 from bespokelabs.curator.request_processor.config import OfflineRequestProcessorConfig
 from bespokelabs.curator.request_processor.offline.base_offline_request_processor import BaseOfflineRequestProcessor
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest
 from bespokelabs.curator.status_tracker.offline_status_tracker import OfflineStatusTracker
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-from pydantic import BaseModel
-from vllm.distributed import destroy_distributed_environment, destroy_model_parallel
-from vllm.sampling_params import GuidedDecodingParams
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ class VLLMOfflineRequestProcessor(BaseOfflineRequestProcessor):
     @property
     def backend(self):
         """Backend property."""
-        return 'vllm'
+        return "vllm"
 
     def load_offline_model(self):
         """Load the VLLM model for offline processing."""
