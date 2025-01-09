@@ -46,7 +46,7 @@ poet = curator.LLM(
     prompt_func=lambda row: f"Write two poems about {row['topic']}.",
     model_name="gpt-4o-mini",
     response_format=Poems,
-    # row is the input row, and poems is the Poems class which 
+    # row is the input row, and poems is the Poems class which
     # is parsed from the structured output from the LLM.
     parse_func=lambda row, poems: [
         {"topic": row["topic"], "poem": p.poem} for p in poems.poems_list
@@ -75,13 +75,13 @@ export function RunsTable() {
 
   const fetchRuns = useCallback(async (isInitial = false) => {
     try {
-      const queryParams = lastCreatedTime && !isInitial 
+      const queryParams = lastCreatedTime && !isInitial
         ? `?lastCreatedTime=${lastCreatedTime}`
         : ''
-      
+
       const response = await fetch(`/api/runs${queryParams}`)
       const data = await response.json()
-      
+
       if (response.status === 404 && data.error === 'NO_CACHE_DB') {
         setNoCacheFound({ message: data.message, path: data.path })
         setIsPolling(false) // Stop polling if no cache exists
@@ -105,7 +105,7 @@ export function RunsTable() {
           // Mark new runs for highlighting
           const newIds = new Set(data.map(run => run.run_hash))
           setNewRunIds(newIds)
-          
+
           // Add new runs to the top
           setRuns(prevRuns => [...data, ...prevRuns])
           setLastCreatedTime(data[0].created_time)
@@ -156,8 +156,8 @@ export function RunsTable() {
       case "created_time":
         return new Date(run.created_time).toLocaleString()
       case "last_edited_time":
-        return run.last_edited_time === '-' 
-          ? '-' 
+        return run.last_edited_time === '-'
+          ? '-'
           : new Date(run.last_edited_time).toLocaleString()
       default:
         return run[columnKey as keyof Run]
@@ -167,14 +167,14 @@ export function RunsTable() {
   if (error) return <div>Error: {error}</div>
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      <Header 
+      <Header
         isLoading={isLoading}
         isPolling={isPolling}
         onTogglePolling={() => setIsPolling(prev => !prev)}
         pollingText="Polling for updates..."
         loadingText="Loading runs..."
       />
-      
+
       <main className="container mx-auto p-4">
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-foreground">Curator Runs History</h2>
@@ -198,7 +198,7 @@ export function RunsTable() {
                   </p>
                 </div>
               </div>
-              
+
               <div className="mt-4 rounded-lg p-4">
                 <p className="text-sm text-yellow-400 mb-2">Try running this example to create your first curator run:</p>
                 <PythonHighlighter code={EXAMPLE_CODE} />

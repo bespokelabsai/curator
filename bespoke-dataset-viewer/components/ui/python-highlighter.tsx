@@ -45,4 +45,4 @@ export const PythonHighlighter: React.FC<PythonHighlighterProps> = ({ code }) =>
             </pre>
         </div>
     );
-}; 
+};

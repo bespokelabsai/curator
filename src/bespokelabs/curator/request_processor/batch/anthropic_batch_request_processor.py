@@ -6,16 +6,9 @@ from anthropic import AsyncAnthropic
 from anthropic.types.messages import MessageBatch, MessageBatchRequestCounts
 from anthropic.types.shared.not_found_error import NotFoundError
 
-from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
-from bespokelabs.curator.request_processor.batch.base_batch_request_processor import (
-    BaseBatchRequestProcessor,
-)
+from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
-from bespokelabs.curator.types.generic_batch import (
-    GenericBatch,
-    GenericBatchRequestCounts,
-    GenericBatchStatus,
-)
+from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import TokenUsage
@@ -40,14 +33,18 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
     """
 
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
+        """Initialize the AnthropicBatchRequestProcessor."""
         super().__init__(config)
         if self.config.base_url is None:
             self.client = AsyncAnthropic(max_retries=self.config.max_retries)
         else:
-            self.client = AsyncAnthropic(
-                max_retries=self.config.max_retries, base_url=self.config.base_url
-            )
+            self.client = AsyncAnthropic(max_retries=self.config.max_retries, base_url=self.config.base_url)
         self.web_dashboard = "https://console.anthropic.com/settings/workspaces/default/batches"
+
+    @property
+    def backend(self):
+        """Backend property."""
+        return "anthropic"
 
     @property
     def max_requests_per_batch(self) -> int:
@@ -78,9 +75,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         """
         return 100
 
-    def parse_api_specific_request_counts(
-        self, request_counts: MessageBatchRequestCounts
-    ) -> GenericBatchRequestCounts:
+    def parse_api_specific_request_counts(self, request_counts: MessageBatchRequestCounts) -> GenericBatchRequestCounts:
         """Converts Anthropic-specific request counts to generic format.
 
         Reference implementation:
@@ -109,9 +104,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             raw_request_counts_object=request_counts.model_dump(),
         )
 
-    def parse_api_specific_batch_object(
-        self, batch: MessageBatch, request_file: str | None = None
-    ) -> GenericBatch:
+    def parse_api_specific_batch_object(self, batch: MessageBatch, request_file: str | None = None) -> GenericBatch:
         """Converts an Anthropic batch object to generic format.
 
         Reference implementations:
@@ -217,9 +210,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         result_type = raw_response["result"]["type"]
         if result_type != "succeeded":
             error = raw_response["result"]["error"]
-            logger.warning(
-                f"custom_id {raw_response['custom_id']} result was '{result_type}' with error '{error}'"
-            )
+            logger.warning(f"custom_id {raw_response['custom_id']} result was '{result_type}' with error '{error}'")
             response_message = None
             response_errors = [str(error)]
             token_usage = None
@@ -230,8 +221,8 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             # TODO(Ryan) will want to resubmit requests like in the online case
             # if we get max_tokens?
             # end_turn, max_tokens, stop_sequence, tool_use
-            stop_reason = response_body["stop_reason"]
-            stop_sequence = response_body["stop_sequence"]
+            # stop_reason = response_body["stop_reason"]
+            # stop_sequence = response_body["stop_sequence"]
             usage = response_body.get("usage", {})
 
             token_usage = TokenUsage(
@@ -239,9 +230,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                 completion_tokens=usage.get("output_tokens", 0),
                 total_tokens=usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
             )
-            response_message, response_errors = self.prompt_formatter.parse_response_message(
-                response_message_raw
-            )
+            response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
 
             cost = litellm.completion_cost(
                 model=self.config.model,
@@ -263,8 +252,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         )
 
     async def submit_batch(self, requests: list[dict], metadata: dict) -> GenericBatch:
-        """
-        Handles the complete batch submission process.
+        """Handles the complete batch submission process.
 
         Args:
             requests (list[dict]): List of API-specific requests to submit
@@ -278,9 +266,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         """
         async with self.semaphore:
             batch = await self.client.messages.batches.create(requests=requests)
-            return self.parse_api_specific_batch_object(
-                batch, request_file=metadata["request_file"]
-            )
+            return self.parse_api_specific_batch_object(batch, request_file=metadata["request_file"])
 
     async def retrieve_batch(self, batch: GenericBatch) -> GenericBatch:
         """Retrieves the current status of a batch from Anthropic's API.
@@ -299,10 +285,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             try:
                 batch = await self.client.messages.batches.retrieve(batch.id)
             except NotFoundError:
-                logger.warning(
-                    f"batch object {batch.id} not found. "
-                    f"Your API key (***{self.client.api_key[-4:]}) might not have access to this batch."
-                )
+                logger.warning(f"batch object {batch.id} not found. " f"Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
                 return None
 
             request_file = self.tracker.submitted_batches[batch.id].request_file
@@ -323,7 +306,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             - Converts each result to a dictionary format.
         """
         async with self.semaphore:
-            anthropic_batch = MessageBatch.model_validate(batch.raw_batch)
+            MessageBatch.model_validate(batch.raw_batch)
             responses = []
             results_stream = await self.client.messages.batches.results(batch.id)
             async for result in results_stream:

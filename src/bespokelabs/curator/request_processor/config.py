@@ -7,7 +7,18 @@ logger = logging.getLogger(__name__)
 
 
 class RequestProcessorConfig(BaseModel):
-    """Configuration for request processors."""
+    """Configuration for request processors.
+
+    Base configuration class that defines common parameters used across different request processors.
+
+    Attributes:
+        model: Name/identifier of the LLM model to use
+        base_url: Optional base URL for API endpoint
+        max_retries: Maximum number of retry attempts for failed requests
+        request_timeout: Timeout in seconds for each request
+        require_all_responses: Whether to require successful responses for all requests
+        generation_params: Dictionary of model-specific generation parameters
+    """
 
     model: str
     base_url: str | None = None
@@ -17,19 +28,32 @@ class RequestProcessorConfig(BaseModel):
     generation_params: dict = Field(default_factory=dict)
 
     def __post_init__(self):
+        """Post-initialization hook to validate generation parameters.
+
+        Validates that all provided generation parameters are supported by the specified model
+        using litellm's parameter validation.
+
+        Raises:
+            ValueError: If an unsupported generation parameter is provided
+        """
         self.supported_params = litellm.get_supported_openai_params(model=self.model)
-        logger.debug(
-            f"Automatically detected supported params using litellm for {self.model}: {self.supported_params}"
-        )
+        logger.debug(f"Automatically detected supported params using litellm for {self.model}: {self.supported_params}")
 
         for key in self.generation_params.keys():
-            raise ValueError(
-                f"Generation parameter '{key}' is not supported for model '{self.model}'"
-            )
+            raise ValueError(f"Generation parameter '{key}' is not supported for model '{self.model}'")
 
 
 class BatchRequestProcessorConfig(RequestProcessorConfig):
-    """Additional configuration specific to batch processors."""
+    """Additional configuration specific to batch processors.
+
+    Extends the base RequestProcessorConfig with batch-specific parameters.
+
+    Attributes:
+        batch_size: Maximum number of requests to process in a single batch
+        batch_check_interval: Time in seconds between batch status checks
+        delete_successful_batch_files: Whether to delete batch files after successful processing
+        delete_failed_batch_files: Whether to delete batch files after failed processing
+    """
 
     batch_size: int = Field(default=10_000, gt=0)
     batch_check_interval: int = Field(default=60, gt=0)
@@ -38,7 +62,15 @@ class BatchRequestProcessorConfig(RequestProcessorConfig):
 
 
 class OnlineRequestProcessorConfig(RequestProcessorConfig):
-    """Additional configuration specific to online processors."""
+    """Additional configuration specific to online processors.
+
+    Extends the base RequestProcessorConfig with rate limiting and capacity parameters.
+
+    Attributes:
+        max_requests_per_minute: Maximum number of requests allowed per minute
+        max_tokens_per_minute: Maximum number of tokens allowed per minute
+        seconds_to_pause_on_rate_limit: Duration to pause when rate limit is hit
+    """
 
     max_requests_per_minute: int | None = Field(default=None, gt=0)
     max_tokens_per_minute: int | None = Field(default=None, gt=0)
@@ -46,7 +78,19 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
 
 
 class OfflineRequestProcessorConfig(RequestProcessorConfig):
-    """Additional configuration specific to offline processors."""
+    """Additional configuration specific to offline processors.
+
+    Extends the base RequestProcessorConfig with parameters for offline/local model execution.
+
+    Attributes:
+        max_model_length: Maximum sequence length the model can handle
+        max_tokens: Maximum number of tokens to generate
+        min_tokens: Minimum number of tokens to generate
+        enforce_eager: Whether to enforce eager execution mode
+        tensor_parallel_size: Number of GPUs to use for tensor parallelism
+        batch_size: Size of batches for processing
+        gpu_memory_utilization: Target GPU memory utilization (0-1)
+    """
 
     max_model_length: int = Field(default=4096, gt=0)
     max_tokens: int = Field(default=4096, gt=0)
@@ -57,4 +101,8 @@ class OfflineRequestProcessorConfig(RequestProcessorConfig):
     gpu_memory_utilization: float = Field(default=0.95, gt=0, le=1)
 
     def __post_init__(self):
+        """Post-initialization hook to validate generation parameters.
+
+        Overrides base class validation since offline models have different parameter requirements.
+        """
         pass

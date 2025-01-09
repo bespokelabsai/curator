@@ -58,7 +58,7 @@ export async function GET(
     } else {
       // Online streaming mode
       const responsesPath = join(runDir, 'responses_0.jsonl')
-      
+
       // Check if the file exists before trying to read it
       if (!existsSync(responsesPath)) {
         return NextResponse.json({

@@ -90,18 +90,18 @@ export function SortableTable({
       result.sort((a, b) => {
         const aValue = getCellContent(a, sortColumn)
         const bValue = getCellContent(b, sortColumn)
-        
+
         // Handle numeric sorting
         if (isNumeric(aValue) && isNumeric(bValue)) {
           const aNum = parseFloat(String(aValue))
           const bNum = parseFloat(String(bValue))
-          return sortDirection === "asc" 
+          return sortDirection === "asc"
             ? aNum - bNum
             : bNum - aNum
         }
 
         // Fall back to string sorting
-        return sortDirection === "asc" 
+        return sortDirection === "asc"
           ? String(aValue).localeCompare(String(bValue))
           : String(bValue).localeCompare(String(aValue))
       })
@@ -130,8 +130,8 @@ export function SortableTable({
     setCurrentPage(page)
   }, [])
 
-  const orderedColumns = useMemo(() => 
-    columnOrder.map(columnKey => 
+  const orderedColumns = useMemo(() =>
+    columnOrder.map(columnKey =>
       columns.find(col => col.key === columnKey)!
     ), [columnOrder, columns]
   )
@@ -147,7 +147,7 @@ export function SortableTable({
     }
 
     const truncatedContent = `${content.slice(0, maxLength)}...`
-    
+
     return (
       <TooltipProvider>
         <Tooltip>
@@ -156,7 +156,7 @@ export function SortableTable({
               {truncatedContent}
             </span>
           </TooltipTrigger>
-          <TooltipContent 
+          <TooltipContent
             className="max-w-[400px] whitespace-pre-wrap bg-popover/95 backdrop-blur supports-[backdrop-filter]:bg-popover/85"
           >
             {content}
@@ -180,16 +180,16 @@ export function SortableTable({
     }
 
     const pages = []
-    
+
     if (startPage > 1) {
       pages.push(1)
       if (startPage > 2) pages.push('...')
     }
-    
+
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i)
     }
-    
+
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) pages.push('...')
       pages.push(totalPages)
@@ -231,7 +231,7 @@ export function SortableTable({
                 {...(rowProps?.(row) || {})}
               >
                 {orderedColumns.map((column, colIndex) => (
-                  <TableCell 
+                  <TableCell
                     key={`${rowIndex}-${colIndex}-${getRowKey(row)}-${column.key}`}
                   >
                     {renderCell(getCellContent(row, column.key), truncateConfig.enabled)}
@@ -242,20 +242,20 @@ export function SortableTable({
           </TableBody>
         </Table>
       </DndContext>
-      
+
       {totalPages > 1 && (
         <div className="flex justify-center py-4 border-t">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious 
+                <PaginationPrevious
                   onClick={handlePrevPage}
                   className={cn(
                     currentPage === 1 && "pointer-events-none opacity-50"
                   )}
                 />
               </PaginationItem>
-              
+
               {getVisiblePages(currentPage, totalPages).map((page, index) => (
                 <PaginationItem key={`page-${index}`}>
                   {page === '...' ? (
@@ -270,7 +270,7 @@ export function SortableTable({
                   )}
                 </PaginationItem>
               ))}
-              
+
               <PaginationItem>
                 <PaginationNext
                   onClick={handleNextPage}

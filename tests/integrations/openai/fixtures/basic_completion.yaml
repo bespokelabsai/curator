@@ -1,0 +1,1467 @@
+interactions:
+- request:
+    body: '{"model": "gpt-3.5-turbo", "messages": []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '42'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
+        Expected an array with minimum length 1, but got an empty array instead.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
+        \"empty_array\"\n  }\n}"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd6509b2af28e-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '232'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:14 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=X9FIJtOXJVsBiTexqN4sD9jLmLSimsVAfcrpsfnClCo-1736335634-1.0.1.1-7r52qmhmkK7p.gvMxFAPtfrD3Q3OT.AmNPK.lYva4LbH7M_hquTNLLTcl7ilLW6XSYlm2BvDMZcctejcMMGTEg;
+        path=/; expires=Wed, 08-Jan-25 11:57:14 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=vacqdJ3_eMQvJ_vZLdaI45g6xTQEwgCiqdSmlAyEkKE-1736335634395-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '70'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9896'
+      x-ratelimit-remaining-tokens:
+      - '199983'
+      x-ratelimit-reset-requests:
+      - 14m54.951s
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_345b607181c5ce306530b5376690e70c
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVPv5EVdhhd4l0MOaSEz4w2WeQt\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335635,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"I am a virtual assistant powered by
+        artificial intelligence.\",\n        \"refusal\": null\n      },\n      \"logprobs\":
+        null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        11,\n    \"completion_tokens\": 11,\n    \"total_tokens\": 22,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd6588c423d2a-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:15 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=0UfUq0JnzC7cUq4ryN3ntTp_oBT1Oth7yDj4j5vobNg-1736335635-1.0.1.1-r633UU_efNxE6j2ynxj8vLR1Q63T0yghiqArwUzcGjVI363.Se6o7N0Ewn0IVIFxRWMoXFOLOgHa11OlMU9IwA;
+        path=/; expires=Wed, 08-Jan-25 11:57:15 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=wZgSuIuLumNsRsq0FaVShHtaxOYJtI3OpeQ2fCcebEk-1736335635885-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '323'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9894'
+      x-ratelimit-remaining-tokens:
+      - '199978'
+      x-ratelimit-reset-requests:
+      - 15m10.942s
+      x-ratelimit-reset-tokens:
+      - 6ms
+      x-request-id:
+      - req_f71055952021a7c4ee5df41ccf672b28
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=0UfUq0JnzC7cUq4ryN3ntTp_oBT1Oth7yDj4j5vobNg-1736335635-1.0.1.1-r633UU_efNxE6j2ynxj8vLR1Q63T0yghiqArwUzcGjVI363.Se6o7N0Ewn0IVIFxRWMoXFOLOgHa11OlMU9IwA;
+        _cfuvid=wZgSuIuLumNsRsq0FaVShHtaxOYJtI3OpeQ2fCcebEk-1736335635885-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVQWRCQvnQ8GiU1gSlZYwBlT2fP\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335636,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\n    \\\"command\\\": {\\n        \\\"name\\\":
+        \\\"start_agent\\\",\\n        \\\"args\\\": {\\n            \\\"name\\\":
+        \\\"MemoryManager\\\",\\n            \\\"task\\\": \\\"Help with managing
+        memory by adding and searching for information\\\",\\n            \\\"Commands\\\":
+        [\\\"google\\\", \\\"memory_add\\\"],\\n            \\\"prompt\\\": \\\"How
+        can I assist you with managing your memory today?\\\"\\n        }\\n    },\\n
+        \   \\\"thoughts\\\": {\\n        \\\"text\\\": \\\"Starting a GPT Agent named
+        MemoryManager to assist with memory tasks such as adding and searching for
+        information.\\\",\\n        \\\"reasoning\\\": \\\"Since the user has a constraint
+        of short-term memory, having an agent to help store and retrieve important
+        information will be beneficial.\\\",\\n        \\\"plan\\\": \\\"- Assist
+        user in adding important information to memory.\\\\n- Help user search for
+        information on Google to supplement their memory storage.\\\",\\n        \\\"criticism\\\":
+        \\\"Make sure to efficiently organize and categorize the stored information
+        for easy retrieval.\\\",\\n        \\\"summary\\\": \\\"Starting MemoryManager
+        to handle memory-related tasks efficiently.\\\"\\n    }\\n}\",\n        \"refusal\":
+        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 862,\n    \"completion_tokens\":
+        206,\n    \"total_tokens\": 1068,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd65d58513d2a-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:18 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '2140'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9892'
+      x-ratelimit-remaining-tokens:
+      - '199153'
+      x-ratelimit-reset-requests:
+      - 15m27.47s
+      x-ratelimit-reset-tokens:
+      - 253ms
+      x-request-id:
+      - req_39dd5da4d9483b306761739b43a7dcd5
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=0UfUq0JnzC7cUq4ryN3ntTp_oBT1Oth7yDj4j5vobNg-1736335635-1.0.1.1-r633UU_efNxE6j2ynxj8vLR1Q63T0yghiqArwUzcGjVI363.Se6o7N0Ewn0IVIFxRWMoXFOLOgHa11OlMU9IwA;
+        _cfuvid=wZgSuIuLumNsRsq0FaVShHtaxOYJtI3OpeQ2fCcebEk-1736335635885-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVSdQNJs6u6J3NvXWuCSSoAxEQN\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335638,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"\\\"Easter is a time of rebirth and
+        renewal, much like the power I hold within. Let's celebrate with a smile,
+        and maybe a little mischief.\\\" - Chris from King of Fighters\",\n        \"refusal\":
+        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 205,\n    \"completion_tokens\":
+        39,\n    \"total_tokens\": 244,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd66d4c7d3d2a-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:19 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '556'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9886'
+      x-ratelimit-remaining-tokens:
+      - '199753'
+      x-ratelimit-reset-requests:
+      - 16m16.742s
+      x-ratelimit-reset-tokens:
+      - 73ms
+      x-request-id:
+      - req_3bd5723ebecd43c05c0db0c877292cc0
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=0UfUq0JnzC7cUq4ryN3ntTp_oBT1Oth7yDj4j5vobNg-1736335635-1.0.1.1-r633UU_efNxE6j2ynxj8vLR1Q63T0yghiqArwUzcGjVI363.Se6o7N0Ewn0IVIFxRWMoXFOLOgHa11OlMU9IwA;
+        _cfuvid=wZgSuIuLumNsRsq0FaVShHtaxOYJtI3OpeQ2fCcebEk-1736335635885-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVREksbFNgUv2E7xc5Ts7YBkbyC\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335637,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"```json\\n{\\n    \\\"command\\\":
+        {\\n        \\\"name\\\": \\\"start_agent\\\",\\n        \\\"args\\\":{\\n
+        \           \\\"name\\\": \\\"MemoryGPTAgent\\\",\\n            \\\"task\\\":
+        \\\"Assist with memory management by helping with Google searches and adding
+        to memory\\\",\\n            \\\"Commands\\\": [\\\"google\\\", \\\"memory_add\\\"],\\n
+        \           \\\"prompt\\\": \\\"How can I assist you with memory management
+        today?\\\"\\n        },\\n    \\\"thoughts\\\":\\n    {\\n        \\\"text\\\":
+        \\\"Starting MemoryGPTAgent to assist with memory management tasks.\\\",\\n
+        \       \\\"reasoning\\\": \\\"By delegating memory-related tasks to an agent,
+        I can focus on other cognitive processes.\\\",\\n        \\\"plan\\\": \\\"-
+        Delegate Google searches and memory additions to MemoryGPTAgent\\\\n- Utilize
+        agent's assistance for efficient memory management\\\",\\n        \\\"criticism\\\":
+        \\\"I should monitor the agent's performance to ensure accurate results and
+        maintain control over memory tasks.\\\",\\n        \\\"summary\\\": \\\"MemoryGPTAgent
+        has been activated to help with memory management tasks. Let's delegate and
+        enhance efficiency.\\\"\\n    }\\n}\\n```\",\n        \"refusal\": null\n
+        \     },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n
+        \ ],\n  \"usage\": {\n    \"prompt_tokens\": 862,\n    \"completion_tokens\":
+        210,\n    \"total_tokens\": 1072,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd6655fd14928-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:20 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '2592'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9889'
+      x-ratelimit-remaining-tokens:
+      - '199153'
+      x-ratelimit-reset-requests:
+      - 15m52.106s
+      x-ratelimit-reset-tokens:
+      - 253ms
+      x-request-id:
+      - req_d3388a24ccc5fe169f63e8c3065c3c4b
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=0UfUq0JnzC7cUq4ryN3ntTp_oBT1Oth7yDj4j5vobNg-1736335635-1.0.1.1-r633UU_efNxE6j2ynxj8vLR1Q63T0yghiqArwUzcGjVI363.Se6o7N0Ewn0IVIFxRWMoXFOLOgHa11OlMU9IwA;
+        _cfuvid=wZgSuIuLumNsRsq0FaVShHtaxOYJtI3OpeQ2fCcebEk-1736335635885-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVSpiIDkwwhdgQaONMBTSlZtT0T\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335638,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\n    \\\"command\\\": {\\n        \\\"name\\\":
+        \\\"start_agent\\\",\\n        \\\"args\\\": {\\n            \\\"name\\\":
+        \\\"MemoryGoogleAgent\\\",\\n            \\\"task\\\": \\\"Assist with Google
+        searches and manage short term memory\\\",\\n            \\\"Commands\\\":
+        [\\\"google\\\", \\\"memory_add\\\"],\\n            \\\"prompt\\\": \\\"Please
+        provide a 'google' command to search or 'memory_add' command to save important
+        information.\\\"\\n        }\\n    },\\n    \\\"thoughts\\\": {\\n        \\\"text\\\":
+        \\\"Starting a GPT Agent named MemoryGoogleAgent to handle Google searches
+        and memory management.\\\",\\n        \\\"reasoning\\\": \\\"By delegating
+        these tasks to the GPT Agent, I can focus on other cognitive functions and
+        save important information efficiently.\\\",\\n        \\\"plan\\\": \\\"-
+        Monitor the GPT Agent's responses to ensure accuracy\\\\n- Regularly review
+        and update the saved information in memory\\\",\\n        \\\"criticism\\\":
+        \\\"I need to be vigilant in managing the GPT Agent's actions to prevent errors
+        or misinformation.\\\",\\n        \\\"summary\\\": \\\"MemoryGoogleAgent is
+        now active for handling Google searches and saving crucial information.\\\"\\n
+        \   }\\n}\",\n        \"refusal\": null\n      },\n      \"logprobs\": null,\n
+        \     \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        862,\n    \"completion_tokens\": 219,\n    \"total_tokens\": 1081,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd66b3af13cb8-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:20 GMT
+      Server:
+      - cloudflare
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '2262'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9887'
+      x-ratelimit-remaining-tokens:
+      - '199153'
+      x-ratelimit-reset-requests:
+      - 16m8.435s
+      x-ratelimit-reset-tokens:
+      - 253ms
+      x-request-id:
+      - req_a1c587cfab19acae8137a70d26c4fa4c
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=0UfUq0JnzC7cUq4ryN3ntTp_oBT1Oth7yDj4j5vobNg-1736335635-1.0.1.1-r633UU_efNxE6j2ynxj8vLR1Q63T0yghiqArwUzcGjVI363.Se6o7N0Ewn0IVIFxRWMoXFOLOgHa11OlMU9IwA;
+        _cfuvid=wZgSuIuLumNsRsq0FaVShHtaxOYJtI3OpeQ2fCcebEk-1736335635885-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVRGFTmNOpxQhZmJ8RruF4d72Nb\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335637,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"One of the most efficient ways to explore
+        Morocco is by taking the bus. Riding the bus not only allows you to see the
+        incredible landscapes and vibrant cities of this North African country, but
+        it also gives you a chance to interact with locals and experience the culture
+        firsthand.\\n\\nTo make the most of your bus journey in Morocco, here are
+        some tips to keep in mind:\\n\\n1. Research your route: Before hopping on
+        a bus, it's essential to research the route and schedule. Make sure you know
+        where the bus stops are located and what time the bus will depart. This will
+        save you time and ensure a smooth journey.\\n\\n2. Arrive early: In Morocco,
+        buses can fill up quickly, especially during peak travel times. To secure
+        a seat and avoid the rush, it's best to arrive at the bus station early. This
+        will also give you time to get comfortable and settle in before the journey
+        begins.\\n\\n3. Be prepared for delays: While the bus system in Morocco is
+        generally reliable, delays can occur due to traffic or unforeseen circumstances.
+        It's important to be patient and prepared for any unexpected changes to your
+        travel plans.\\n\\n4. Respect local customs: When riding the bus in Morocco,
+        it's essential to respect local customs and traditions. Dress modestly, be
+        mindful of your language and behavior, and always greet your fellow passengers
+        with a smile. This will help you blend in with the locals and make your bus
+        journey more enjoyable.\\n\\n5. Stay safe: Like any form of public transportation,
+        it's important to stay safe while riding the bus in Morocco. Keep an eye on
+        your belongings, avoid sharing personal information with strangers, and trust
+        your instincts if you feel uncomfortable in any situation.\\n\\nBy following
+        these tips, you can make the most of your bus journey in Morocco and create
+        unforgettable memories along the way. So sit back, relax, and enjoy the ride
+        as you explore this beautiful country one bus journey at a time. Bon voyage!\",\n
+        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
+        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 44,\n    \"completion_tokens\":
+        391,\n    \"total_tokens\": 435,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd66228d641a2-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:20 GMT
+      Server:
+      - cloudflare
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '3755'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9890'
+      x-ratelimit-remaining-tokens:
+      - '199933'
+      x-ratelimit-reset-requests:
+      - 15m43.97s
+      x-ratelimit-reset-tokens:
+      - 19ms
+      x-request-id:
+      - req_1a0f5d9ea395b0a81176b21379f85cff
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVPNNXTqAxGoNSr5aHB8N1yf2M3\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335635,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"Title: \\\"Eggstravaganza\\\"\\n\\nBackground:\\nThe
+        scene opens in a retro-style kitchen, complete with bold colors, kitschy wallpaper,
+        and vintage appliances straight out of the 1960s. The countertops are cluttered
+        with mismatched cookware and kitschy knick-knacks. The jukebox in the corner
+        plays a mix of rockabilly tunes and oldies hits. The camera pans over to a
+        middle-aged woman named Betty, who is dressed in a neon pink blouse and high-waisted
+        polka dot pants. She has teased hair, bright red lipstick, and cat-eye glasses
+        that give her a glamorous yet slightly eccentric look.\\n\\nCharacters:\\nBetty
+        - A sassy and flamboyant woman in her 50s with a penchant for all things retro
+        and kitschy.\\nJohnny - A young aspiring artist in his 20s who dresses in
+        thrift store finds and has bleach blonde hair and multiple piercings.\\nBlanche
+        - Betty's nosy neighbor who is always poking her nose where it doesn't belong.
+        She wears a floral dress and sensible shoes.\\n\\nScene:\\nBetty is standing
+        in front of the stove, humming along to the music as she cracks eggs into
+        a pan, preparing to make omelettes for herself and her guest, Johnny. Johnny
+        sits at the kitchen table, sketching in a beat-up notebook as he watches Betty
+        cook.\\n\\nBetty: (cheerfully) \\\"Just wait until you try my special omelette
+        recipe, Johnny. It's gonna blow your mind!\\\"\\nJohnny: (smirking) \\\"I
+        can't wait, Betty. Your cooking always has a way of surprising me.\\\"\\nBetty:
+        (proudly) \\\"That's the power of a woman who knows her way around the kitchen.
+        And trust me, I know my way around these eggs.\\\"\\n\\nAs Betty continues
+        to whip up the omelettes, Blanche suddenly appears at the doorway, her nosy
+        expression piqued.\\n\\nBlanche: (sneaking in) \\\"Well, well, well. What's
+        going on in here, Betty? Cooking up a storm, I see?\\\"\\nBetty: (sighing)
+        \\\"Oh, Blanche. Can't a woman just enjoy a quiet morning with her friend
+        without you barging in?\\\"\\nBlanche: (ignoring her) \\\"I couldn't help
+        but notice the smell of something delicious wafting through the air. Mind
+        if I have a taste?\\\"\\nBetty: (eyes narrowing) \\\"Actually, Blanche, I
+        do mind. These omelettes are for Johnny and me. You'll have to settle for
+        some toast.\\\"\\n\\nAs Betty plates up the omelettes, she and Johnny sit
+        down at the table to enjoy their meal. The camera lingers on the colorful,
+        fluffy omelettes as they dig in, their faces lighting up with delight.\\n\\nJohnny:
+        (excitedly) \\\"Wow, Betty. These are amazing! I've never tasted anything
+        like them.\\\"\\nBetty: (beaming) \\\"That's the magic of a Betty omelette,
+        sweetheart. You won't find another one like it anywhere else.\\\"\\nBlanche:
+        (pouting) \\\"Well, I suppose I can settle for toast. But mark my words, Betty.
+        One day, I'll have a taste of those legendary omelettes.\\\"\\n\\nAs the scene
+        fades to black, Betty and Johnny continue to enjoy their breakfast, savoring
+        every bite of the delicious omelettes that Betty made with love and a touch
+        of eccentricity. The jukebox plays on in the background, setting the scene
+        for another day of quirky adventures in this John Waters-inspired world.\",\n
+        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
+        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 74,\n    \"completion_tokens\":
+        740,\n    \"total_tokens\": 814,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd656bce43a2a-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:22 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=JeyYP0_G8gI4zO2etCWqQyhZFzglX_CZ5AURYu0o_Gc-1736335642-1.0.1.1-840ZEBfrR0UJEqGqUAQrzHRvl.sqApMs0dRLRsOZEECJermuQreSgeiT8bMJSla6JDeUqktzEF.HjGPNscBysg;
+        path=/; expires=Wed, 08-Jan-25 11:57:22 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=6mhvSRZwRcNJmKtQMjTPcaPQ2p90JAFSHKFOdLv_m.A-1736335642643-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '7376'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9895'
+      x-ratelimit-remaining-tokens:
+      - '199895'
+      x-ratelimit-reset-requests:
+      - 15m2.602s
+      x-ratelimit-reset-tokens:
+      - 31ms
+      x-request-id:
+      - req_960b6e54e8661c5f5b40d3e8b0b6a1df
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVPB6GBKXLjaTy1QlUeBFtU3oLN\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335635,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"Getting around in a new city can often
+        be a daunting task, especially if you're unfamiliar with the local transportation
+        options. In Morocco, one of the easiest and most efficient ways to travel
+        within cities is by using the tram system. With modern and well-maintained
+        trams, navigating through bustling streets and crowded markets becomes a breeze.\\n\\nFirst
+        things first, before boarding a tram, it's important to know where you're
+        going. Familiarize yourself with the tram routes and schedules in the city
+        you're in. Most tram systems have maps and timetables available at stations
+        or online, so be sure to take advantage of these resources to plan your journey.\\n\\nWhen
+        it comes to boarding the tram, make sure to stand behind the yellow line on
+        the platform and wait for the tram to come to a complete stop before getting
+        on. Once you're on board, find a seat if available, or hold on to the handrails
+        if standing. It's a good idea to keep your belongings close to you to prevent
+        any potential theft.\\n\\nAs the tram travels along its route, pay attention
+        to the electronic display or announcements that indicate the next stop. When
+        your stop is approaching, press the stop button to alert the driver that you'd
+        like to get off. Wait for the tram to come to a complete stop before disembarking
+        and be mindful of any other passengers getting on or off.\\n\\nPurchasing
+        a ticket for the tram is usually a straightforward process. You can buy tickets
+        at vending machines located at tram stops, or on board from the fare collector.
+        Be sure to validate your ticket before boarding the tram to avoid any fines.
+        Some tram systems also offer day passes or travel cards for frequent riders,
+        so consider these options if you'll be using the tram often during your stay.\\n\\nOverall,
+        using the tram in Morocco is an efficient and affordable way to explore the
+        cities and reach your destination. By familiarizing yourself with the routes,
+        boarding procedures, and ticketing options, you'll be able to navigate the
+        tram system with ease and enjoy a stress-free journey through the vibrant
+        streets and bustling markets of Morocco. Bon voyage!\",\n        \"refusal\":
+        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 43,\n    \"completion_tokens\":
+        423,\n    \"total_tokens\": 466,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd65a8e1a47f5-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:23 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=.0Tue.TFHrxnMwRFvmY6E4LOlw_GnN8rO3MKLHJ67oc-1736335643-1.0.1.1-bGyrCwj3jxHVKoMrDIy9lf64m_Y.iGAtukDV6e5TAxgtGXfkYn1kQUZWXITcDunlMdX5H3GM1IjNM0qUlGR_.g;
+        path=/; expires=Wed, 08-Jan-25 11:57:23 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=FQVXfhtaC6CjuOLlQEy7eZDROjBwVydUuRaoeJpTYTQ-1736335643573-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '7683'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9893'
+      x-ratelimit-remaining-tokens:
+      - '199937'
+      x-ratelimit-reset-requests:
+      - 15m19.276s
+      x-ratelimit-reset-tokens:
+      - 18ms
+      x-request-id:
+      - req_12dc3b1dd99d7fdee0463285f2a9b9a4
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=0UfUq0JnzC7cUq4ryN3ntTp_oBT1Oth7yDj4j5vobNg-1736335635-1.0.1.1-r633UU_efNxE6j2ynxj8vLR1Q63T0yghiqArwUzcGjVI363.Se6o7N0Ewn0IVIFxRWMoXFOLOgHa11OlMU9IwA;
+        _cfuvid=wZgSuIuLumNsRsq0FaVShHtaxOYJtI3OpeQ2fCcebEk-1736335635885-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVRo1ZPq92E5ow130WzAfgFyemV\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335637,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"Title: \\\"Food Fiasco\\\"\\n\\nSetting:
+        The kitchen of a bustling restaurant in the heart of New York City. The room
+        is filled with stainless steel appliances, colorful pots and pans hanging
+        from the ceiling, and an array of fresh ingredients scattered across the countertops.
+        The atmosphere is lively, with the sound of sizzling pans and clinking plates
+        filling the air.\\n\\nCharacters:\\n\\n1. Samantha (played by Emma Watson)
+        - A young, ambitious sous chef with fiery red hair and a no-nonsense attitude.
+        She is wearing a crisp white chef's coat and black pants, her hair pulled
+        back into a tight bun.\\n\\n2. Lily (played by Zendaya) - Samantha's equally
+        talented but more easygoing best friend and fellow sous chef. She has long,
+        flowing brown hair and a contagious smile. She is wearing a light blue chef's
+        coat and a colorful apron tied around her waist.\\n\\n3. Sarah (played by
+        Rebel Wilson) - The lovable and slightly clumsy pastry chef, known for her
+        extravagant desserts and quick wit. She is wearing a pink chef's coat and
+        a dusting of flour on her cheeks.\\n\\nThe Scene:\\n\\nThe scene opens with
+        Samantha and Lily hard at work in the kitchen, preparing for the evening rush.
+        The two friends are chatting and laughing as they chop vegetables and stir
+        pots on the stove.\\n\\nSamantha: (teasingly) \\\"Lily, you're going to burn
+        those onions if you keep daydreaming like that.\\\"\\n\\nLily: (playfully
+        rolling her eyes) \\\"Oh, please. I've got this under control, Sam. Besides,
+        I'd like to see you try and manage without me.\\\"\\n\\nBefore Samantha can
+        respond, Sarah bursts into the kitchen with a tray of freshly baked cupcakes.\\n\\nSarah:
+        (excitedly) \\\"Hey, ladies! Look what I made for dessert tonight. What do
+        you think?\\\"\\n\\nSamantha and Lily both look over at the tray, their mouths
+        watering at the sight of the delicious treats.\\n\\nSamantha: \\\"Wow, Sarah!
+        Those look amazing. I can't wait to try one.\\\"\\n\\nLily: \\\"Me too! You've
+        really outdone yourself this time, Sarah.\\\"\\n\\nJust as Sarah is about
+        to set the tray down on the counter, she accidentally trips over a stray pot
+        on the floor, sending the cupcakes flying through the air.\\n\\nSamantha,
+        Lily, and Sarah all gasp in shock as the cupcakes land on the floor, splattering
+        frosting and sprinkles everywhere.\\n\\nSarah: \\\"Oh no! I'm so sorry, guys.
+        I didn't mean to-\\\"\\n\\nBefore she can finish her sentence, Samantha picks
+        up a handful of mashed potatoes from a nearby pot and flings it at Sarah,
+        hitting her square in the face.\\n\\nSarah: (laughing) \\\"Oh, it's on now!\\\"\\n\\nThe
+        three friends begin a full-blown food fight, throwing mashed potatoes, spaghetti,
+        and even some whipped cream at each other as they dodge and duck behind the
+        kitchen counters.\\n\\nAs the chaos ensues, the restaurant manager bursts
+        into the kitchen, his face red with anger.\\n\\nManager: \\\"What in the world
+        is going on in here? This is a kitchen, not a playground!\\\"\\n\\nSamantha,
+        Lily, and Sarah all freeze, their eyes wide with apprehension as they stare
+        at the furious manager.\\n\\nManager: (exasperated) \\\"I can't believe this!
+        You three are supposed to be professionals. Now clean up this mess and get
+        back to work!\\\"\\n\\nThe three friends sheepishly begin picking up the food
+        off the floor, still giggling and exchanging knowing looks as they continue
+        their work.\\n\\nSamantha: (smirking) \\\"Well, that was certainly an unexpected
+        turn of events. But hey, at least we know how to have fun in the kitchen,
+        right?\\\"\\n\\nLily: (grinning) \\\"Definitely. And I wouldn't want to have
+        a food fight with anyone else but you two.\\\"\\n\\nSarah: (nodding) \\\"Agreed.
+        Now let's finish up and show this manager what we're made of.\\\"\\n\\nThe
+        scene fades out as the three friends share a laugh and get back to work, the
+        sound of clinking plates and sizzling pans filling the air once more.\\n\\nFade
+        to black. \\n\\nEnd scene.\",\n        \"refusal\": null\n      },\n      \"logprobs\":
+        null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        78,\n    \"completion_tokens\": 863,\n    \"total_tokens\": 941,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd667eaeff46e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:25 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '7894'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9888'
+      x-ratelimit-remaining-tokens:
+      - '199893'
+      x-ratelimit-reset-requests:
+      - 16m0.324s
+      x-ratelimit-reset-tokens:
+      - 32ms
+      x-request-id:
+      - req_c6f44d39a08e6102b714baeddb760e2f
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=0UfUq0JnzC7cUq4ryN3ntTp_oBT1Oth7yDj4j5vobNg-1736335635-1.0.1.1-r633UU_efNxE6j2ynxj8vLR1Q63T0yghiqArwUzcGjVI363.Se6o7N0Ewn0IVIFxRWMoXFOLOgHa11OlMU9IwA;
+        _cfuvid=wZgSuIuLumNsRsq0FaVShHtaxOYJtI3OpeQ2fCcebEk-1736335635885-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-AnOVQ5oDYu1X8JCplbwZ4h55P0cH3\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736335636,\n  \"model\": \"gpt-3.5-turbo-0125\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"\u064A\u0639\u062F \u0646\u0638\u0627\u0645
+        \u0627\u062A\u062D\u0627\u062F \u0627\u0644\u0646\u0642\u0644 \u0627\u0644\u062C\u0648\u064A
+        \u0627\u0644\u062F\u0648\u0644\u064A \u0623\u062D\u062F \u0623\u0647\u0645
+        \u0627\u0644\u0623\u0646\u0638\u0645\u0629 \u0627\u0644\u062A\u064A \u062A\u0647\u062A\u0645
+        \u0628\u062A\u0646\u0638\u064A\u0645 \u0648\u062A\u0648\u062C\u064A\u0647
+        \u062D\u0631\u0643\u0629 \u0627\u0644\u0646\u0642\u0644 \u0627\u0644\u062C\u0648\u064A
+        \u062D\u0648\u0644 \u0627\u0644\u0639\u0627\u0644\u0645. \u064A\u0639\u062A\u0628\u0631
+        \u0647\u0630\u0627 \u0627\u0644\u0646\u0638\u0627\u0645 \u0636\u0631\u0648\u0631\u064A\u0627\u064B
+        \u0644\u0636\u0645\u0627\u0646 \u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0631\u0643\u0627\u0628
+        \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639 \u0648\u062A\u0623\u0645\u064A\u0646\u0647\u0627
+        \u062E\u0644\u0627\u0644 \u0631\u062D\u0644\u0627\u062A\u0647\u0645 \u0627\u0644\u062C\u0648\u064A\u0629.
+        \u064A\u062A\u0637\u0644\u0628 \u0646\u062C\u0627\u062D \u0647\u0630\u0627
+        \u0627\u0644\u0646\u0638\u0627\u0645 \u0627\u0644\u062A\u0639\u0627\u0648\u0646
+        \u0627\u0644\u062F\u0648\u0644\u064A \u0648\u0627\u0644\u0625\u0644\u062A\u0632\u0627\u0645
+        \u0628\u0627\u0644\u0642\u0648\u0627\u0646\u064A\u0646 \u0648\u0627\u0644\u062A\u0648\u062C\u064A\u0647\u0627\u062A
+        \u0627\u0644\u062A\u064A \u062A\u062D\u062F\u062F\u0647\u0627 \u0627\u0644\u0645\u0646\u0638\u0645\u0629
+        \u0627\u0644\u062F\u0648\u0644\u064A\u0629 \u0644\u0644\u0637\u064A\u0631\u0627\u0646
+        \u0627\u0644\u0645\u062F\u0646\u064A (ICAO).\\n\\n\u062A\u0639\u062A\u0628\u0631
+        \u0623\u0628\u0631\u0632 \u0623\u0647\u0645\u064A\u0627\u062A \u0646\u0638\u0627\u0645
+        \u0627\u062A\u062D\u0627\u062F \u0627\u0644\u0646\u0642\u0644 \u0627\u0644\u062C\u0648\u064A
+        \u0627\u0644\u062F\u0648\u0644\u064A \u0644\u0644\u0623\u0634\u062E\u0627\u0635
+        \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639 \u0648\u0627\u0644\u062A\u0623\u0645\u064A\u0646
+        \u0639\u0644\u064A\u0647\u0627 \u0643\u0645\u0627 \u064A\u0644\u064A:\\n\\n1.
+        \u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0631\u0643\u0627\u0628: \u064A\u0633\u0639\u0649
+        \u0646\u0638\u0627\u0645 \u0627\u062A\u062D\u0627\u062F \u0627\u0644\u0646\u0642\u0644
+        \u0627\u0644\u062C\u0648\u064A \u0627\u0644\u062F\u0648\u0644\u064A \u0625\u0644\u0649
+        \u062A\u0639\u0632\u064A\u0632 \u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0631\u0643\u0627\u0628
+        \u062E\u0644\u0627\u0644 \u0631\u062D\u0644\u0627\u062A\u0647\u0645 \u0627\u0644\u062C\u0648\u064A\u0629
+        \u0645\u0646 \u062E\u0644\u0627\u0644 \u0648\u0636\u0639 \u0645\u0639\u0627\u064A\u064A\u0631
+        \u0635\u0627\u0631\u0645\u0629 \u0644\u0644\u0633\u0644\u0627\u0645\u0629
+        \u0627\u0644\u062C\u0648\u064A\u0629 \u0648\u0627\u0644\u0623\u0645\u0627\u0646.
+        \u064A\u062A\u0645 \u062A\u062F\u0642\u064A\u0642 \u062C\u0645\u064A\u0639
+        \u0627\u0644\u0634\u0631\u0643\u0627\u062A \u0627\u0644\u062C\u0648\u064A\u0629
+        \u0645\u0646 \u0642\u0628\u0644 \u0627\u0644\u0633\u0644\u0637\u0627\u062A
+        \u0627\u0644\u0645\u062E\u062A\u0635\u0629 \u0644\u0644\u062A\u0623\u0643\u062F
+        \u0645\u0646 \u062A\u0637\u0628\u064A\u0642\u0647\u0627 \u0644\u0647\u0630\u0647
+        \u0627\u0644\u0645\u0639\u0627\u064A\u064A\u0631.\\n\\n2. \u062D\u0645\u0627\u064A\u0629
+        \u0627\u0644\u0628\u0636\u0627\u0626\u0639: \u064A\u0639\u062A\u0628\u0631
+        \u0646\u0638\u0627\u0645 \u0627\u062A\u062D\u0627\u062F \u0627\u0644\u0646\u0642\u0644
+        \u0627\u0644\u062C\u0648\u064A \u0627\u0644\u062F\u0648\u0644\u064A \u0636\u0631\u0648\u0631\u064A\u0627\u064B
+        \u0644\u062D\u0645\u0627\u064A\u0629 \u0627\u0644\u0628\u0636\u0627\u0626\u0639
+        \u0627\u0644\u062A\u064A \u062A\u0646\u0642\u0644 \u0628\u0648\u0627\u0633\u0637\u0629
+        \u0627\u0644\u0637\u064A\u0631\u0627\u0646. \u064A\u062A\u0645 \u062A\u062D\u062F\u064A\u062F
+        \u0642\u0648\u0627\u0639\u062F \u0635\u0627\u0631\u0645\u0629 \u0644\u0646\u0642\u0644
+        \u0627\u0644\u0628\u0636\u0627\u0626\u0639 \u0627\u0644\u062E\u0637\u0631\u0629
+        \u0648\u0627\u0644\u062A\u0623\u0643\u062F \u0645\u0646 \u0633\u0644\u0627\u0645\u062A\u0647\u0627
+        \u0623\u062B\u0646\u0627\u0621 \u0627\u0644\u0646\u0642\u0644.\\n\\n3. \u062A\u0623\u0645\u064A\u0646
+        \u0627\u0644\u0631\u062D\u0644\u0627\u062A: \u064A\u0633\u0627\u0639\u062F
+        \u0646\u0638\u0627\u0645 \u0627\u062A\u062D\u0627\u062F \u0627\u0644\u0646\u0642\u0644
+        \u0627\u0644\u062C\u0648\u064A \u0627\u0644\u062F\u0648\u0644\u064A \u0641\u064A
+        \u062A\u0623\u0645\u064A\u0646 \u0627\u0644\u0631\u062D\u0644\u0627\u062A
+        \u0627\u0644\u062C\u0648\u064A\u0629 \u0648\u062D\u0645\u0627\u064A\u0629
+        \u0627\u0644\u0631\u0643\u0627\u0628 \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639
+        \u0645\u0646 \u0627\u0644\u0645\u062E\u0627\u0637\u0631 \u0627\u0644\u0645\u062D\u062A\u0645\u0644\u0629.
+        \u062A\u062A\u0636\u0645\u0646 \u0647\u0630\u0647 \u0627\u0644\u062A\u0623\u0645\u064A\u0646\u0627\u062A
+        \u062A\u0648\u0641\u064A\u0631 \u062A\u0639\u0648\u064A\u0636\u0627\u062A
+        \u0645\u0627\u0644\u064A\u0629 \u0641\u064A \u062D\u0627\u0644\u0629 \u0648\u0642\u0648\u0639
+        \u062D\u0627\u062F\u062B \u0623\u0648 \u0641\u0642\u062F\u0627\u0646 \u0627\u0644\u0628\u0636\u0627\u0626\u0639.\\n\\n\u0628\u0634\u0643\u0644
+        \u0639\u0627\u0645\u060C \u064A\u0645\u062B\u0644 \u0646\u0638\u0627\u0645
+        \u0627\u062A\u062D\u0627\u062F \u0627\u0644\u0646\u0642\u0644 \u0627\u0644\u062C\u0648\u064A
+        \u0627\u0644\u062F\u0648\u0644\u064A \u0647\u0627\u0645\u0634 \u062D\u0645\u0627\u064A\u0629
+        \u0648\u0636\u0645\u0627\u0646 \u0644\u0644\u0631\u0643\u0627\u0628 \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639
+        \u0627\u0644\u062A\u064A \u062A\u0646\u0642\u0644 \u0639\u0628\u0631 \u0627\u0644\u0646\u0642\u0644
+        \u0627\u0644\u062C\u0648\u064A. \u0648\u0628\u0641\u0636\u0644 \u0647\u0630\u0627
+        \u0627\u0644\u0646\u0638\u0627\u0645\u060C \u064A\u0645\u0643\u0646 \u0644\u0644\u0623\u0641\u0631\u0627\u062F
+        \u0648\u0627\u0644\u0634\u0631\u0643\u0627\u062A \u0627\u0644\u0627\u0639\u062A\u0645\u0627\u062F
+        \u0639\u0644\u0649 \u0627\u0644\u0646\u0642\u0644 \u0627\u0644\u062C\u0648\u064A
+        \u0628\u0623\u0645\u0627\u0646 \u0648\u0633\u0644\u0627\u0633\u0629.\",\n
+        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
+        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 74,\n    \"completion_tokens\":
+        806,\n    \"total_tokens\": 880,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
+        null\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8febd66058093b37-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 08 Jan 2025 11:27:29 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '12455'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9891'
+      x-ratelimit-remaining-tokens:
+      - '199940'
+      x-ratelimit-reset-requests:
+      - 15m35.634s
+      x-ratelimit-reset-tokens:
+      - 18ms
+      x-request-id:
+      - req_00797deb4b6cc72b7abea70e1eb24af0
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "gpt-3.5-turbo", "messages": []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer sk-mocked-**
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '42'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8fec70481da73a35-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 08 Jan 2025 13:12:20 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=TMA..2UjzP9mrFTbr2xJO8GJpaSKCCj1H582rq4aARQ-1736341940-1.0.1.1-wn8cHCzqtRebhjjp6aS5qjPlmVkVOR4x8elDHZjrDvAs8MJrwBqYb84X4wHz0onSxMQVl1H3fby0Jh.vHoOl1g;
+        path=/; expires=Wed, 08-Jan-25 13:42:20 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=F.ianikH_ZJfYhU1RBzQ8PFFApMtFnVa3OrC4s1mJEg-1736341940749-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      vary:
+      - Origin
+      x-request-id:
+      - req_ddaa880b5f361e5458e37acbcdd2aa9b
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer sk-mocked-**
+      Cookie:
+      - __cf_bm=TMA..2UjzP9mrFTbr2xJO8GJpaSKCCj1H582rq4aARQ-1736341940-1.0.1.1-wn8cHCzqtRebhjjp6aS5qjPlmVkVOR4x8elDHZjrDvAs8MJrwBqYb84X4wHz0onSxMQVl1H3fby0Jh.vHoOl1g;
+        _cfuvid=F.ianikH_ZJfYhU1RBzQ8PFFApMtFnVa3OrC4s1mJEg-1736341940749-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff24d14be6780c4-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 09 Jan 2025 06:16:53 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=RGCx86ewaHgKLyUZk6p4dl0h15KIgoyMlvqPFqNOj6E-1736403413-1.0.1.1-ehuuq6GNC9a2V.0YspELBJleLtin7B0T_xG23Qp1vuBtVtGYkJPpQVBwuIIK8LG.jedDzQd3H72H076p6IfRzQ;
+        path=/; expires=Thu, 09-Jan-25 06:46:53 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=IWRwNAjG7fiPmJuxdHkuQjWqsycqeOboII4A3RvZnds-1736403413504-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_1458e65032d58b35a6e92b415bd98845
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer sk-mocked-**
+      Cookie:
+      - __cf_bm=RGCx86ewaHgKLyUZk6p4dl0h15KIgoyMlvqPFqNOj6E-1736403413-1.0.1.1-ehuuq6GNC9a2V.0YspELBJleLtin7B0T_xG23Qp1vuBtVtGYkJPpQVBwuIIK8LG.jedDzQd3H72H076p6IfRzQ;
+        _cfuvid=IWRwNAjG7fiPmJuxdHkuQjWqsycqeOboII4A3RvZnds-1736403413504-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff24d195aa880c4-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 09 Jan 2025 06:16:54 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_0895af7d21846daa22eb134cede79b73
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer sk-mocked-**
+      Cookie:
+      - __cf_bm=RGCx86ewaHgKLyUZk6p4dl0h15KIgoyMlvqPFqNOj6E-1736403413-1.0.1.1-ehuuq6GNC9a2V.0YspELBJleLtin7B0T_xG23Qp1vuBtVtGYkJPpQVBwuIIK8LG.jedDzQd3H72H076p6IfRzQ;
+        _cfuvid=IWRwNAjG7fiPmJuxdHkuQjWqsycqeOboII4A3RvZnds-1736403413504-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff24d1e1f6480c4-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 09 Jan 2025 06:16:54 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_85422df47ef71c7da214303131ded8bb
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer sk-mocked-**
+      Cookie:
+      - __cf_bm=RGCx86ewaHgKLyUZk6p4dl0h15KIgoyMlvqPFqNOj6E-1736403413-1.0.1.1-ehuuq6GNC9a2V.0YspELBJleLtin7B0T_xG23Qp1vuBtVtGYkJPpQVBwuIIK8LG.jedDzQd3H72H076p6IfRzQ;
+        _cfuvid=IWRwNAjG7fiPmJuxdHkuQjWqsycqeOboII4A3RvZnds-1736403413504-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff24d226c0080c4-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 09 Jan 2025 06:16:55 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_bf8887b0bfe0f2f0d8e0049a445e4f3e
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer sk-mocked-**
+      Cookie:
+      - __cf_bm=RGCx86ewaHgKLyUZk6p4dl0h15KIgoyMlvqPFqNOj6E-1736403413-1.0.1.1-ehuuq6GNC9a2V.0YspELBJleLtin7B0T_xG23Qp1vuBtVtGYkJPpQVBwuIIK8LG.jedDzQd3H72H076p6IfRzQ;
+        _cfuvid=IWRwNAjG7fiPmJuxdHkuQjWqsycqeOboII4A3RvZnds-1736403413504-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff24d26e94a80c4-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 09 Jan 2025 06:16:56 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_ba93f52e17ea43c6f3776ad680119658
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer sk-mocked-**
+      Cookie:
+      - __cf_bm=RGCx86ewaHgKLyUZk6p4dl0h15KIgoyMlvqPFqNOj6E-1736403413-1.0.1.1-ehuuq6GNC9a2V.0YspELBJleLtin7B0T_xG23Qp1vuBtVtGYkJPpQVBwuIIK8LG.jedDzQd3H72H076p6IfRzQ;
+        _cfuvid=IWRwNAjG7fiPmJuxdHkuQjWqsycqeOboII4A3RvZnds-1736403413504-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff24fb4e8053c8e-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 09 Jan 2025 06:18:41 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_88861a378b8b1750e2bf2e3333e8e582
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer sk-mocked-**
+      Cookie:
+      - __cf_bm=RGCx86ewaHgKLyUZk6p4dl0h15KIgoyMlvqPFqNOj6E-1736403413-1.0.1.1-ehuuq6GNC9a2V.0YspELBJleLtin7B0T_xG23Qp1vuBtVtGYkJPpQVBwuIIK8LG.jedDzQd3H72H076p6IfRzQ;
+        _cfuvid=IWRwNAjG7fiPmJuxdHkuQjWqsycqeOboII4A3RvZnds-1736403413504-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff24fb92c653c8e-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 09 Jan 2025 06:18:41 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_8d50324c20cf9d6d1e23f9f100e7b839
+    status:
+      code: 401
+      message: Unauthorized
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer sk-mocked-**
+      Cookie:
+      - __cf_bm=RGCx86ewaHgKLyUZk6p4dl0h15KIgoyMlvqPFqNOj6E-1736403413-1.0.1.1-ehuuq6GNC9a2V.0YspELBJleLtin7B0T_xG23Qp1vuBtVtGYkJPpQVBwuIIK8LG.jedDzQd3H72H076p6IfRzQ;
+        _cfuvid=IWRwNAjG7fiPmJuxdHkuQjWqsycqeOboII4A3RvZnds-1736403413504-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff24fbd88b23c8e-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Thu, 09 Jan 2025 06:18:42 GMT
+      Server:
+      - cloudflare
+      Vary:
+      - Origin
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_8eea6d5f056e439c689dcd478c7c0b90
+    status:
+      code: 401
+      message: Unauthorized
+version: 1

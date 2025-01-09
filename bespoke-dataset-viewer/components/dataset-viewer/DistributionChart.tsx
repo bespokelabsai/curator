@@ -48,7 +48,7 @@ function getDistributionData(data: DataItem[], column: string) {
 
 export function DistributionChart({ data, column }: DistributionChartProps) {
   const distributionData = getDistributionData(data, column);
-  
+
   if (distributionData.length === 0) return null;
 
   const displayName = COLUMN_DISPLAY_NAMES[column] || column;
@@ -57,19 +57,19 @@ export function DistributionChart({ data, column }: DistributionChartProps) {
     <div className="w-full h-80">
       <h2 className="text-xl font-semibold mb-4">Distribution of {displayName}</h2>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart 
+        <BarChart
           data={distributionData}
           margin={{ top: 10, right: 30, left: 20, bottom: 15 }}
         >
-          <XAxis 
-            dataKey="range" 
+          <XAxis
+            dataKey="range"
             fontSize={12}
             angle={-45}
             textAnchor="end"
             height={70}
           />
           <YAxis />
-          <Tooltip 
+          <Tooltip
             formatter={(value: number) => [`Count: ${value}`, displayName]}
             contentStyle={{
               backgroundColor: 'var(--tooltip-text-bg)',
@@ -84,8 +84,8 @@ export function DistributionChart({ data, column }: DistributionChartProps) {
             }}
             cursor={{ fill: 'var(--tooltip-bg)', opacity: 0.2 }}
           />
-          <Bar 
-            dataKey="count" 
+          <Bar
+            dataKey="count"
             fill="#8884d8"
             name={displayName}
           />

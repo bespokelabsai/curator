@@ -5,8 +5,6 @@ from pathlib import Path
 
 import pytest
 
-from tests.helpers import clear_test_cache
-
 examples_dir = Path(__file__).parent.parent / "examples"
 sys.path.append(str(examples_dir))
 
@@ -19,19 +17,13 @@ def get_example_scripts():
             if file.endswith(".py"):
                 example_scripts.append(os.path.join(root, file))
     # Filter out prompt_templates.py and reannotate.py
-    example_scripts = [
-        script
-        for script in example_scripts
-        if not script.endswith(("prompt_templates.py", "wildchat.py", "openhermes.py"))
-    ]
+    example_scripts = [script for script in example_scripts if not script.endswith(("prompt_templates.py", "wildchat.py", "openhermes.py"))]
     return example_scripts
 
 
 @pytest.mark.integration
 @pytest.mark.parametrize("script_path", get_example_scripts())
-@pytest.mark.cache_dir(
-    lambda script_path: os.path.expanduser(f"~/.cache/curator-tests/{Path(script_path).stem}")
-)
+@pytest.mark.cache_dir(lambda script_path: os.path.expanduser(f"~/.cache/curator-tests/{Path(script_path).stem}"))
 @pytest.mark.usefixtures("clear_test_cache")
 @pytest.mark.dependency(name="first_run_{script_path}")
 def test_example_script_first_run(script_path, monkeypatch, tmp_path):

@@ -8,6 +8,11 @@ class MetadataDB:
     """Database class for storing Bella run metadata."""
 
     def __init__(self, db_path: str):
+        """Initialize the MetadataDB with a given database path.
+
+        Args:
+            db_path: Path to the SQLite database file.
+        """
         self.db_path = db_path
 
     def _get_current_schema(self) -> list:
@@ -97,7 +102,7 @@ class MetadataDB:
                 # Update last_edited_time for existing entry
                 cursor.execute(
                     """
-                    UPDATE runs 
+                    UPDATE runs
                     SET last_edited_time = ?
                     WHERE run_hash = ?
                     """,
@@ -108,7 +113,7 @@ class MetadataDB:
                 cursor.execute(
                     """
                     INSERT INTO runs (
-                        run_hash, dataset_hash, prompt_func, model_name, 
+                        run_hash, dataset_hash, prompt_func, model_name,
                         response_format, batch_mode, created_time, last_edited_time
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """,

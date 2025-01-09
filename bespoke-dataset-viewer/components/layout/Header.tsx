@@ -15,10 +15,10 @@ interface HeaderProps {
   pollingText?: string
 }
 
-export function Header({ 
-  isLoading, 
-  isPolling, 
-  onTogglePolling, 
+export function Header({
+  isLoading,
+  isPolling,
+  onTogglePolling,
   showPolling = true,
   loadingText = "Loading dataset...",
   pollingText = "Polling for updates..."
@@ -36,7 +36,7 @@ export function Header({
 
   useEffect(() => {
     if (!mounted) return
-    
+
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
@@ -57,7 +57,7 @@ export function Header({
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
           <Image
             src="/Bespoke-Labs-Logomark-Red-on-Mint.svg"
-            alt="Bespoke Logo" 
+            alt="Bespoke Logo"
             width={32}
             height={32}
             className="object-contain"
@@ -77,8 +77,8 @@ export function Header({
             </div>
           ) : null}
           {showPolling && onTogglePolling && (
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={onTogglePolling}
               disabled={isLoading}
@@ -98,4 +98,4 @@ export function Header({
       </div>
     </header>
   )
-} 
+}

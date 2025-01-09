@@ -3,14 +3,13 @@
 import inspect
 import logging
 import os
-
 import shutil
 from datetime import datetime
 
 # Initialize module logger
 logger = logging.getLogger(__name__)
 from io import BytesIO
-from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar
 
 from datasets import Dataset
 from datasets.utils._dill import Pickler
@@ -19,23 +18,10 @@ from xxhash import xxh64
 
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
-from bespokelabs.curator.request_processor import (
-    LiteLLMOnlineRequestProcessor,
-    OpenAIOnlineRequestProcessor,
-)
-from bespokelabs.curator.request_processor.batch.anthropic_batch_request_processor import (
-    AnthropicBatchRequestProcessor,
-)
+from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
 from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import (
     OpenAIBatchRequestProcessor,
-    VLLMOfflineRequestProcessor,
 )
-from bespokelabs.curator.request_processor.config import (
-    BatchRequestProcessorConfig,
-    OnlineRequestProcessorConfig,
-    OfflineRequestProcessorConfig,
-)
-
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -78,21 +64,25 @@ class LLM:
                 and returns either a string (assumed to be a user prompt) or messages list
             parse_func: A function that takes the input row and
                 response object and returns the parsed output
+            base_url: Optional base URL for the API endpoint
             response_format: A Pydantic model specifying the
-                response format from the LLM.
-            backend: The backend to use ("openai" or "litellm"). If None, will be auto-determined
+                response format from the LLM
             batch: Whether to use batch processing
+            backend: The backend to use ("openai", "litellm", or "vllm"). If None, will be auto-determined
+            max_requests_per_minute: Maximum number of requests per minute for rate limiting
+            max_tokens_per_minute: Maximum number of tokens per minute for rate limiting
             batch_size: The size of the batch to use, only used if batch is True
             batch_check_interval: The interval to check for batch completions, only used if batch is True
             delete_successful_batch_files: Whether to delete successful batch files, only used if batch is True
             delete_failed_batch_files: Whether to delete failed batch files, only used if batch is True
             max_retries: The maximum number of retries to use for the LLM
             require_all_responses: Whether to require all responses
+            generation_params: Additional parameters to pass to the generation API
+            seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited
             tensor_parallel_size: The tensor parallel size to use for the VLLM backend
             enforce_eager: Whether to enforce eager execution for the VLLM backend
             max_model_length: The maximum model length to use for the VLLM backend
             max_tokens: The maximum tokens to use for the VLLM backend
-            min_tokens: The minimum tokens to use for the VLLM backend
             gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
         """
         if generation_params is None:
@@ -100,111 +90,33 @@ class LLM:
         else:
             generation_params = _remove_none_values(generation_params)
 
-        self.prompt_formatter = PromptFormatter(
-            model_name, prompt_func, parse_func, response_format, generation_params
-        )
+        self.prompt_formatter = PromptFormatter(model_name, prompt_func, parse_func, response_format, generation_params)
         self.batch_mode = batch
 
-        if backend is not None:
-            self.backend = backend
-        else:
-            self.backend = self._determine_backend(model_name, response_format, batch)
+        backend_params = {
+            "model": model_name,
+            "base_url": base_url,
+            "batch_size": batch_size,
+            "batch_check_interval": batch_check_interval,
+            "delete_successful_batch_files": delete_successful_batch_files,
+            "delete_failed_batch_files": delete_failed_batch_files,
+            "require_all_responses": require_all_responses,
+            "generation_params": generation_params,
+            "max_requests_per_minute": max_requests_per_minute,
+            "max_tokens_per_minute": max_tokens_per_minute,
+            "max_retries": max_retries,
+            "seconds_to_pause_on_rate_limit": seconds_to_pause_on_rate_limit,
+            "tensor_parallel_size": tensor_parallel_size,
+            "enforce_eager": enforce_eager,
+            "max_model_length": max_model_length,
+            "max_tokens": max_tokens,
+            "gpu_memory_utilization": gpu_memory_utilization,
+        }
 
-        if self.backend == "vllm":
-            config_params = {
-                "model": model_name,
-                "generation_params": generation_params,
-                "tensor_parallel_size": tensor_parallel_size,
-                "enforce_eager": enforce_eager,
-                "max_model_length": max_model_length,
-                "max_tokens": max_tokens,
-                "gpu_memory_utilization": gpu_memory_utilization,
-                "batch_size": batch_size if batch_size is not None else 256,
-            }
-            config = OfflineRequestProcessorConfig(**_remove_none_values(config_params))
+        self._request_processor = _RequestProcessorFactory.create(backend_params, batch=batch, response_format=response_format, backend=backend)
 
-        elif batch:
-            config_params = {
-                "model": model_name,
-                "base_url": base_url,
-                "batch_size": batch_size,
-                "batch_check_interval": batch_check_interval,
-                "delete_successful_batch_files": delete_successful_batch_files,
-                "delete_failed_batch_files": delete_failed_batch_files,
-                "max_retries": max_retries,
-                "require_all_responses": require_all_responses,
-                "generation_params": generation_params,
-            }
-            config = BatchRequestProcessorConfig(**_remove_none_values(config_params))
-        else:
-            config_params = {
-                "model": model_name,
-                "base_url": base_url,
-                "max_requests_per_minute": max_requests_per_minute,
-                "max_tokens_per_minute": max_tokens_per_minute,
-                "max_retries": max_retries,
-                "require_all_responses": require_all_responses,
-                "generation_params": generation_params,
-                "seconds_to_pause_on_rate_limit": seconds_to_pause_on_rate_limit,
-            }
-            config = OnlineRequestProcessorConfig(**_remove_none_values(config_params))
-
-        if self.backend == "openai" and not batch:
-            self._request_processor = OpenAIOnlineRequestProcessor(config)
-        elif self.backend == "openai" and batch:
-            self._request_processor = OpenAIBatchRequestProcessor(config)
-        elif self.backend == "anthropic" and batch:
-            self._request_processor = AnthropicBatchRequestProcessor(config)
-        elif self.backend == "anthropic" and not batch:
-            raise ValueError("Online mode is not currently supported with Anthropic backend.")
-        elif self.backend == "litellm" and batch:
-            raise ValueError("Batch mode is not supported with LiteLLM backend")
-        elif self.backend == "litellm":
-            self._request_processor = LiteLLMOnlineRequestProcessor(config)
-        elif self.backend == "vllm":
-            self._request_processor = VLLMOfflineRequestProcessor(config)
-        else:
-            raise ValueError(f"Unknown backend: {self.backend}")
-
-    @staticmethod
-    def _check_openai_structured_output_support(model_name: str) -> bool:
-        config = OnlineRequestProcessorConfig(model=model_name)
-        return OpenAIOnlineRequestProcessor(config).check_structured_output_support()
-
-    @staticmethod
-    def _determine_backend(
-        model_name: str, response_format: Optional[Type[BaseModel]] = None, batch: bool = False
-    ) -> str:
-        """Determine which backend to use based on model name and response format.
-
-        Args:
-            model_name (str): Name of the model
-            response_format (Optional[Type[BaseModel]]): Response format if specified
-            batch (bool): Whether to use batch mode
-        Returns:
-            str: Backend to use ("openai" or "litellm")
-        """
-        model_name = model_name.lower()
-
-        # GPT-4o models with response format should use OpenAI
-        if response_format and LLM._check_openai_structured_output_support(model_name):
-            logger.info(f"Requesting structured output from {model_name}, using OpenAI backend")
-            return "openai"
-
-        # GPT models and O1 models without response format should use OpenAI
-        if not response_format and any(x in model_name for x in ["gpt-", "o1-preview", "o1-mini"]):
-            logger.info(f"Requesting text output from {model_name}, using OpenAI backend")
-            return "openai"
-
-        if batch and "claude" in model_name:
-            logger.info(f"Requesting output from {model_name}, using Anthropic backend")
-            return "anthropic"
-
-        # Default to LiteLLM for all other cases
-        logger.info(
-            f"Requesting {'structured' if response_format else 'text'} output from {model_name}, using LiteLLM backend"
-        )
-        return "litellm"
+    def _hash_fingerprint(self, fingerprint_str):
+        return xxh64(fingerprint_str.encode("utf-8")).hexdigest()
 
     def __call__(
         self,
@@ -212,16 +124,12 @@ class LLM:
         working_dir: Optional[str] = None,
         batch_cancel: bool = False,
     ) -> Dataset:
-        """
-        Apply structured completions in parallel to a dataset using specified model and
-        prompts.
+        """Apply structured completions in parallel to a dataset using specified model and prompts.
 
         Args:
             dataset (Iterable): A dataset consisting of a list of items to apply completions
-            prompter (LLM): A LLM that contains the logic for formatting each
-                item in the dataset
             working_dir (str): The working directory to save the requests.jsonl, responses.jsonl, and dataset.arrow files.
-
+            batch_cancel (bool): Whether to cancel the batch if it is running
         Returns:
             Iterable: A list of structured outputs from the completions
         """
@@ -250,13 +158,9 @@ class LLM:
                 str(dataset_hash),
                 str(prompt_func_hash),
                 str(self.prompt_formatter.model_name),
-                str(
-                    self.prompt_formatter.response_format.model_json_schema()
-                    if self.prompt_formatter.response_format
-                    else "text"
-                ),
+                str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
                 str(self.batch_mode),
-                str(self.backend),
+                str(self._request_processor.backend),
             ]
         )
 
@@ -264,9 +168,10 @@ class LLM:
             generation_params_str = str(sorted(self.prompt_formatter.generation_params.items()))
             fingerprint_str += f"_{generation_params_str}"
 
-        fingerprint = xxh64(fingerprint_str.encode("utf-8")).hexdigest()
-
         # Check if cache should be overwritten
+        fingerprint = self._hash_fingerprint(fingerprint_str)
+        logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
+        logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
         cache_overwrite = os.getenv("CURATOR_OVERWRITE_CACHE", "").lower() in ["true", "1"]
 
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
@@ -285,11 +190,7 @@ class LLM:
             "prompt_func": prompt_func_source,
             "parse_func": parse_func_source,
             "model_name": self.prompt_formatter.model_name,
-            "response_format": (
-                str(self.prompt_formatter.response_format.model_json_schema())
-                if self.prompt_formatter.response_format
-                else "text"
-            ),
+            "response_format": (str(self.prompt_formatter.response_format.model_json_schema()) if self.prompt_formatter.response_format else "text"),
             "run_hash": fingerprint,
             "batch_mode": self.batch_mode,
         }
@@ -313,7 +214,9 @@ class LLM:
                 raise ValueError("batch_cancel can only be used with batch mode")
 
             # Use run_in_event_loop to properly handle async batch cancellation
-            from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+            from bespokelabs.curator.request_processor.event_loop import (
+                run_in_event_loop,
+            )
 
             dataset = run_in_event_loop(self._request_processor.cancel_batches())
         else:

@@ -8,18 +8,18 @@ export async function GET(request: Request): Promise<Response>  {
   return new Promise((resolve) => {
     const { searchParams } = new URL(request.url)
     const lastCreatedTime = searchParams.get('lastCreatedTime')
-    
+
     const cacheDir = process.env.CURATOR_CACHE_DIR || join(homedir(), '.cache', 'curator')
     const dbPath = join(cacheDir, 'metadata.db')
-    
+
     if (!existsSync(dbPath)) {
       console.error(`Database file not found at: ${dbPath}`)
       resolve(NextResponse.json(
-        { 
+        {
           error: 'NO_CACHE_DB',
           message: 'No cache database found. Please run some prompts first.',
-          path: dbPath 
-        }, 
+          path: dbPath
+        },
         { status: 404 }
       ))
       return
@@ -37,7 +37,7 @@ export async function GET(request: Request): Promise<Response>  {
       const query = lastCreatedTime
         ? 'SELECT * FROM runs WHERE created_time > ? ORDER BY created_time DESC'
         : 'SELECT * FROM runs ORDER BY created_time DESC'
-      
+
       const params = lastCreatedTime ? [lastCreatedTime] : []
 
       db.all(
@@ -49,10 +49,10 @@ export async function GET(request: Request): Promise<Response>  {
             resolve(NextResponse.json({ error: 'Database query failed' }, { status: 500 }))
             return
           }
-          
+
           const safeRows = Array.isArray(rows) ? rows : []
           resolve(NextResponse.json(safeRows))
-          
+
           db.close((closeErr) => {
             if (closeErr) {
               console.error('Error closing database:', closeErr)
@@ -65,4 +65,4 @@ export async function GET(request: Request): Promise<Response>  {
       resolve(NextResponse.json({ error: 'Unexpected error occurred' }, { status: 500 }))
     }
   })
-} 
+}

@@ -35,12 +35,14 @@ litellm = "1.55.4"
 isort = "^5.13.2"
 tiktoken = ">=0.7.0,<0.8.0"
 aiofiles = ">=22.0,<24.0"
-vllm = "v0.6.6.post1"
+vllm = "^0.6.3"
+vcrpy = "^7.0.0"
 anthropic = "^0.42.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.2.0"
 twine = "^5.0.0"
+ruff = "^0.8.6"
+pre-commit = "^4.0.1"
 pytest-dependency = "^0.6.0"
 pytest-timeout = "^2.3.1"
 
@@ -51,8 +53,34 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 curator-viewer = "bespokelabs.curator.viewer.__main__:main"
 
-[tool.black]
-line-length = 100
+[tool.ruff]
+line-length = 160
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "N",  # PEP8 naming convetions
+    "D"  # pydocstyle
+]
+ignore = [
+    "D100",  # Remove this eventually
+    "C901",  # too complex
+    "W191",  # indentation contains tabs
+    "D401",  # imperative mood
+    "N806",  # uppercase variable names, for example, "API_KEY"
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = ["D"]  # ignore tests for now
+"**/prompt_templates.py" = ["E501"]  # ignore line-too-long for prompt template files
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"

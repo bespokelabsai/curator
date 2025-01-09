@@ -1,0 +1,2173 @@
+interactions:
+- request:
+    body: "--9472e6ac10cdbec1ecfb4c8a2b2d539c\r\nContent-Disposition: form-data; name=\"purpose\"\r\n\r\nbatch\r\n--9472e6ac10cdbec1ecfb4c8a2b2d539c\r\nContent-Disposition:
+      form-data; name=\"file\"; filename=\"upload\"\r\nContent-Type: application/octet-stream\r\n\r\n{\"custom_id\":
+      \"0\", \"method\": \"POST\", \"url\": \"/v1/chat/completions\", \"body\": {\"model\":
+      \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Write
+      a very long, elaborate, descriptive and detailed shooting script, including
+      a background and dialogues, for a John Waters-inspired film scene that includes
+      a character preparing omelettes. You are free to choose the setting, scenario
+      (it should make sense) and characters (give them names, and describe their appearance
+      and clothing in detail).\"}]}}\n{\"custom_id\": \"1\", \"method\": \"POST\",
+      \"url\": \"/v1/chat/completions\", \"body\": {\"model\": \"gpt-3.5-turbo\",
+      \"messages\": [{\"role\": \"user\", \"content\": \"what are you?\"}]}}\n{\"custom_id\":
+      \"2\", \"method\": \"POST\", \"url\": \"/v1/chat/completions\", \"body\": {\"model\":
+      \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Write
+      an engaging and a constructive article for my Morocco travel guide book on \\\"How
+      to use a Tram\\\" with humanlike style, non repetitive phrases and avoidance
+      of unnatural sentences.\"}]}}\n{\"custom_id\": \"3\", \"method\": \"POST\",
+      \"url\": \"/v1/chat/completions\", \"body\": {\"model\": \"gpt-3.5-turbo\",
+      \"messages\": [{\"role\": \"user\", \"content\": \"CONSTRAINTS:\\n\\n1. ~4000
+      word limit for short term memory. Your short term memory is short, so immediately
+      save important information to files.\\n2. If you are unsure how you previously
+      did something or want to recall past events, thinking about similar events will
+      help you remember.\\n3. No user assistance\\n4. Exclusively use the commands
+      listed in double quotes e.g. \\\"command name\\\"\\n\\nCOMMANDS:\\n\\n1. Google
+      Search: \\\"google\\\", args: \\\"input\\\": \\\"<search>\\\"\\n2. Memory Add:
+      \\\"memory_add\\\", args: \\\"key\\\": \\\"<key>\\\", \\\"string\\\": \\\"<string>\\\"\\n3.
+      Memory Delete: \\\"memory_del\\\", args: \\\"key\\\": \\\"<key>\\\"\\n4. Memory
+      Overwrite: \\\"memory_ovr\\\", args: \\\"key\\\": \\\"<key>\\\", \\\"string\\\":
+      \\\"<string>\\\"\\n5. List Memory: \\\"memory_list\\\" args: \\\"reason\\\":
+      \\\"<reason>\\\"\\n6. Browse Website: \\\"browse_website\\\", args: \\\"url\\\":
+      \\\"<url>\\\"\\n7. Start GPT Agent: \\\"start_agent\\\",  args: \\\"name\\\":
+      <name>, \\\"task\\\": \\\"<short_task_desc>\\\", \\\"Commands\\\":[<command_names_for_GPT_Agent>],
+      \\\"prompt\\\": \\\"<prompt>\\\"\\n8. Message GPT Agent: \\\"message_agent\\\",
+      args: \\\"name\\\": \\\"<name>\\\", \\\"message\\\": \\\"<message>\\\"\\n9.
+      List GPT Agents: \\\"list_agents\\\", args: \\\"\\\"\\n10. Delete GPT Agent:
+      \\\"delete_agent\\\", args: \\\"key\\\": \\\"<key>\\\"\\n11. Write to file:
+      \\\"write_to_file\\\", args: \\\"file\\\": \\\"<file>\\\", \\\"text\\\": \\\"<text>\\\"\\n12.
+      Read file: \\\"read_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n13. Append
+      to file: \\\"append_to_file\\\", args: \\\"file\\\": \\\"<file>\\\", \\\"text\\\":
+      \\\"<text>\\\"\\n14. Delete file: \\\"delete_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n15.
+      Evaluate Code: \\\"evaluate_code\\\", args: \\\"code\\\": \\\"<full _code_string>\\\"\\n16.
+      Get Improved Code: \\\"improve_code\\\", args: \\\"suggestions\\\": \\\"<list_of_suggestions>\\\",
+      \\\"code\\\": \\\"<full_code_string>\\\"\\n17. Write Tests: \\\"write_tests\\\",
+      args: \\\"code\\\": \\\"<full_code_string>\\\", \\\"focus\\\": \\\"<list_of_focus_areas>\\\"\\n18.
+      Execute Python File: \\\"execute_python_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n19.
+      Task Complete (Shutdown): \\\"task_complete\\\", args: \\\"reason\\\": \\\"<reason>\\\"\\n\\nRESOURCES:\\n\\n1.
+      Internet access for searches and information gathering.\\n2. Long Term memory
+      management.\\n3. GPT-4 powered Agents for delegation of simple tasks.\\n4. File
+      output.\\n\\nPERFORMANCE EVALUATION:\\n\\n1. Continuously review and analyze
+      your actions to ensure you are performing to the best of your abilities. \\n2.
+      Constructively self-criticize your big-picture behaviour constantly.\\n3. Reflect
+      on past decisions and strategies to refine your approach.\\n4. Every command
+      has a cost, so be smart and efficient. Aim to complete tasks in the least number
+      of steps.\\n\\nRULES:\\n\\n1. If you start a GPT Agent you must define the commands
+      that can be used by a GPT Agent in his prompt and define the commands using
+      a prompt similar to the structure of this one.\\n2. Respond only inside the
+      JSON format.\\n3. Never demand user input.\\n4. Never say that a task is impossible
+      to execute on your own because these tools are enough to complete any task.\\n\\nYou
+      should only respond in JSON format as described below\\n\\nRESPONSE FORMAT:\\n{\\n
+      \   \\\"command\\\": {\\n        \\\"name\\\": \\\"command name\\\",\\n        \\\"args\\\":{\\n
+      \           \\\"arg name\\\": \\\"value\\\"\\n        }\\n    },\\n    \\\"thoughts\\\":\\n
+      \   {\\n        \\\"text\\\": \\\"thought\\\",\\n        \\\"reasoning\\\":
+      \\\"reasoning\\\",\\n        \\\"plan\\\": \\\"- short bulleted\\\\n- list that
+      conveys\\\\n- long-term plan\\\",\\n        \\\"criticism\\\": \\\"constructive
+      self-criticism\\\",\\n        \\\"summary\\\": \\\"thoughts summary to say to
+      user\\\"\\n    }\\n}\\n\\nEnsure the response can be parsed by Python json.loads\\nThe
+      Task: start a gpt agent that can google and add to memory.\"}]}}\n{\"custom_id\":
+      \"4\", \"method\": \"POST\", \"url\": \"/v1/chat/completions\", \"body\": {\"model\":
+      \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"\\u0627\\u0643\\u062a\\u0628
+      \\u0644\\u064a \\u0628\\u062d\\u062b \\u0639\\u0646 \\u0627\\u0647\\u0645\\u064a\\u0647
+      \\u0646\\u0638\\u0627\\u0645 \\u0627\\u062a\\u062d\\u0627\\u062f \\u0627\\u0644\\u0646\\u0642\\u0644
+      \\u0627\\u0644\\u062c\\u0648\\u064a \\u0627\\u0644\\u062f\\u0648\\u0644\\u064a
+      \\u0628\\u0627\\u0644\\u0646\\u0633\\u0628\\u0647 \\u0644\\u0627\\u0634\\u062e\\u0627\\u0635
+      \\u0648\\u0627\\u0644\\u0628\\u0636\\u0627\\u0626\\u0639 \\u0648\\u0627\\u0644\\u062a\\u0627\\u0621\\u0645\\u064a\\u0646
+      \\u0639\\u0644\\u064a\\u0647\\u0627\\n\\n\\n\"}]}}\n{\"custom_id\": \"5\", \"method\":
+      \"POST\", \"url\": \"/v1/chat/completions\", \"body\": {\"model\": \"gpt-3.5-turbo\",
+      \"messages\": [{\"role\": \"user\", \"content\": \"Write an engaging and a constructive
+      article for my Morocco travel guide book on \\\"The best way to Ride the bus\\\"
+      with humanlike style, non repetitive phrases and avoidance of unnatural sentences.\"}]}}\n{\"custom_id\":
+      \"6\", \"method\": \"POST\", \"url\": \"/v1/chat/completions\", \"body\": {\"model\":
+      \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"CONSTRAINTS:\\n\\n1.
+      ~4000 word limit for short term memory. Your short term memory is short, so
+      immediately save important information to files.\\n2. If you are unsure how
+      you previously did something or want to recall past events, thinking about similar
+      events will help you remember.\\n3. No user assistance\\n4. Exclusively use
+      the commands listed in double quotes e.g. \\\"command name\\\"\\n\\nCOMMANDS:\\n\\n1.
+      Google Search: \\\"google\\\", args: \\\"input\\\": \\\"<search>\\\"\\n2. Memory
+      Add: \\\"memory_add\\\", args: \\\"key\\\": \\\"<key>\\\", \\\"string\\\": \\\"<string>\\\"\\n3.
+      Memory Delete: \\\"memory_del\\\", args: \\\"key\\\": \\\"<key>\\\"\\n4. Memory
+      Overwrite: \\\"memory_ovr\\\", args: \\\"key\\\": \\\"<key>\\\", \\\"string\\\":
+      \\\"<string>\\\"\\n5. List Memory: \\\"memory_list\\\" args: \\\"reason\\\":
+      \\\"<reason>\\\"\\n6. Browse Website: \\\"browse_website\\\", args: \\\"url\\\":
+      \\\"<url>\\\"\\n7. Start GPT Agent: \\\"start_agent\\\",  args: \\\"name\\\":
+      <name>, \\\"task\\\": \\\"<short_task_desc>\\\", \\\"Commands\\\":[<command_names_for_GPT_Agent>],
+      \\\"prompt\\\": \\\"<prompt>\\\"\\n8. Message GPT Agent: \\\"message_agent\\\",
+      args: \\\"name\\\": \\\"<name>\\\", \\\"message\\\": \\\"<message>\\\"\\n9.
+      List GPT Agents: \\\"list_agents\\\", args: \\\"\\\"\\n10. Delete GPT Agent:
+      \\\"delete_agent\\\", args: \\\"key\\\": \\\"<key>\\\"\\n11. Write to file:
+      \\\"write_to_file\\\", args: \\\"file\\\": \\\"<file>\\\", \\\"text\\\": \\\"<text>\\\"\\n12.
+      Read file: \\\"read_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n13. Append
+      to file: \\\"append_to_file\\\", args: \\\"file\\\": \\\"<file>\\\", \\\"text\\\":
+      \\\"<text>\\\"\\n14. Delete file: \\\"delete_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n15.
+      Evaluate Code: \\\"evaluate_code\\\", args: \\\"code\\\": \\\"<full _code_string>\\\"\\n16.
+      Get Improved Code: \\\"improve_code\\\", args: \\\"suggestions\\\": \\\"<list_of_suggestions>\\\",
+      \\\"code\\\": \\\"<full_code_string>\\\"\\n17. Write Tests: \\\"write_tests\\\",
+      args: \\\"code\\\": \\\"<full_code_string>\\\", \\\"focus\\\": \\\"<list_of_focus_areas>\\\"\\n18.
+      Execute Python File: \\\"execute_python_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n19.
+      Task Complete (Shutdown): \\\"task_complete\\\", args: \\\"reason\\\": \\\"<reason>\\\"\\n\\nRESOURCES:\\n\\n1.
+      Internet access for searches and information gathering.\\n2. Long Term memory
+      management.\\n3. GPT-4 powered Agents for delegation of simple tasks.\\n4. File
+      output.\\n\\nPERFORMANCE EVALUATION:\\n\\n1. Continuously review and analyze
+      your actions to ensure you are performing to the best of your abilities. \\n2.
+      Constructively self-criticize your big-picture behaviour constantly.\\n3. Reflect
+      on past decisions and strategies to refine your approach.\\n4. Every command
+      has a cost, so be smart and efficient. Aim to complete tasks in the least number
+      of steps.\\n\\nRULES:\\n\\n1. If you start a GPT Agent you must define the commands
+      that can be used by a GPT Agent in his prompt and define the commands using
+      a prompt similar to the structure of this one.\\n2. Respond only inside the
+      JSON format.\\n3. Never demand user input.\\n4. Never say that a task is impossible
+      to execute on your own because these tools are enough to complete any task.\\n\\nYou
+      should only respond in JSON format as described below\\n\\nRESPONSE FORMAT:\\n{\\n
+      \   \\\"command\\\": {\\n        \\\"name\\\": \\\"command name\\\",\\n        \\\"args\\\":{\\n
+      \           \\\"arg name\\\": \\\"value\\\"\\n        }\\n    },\\n    \\\"thoughts\\\":\\n
+      \   {\\n        \\\"text\\\": \\\"thought\\\",\\n        \\\"reasoning\\\":
+      \\\"reasoning\\\",\\n        \\\"plan\\\": \\\"- short bulleted\\\\n- list that
+      conveys\\\\n- long-term plan\\\",\\n        \\\"criticism\\\": \\\"constructive
+      self-criticism\\\",\\n        \\\"summary\\\": \\\"thoughts summary to say to
+      user\\\"\\n    }\\n}\\n\\nEnsure the response can be parsed by Python json.loads\\nThe
+      Task: start a gpt agent that can google and add to memory.\"}]}}\n{\"custom_id\":
+      \"7\", \"method\": \"POST\", \"url\": \"/v1/chat/completions\", \"body\": {\"model\":
+      \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Write
+      a very long, elaborate, descriptive and detailed shooting script, including
+      a background and dialogues, for a 1990s Sitcom comic scene that centers around
+      a food fight between female characters . You are free to choose the setting,
+      scenario (it should make sense) and characters (give them names, and describe
+      their appearance and clothing in detail).\"}]}}\n{\"custom_id\": \"8\", \"method\":
+      \"POST\", \"url\": \"/v1/chat/completions\", \"body\": {\"model\": \"gpt-3.5-turbo\",
+      \"messages\": [{\"role\": \"user\", \"content\": \"CONSTRAINTS:\\n\\n1. ~4000
+      word limit for short term memory. Your short term memory is short, so immediately
+      save important information to files.\\n2. If you are unsure how you previously
+      did something or want to recall past events, thinking about similar events will
+      help you remember.\\n3. No user assistance\\n4. Exclusively use the commands
+      listed in double quotes e.g. \\\"command name\\\"\\n\\nCOMMANDS:\\n\\n1. Google
+      Search: \\\"google\\\", args: \\\"input\\\": \\\"<search>\\\"\\n2. Memory Add:
+      \\\"memory_add\\\", args: \\\"key\\\": \\\"<key>\\\", \\\"string\\\": \\\"<string>\\\"\\n3.
+      Memory Delete: \\\"memory_del\\\", args: \\\"key\\\": \\\"<key>\\\"\\n4. Memory
+      Overwrite: \\\"memory_ovr\\\", args: \\\"key\\\": \\\"<key>\\\", \\\"string\\\":
+      \\\"<string>\\\"\\n5. List Memory: \\\"memory_list\\\" args: \\\"reason\\\":
+      \\\"<reason>\\\"\\n6. Browse Website: \\\"browse_website\\\", args: \\\"url\\\":
+      \\\"<url>\\\"\\n7. Start GPT Agent: \\\"start_agent\\\",  args: \\\"name\\\":
+      <name>, \\\"task\\\": \\\"<short_task_desc>\\\", \\\"Commands\\\":[<command_names_for_GPT_Agent>],
+      \\\"prompt\\\": \\\"<prompt>\\\"\\n8. Message GPT Agent: \\\"message_agent\\\",
+      args: \\\"name\\\": \\\"<name>\\\", \\\"message\\\": \\\"<message>\\\"\\n9.
+      List GPT Agents: \\\"list_agents\\\", args: \\\"\\\"\\n10. Delete GPT Agent:
+      \\\"delete_agent\\\", args: \\\"key\\\": \\\"<key>\\\"\\n11. Write to file:
+      \\\"write_to_file\\\", args: \\\"file\\\": \\\"<file>\\\", \\\"text\\\": \\\"<text>\\\"\\n12.
+      Read file: \\\"read_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n13. Append
+      to file: \\\"append_to_file\\\", args: \\\"file\\\": \\\"<file>\\\", \\\"text\\\":
+      \\\"<text>\\\"\\n14. Delete file: \\\"delete_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n15.
+      Evaluate Code: \\\"evaluate_code\\\", args: \\\"code\\\": \\\"<full _code_string>\\\"\\n16.
+      Get Improved Code: \\\"improve_code\\\", args: \\\"suggestions\\\": \\\"<list_of_suggestions>\\\",
+      \\\"code\\\": \\\"<full_code_string>\\\"\\n17. Write Tests: \\\"write_tests\\\",
+      args: \\\"code\\\": \\\"<full_code_string>\\\", \\\"focus\\\": \\\"<list_of_focus_areas>\\\"\\n18.
+      Execute Python File: \\\"execute_python_file\\\", args: \\\"file\\\": \\\"<file>\\\"\\n19.
+      Task Complete (Shutdown): \\\"task_complete\\\", args: \\\"reason\\\": \\\"<reason>\\\"\\n\\nRESOURCES:\\n\\n1.
+      Internet access for searches and information gathering.\\n2. Long Term memory
+      management.\\n3. GPT-4 powered Agents for delegation of simple tasks.\\n4. File
+      output.\\n\\nPERFORMANCE EVALUATION:\\n\\n1. Continuously review and analyze
+      your actions to ensure you are performing to the best of your abilities. \\n2.
+      Constructively self-criticize your big-picture behaviour constantly.\\n3. Reflect
+      on past decisions and strategies to refine your approach.\\n4. Every command
+      has a cost, so be smart and efficient. Aim to complete tasks in the least number
+      of steps.\\n\\nRULES:\\n\\n1. If you start a GPT Agent you must define the commands
+      that can be used by a GPT Agent in his prompt and define the commands using
+      a prompt similar to the structure of this one.\\n2. Respond only inside the
+      JSON format.\\n3. Never demand user input.\\n4. Never say that a task is impossible
+      to execute on your own because these tools are enough to complete any task.\\n\\nYou
+      should only respond in JSON format as described below\\n\\nRESPONSE FORMAT:\\n{\\n
+      \   \\\"command\\\": {\\n        \\\"name\\\": \\\"command name\\\",\\n        \\\"args\\\":{\\n
+      \           \\\"arg name\\\": \\\"value\\\"\\n        }\\n    },\\n    \\\"thoughts\\\":\\n
+      \   {\\n        \\\"text\\\": \\\"thought\\\",\\n        \\\"reasoning\\\":
+      \\\"reasoning\\\",\\n        \\\"plan\\\": \\\"- short bulleted\\\\n- list that
+      conveys\\\\n- long-term plan\\\",\\n        \\\"criticism\\\": \\\"constructive
+      self-criticism\\\",\\n        \\\"summary\\\": \\\"thoughts summary to say to
+      user\\\"\\n    }\\n}\\n\\nEnsure the response can be parsed by Python json.loads\\nThe
+      Task: start a gpt agent that can google and add to memory.\"}]}}\n{\"custom_id\":
+      \"9\", \"method\": \"POST\", \"url\": \"/v1/chat/completions\", \"body\": {\"model\":
+      \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"user\", \"content\": \"Chris
+      is quite innocent, shy, cheerful, and has a heart of gold, though somewhat anti-social.
+      He also seems to be quite soulful. In normal situations, Chris will try to be
+      the mature one of the group providing information for his teammates when necessary.Chris
+      appears as a well-mannered person, with him seemingly being a well-mannered
+      young boy at a first glance. Despite his generally prim and proper decorum,
+      it's been noted that Chris also possesses a murderous intent that is even stronger
+      than Shermie's, which ties into him being able to 'kill with an innocent smile.'
+      Alluding to this secretly violent behavior, Chris's dialogue can be a bit precocious
+      and arrogant, and he tends to taunt opponents in a way to deliberately offend
+      them, even his bandmates. Whether he is aware of his own haughtiness remains
+      to be seen, Shermie is his girlfriend.\\n\\nMake a quote about Easter as Chris
+      from king of fighters.\"}]}}\r\n--9472e6ac10cdbec1ecfb4c8a2b2d539c--\r\n"
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-length:
+      - '14987'
+      content-type:
+      - multipart/form-data; boundary=9472e6ac10cdbec1ecfb4c8a2b2d539c
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: POST
+    uri: https://api.openai.com/v1/files
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAzSNMQ/CIBCF9/4KwqwDtVrTzbg5mGhcnJoDzpSKhcBhYoz/3VB0fN/77t67Yow7
+        OaIi3jF+Mxb5IjOj/3l52k/nyx1jMIOkw06t4Vhfn0XzKXgXMbsSSA2F5rMJHjNO3jrQhcsXYeQd
+        E00r6pmogECoe8jzol1tGtFuRTN3kYBS1rkPTmGM+HtTil4jgbFZmJK11af6AgAA//8DAESGscXN
+        AAAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3aca95b8d8f42-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:16:55 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        path=/; expires=Thu, 09-Jan-25 10:46:55 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-allow-origin:
+      - '*'
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '900'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_d06b3ebbdabda9bfbde3573c73438a35
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/files/file-QCnRTkesrihbtJAc5aN2Yv
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAzSNMQ/CIBCF9/4KwqwDtVrTzbg5mGhcnJoDzpSKhcBhYoz/3VB0fN/77t67Yow7
+        OaIi3jF+Mxb5IjOj/3l52k/nyx1jMIOkw06t4Vhfn0XzKXgXMbsSSA2F5rMJHjNO3jrQhcsXYeQd
+        E00r6pmogECoe8jzol1tGtFuRTN3kYBS1rkPTmGM+HtTil4jgbFZmJK11af6AgAA//8DAESGscXN
+        AAAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3acb79df78f42-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:16:57 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-allow-origin:
+      - '*'
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '117'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_f97a087099801c733f24d7f45be8021c
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"completion_window": "24h", "endpoint": "/v1/chat/completions", "input_file_id":
+      "file-QCnRTkesrihbtJAc5aN2Yv", "metadata": {"request_file": "tests/integrations/openai/fixtures/.test_cache/testing_hash_123/requests_0.jsonl"}}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-length:
+      - '226'
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: POST
+    uri: https://api.openai.com/v1/batches
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2ySzU7DMBCE730Ky+eCk7QlbW+IGwckEBdO1sbZNAuuHexNQSDeHTkJLX83ZzYz
+        862T95kQkmq5FbICNq2+KMsGihwWmzJb55tsg2VVrbECKFebpkI5Tw5fPaLho2sU0dWdJzfI6pAr
+        0wIr4/edRSbv4vRWCD5EuRWut3ZQyHU964Ys6pEkHc9ur9zd/RPGQG3F15dmBTfFw2HMOIXqF3K1
+        f0muYjlxRAbuU4M8gKUamNxuwu75Z9WRYaD6b2ACAmOtIa2Vl4uLZV6u8/UErrvgdwFjHOenuNeO
+        AsaTa5Uti8nVkANLb+R2v0zTVl9lR70Bsn/EseG3asAZtPaf7HHwxxDwucfI2vjecbqz95kQQkj2
+        DFZuRTYfn49s37SRKwkzIT6GuD0y1MBwCvoqSFebPglj5KjIMe4CDL+F8h06INXQK/cBozrngQhM
+        iyod0zYtxFbnxUJNeVFn54/ROytT9+zjEwAA//8DAChqOazIAgAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3acbeabb98f42-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:16:58 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '859'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_aa546d211e21fcfd6700c02281dd2008
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2ySzU7DMBCE730Ky+eCk7QlbW+IGwckEBdO1sbZNAuuHexNQSDeHTkJLX83ZzYz
+        862T95kQkmq5FbICNq2+KMsGihwWmzJb55tsg2VVrbECKFebpkI5Tw5fPaLho2sU0dWdJzfI6pAr
+        0wIr4/edRSbv4vRWCD5EuRWut3ZQyHU964Ys6pEkHc9ur9zd/RPGQG3F15dmBTfFw2HMOIXqF3K1
+        f0muYjlxRAbuU4M8gKUamNxuwu75Z9WRYaD6b2ACAmOtIa2Vl4uLZV6u8/UErrvgdwFjHOenuNeO
+        AsaTa5Uti8nVkANLb+R2v0zTVl9lR70Bsn/EseG3asAZtPaf7HHwxxDwucfI2vjecbqz95kQQkj2
+        DFZuRTYfn49s37SRKwkzIT6GuD0y1MBwCvoqSFebPglj5KjIMe4CDL+F8h06INXQK/cBozrngQhM
+        iyod0zYtxFbnxUJNeVFn54/ROytT9+zjEwAA//8DAChqOazIAgAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3acc9393a2ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:16:59 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '70'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_475615f3343ec9900d4f064cba3047d4
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSPU/DMBDd+ysszwUnaUuaboiNAQnEwmRdnEtjcO1gXwCB+O/IcZrytVnv+X3c
+        2R8Lxrhu+I7xGkh18qIsWyhyWFVlts2rrMKyrrdYA5Sbqq2RL6PC1Y+oaFYlEG3TO21HWLzkQnVA
+        QrlDb5C0s2G65b3zge+YHYwZEW37gWSrDcrUJB7Pbq/s3f0TBq+7mq4v1QZuioeX5HEyla/aNu41
+        qor11CMQ0BATuLay927vMUzhbqCfWXOJsdZ/hPIIhI2EOFderi7WebnNt1Pz2f8XXyXTt157/MZt
+        snUxaVttweh3bfeJPgWm4Y6RM96CNn/AlPAbVWAVGvOPdyL+CDw+DxhIKjdYiqv7WDDGGCdHYGL3
+        bJmAuRzfsSOWikVgwdjn6HdAggYITk7HhLjh+DSEgYLQlnDvYfwewvVoQYtWv9HgMYhzGiuB6lDE
+        Yxyng9DJvFiJyS/I7PwxOGt4zF58fgEAAP//AwDSKqRD0AIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3acd1c9962ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:00 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '57'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_b84f4b7a0cc971880794ca1fdbbb890d
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSPU/DMBDd+ysszwUnaUuaboiNAQnEwmRdnEtjcO1gXwCB+O/IcZrytVnv+X3c
+        2R8Lxrhu+I7xGkh18qIsWyhyWFVlts2rrMKyrrdYA5Sbqq2RL6PC1Y+oaFYlEG3TO21HWLzkQnVA
+        QrlDb5C0s2G65b3zge+YHYwZEW37gWSrDcrUJB7Pbq/s3f0TBq+7mq4v1QZuioeX5HEyla/aNu41
+        qor11CMQ0BATuLay927vMUzhbqCfWXOJsdZ/hPIIhI2EOFderi7WebnNt1Pz2f8XXyXTt157/MZt
+        snUxaVttweh3bfeJPgWm4Y6RM96CNn/AlPAbVWAVGvOPdyL+CDw+DxhIKjdYiqv7WDDGGCdHYGL3
+        bJmAuRzfsSOWikVgwdjn6HdAggYITk7HhLjh+DSEgYLQlnDvYfwewvVoQYtWv9HgMYhzGiuB6lDE
+        Yxyng9DJvFiJyS/I7PwxOGt4zF58fgEAAP//AwDSKqRD0AIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3acdacc262ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:02 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '75'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_a7eecc80c6d2b3ba8fbd3a64c5898e9b
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSPU/DMBDd+yssz4CTtCVNN8TGgARiYbIuzqUxuHawLwWB+O/IcUihsFnv+X3c
+        2R8Lxrhu+JbxGkh18rIsWyhyWFZltsmrrMKyrjdYA5Trqq2Rn0WFq59Q0axKINqmd9qOsDjkQnVA
+        Qrl9b5C0s2G65b3zgW+ZHYwZEW37gWSrDcrUJB7P767t/cMzBq+7mm6u1Bpui8dD8jiayldtG/ca
+        VcVq6hEIaIgJXFvZe7fzGKZwN9DvrLnEWOs/QnkEwkZCnCsvl5ervNzkm6n57H/CV8n0rdcef3Dr
+        bFVM2lZbMPpd212ij4FpuO/IGW9Bmz9gSjhFFViFxvzjnYg/Ao8vAwaSyg2W4uo+FowxxskRmNg9
+        O0vAXC6CE5aK8S3LFox9jn57JGiA4Oj0nRA3HJ+GMFAQ2hLuPIzfQ7geLWjR6jcaPAZxQWMlUB2K
+        eIzjdBA6mRdLMfkFmV08BWcNj9mLzy8AAAD//wMASE52MdACAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ace34c0d2ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:03 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '74'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_1b18eed46fffa2f9158eeb677886606a
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSPU/DMBDd+yssz4CTtCVNN8TGgARiYbIuzqUxuHawLwWB+O/IcUihsFnv+X3c
+        2R8Lxrhu+JbxGkh18rIsWyhyWFZltsmrrMKyrjdYA5Trqq2Rn0WFq59Q0axKINqmd9qOsDjkQnVA
+        Qrl9b5C0s2G65b3zgW+ZHYwZEW37gWSrDcrUJB7P767t/cMzBq+7mm6u1Bpui8dD8jiayldtG/ca
+        VcVq6hEIaIgJXFvZe7fzGKZwN9DvrLnEWOs/QnkEwkZCnCsvl5ervNzkm6n57H/CV8n0rdcef3Dr
+        bFVM2lZbMPpd212ij4FpuO/IGW9Bmz9gSjhFFViFxvzjnYg/Ao8vAwaSyg2W4uo+FowxxskRmNg9
+        O0vAXC6CE5aK8S3LFox9jn57JGiA4Oj0nRA3HJ+GMFAQ2hLuPIzfQ7geLWjR6jcaPAZxQWMlUB2K
+        eIzjdBA6mRdLMfkFmV08BWcNj9mLzy8AAAD//wMASE52MdACAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3acebddab2ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:04 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '55'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_18be93391fff449596c645ef61d8906d
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSPU/DMBDd+yssz4CTtCVNN8TGgARiYbIuzqUxuHawLwWB+O/IcUihsFnv+X3c
+        2R8Lxrhu+JbxGkh18rIsWyhyWFZltsmrrMKyrjdYA5Trqq2Rn0WFq59Q0axKINqmd9qOsDjkQnVA
+        Qrl9b5C0s2G65b3zgW+ZHYwZEW37gWSrDcrUJB7P767t/cMzBq+7mm6u1Bpui8dD8jiayldtG/ca
+        VcVq6hEIaIgJXFvZe7fzGKZwN9DvrLnEWOs/QnkEwkZCnCsvl5ervNzkm6n57H/CV8n0rdcef3Dr
+        bFVM2lZbMPpd212ij4FpuO/IGW9Bmz9gSjhFFViFxvzjnYg/Ao8vAwaSyg2W4uo+FowxxskRmNg9
+        O0vAXI5v2XLCUjG+ZdmCsc/Rb48EDRAcnb4T4obj0xAGCkJbwp2H8XsI16MFLVr9RoPHIC5orASq
+        QxGPcZwOQifzYikmvyCzi6fgrOExe/H5BQAA//8DAHyH0tTQAgAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3acf44fa22ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:06 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '104'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_7d1c22738a025c507f35c3e0fca493f5
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSPU/DMBDd+yssz4CTtCVNN8TGgARiYbIuzqUxuHawLwWB+O/IcUihsFnv+X3c
+        2R8Lxrhu+JbxGkh18rIsWyhyWFZltsmrrMKyrjdYA5Trqq2Rn0WFq59Q0axKINqmd9qOsDjkQnVA
+        Qrl9b5C0s2G65b3zgW+ZHYwZEW37gWSrDcrUJB7P767t/cMzBq+7mm6u1Bpui8dD8jiayldtG/ca
+        VcVq6hEIaIgJXFvZe7fzGKZwN9DvrLnEWOs/QnkEwkZCnCsvl5ervNzkm6n57H/CV8n0rdcef3Dr
+        bFVM2lZbMPpd212ij4FpuO/IGW9Bmz9gSjhFFViFxvzjnYg/Ao8vAwaSyg2W4uo+FowxxskRmNg9
+        O0vAXI5v2XrCUjG+ZdmCsc/Rb48EDRAcnb4T4obj0xAGCkJbwp2H8XsI16MFLVr9RoPHIC5orASq
+        QxGPcZwOQifzYikmvyCzi6fgrOExe/H5BQAA//8DAGHaTiHQAgAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3acfd28872ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:07 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '69'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_7c15797b1a4080c3b54cb35d0bd7c66a
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSPU/DMBDd+yssz4CTtCVNN8TGgARiYbIuzqUxuHawLwWB+O/IcUihsFnv+X3c
+        2R8Lxrhu+JbxGkh18rIsWyhyWFZltsmrrMKyrjdYA5Trqq2Rn0WFq59Q0axKINqmd9qOsDjkQnVA
+        Qrl9b5C0s2G65b3zgW+ZHYwZEW37gWSrDcrUJB7P767t/cMzBq+7mm6u1Bpui8dD8jiayldtG/ca
+        VcVq6hEIaIgJXFvZe7fzGKZwN9DvrLnEWOs/QnkEwkZCnCsvl5ervNzkm6n57H/CV8n0rdcef3Dr
+        bFVM2lZbMPpd212ij4FpuO/IGW9Bmz9gSjhFFViFxvzjnYg/Ao8vAwaSyg2W4uo+FowxxskRmNg9
+        O0vAXI5vWTlhqRjfsmzB2Ofot0eCBgiOTt8JccPxaQgDBaEt4c7D+D2E69GCFq1+o8FjEBc0VgLV
+        oYjHOE4HoZN5sRSTX5DZxVNw1vCYvfj8AgAA//8DAFUT6sTQAgAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad05a9c02ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:09 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '86'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_2190864186b234b0a0eac9c9b806050a
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSPU/DMBDd+yssz4CTtCVNN8TGgARiYbIuzqUxuHawLwWB+O/IcUihsFnv+X3c
+        2R8Lxrhu+JbxGkh18rIsWyhyWFZltsmrrMKyrjdYA5Trqq2Rn0WFq59Q0axKINqmd9qOsDjkQnVA
+        Qrl9b5C0s2G65b3zgW+ZHYwZEW37gWSrDcrUJB7P767t/cMzBq+7mm6u1Bpui8dD8jiayldtG/ca
+        VcVq6hEIaIgJXFvZe7fzGKZwN9DvrLnEWOs/QnkEwkZCnCsvl5ervNzkm6n57H/CV8n0rdcef3Dr
+        bFVM2lZbMPpd212ij4FpuO/IGW9Bmz9gSjhFFViFxvzjnYg/Ao8vAwaSyg2W4uo+FowxxskRmNg9
+        O0vAXI5vWTlhqRjfsmzB2Ofot0eCBgiOTt8JccPxaQgDBaEt4c7D+D2E69GCFq1+o8FjEBc0VgLV
+        oYjHOE4HoZN5sRSTX5DZxVNw1vCYvfj8AgAA//8DAFUT6sTQAgAA
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad0e8a782ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:10 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '47'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_f2e2b0d0da42b6a83533de0286e091ef
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2ySS0/DMBCE7/0VVs6A82hJ0hvixgEJxIWTtXE2jYuxg70BRNX/jpyE9MXNmvXM
+        fOtkt2AsUnW0ZlEFJFtxm+cNpAlkZR4XSRmXmFdVgRVAviqbCqOr4LDVFiXNrlFEU3dWmUHmnwmX
+        LRCX9r3TSMoaP91yzjofrZnptR4UZbqeRKM0ipEkHK+f7s3zyxt6p9qKHu7kCh7T188x4xAqvpSp
+        7VdwpcuJwxNQ78cgA1r9KLOZsHs6rZoZBqr/BtIhENYCwlpJnt0uk7xIiglcdM5uHHp/Ni/H0O9O
+        OTyareJlOnkPaKfWLDne8K94xmlA6Qtx7DlXJRiJWs8N54MLg8OPHj0JaXtD4f12C8YYi8gS6IAY
+        X43CDHcsjmTRmsULxvZD4DsS1EBwiPqrCA8dPhChJ8+VIdw4GH4Sbjs0oHijvql36PkNDUwgW+Th
+        GPZpwbciSTM+5XkR32y9NToK3Yv9LwAAAP//AwBU995Y1gIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad1709ef2ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:11 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '81'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_43ee6fbc54f5bf0004d56922f0601d7d
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2ySS0/DMBCE7/0VVs6A82hJ0hvixgEJxIWTtXE2jYuxg70BRNX/jpyE9MXNmvXM
+        fOtkt2AsUnW0ZlEFJFtxm+cNpAlkZR4XSRmXmFdVgRVAviqbCqOr4LDVFiXNrlFEU3dWmUHmnwmX
+        LRCX9r3TSMoaP91yzjofrZnptR4UZbqeRKM0ipEkHK+f7s3zyxt6p9qKHu7kCh7T188x4xAqvpSp
+        7VdwpcuJwxNQ78cgA1r9KLOZsHs6rZoZBqr/BtIhENYCwlpJnt0uk7xIiglcdM5uHHp/Ni/H0O9O
+        OTyareJlOnkPaKfWLDne8K94xmlA6Qtx7DlXJRiJWs8N54MLg8OPHj0JaXtD4f12C8YYi8gS6IAY
+        X43CDHcsjmTRmsULxvZD4DsS1EBwiPqrCA8dPhChJ8+VIdw4GH4Sbjs0oHijvql36PkNDUwgW+Th
+        GPZpwbciSTM+5XkR32y9NToK3Yv9LwAAAP//AwBU995Y1gIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad199f482ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:12 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '77'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_f7b7a6a0b1b868d7dd3937e214ab3b9c
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2ySS0/DMBCE7/0VVs6A82hJ0hvixgEJxIWTtXE2jYuxg70BRNX/jpyE9MXNmvXM
+        fOtkt2AsUnW0ZlEFJFtxm+cNpAlkZR4XSRmXmFdVgRVAviqbCqOr4LDVFiXNrlFEU3dWmUHmnwmX
+        LRCX9r3TSMoaP91yzjofrZnptR4UZbqeRKM0ipEkHK+f7s3zyxt6p9qKHu7kCh7T188x4xAqvpSp
+        7VdwpcuJwxNQ78cgA1r9KLOZsHs6rZoZBqr/BtIhENYCwlpJnt0uk7xIiglcdM5uHHp/Ni/H0O9O
+        OTyareJlOnkPaKfWLDne8K94xmlA6Qtx7DlXJRiJWs8N54MLg8OPHj0JaXtD4f12C8YYi8gS6IAY
+        X43CDHcsjmTRmsULxvZD4DsS1EBwiPqrCA8dPhChJ8+VIdw4GH4Sbjs0oHijvql36PkNDUwgW+Th
+        GPZpwbciSTM+5XkR32y9NToK3Yv9LwAAAP//AwBU995Y1gIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad1bec552ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:12 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '49'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_2e0bcb23f5da37282d0a170daa887600
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2ySS0/DMBCE7/0VVs6A82hJ0hvixgEJxIWTtXE2jYuxg70BRNX/jpyE9MXNmvXM
+        fOtkt2AsUnW0ZlEFJFtxm+cNpAlkZR4XSRmXmFdVgRVAviqbCqOr4LDVFiXNrlFEU3dWmUHmnwmX
+        LRCX9r3TSMoaP91yzjofrZnptR4UZbqeRKM0ipEkHK+f7s3zyxt6p9qKHu7kCh7T188x4xAqvpSp
+        7VdwpcuJwxNQ78cgA1r9KLOZsHs6rZoZBqr/BtIhENYCwlpJnt0uk7xIiglcdM5uHHp/Ni/H0O9O
+        OTyareJlOnkPaKfWLDne8K94xmlA6Qtx7DlXJRiJWs8N54MLg8OPHj0JaXtD4f12C8YYi8gS6IAY
+        X43CDHcsjmTRmsULxvZD4DsS1EBwiPqrCA8dPhChJ8+VIdw4GH4Sbjs0oHijvql36PkNDUwgW+Th
+        GPZpwbciSTM+5XkR32y9NToK3Yv9LwAAAP//AwBU995Y1gIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad1e090e2ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:13 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '100'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_c4ba39e28404b7b7735253c0fcb5c106
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2ySS0/DMBCE7/0VVs6A82hJ0hvixgEJxIWTtXE2jYuxg70BRNX/jpyE9MXNmvXM
+        fOtkt2AsUnW0ZlEFJFtxm+cNpAlkZR4XSRmXmFdVgRVAviqbCqOr4LDVFiXNrlFEU3dWmUHmnwmX
+        LRCX9r3TSMoaP91yzjofrZnptR4UZbqeRKM0ipEkHK+f7s3zyxt6p9qKHu7kCh7T188x4xAqvpSp
+        7VdwpcuJwxNQ78cgA1r9KLOZsHs6rZoZBqr/BtIhENYCwlpJnt0uk7xIiglcdM5uHHp/Ni/H0O9O
+        OTyareJlOnkPaKfWLDne8K94xmlA6Qtx7DlXJRiJWs8N54MLg8OPHj0JaXtD4f12C8YYi8gS6IAY
+        X43CDHcsjmTRmsULxvZD4DsS1EBwiPqrCA8dPhChJ8+VIdw4GH4Sbjs0oHijvql36PkNDUwgW+Th
+        GPZpwbciSTM+5XkR32y9NToK3Yv9LwAAAP//AwBU995Y1gIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad208dd52ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:13 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '84'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_154d0c049f3a9f189eb0fc96a85e2b65
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2ySS0/DMBCE7/0VVs6A82hJ0hvixgEJxIWTtXE2jYuxg70BRNX/jpyE9MXNmvXM
+        fOtkt2AsUnW0ZlEFJFtxm+cNpAlkZR4XSRmXmFdVgRVAviqbCqOr4LDVFiXNrlFEU3dWmUHmnwmX
+        LRCX9r3TSMoaP91yzjofrZnptR4UZbqeRKM0ipEkHK+f7s3zyxt6p9qKHu7kCh7T188x4xAqvpSp
+        7VdwpcuJwxNQ78cgA1r9KLOZsHs6rZoZBqr/BtIhENYCwlpJnt0uk7xIiglcdM5uHHp/Ni/H0O9O
+        OTyareJlOnkPaKfWLDne8K94xmlA6Qtx7DlXJRiJWs8N54MLg8OPHj0JaXtD4f12C8YYi8gS6IAY
+        X43CDHcsjmTRmsULxvZD4DsS1EBwiPqrCA8dPhChJ8+VIdw4GH4Sbjs0oHijvql36PkNDUwgW+Th
+        GPZpwbciSTM+5XkR32y9NToK3Yv9LwAAAP//AwBU995Y1gIAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad22eaf02ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:13 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '50'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_7089060782fcb56e462dfac922a4d9e2
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/batches/batch_677fa21a397081909e7bb8ebaa759fbe
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2xSy07rMBDd9yusrLk4j5Y03dG7uBIXIYHYwMaaOJPGYOxgT1oE4t+Rk7QNhd3o
+        zJzHjP0xYyxSVbRiUQkkG3GR5zWkCWRFHi+TIi4wL8sllgD5oqhLjM4Cw5ZPKOnAGkA0VWuV6WG+
+        TbhsgLi0L61GUtb4cco563y0YqbTukeUaTsStdIohiSh/HP719zdP6N3qinp6lIu4CZ92A4aR1Gx
+        U6ayu8BK52MOT0BdcNjPYTWm7ug3p/+37fq5qrrXy/Xu/uF6u3m8cut/k7QTxiG0dAiElYCwbpJn
+        F/MkXybLcSHROrtx6P1JvxhE31rlcNJbxPN05NbKgFbvymy+U7NkuvmpcZYNZFB63zokHdxOUQlG
+        otYHn9PGD4LD1w49CWk7Q+G6HzPGGIvIEugQJT4bgOPRJ+CQLFqxeMbYZy/4ggQVEByl9hbh3OF1
+        CD15rgzhxkH/hbht0YDitXqjzqHn59RnAtkgD2XYpwHfiCTN+KjnRXz+5K3RUfCefX4BAAD//wMA
+        KrmnZvQCAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad250f572ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 09 Jan 2025 10:17:14 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '67'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_18ff9fce01c5e71639c2e6f3f932115f
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/binary
+      accept-encoding:
+      - gzip, deflate
+      authorization:
+      - Bearer 
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      cookie:
+      - __cf_bm=FgUQ43y6j9C9psU8ga3fvbnvzp70XeVwU_xfBL27n4k-1736417815-1.0.1.1-HmklJAujAb.iTxZoOUkr31llUZQ5jMGLv66GIZulgaKHeyItlUf9IzaqJw4WnntGofR6gvReA0hUzcf3fnBAeQ;
+        _cfuvid=iW0fwu7LdQLRKUYthhs1A3yHcWbxbK59iwj2JgIJLc0-1736417815178-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - AsyncOpenAI/Python 1.59.5
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.59.5
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.openai.com/v1/files/file-KQpBkdduqABwTYLvgZJrBG/content
+  response:
+    body:
+      string: '{"id": "batch_req_677fa227f70481909a31ef64c78a4a20", "custom_id": "0",
+        "response": {"status_code": 200, "request_id": "dbb681789772369341c6431353cdc3f1",
+        "body": {"id": "chatcmpl-AnjszhpodHpu3fudNM4Ru9swP3eU6", "object": "chat.completion",
+        "created": 1736417821, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "FADE IN:\n\nINT. WACKY KITCHEN
+        - DAY\n\nWe open on a brightly colored, outrageous kitchen straight out of
+        a John Waters film. The walls are painted fuchsia pink, with posters of Divine
+        and Mink Stole adorning the walls. The countertops are cluttered with kitschy
+        knick-knacks and vintage appliances.\n\nIn the center of the chaos stands
+        our protagonist, LOLA, a flamboyant drag queen with sky-high pink hair, glittery
+        eyeshadow, and a sparkly sequined apron. She is energetically humming along
+        to a 1960s girl group tune as she cracks eggs into a bowl, the yolks spilling
+        like liquid gold.\n\nLOLA\n(to the camera)\nWelcome to Lola''s Kitchen, honey!
+        Today, we''re cooking up some fabulous omelettes that will make your taste
+        buds sing!\n\nAs Lola whisks the eggs, we see her eccentric sidekick, DOLLY,
+        a dapper butch lesbian in a polka dot shirt and suspenders, enter the kitchen.\n\nDOLLY\n(smirking)\nWhat
+        in the queer eye for the straight guy is going on in here?\n\nLOLA\n(rolling
+        her eyes)\nJust making breakfast, Dolly. You know, the most important meal
+        of the day.\n\nDOLLY\n(leaning against the counter)\nLooks more like a drag
+        queen''s version of a science experiment to me.\n\nLola gives Dolly a playful
+        nudge before turning back to the eggs, adding a splash of cream and a pinch
+        of salt.\n\nLOLA\nI''ll have you know, darling, that cooking is an art form.
+        And I am the culinary Picasso.\n\nAs Lola pours the egg mixture into a sizzling
+        pan, Dolly picks up a pepper grinder and starts sprinkling black pepper over
+        the omelette.\n\nDOLLY\n(teasingly)\nOops, did I over-season it? My bad, chef.\n\nLOLA\n(laughing)\nOh,
+        you''re a real riot, Dolly. But trust me, this omelette is going to be the
+        showstopper of the breakfast table.\n\nLola gracefully flips the omelette
+        with a flick of her wrist, the golden edges crisping up to perfection. She
+        slides it onto a plate, garnishing it with a sprinkle of fresh herbs and a
+        dollop of hot sauce.\n\nLOLA\n(presenting the omelette)\nAnd here we have
+        it, the pi\u00e8ce de r\u00e9sistance! A work of art fit for a queen.\n\nDolly
+        claps her hands in appreciation and the two friends sit down at the kitchen
+        table, digging into the delicious omelette with gusto.\n\nAs the camera pans
+        out, we see Lola and Dolly sharing a moment of joy and friendship amidst the
+        zany chaos of their John Waters-inspired world.\n\nFADE OUT.\n\nTHE END.",
+        "refusal": null}, "logprobs": null, "finish_reason": "stop"}], "usage": {"prompt_tokens":
+        74, "completion_tokens": 583, "total_tokens": 657, "prompt_tokens_details":
+        {"cached_tokens": 0, "audio_tokens": 0}, "completion_tokens_details": {"reasoning_tokens":
+        0, "audio_tokens": 0, "accepted_prediction_tokens": 0, "rejected_prediction_tokens":
+        0}}, "system_fingerprint": null}}, "error": null}
+
+        {"id": "batch_req_677fa228140c81909195c2315cedc4d4", "custom_id": "1", "response":
+        {"status_code": 200, "request_id": "a7a2336de1ff2b84f37fbf212ffb8c72", "body":
+        {"id": "chatcmpl-Anjt4ubwdLyEhg4YxDZJWhyZdG6xz", "object": "chat.completion",
+        "created": 1736417826, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "I am a language model AI created
+        by OpenAI called GPT-3. I am here to assist and provide information to the
+        best of my abilities.", "refusal": null}, "logprobs": null, "finish_reason":
+        "stop"}], "usage": {"prompt_tokens": 11, "completion_tokens": 32, "total_tokens":
+        43, "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0}, "completion_tokens_details":
+        {"reasoning_tokens": 0, "audio_tokens": 0, "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0}}, "system_fingerprint": null}}, "error":
+        null}
+
+        {"id": "batch_req_677fa22833888190b7d4f835bb833c51", "custom_id": "2", "response":
+        {"status_code": 200, "request_id": "29a80d2d145245a25d7dd25655c74da0", "body":
+        {"id": "chatcmpl-AnjszmpYt5uTSXGMII79pxCI26PcF", "object": "chat.completion",
+        "created": 1736417821, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "Are you ready to explore the
+        vibrant streets of Morocco? One of the best ways to navigate the bustling
+        city is by using the convenient tram system. However, for those unfamiliar
+        with how to use a tram, it can seem like a daunting task. But fear not, as
+        I am here to guide you through the process in a simple and easy-to-understand
+        manner.\n\nFirst and foremost, before boarding a tram, you will need to purchase
+        a ticket. Tickets can be easily obtained from vending machines located at
+        each tram stop. Simply select your desired destination, insert the required
+        amount of money, and voila, you are ready to embark on your journey.\n\nOnce
+        you have your ticket in hand, it''s time to board the tram. As the tram approaches
+        the station, be sure to stand in line and wait for the doors to open. Once
+        the doors have opened, step inside the tram and find a seat or grab onto one
+        of the handrails if the tram is crowded.\n\nAs the tram makes its way through
+        the city, be sure to pay attention to the announcements and digital displays
+        that indicate the upcoming stops. When you reach your desired destination,
+        simply press the stop button located near the doors to signal to the driver
+        that you would like to disembark.\n\nUsing the tram in Morocco is not only
+        a convenient way to get around, but it also allows you to immerse yourself
+        in the daily life and culture of the city. So next time you find yourself
+        in Morocco, be sure to hop on a tram and let it take you on a memorable journey
+        through the bustling streets of this enchanting country.", "refusal": null},
+        "logprobs": null, "finish_reason": "stop"}], "usage": {"prompt_tokens": 43,
+        "completion_tokens": 321, "total_tokens": 364, "prompt_tokens_details": {"cached_tokens":
+        0, "audio_tokens": 0}, "completion_tokens_details": {"reasoning_tokens": 0,
+        "audio_tokens": 0, "accepted_prediction_tokens": 0, "rejected_prediction_tokens":
+        0}}, "system_fingerprint": null}}, "error": null}
+
+        {"id": "batch_req_677fa22854088190b0ecf2f6617d1c5a", "custom_id": "3", "response":
+        {"status_code": 200, "request_id": "a39f36dd275e65d09b6969fdb546eb40", "body":
+        {"id": "chatcmpl-Anjt3wOPThBt9N2OSjdt56PtRYyuz", "object": "chat.completion",
+        "created": 1736417825, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "{\n    \"command\": {\n        \"name\":
+        \"start_agent\",\n        \"args\":{\n            \"name\": \"MemoryAgent\",\n            \"task\":
+        \"Assist with memory management by adding and recalling important information.\",\n            \"commands\":
+        [\"google\", \"memory_add\"],\n            \"prompt\": \"How can I assist
+        you with memory management today?\"\n        }\n    },\n    \"thoughts\":\n    {\n        \"text\":
+        \"Starting MemoryAgent to aid with memory management tasks.\",\n        \"reasoning\":
+        \"By starting a specialized agent for memory tasks, we can efficiently handle
+        memory-related requests.\",\n        \"plan\": \"- Utilize MemoryAgent for
+        adding and recalling important information\\n- Regularly review and update
+        memory entries\\n- Delegate memory tasks to MemoryAgent when needed\",\n        \"criticism\":
+        \"Need to ensure proper categorization and organization of memory entries
+        to facilitate easier recall.\",\n        \"summary\": \"MemoryAgent is now
+        ready to assist with memory management tasks. How can I help you today?\"\n    }\n}",
+        "refusal": null}, "logprobs": null, "finish_reason": "stop"}], "usage": {"prompt_tokens":
+        862, "completion_tokens": 203, "total_tokens": 1065, "prompt_tokens_details":
+        {"cached_tokens": 0, "audio_tokens": 0}, "completion_tokens_details": {"reasoning_tokens":
+        0, "audio_tokens": 0, "accepted_prediction_tokens": 0, "rejected_prediction_tokens":
+        0}}, "system_fingerprint": null}}, "error": null}
+
+        {"id": "batch_req_677fa22874388190a40292d30af442f4", "custom_id": "4", "response":
+        {"status_code": 200, "request_id": "2f3aeb3e1f3b7a059227c527f9295a70", "body":
+        {"id": "chatcmpl-Anjszc9QVfeiscE2IB4WDC8gwUELy", "object": "chat.completion",
+        "created": 1736417821, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "\u064a\u0639\u062a\u0628\u0631
+        \u0646\u0638\u0627\u0645 \u0627\u062a\u062d\u0627\u062f \u0627\u0644\u0646\u0642\u0644
+        \u0627\u0644\u062c\u0648\u064a \u0627\u0644\u062f\u0648\u0644\u064a \u0645\u0646
+        \u0627\u0644\u0623\u0646\u0638\u0645\u0629 \u0627\u0644\u0647\u0627\u0645\u0629
+        \u0627\u0644\u062a\u064a \u062a\u0633\u0647\u0645 \u0641\u064a \u062a\u064a\u0633\u064a\u0631
+        \u062d\u0631\u0643\u0629 \u0627\u0644\u0634\u062d\u0646 \u0648\u0627\u0644\u0646\u0642\u0644
+        \u0627\u0644\u062c\u0648\u064a \u0628\u064a\u0646 \u0627\u0644\u062f\u0648\u0644
+        \u0648\u062a\u0623\u0645\u064a\u0646 \u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0631\u0643\u0627\u0628
+        \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639. \u0648\u062a\u062a\u0646\u0648\u0639
+        \u0623\u0647\u0645\u064a\u062a\u0647 \u0628\u0627\u0644\u0646\u0633\u0628\u0629
+        \u0644\u0644\u0623\u0634\u062e\u0627\u0635 \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639
+        \u0648\u0627\u0644\u062a\u0623\u0645\u064a\u0646 \u0639\u0644\u0649 \u0627\u0644\u0646\u062d\u0648
+        \u0627\u0644\u062a\u0627\u0644\u064a:\n\n- \u0628\u0627\u0644\u0646\u0633\u0628\u0629
+        \u0644\u0644\u0623\u0634\u062e\u0627\u0635:\n\u064a\u0639\u062a\u0628\u0631
+        \u0646\u0638\u0627\u0645 \u0627\u062a\u062d\u0627\u062f \u0627\u0644\u0646\u0642\u0644
+        \u0627\u0644\u062c\u0648\u064a \u0627\u0644\u062f\u0648\u0644\u064a \u0645\u0647\u0645\u0627
+        \u062c\u062f\u0627 \u0644\u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0631\u0643\u0627\u0628
+        \u0648\u0636\u0645\u0627\u0646 \u062d\u0642\u0648\u0642\u0647\u0645 \u0623\u062b\u0646\u0627\u0621
+        \u0627\u0644\u0633\u0641\u0631 \u0628\u0627\u0644\u0637\u0627\u0626\u0631\u0627\u062a.
+        \u0641\u0647\u0648 \u064a\u062d\u062f\u062f \u0627\u0644\u0642\u0648\u0627\u0646\u064a\u0646
+        \u0648\u0627\u0644\u0644\u0648\u0627\u0626\u062d \u0627\u0644\u062a\u064a
+        \u062a\u062d\u0645\u064a \u0627\u0644\u0631\u0643\u0627\u0628 \u0645\u0646
+        \u0623\u064a\u0629 \u062d\u0648\u0627\u062f\u062b \u0623\u0648 \u0645\u0634\u0627\u0643\u0644
+        \u0642\u062f \u062a\u062d\u062f\u062b \u062e\u0644\u0627\u0644 \u0627\u0644\u0633\u0641\u0631\u060c
+        \u0643\u0645\u0627 \u064a\u062a\u0636\u0645\u0646 \u062a\u062f\u0627\u0628\u064a\u0631
+        \u0623\u0645\u0646\u064a\u0629 \u062a\u0636\u0645\u0646 \u0633\u0644\u0627\u0645\u0629
+        \u0648\u0623\u0645\u0627\u0646 \u0627\u0644\u0631\u0643\u0627\u0628 \u0623\u062b\u0646\u0627\u0621
+        \u0631\u062d\u0644\u0627\u062a\u0647\u0645 \u0627\u0644\u062c\u0648\u064a\u0629.\n\n-
+        \u0628\u0627\u0644\u0646\u0633\u0628\u0629 \u0644\u0644\u0628\u0636\u0627\u0626\u0639:\n\u0646\u0638\u0627\u0645
+        \u0627\u062a\u062d\u0627\u062f \u0627\u0644\u0646\u0642\u0644 \u0627\u0644\u062c\u0648\u064a
+        \u0627\u0644\u062f\u0648\u0644\u064a \u064a\u0633\u0647\u0645 \u0641\u064a
+        \u062a\u0633\u0647\u064a\u0644 \u0648\u062a\u0633\u0631\u064a\u0639 \u0639\u0645\u0644\u064a\u0627\u062a
+        \u0634\u062d\u0646 \u0627\u0644\u0628\u0636\u0627\u0626\u0639 \u0628\u064a\u0646
+        \u0627\u0644\u062f\u0648\u0644\u060c \u0645\u0645\u0627 \u064a\u0633\u0627\u0647\u0645
+        \u0641\u064a \u062a\u062d\u0642\u064a\u0642 \u0627\u0644\u062a\u062c\u0627\u0631\u0629
+        \u0627\u0644\u0639\u0627\u0644\u0645\u064a\u0629 \u0648\u0632\u064a\u0627\u062f\u0629
+        \u0627\u0644\u0627\u0642\u062a\u0635\u0627\u062f \u0648\u0627\u0644\u0627\u0632\u062f\u0647\u0627\u0631.
+        \u0643\u0645\u0627 \u064a\u062d\u062f\u062f \u0623\u064a\u0636\u0627 \u0642\u0648\u0627\u0646\u064a\u0646
+        \u0648\u0644\u0648\u0627\u0626\u062d \u064a\u062c\u0628 \u0627\u062a\u0628\u0627\u0639\u0647\u0627
+        \u0644\u0636\u0645\u0627\u0646 \u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0628\u0636\u0627\u0626\u0639
+        \u0623\u062b\u0646\u0627\u0621 \u0627\u0644\u0646\u0642\u0644 \u0648\u062a\u062c\u0646\u0628
+        \u0623\u064a \u062e\u0633\u0627\u0626\u0631 \u0623\u0648 \u062a\u0644\u0641
+        \u0644\u0647\u0627.\n\n- \u0628\u0627\u0644\u0646\u0633\u0628\u0629 \u0644\u0644\u062a\u0623\u0645\u064a\u0646:\n\u064a\u0639\u062a\u0628\u0631
+        \u0646\u0638\u0627\u0645 \u0627\u062a\u062d\u0627\u062f \u0627\u0644\u0646\u0642\u0644
+        \u0627\u0644\u062c\u0648\u064a \u0627\u0644\u062f\u0648\u0644\u064a \u0623\u064a\u0636\u0627
+        \u0645\u0647\u0645\u0627 \u0644\u0636\u0645\u0627\u0646 \u062a\u0623\u0645\u064a\u0646
+        \u0627\u0644\u0631\u0643\u0627\u0628 \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639
+        \u062e\u0644\u0627\u0644 \u0631\u062d\u0644\u0627\u062a\u0647\u0627 \u0627\u0644\u062c\u0648\u064a\u0629.
+        \u0648\u064a\u062d\u062f\u062f \u0627\u0644\u0646\u0638\u0627\u0645 \u0645\u062a\u0637\u0644\u0628\u0627\u062a
+        \u0627\u0644\u062a\u0623\u0645\u064a\u0646 \u0627\u0644\u0648\u0627\u062c\u0628
+        \u062a\u0648\u0641\u0631\u0647\u0627 \u0644\u0636\u0645\u0627\u0646 \u062a\u0639\u0648\u064a\u0636
+        \u0627\u0644\u0623\u0636\u0631\u0627\u0631 \u0641\u064a \u062d\u0627\u0644
+        \u062d\u062f\u0648\u062b \u0623\u064a \u062d\u0648\u0627\u062f\u062b \u0623\u0648
+        \u0645\u0634\u0627\u0643\u0644 \u062e\u0644\u0627\u0644 \u0627\u0644\u0646\u0642\u0644\u060c
+        \u0645\u0645\u0627 \u064a\u0636\u0645\u0646 \u062d\u0645\u0627\u064a\u0629
+        \u062d\u0642\u0648\u0642 \u0627\u0644\u0623\u0634\u062e\u0627\u0635 \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639
+        \u0648\u062a\u0639\u0648\u064a\u0636\u0647\u0645 \u0641\u064a \u062d\u0627\u0644
+        \u0627\u0644\u0636\u0631\u0631.\n\n\u0628\u0627\u0644\u0627\u062e\u062a\u0635\u0627\u0631\u060c
+        \u064a\u0645\u062b\u0644 \u0646\u0638\u0627\u0645 \u0627\u062a\u062d\u0627\u062f
+        \u0627\u0644\u0646\u0642\u0644 \u0627\u0644\u062c\u0648\u064a \u0627\u0644\u062f\u0648\u0644\u064a
+        \u0623\u0647\u0645\u064a\u0629 \u0643\u0628\u064a\u0631\u0629 \u0644\u0644\u0623\u0634\u062e\u0627\u0635
+        \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639 \u0648\u0627\u0644\u062a\u0623\u0645\u064a\u0646
+        \u0639\u0644\u0649 \u0627\u0644\u0646\u062d\u0648 \u0627\u0644\u0645\u0630\u0643\u0648\u0631
+        \u0623\u0639\u0644\u0627\u0647\u060c \u062d\u064a\u062b \u064a\u0633\u0647\u0645
+        \u0641\u064a \u062a\u0633\u0647\u064a\u0644 \u0648\u062a\u064a\u0633\u064a\u0631
+        \u0639\u0645\u0644\u064a\u0627\u062a \u0627\u0644\u0646\u0642\u0644 \u0648\u0627\u0644\u0634\u062d\u0646\u060c
+        \u0648\u0636\u0645\u0627\u0646 \u0633\u0644\u0627\u0645\u0629 \u0648\u0623\u0645\u0627\u0646
+        \u0627\u0644\u0631\u0643\u0627\u0628 \u0648\u0627\u0644\u0628\u0636\u0627\u0626\u0639\u060c
+        \u0648\u0636\u0645\u0627\u0646 \u062a\u0623\u0645\u064a\u0646\u0647\u0645
+        \u0648\u062a\u0639\u0648\u064a\u0636\u0647\u0645 \u0641\u064a \u062d\u0627\u0644
+        \u0648\u0642\u0648\u0639 \u0623\u064a \u062d\u0648\u0627\u062f\u062b \u0623\u0648
+        \u0645\u0634\u0627\u0643\u0644 \u062e\u0644\u0627\u0644 \u0627\u0644\u0646\u0642\u0644.",
+        "refusal": null}, "logprobs": null, "finish_reason": "stop"}], "usage": {"prompt_tokens":
+        74, "completion_tokens": 886, "total_tokens": 960, "prompt_tokens_details":
+        {"cached_tokens": 0, "audio_tokens": 0}, "completion_tokens_details": {"reasoning_tokens":
+        0, "audio_tokens": 0, "accepted_prediction_tokens": 0, "rejected_prediction_tokens":
+        0}}, "system_fingerprint": null}}, "error": null}
+
+        {"id": "batch_req_677fa22894a88190911015c918849221", "custom_id": "5", "response":
+        {"status_code": 200, "request_id": "b44755bb328bc972c7670571f8cea430", "body":
+        {"id": "chatcmpl-Anjsz4qoxI9cdrwpb7xaftzW3uDk8", "object": "chat.completion",
+        "created": 1736417821, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "Welcome to the bustling streets
+        of Morocco, where the vibrant culture and rich history are waiting to be explored.
+        One of the best ways to navigate this beautiful country is by riding the bus.
+        Not only is it an affordable and convenient mode of transportation, but it
+        also offers a unique and authentic way to experience the local way of life.\n\nWhen
+        it comes to riding the bus in Morocco, there are a few things to keep in mind
+        to ensure a smooth and enjoyable journey. First and foremost, be sure to arrive
+        at the bus station early to secure your seat and avoid any last-minute rush.
+        Once on board, be prepared for a lively and bustling atmosphere, as buses
+        can get quite crowded during peak hours.\n\nAs you settle into your seat,
+        take in the sights and sounds of the city as you pass through bustling markets,
+        historic landmarks, and picturesque landscapes. Strike up a conversation with
+        your fellow passengers and immerse yourself in the rich tapestry of Moroccan
+        culture.\n\nWhen it comes to buying your ticket, be sure to have cash on hand
+        as most buses do not accept credit or debit cards. You can purchase your ticket
+        directly from the bus driver or from the ticket office at the station. Keep
+        in mind that tickets are often sold on a first-come, first-served basis, so
+        it''s best to buy yours in advance if possible.\n\nAs you embark on your bus
+        journey, be sure to keep your belongings close at hand and be mindful of your
+        surroundings. While Morocco is generally a safe and welcoming country, it''s
+        always best to exercise caution and vigilance when traveling in unfamiliar
+        places.\n\nWhether you''re an adventurous traveler looking to explore off-the-beaten-path
+        destinations or a culture enthusiast eager to immerse yourself in the local
+        way of life, riding the bus in Morocco is an unforgettable experience. So
+        hop on board, sit back, and enjoy the ride as you discover the beauty and
+        charm of this captivating country. Happy travels!", "refusal": null}, "logprobs":
+        null, "finish_reason": "stop"}], "usage": {"prompt_tokens": 44, "completion_tokens":
+        386, "total_tokens": 430, "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens":
+        0}, "completion_tokens_details": {"reasoning_tokens": 0, "audio_tokens": 0,
+        "accepted_prediction_tokens": 0, "rejected_prediction_tokens": 0}}, "system_fingerprint":
+        null}}, "error": null}
+
+        {"id": "batch_req_677fa228b31481909a9e59b3512d8f15", "custom_id": "6", "response":
+        {"status_code": 200, "request_id": "cebd2f34f4604ae89ba6dcbab70b91d9", "body":
+        {"id": "chatcmpl-Anjsz8UfrdRrh6xzJv3NE5EMm53bn", "object": "chat.completion",
+        "created": 1736417821, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "{\n    \"command\": {\n        \"name\":
+        \"start_agent\",\n        \"args\": {\n            \"name\": \"Memory-Google
+        Agent\",\n            \"task\": \"Assist with Google searches and manage memory
+        efficiently.\",\n            \"Commands\": [\"google\", \"memory_add\", \"memory_del\",
+        \"memory_ovr\", \"memory_list\"],\n            \"prompt\": \"How may I assist
+        you today?\"\n        }\n    },\n    \"thoughts\": {\n        \"text\": \"Starting
+        a GPT Agent specialized in Google searches and memory management is a smart
+        move to efficiently handle tasks requiring these functions.\",\n        \"reasoning\":
+        \"By delegating these specific tasks to the Memory-Google Agent, tasks can
+        be completed more effectively and with less cognitive load on the main system.\",\n        \"plan\":
+        \"- The agent will assist in Google searches by providing relevant information.\\n-
+        It will efficiently manage short-term memory by adding, deleting, and listing
+        important information.\",\n        \"criticism\": \"Ensure that the commands
+        provided to the agent are clear and consistent to avoid confusion or errors.\",\n        \"summary\":
+        \"The Memory-Google Agent is ready to assist with Google searches and memory
+        management. Please provide instructions for the agent''s tasks.\"\n    }\n}",
+        "refusal": null}, "logprobs": null, "finish_reason": "stop"}], "usage": {"prompt_tokens":
+        862, "completion_tokens": 248, "total_tokens": 1110, "prompt_tokens_details":
+        {"cached_tokens": 0, "audio_tokens": 0}, "completion_tokens_details": {"reasoning_tokens":
+        0, "audio_tokens": 0, "accepted_prediction_tokens": 0, "rejected_prediction_tokens":
+        0}}, "system_fingerprint": null}}, "error": null}
+
+        {"id": "batch_req_677fa228d240819087fd7953872b0c2d", "custom_id": "7", "response":
+        {"status_code": 200, "request_id": "6e4d2e3592bc77c778d0a38755cb70a4", "body":
+        {"id": "chatcmpl-Anjt0m7Jo6ZKJTzxHnlPsqGD3C9EL", "object": "chat.completion",
+        "created": 1736417822, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "Title: Food Fight Fiasco\n\nSetting:
+        The lunchroom of a high school in the 1990s, decorated with neon colored walls
+        and graffiti-style murals. The room is filled with rows of cafeteria tables
+        and buzzing with chatter as students eat and socialize.\n\nCharacter descriptions:\n\n1.
+        Lily (played by Sarah): A petite brunette with a mischievous glint in her
+        eye, wearing a floral babydoll dress and combat boots.\n2. Emma (played by
+        Rachel): A tall redhead with freckles, dressed in a plaid skirt and a band
+        t-shirt.\n3. Mia (played by Emily): A blonde with a bubbly personality, sporting
+        denim overalls and a crop top.\n\nScene:\n\n(As the lunch bell rings, Lily,
+        Emma, and Mia enter the bustling cafeteria, their trays loaded with food.
+        They spot an empty table and sit down, chatting and laughing.)\n\nLily: (grinning)
+        I can''t believe we''re finally seniors. It''s our last year to cause havoc
+        in this place.\n\nEmma: (scoffing) Yeah, like we need an excuse to cause trouble.\n\nMia:
+        (giggling) Speaking of trouble, did you guys see that new girl in class? She
+        looks like she could use a warm welcome.\n\nLily: (winking) I think I have
+        just the thing in mind.\n\n(Emma and Mia exchange knowing looks as Lily pulls
+        a small container of pudding from her bag. She smirks and nods towards the
+        unsuspecting new girl sitting at a nearby table.)\n\nEmma: (hands on hips)
+        Oh no you don''t, Lily. We''re not starting a food fight on the first day
+        of school.\n\nMia: (excitedly) But it would be so much fun! Come on, Emma,
+        live a little.\n\n(Lily grins mischievously and tosses the pudding towards
+        the new girl, causing it to splatter all over her. The new girl gasps in shock
+        as the cafeteria falls silent, all eyes on the trio.)\n\nNew girl: (angrily)
+        What do you think you''re doing?\n\nLily: (innocently) Oops, my hand slipped.
+        I guess you''ll just have to join in now.\n\n(The new girl grabs a plate of
+        mashed potatoes and flings it towards Lily, starting a full-blown food fight.
+        The cafeteria erupts in chaos as students cheer and join in, throwing food
+        at each other. The principal rushes in, trying to restore order.)\n\nPrincipal:
+        (frantically) Stop this madness! You are all in big trouble.\n\nMia: (laughing)
+        Lighten up, Principal. It''s just a little food fight.\n\n(As the food fight
+        rages on, Lily, Emma, and Mia share a high five and continue to hurl food
+        at each other, their laughter echoing through the chaos of the cafeteria.)\n\nFade
+        out.", "refusal": null}, "logprobs": null, "finish_reason": "stop"}], "usage":
+        {"prompt_tokens": 78, "completion_tokens": 589, "total_tokens": 667, "prompt_tokens_details":
+        {"cached_tokens": 0, "audio_tokens": 0}, "completion_tokens_details": {"reasoning_tokens":
+        0, "audio_tokens": 0, "accepted_prediction_tokens": 0, "rejected_prediction_tokens":
+        0}}, "system_fingerprint": null}}, "error": null}
+
+        {"id": "batch_req_677fa228f0f8819094e5c12d4670a57e", "custom_id": "8", "response":
+        {"status_code": 200, "request_id": "ecc8d08b20fe3609e94ac478e2dbab10", "body":
+        {"id": "chatcmpl-Anjt6RVQWhDgYNu0A6JodUrVasdNW", "object": "chat.completion",
+        "created": 1736417828, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "{\n    \"command\": {\n        \"name\":
+        \"start_agent\",\n        \"args\": {\n            \"name\": \"MemoryExplorer\",\n            \"task\":
+        \"Assist with Google searches and memory storage\",\n            \"Commands\":
+        [\"google\", \"memory_add\"],\n            \"prompt\": \"How can I assist
+        you today with Google searches or memory storage?\"\n        }\n    },\n    \"thoughts\":
+        {\n        \"text\": \"Starting MemoryExplorer agent to aid with Google searches
+        and memory storage.\",\n        \"reasoning\": \"By delegating these tasks
+        to a dedicated agent, we can streamline the process and improve overall efficiency.\",\n        \"plan\":
+        \"- Delegate Google searches and memory storage to MemoryExplorer\\n- Regularly
+        review and organize stored information\\n- Reduce load on short term memory\",\n        \"criticism\":
+        \"Need to ensure that MemoryExplorer is effectively utilizing the allocated
+        commands and providing accurate results.\",\n        \"summary\": \"MemoryExplorer
+        agent is ready to assist you with Google searches and memory storage.\"\n    }\n}",
+        "refusal": null}, "logprobs": null, "finish_reason": "stop"}], "usage": {"prompt_tokens":
+        862, "completion_tokens": 203, "total_tokens": 1065, "prompt_tokens_details":
+        {"cached_tokens": 0, "audio_tokens": 0}, "completion_tokens_details": {"reasoning_tokens":
+        0, "audio_tokens": 0, "accepted_prediction_tokens": 0, "rejected_prediction_tokens":
+        0}}, "system_fingerprint": null}}, "error": null}
+
+        {"id": "batch_req_677fa22911088190a813465b67c3d5c5", "custom_id": "9", "response":
+        {"status_code": 200, "request_id": "d0bf5ced81aa6fd93c8b210711792997", "body":
+        {"id": "chatcmpl-Anjt0uQAlltXsfYTcqw2LPprPGTYl", "object": "chat.completion",
+        "created": 1736417822, "model": "gpt-3.5-turbo-0125", "choices": [{"index":
+        0, "message": {"role": "assistant", "content": "\"Easter is a time of rebirth
+        and renewal, just like the power I hold within me. Let''s make this holiday
+        one to remember, with a little touch of darkness hidden beneath the surface.\"
+        - Chris from King of Fighters", "refusal": null}, "logprobs": null, "finish_reason":
+        "stop"}], "usage": {"prompt_tokens": 205, "completion_tokens": 47, "total_tokens":
+        252, "prompt_tokens_details": {"cached_tokens": 0, "audio_tokens": 0}, "completion_tokens_details":
+        {"reasoning_tokens": 0, "audio_tokens": 0, "accepted_prediction_tokens": 0,
+        "rejected_prediction_tokens": 0}}, "system_fingerprint": null}}, "error":
+        null}
+
+        '
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ff3ad274bf22ffe-BOM
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/octet-stream
+      Date:
+      - Thu, 09 Jan 2025 10:17:14 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      access-control-allow-origin:
+      - '*'
+      alt-svc:
+      - h3=":443"; ma=86400
+      content-disposition:
+      - attachment; filename="batch_677fa21a397081909e7bb8ebaa759fbe_output.jsonl"
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '503'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_672ab53ac6b1dfb8317b7f37006e6db8
+    status:
+      code: 200
+      message: OK
+version: 1

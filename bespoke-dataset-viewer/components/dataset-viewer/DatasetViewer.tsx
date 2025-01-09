@@ -231,7 +231,7 @@ export function DatasetViewer({ runHash, batchMode }: DatasetViewerProps) {
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline">
                       {selectedDistribution
-                        ? selectedDistribution === "requests" 
+                        ? selectedDistribution === "requests"
                           ? "Requests & Responses"
                           : selectedDistribution.split('_').map(word =>
                               word.charAt(0).toUpperCase() + word.slice(1)
