@@ -62,6 +62,8 @@ class LLM:
         max_model_length: int | None = None,
         max_tokens: int | None = None,
         gpu_memory_utilization: float | None = None,
+        distributed_executor_backend: str | None = None,
+        pipeline_parallel_size: int | None = None,
     ):
         """Initialize a LLM.
 
@@ -113,6 +115,8 @@ class LLM:
                 "max_tokens": max_tokens,
                 "gpu_memory_utilization": gpu_memory_utilization,
                 "batch_size": batch_size if batch_size is not None else 256,
+                "distributed_executor_backend": distributed_executor_backend,
+                "pipeline_parallel_size": pipeline_parallel_size,
             }
             config = OfflineRequestProcessorConfig(**_remove_none_values(config_params))
 

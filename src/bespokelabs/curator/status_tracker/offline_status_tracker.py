@@ -42,7 +42,7 @@ class OfflineStatusTracker:
     time_finished: datetime.datetime = None
     finished_successfully: bool = False
     num_total_requests: int = 0
-    system: System = System()
+    system: System = field(default_factory=System)
 
     def __str__(self):
         return (
