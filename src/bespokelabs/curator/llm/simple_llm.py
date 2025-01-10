@@ -15,7 +15,7 @@ class SimpleLLM:
     For more complex use cases (e.g. structured outputs and custom prompt functions), see the LLM class.
     """
 
-    def __init__(self, model_name: str, backend: str = "openai"):
+    def __init__(self, model_name: str, backend: str = None):
         """Initialize the SimpleLLM instance."""
         self._model_name = model_name
         self._backend = backend
