@@ -107,7 +107,7 @@ class BaseRequestProcessor(ABC):
         self.prompt_formatter = prompt_formatter
         if self.prompt_formatter.response_format:
             if not self.check_structured_output_support():
-                raise ValueError(f"Model {self.config.model} does not support structured output, " f"response_format: {self.prompt_formatter.response_format}")
+                raise ValueError(f"Model {self.config.model} does not support structured output, response_format: {self.prompt_formatter.response_format}")
         generic_request_files = self.create_request_files(dataset)
 
         self.requests_to_responses(generic_request_files)
@@ -289,9 +289,8 @@ class BaseRequestProcessor(ABC):
         if os.path.exists(dataset_file):
             logger.debug(f"Loading dataset from {dataset_file}")
             try:
-                output_dataset = Dataset.from_file(dataset_file)
                 logger.info(f"Using cached output dataset. {CACHE_MSG}")
-                return output_dataset
+                return self._load_from_dataset_file(dataset_file)
             except pyarrow.lib.ArrowInvalid:
                 os.remove(dataset_file)
                 logger.warning(
@@ -379,7 +378,7 @@ class BaseRequestProcessor(ABC):
                             if not isinstance(row, dict):
                                 os.remove(dataset_file)
                                 raise ValueError(
-                                    f"Got invalid row {row} of type {type(row)} from `parse_func`. " f"This should be type <class 'dict'>. {error_help}"
+                                    f"Got invalid row {row} of type {type(row)} from `parse_func`. This should be type <class 'dict'>. {error_help}"
                                 )
                             if not row:
                                 os.remove(dataset_file)
@@ -421,6 +420,9 @@ class BaseRequestProcessor(ABC):
                     os.remove(dataset_file)
                     raise ValueError("Some requests do not have responses and require_all_responses is True.")
 
+        return self._load_from_dataset_file(dataset_file)
+
+    def _load_from_dataset_file(self, dataset_file: str) -> Dataset:
         d = Dataset.from_file(dataset_file)
         d = d.sort("__original_row_idx")
         d = d.remove_columns("__original_row_idx")
