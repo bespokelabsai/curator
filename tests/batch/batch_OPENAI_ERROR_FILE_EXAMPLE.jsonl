@@ -1,2 +1,0 @@
-{"id": "batch_req_6768d00c43d08190b5a0902eb4f466f9", "custom_id": "1", "response": {"status_code": 403, "request_id": "a6bf61681767fd00cac977ec6c01f69d", "body": {"error": {"message": "Project `proj_saQz2jP9J5cTyU56Zjdsqn7x` does not have access to model `gpt-4o-mini-2024-07-18-batch`", "type": "invalid_request_error", "param": null, "code": "model_not_found"}}}, "error": null}
-{"id": "batch_req_123", "custom_id": "2", "response": null, "error": {"code": "batch_expired", "message": "This request could not be executed before the completion window expired."}}

@@ -1,5 +1,0 @@
-{"custom_id":"1","result":{"type":"succeeded","message":{"id":"msg_017ohujpJqzhPRy8NJfTatEE","type":"message","role":"assistant","model":"claude-3-5-sonnet-20241022","content":[{"type":"text","text":"Hi there! It's great to connect with you. I hope you're having a good day! I aim to be friendly and personable in our conversation while remaining clear about my role as an AI assistant. How are you doing today?"}],"stop_reason":"end_turn","stop_sequence":null,"usage":{"input_tokens":43,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":51}}}}
-{"custom_id":"2","result":{"type":"errored","error":{"type":"error","error":{"details":null,"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."}}}}
-{"custom_id":"3","result":{"type":"errored","error":{"type":"error","error":{"details":null,"type":"invalid_request_error","message":"Output blocked by content filtering policy"}}}}
-{"custom_id":"4","result":{"type":"canceled"}}
-{"custom_id":"5","result":{"type":"expired"}}

@@ -20,6 +20,7 @@ def _hash_string(input_string):
 
 _ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm"}]
 _BATCH_BACKENDS = [{"integration": backend} for backend in {"openai"}]
+_FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"openai"}]
 
 
 class TimeoutError(Exception):
@@ -154,6 +155,35 @@ def test_batch_resume(temp_working_dir, mock_dataset):
             tracker = BatchStatusTracker.model_validate_json(f.read())
         assert len(tracker.submitted_batches) == 0
         assert len(tracker.downloaded_batches) == 1
+
+
+@pytest.mark.parametrize("temp_working_dir", (_FAILED_BATCH_BACKENDS), indirect=True)
+def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    with vcr_config.use_cassette("failed_request_batch_resume.yaml"):
+        tracker_batch_file_path = temp_working_dir + "/testing_hash_123/batch_objects.jsonl"
+        from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
+
+        with open(tracker_batch_file_path, "r") as f:
+            failed_tracker = BatchStatusTracker.model_validate_json(f.read())
+        assert failed_tracker.n_total_requests == 3
+        assert failed_tracker.n_downloaded_failed_requests == 1
+        assert len(failed_tracker.submitted_batches) == 0
+        assert len(failed_tracker.downloaded_batches) == 1
+        RESUBMIT_MSG = f"Request file tests/integrations/{backend}/fixtures/.test_cache/testing_hash_123/requests_0.jsonl is being re-submitted."
+
+        logger = "bespokelabs.curator.status_tracker.batch_status_tracker"
+
+        with caplog.at_level(logging.INFO, logger=logger):
+            helper.create_basic(temp_working_dir, mock_dataset, batch=True)
+            assert RESUBMIT_MSG in caplog.text
+
+        with open(tracker_batch_file_path, "r") as f:
+            tracker = BatchStatusTracker.model_validate_json(f.read())
+        assert len(tracker.submitted_batches) == 0
+        resubmitted_sucess_batch = [key for key in tracker.downloaded_batches.keys() if key not in failed_tracker.downloaded_batches.keys()][0]
+        assert tracker.downloaded_batches[resubmitted_sucess_batch].request_counts.total == 1
+        assert tracker.downloaded_batches[resubmitted_sucess_batch].request_counts.succeeded == 1
 
 
 @pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
