@@ -220,7 +220,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         completed_request_ids = self.validate_existing_response_file(response_file)
 
         # Count total requests
-        total_requests = sum(1 for _ in open(generic_request_filepath))
+        with open(generic_request_filepath) as f:
+            total_requests = sum(1 for _ in f)
 
         # Create progress bar
         status_tracker.pbar = tqdm(
