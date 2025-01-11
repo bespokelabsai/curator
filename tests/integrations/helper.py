@@ -25,19 +25,24 @@ class QAs(BaseModel):
 
 
 def create_camel(temp_working_dir, batch=False):
+    if batch:
+        backend_params = {"batch_check_interval": batch_check_interval}
+    else:
+        backend_params = {}
+
     subject_prompter = curator.LLM(
         prompt_func=lambda: "Generate a diverse list of 3 subjects. Keep it high-level (e.g. Math, Science).",
         parse_func=lambda _, subjects: list(subjects.subjects),
         model_name="gpt-4o-mini",
         response_format=Subjects,
-        batch_check_interval=batch_check_interval,
+        backend_params=backend_params,
     )
     subsubject_prompter = curator.LLM(
         prompt_func=lambda subject: f"For the given subject {subject}. Generate 3 diverse subsubjects. No explanation.",
         parse_func=lambda subject, subsubjects: [{"subject": subject["subject"], "subsubject": subsubject.subject} for subsubject in subsubjects.subjects],
         model_name="gpt-4o-mini",
         response_format=Subjects,
-        batch_check_interval=batch_check_interval,
+        backend_params=backend_params,
     )
 
     qa_prompter = curator.LLM(
@@ -53,7 +58,6 @@ def create_camel(temp_working_dir, batch=False):
             }
             for qa in qas.qas
         ],
-        batch_check_interval=batch_check_interval,
     )
 
     subject_dataset = subject_prompter()
@@ -83,14 +87,16 @@ def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, b
     from bespokelabs import curator
 
     llm_params = llm_params or {}
+    if batch:
+        llm_params["batch_check_interval"] = batch_check_interval
+
     prompter = curator.LLM(
         prompt_func=prompt_func,
         parse_func=parse_func,
         model_name=_DEFAULT_MODEL_MAP[backend],
         backend=backend,
-        batch_check_interval=batch_check_interval,
         batch=batch,
-        **llm_params,
+        backend_params=llm_params,
     )
     prompter._request_processor._tracker_console = tracker_console
     if mocking:
@@ -102,11 +108,16 @@ def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, b
 
 
 def create_llm(batch=False):
+    if batch:
+        backend_params = {"batch_check_interval": batch_check_interval}
+    else:
+        backend_params = {}
+
     prompter = curator.LLM(
         prompt_func=prompt_func,
         parse_func=parse_func,
         model_name="gpt-3.5-turbo",
         backend="openai",
-        batch_check_interval=batch_check_interval,
+        backend_params=backend_params,
     )
     return prompter

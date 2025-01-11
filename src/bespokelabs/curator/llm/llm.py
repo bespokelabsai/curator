@@ -15,6 +15,7 @@ from xxhash import xxh64
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
+from bespokelabs.curator.request_processor.config import BackendParamsType
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -31,25 +32,10 @@ class LLM:
         model_name: str,
         prompt_func: Callable[[_DictOrBaseModel], _DictOrBaseModel],
         parse_func: Callable[[_DictOrBaseModel, _DictOrBaseModel], _DictOrBaseModel] | None = None,
-        base_url: str | None = None,
         response_format: Type[BaseModel] | None = None,
         batch: bool = False,
-        backend: str | None = None,
-        max_requests_per_minute: int | None = None,
-        max_tokens_per_minute: int | None = None,
-        batch_size: int | None = None,
-        batch_check_interval: int | None = None,
-        delete_successful_batch_files: bool | None = None,
-        delete_failed_batch_files: bool | None = None,
-        max_retries: int | None = None,
-        require_all_responses: bool | None = None,
-        generation_params: dict | None = None,
-        seconds_to_pause_on_rate_limit: int | None = None,
-        tensor_parallel_size: int | None = None,
-        enforce_eager: bool | None = None,
-        max_model_length: int | None = None,
-        max_tokens: int | None = None,
-        gpu_memory_utilization: float | None = None,
+        backend: Optional[str] = None,
+        backend_params: BackendParamsType | None = None,
     ):
         """Initialize a LLM.
 
@@ -64,22 +50,31 @@ class LLM:
                 response format from the LLM
             batch: Whether to use batch processing
             backend: The backend to use ("openai", "litellm", or "vllm"). If None, will be auto-determined
-            max_requests_per_minute: Maximum number of requests per minute for rate limiting
-            max_tokens_per_minute: Maximum number of tokens per minute for rate limiting
-            batch_size: The size of the batch to use, only used if batch is True
-            batch_check_interval: The interval to check for batch completions, only used if batch is True
-            delete_successful_batch_files: Whether to delete successful batch files, only used if batch is True
-            delete_failed_batch_files: Whether to delete failed batch files, only used if batch is True
-            max_retries: The maximum number of retries to use for the LLM
-            require_all_responses: Whether to require all responses
-            generation_params: Additional parameters to pass to the generation API
-            seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited
-            tensor_parallel_size: The tensor parallel size to use for the VLLM backend
-            enforce_eager: Whether to enforce eager execution for the VLLM backend
-            max_model_length: The maximum model length to use for the VLLM backend
-            max_tokens: The maximum tokens to use for the VLLM backend
-            gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
+
+            backend_params: Dictionary parameters for request processing
+                    - max_retries: The maximum number of retries to use for the LLM
+                    - require_all_responses: Whether to require all responses
+                    - generation_params: Additional parameters to pass to the generation API
+
+            Other backend params:
+                - Online:
+                    - max_requests_per_minute: Maximum number of requests per minute for rate limiting
+                    - max_tokens_per_minute: Maximum number of tokens per minute for rate limiting
+                    - seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited
+
+                - Batch:
+                    - batch_size: The size of the batch to use, only used if batch is True
+                    - batch_check_interval: The interval to check for batch completions, only used if batch is True
+                    - delete_successful_batch_files: Whether to delete successful batch files, only used if batch is True
+                    - delete_failed_batch_files: Whether to delete failed batch files, only used if batch is True
+                - Offline:
+                    - tensor_parallel_size: The tensor parallel size to use for the VLLM backend
+                    - enforce_eager: Whether to enforce eager execution for the VLLM backend
+                    - max_model_length: The maximum model length to use for the VLLM backend
+                    - max_tokens: The maximum tokens to use for the VLLM backend
+                    - gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
         """
+        generation_params = backend_params.get("generation_params") if backend_params else None
         if generation_params is None:
             generation_params = {}
         else:
@@ -88,27 +83,9 @@ class LLM:
         self.prompt_formatter = PromptFormatter(model_name, prompt_func, parse_func, response_format, generation_params)
         self.batch_mode = batch
 
-        backend_params = {
-            "model": model_name,
-            "base_url": base_url,
-            "batch_size": batch_size,
-            "batch_check_interval": batch_check_interval,
-            "delete_successful_batch_files": delete_successful_batch_files,
-            "delete_failed_batch_files": delete_failed_batch_files,
-            "require_all_responses": require_all_responses,
-            "generation_params": generation_params,
-            "max_requests_per_minute": max_requests_per_minute,
-            "max_tokens_per_minute": max_tokens_per_minute,
-            "max_retries": max_retries,
-            "seconds_to_pause_on_rate_limit": seconds_to_pause_on_rate_limit,
-            "tensor_parallel_size": tensor_parallel_size,
-            "enforce_eager": enforce_eager,
-            "max_model_length": max_model_length,
-            "max_tokens": max_tokens,
-            "gpu_memory_utilization": gpu_memory_utilization,
-        }
-
-        self._request_processor = _RequestProcessorFactory.create(backend_params, batch=batch, response_format=response_format, backend=backend)
+        self._request_processor = _RequestProcessorFactory.create(
+            params=backend_params, model_name=model_name, batch=batch, response_format=response_format, backend=backend
+        )
 
     def _hash_fingerprint(self, dataset_hash, disable_cache):
         if disable_cache:
