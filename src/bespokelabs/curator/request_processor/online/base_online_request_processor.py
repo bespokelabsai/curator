@@ -15,7 +15,6 @@ from dataclasses import dataclass, field
 import aiofiles
 import aiohttp
 import litellm
-from tqdm import tqdm
 
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
@@ -71,6 +70,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self.default_max_tokens_per_minute = 100_000
         self.header_based_max_requests_per_minute = None
         self.header_based_max_tokens_per_minute = None
+
+        # The rich.Console used for the status tracker, only set for testing
+        self._tracker_console = None
 
     @property
     def backend(self) -> str:
@@ -223,12 +225,10 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         with open(generic_request_filepath) as f:
             total_requests = sum(1 for _ in f)
 
-        # Create progress bar
-        status_tracker.pbar = tqdm(
-            initial=len(completed_request_ids),
-            total=total_requests,
-            desc=f"Processing {self.__class__.__name__} requests",
-        )
+        status_tracker.num_tasks_already_completed = len(completed_request_ids)
+        status_tracker.total_requests = total_requests
+        status_tracker.model = self.prompt_formatter.model_name
+        status_tracker.start_tracker(self._tracker_console)
 
         # Use higher connector limit for better throughput
         connector = aiohttp.TCPConnector(limit=10 * status_tracker.max_requests_per_minute)
@@ -240,7 +240,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     generic_request = GenericRequest.model_validate_json(line)
 
                     if generic_request.original_row_idx in completed_request_ids:
-                        status_tracker.num_tasks_already_completed += 1
                         continue
 
                     request = APIRequest(
@@ -317,14 +316,14 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 if pending_retries:
                     done, pending_retries = await asyncio.wait(pending_retries, timeout=0.1)
 
-        status_tracker.pbar.close()
+        status_tracker.stop_tracker()
 
         # Log final status
         logger.info(f"Processing complete. Results saved to {response_file}")
         logger.info(f"Status tracker: {status_tracker}")
 
         if status_tracker.num_tasks_failed > 0:
-            logger.warning(f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} " f"requests failed. Errors logged to {response_file}.")
+            logger.warning(f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} requests failed. Errors logged to {response_file}.")
 
     async def handle_single_request_with_retries(
         self,
@@ -352,6 +351,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 session=session,
                 status_tracker=status_tracker,
             )
+            status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
 
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
@@ -361,7 +361,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
             status_tracker.num_tasks_in_progress -= 1
             status_tracker.num_tasks_succeeded += 1
-            status_tracker.pbar.update(1)
 
         except Exception as e:
             status_tracker.num_other_errors += 1

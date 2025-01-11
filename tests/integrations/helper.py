@@ -71,7 +71,7 @@ def parse_func(row, response):
     return {"recipe": response}
 
 
-def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, backend="openai", mocking=None, batch_cancel=False):
+def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, backend="openai", mocking=None, batch_cancel=False, tracker_console=None):
     llm_params = llm_params or {}
     prompter = curator.LLM(
         prompt_func=prompt_func,
@@ -82,6 +82,7 @@ def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, b
         batch=batch,
         **llm_params,
     )
+    prompter._request_processor._tracker_console = tracker_console
     if mocking:
         prompter = mocking(prompter)
     if batch:

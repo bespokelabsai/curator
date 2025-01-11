@@ -2,9 +2,11 @@ import hashlib
 import logging
 import signal
 import time
+from io import StringIO
 
 import numpy as np
 import pytest
+from rich.console import Console
 
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from tests.integrations import helper
@@ -52,7 +54,26 @@ def test_basic(temp_working_dir, mock_dataset):
     }
 
     with vcr_config.use_cassette("basic_completion.yaml"):
-        dataset = helper.create_basic(temp_working_dir, mock_dataset, backend=backend, llm_params={"generation_params": {"seed": 42}})
+        # Capture the output to verify status tracker
+        output = StringIO()
+        console = Console(file=output, width=300)
+
+        dataset = helper.create_basic(
+            temp_working_dir,
+            mock_dataset,
+            backend=backend,
+            llm_params={
+                "generation_params": {"seed": 42},
+            },
+            tracker_console=console,
+        )
+
+        # Verify status tracker output
+        captured = output.getvalue()
+        assert "Generating data using gpt-3.5-turbo" in captured, captured
+        assert "3" in captured, captured  # Verify total requests processed
+        assert "Final Curator Statistics" in captured, captured
+        # Verify response content
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
 
