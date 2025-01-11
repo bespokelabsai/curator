@@ -358,6 +358,12 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         metadata = {"request_file": request_file}
         requests = self.requests_from_generic_request_file(request_file, completed_request_ids)
         batch = await self.submit_batch(requests, metadata)
+
+        # Change state of batch if submitted and partial batch.
+        if len(completed_request_ids) > 0:
+            if batch.status == GenericBatchStatus.SUBMITTED:
+                batch.status = GenericBatchStatus.RESUBMITTED
+
         self.tracker.mark_as_submitted(batch, len(requests))
         await self.update_batch_objects_file()
         self.batch_submit_pbar.update(1)

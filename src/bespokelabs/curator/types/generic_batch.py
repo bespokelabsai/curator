@@ -10,6 +10,7 @@ from pydantic import BaseModel
 class GenericBatchStatus(Enum):
     """Status of a generic batch request."""
 
+    RESUBMITTED = "resubmitted"  # Batch has been resubmitted but not yet processed
     SUBMITTED = "submitted"  # Batch has been submitted but not yet processed
     FINISHED = "finished"  # Batch processing has completed
     DOWNLOADED = "downloaded"  # Results have been downloaded
