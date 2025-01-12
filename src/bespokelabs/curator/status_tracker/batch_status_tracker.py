@@ -122,7 +122,7 @@ class BatchStatusTracker(BaseModel):
             f"[white]Avg Output:[/white] [blue]{avg_completion:.0f}[/blue] "
         )
 
-        avg_cost = self.total_cost / max(1, self.n_finished_or_downloaded_succeeded_requests)
+        avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
         projected_cost = avg_cost * self.n_total_requests
 
         cost_text = (
