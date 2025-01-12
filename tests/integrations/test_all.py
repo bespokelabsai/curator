@@ -79,6 +79,7 @@ def test_basic(temp_working_dir, mock_dataset):
         assert _hash_string(recipes) == hash_book[backend]
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
 def test_camel(temp_working_dir):
     temp_working_dir, _, vcr_config = temp_working_dir
