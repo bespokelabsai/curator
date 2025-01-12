@@ -223,6 +223,19 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         "anthropic": "f38e7406448e95160ebe4d9b6148920ef37b019f23a4e2c57094fdd4bafb09be",
     }
     with vcr_config.use_cassette("basic_batch_completion.yaml"):
-        dataset = helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
+        output = StringIO()
+        console = Console(file=output, width=300)
+
+        dataset = helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend, tracker_console=console)
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
+
+        # Verify status tracker output
+        captured = output.getvalue()
+        assert "Processing batches using gpt-3.5-turbo" in captured, captured
+        assert "Batches: Total: 1 • Submitted: 0⋯ • Downloaded: 1✓" in captured, captured
+        assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 3✓ • Failed: 0✗" in captured, captured
+        assert "Final Curator Statistics" in captured, captured
+        assert "Total Requests             │ 3" in captured, captured
+        assert "Successful                 │ 3" in captured, captured
+        assert "Failed                     │ 0" in captured, captured

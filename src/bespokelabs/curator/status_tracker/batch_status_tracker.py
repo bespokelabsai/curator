@@ -158,13 +158,13 @@ class BatchStatusTracker(BaseModel):
 
     def display_final_stats(self):
         """Display final statistics."""
-        table = Table(title="Final Batch Processing Statistics", box=box.ROUNDED)
+        table = Table(title="Final Curator Statistics", box=box.ROUNDED)
         table.add_column("Section/Metric", style="cyan")
         table.add_column("Value", style="yellow")
 
         # Model Information
         table.add_row("Model", "", style="bold magenta")
-        table.add_row("Name", f"[blue]{self.model}[/blue]")
+        table.add_row("Model", f"[blue]{self.model}[/blue]")
 
         # Request Statistics
         table.add_row("Requests", "", style="bold magenta")

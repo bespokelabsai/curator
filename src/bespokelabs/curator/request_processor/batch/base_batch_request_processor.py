@@ -95,6 +95,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         run_in_event_loop(self.submit_batches_from_request_files(generic_request_files))
         run_in_event_loop(self.poll_and_process_batches())
+        self.tracker.stop_tracker()
 
     @property
     @abstractmethod
