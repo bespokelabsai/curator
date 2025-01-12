@@ -94,7 +94,6 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         self._attempt_loading_batch_status_tracker(generic_request_files)
 
         run_in_event_loop(self.submit_batches_from_request_files(generic_request_files))
-        logger.info(f"Submitted batches. These can be viewed in the web dashboard: {self.web_dashboard}")
         run_in_event_loop(self.poll_and_process_batches())
 
     @property
@@ -573,6 +572,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 f"Requests completed: {self.tracker.n_finished_or_downloaded_succeeded_requests:,}/{self.tracker.n_total_requests:,}"
             )
 
+            self.tracker.update_display()
             if self.tracker.n_submitted_batches + self.tracker.n_finished_batches > 0:
                 logger.debug(f"Sleeping for {self.config.batch_check_interval} seconds...")
                 await asyncio.sleep(self.config.batch_check_interval)
