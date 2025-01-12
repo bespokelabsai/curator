@@ -71,7 +71,12 @@ def parse_func(row, response):
     return {"recipe": response}
 
 
-_DEFAULT_MODEL_MAP = {"openai": "gpt-3.5-turbo", "anthropic": "claude-3-5-sonnet-20241022", "litellm": "gpt-3.5-turbo"}
+_DEFAULT_MODEL_MAP = {
+    "openai": "gpt-3.5-turbo",
+    "anthropic": "claude-3-5-sonnet-20241022",
+    "litellm": "gpt-3.5-turbo",
+    "vllm": "Qwen/Qwen2.5-1.5B-Instruct",
+}
 
 
 def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, backend="openai", mocking=None, batch_cancel=False, tracker_console=None):

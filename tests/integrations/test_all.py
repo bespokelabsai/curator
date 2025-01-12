@@ -239,3 +239,64 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         assert "Total Requests             │ 3" in captured, captured
         assert "Successful                 │ 3" in captured, captured
         assert "Failed                     │ 0" in captured, captured
+
+
+##############################
+# Offline                    #
+##############################
+
+@pytest.mark.parametrize("temp_working_dir", ([{"integration": "vllm"}]), indirect=True)
+def test_basic_offline(temp_working_dir, mock_dataset):
+    """Test basic completion with VLLM backend"""
+    temp_working_dir, _, _ = temp_working_dir
+    
+    import json
+    import os
+
+    # Load mock responses from fixture file
+    fixture_path = os.path.join(os.path.dirname(__file__), "vllm", "fixtures", "basic_responses.json")
+    with open(fixture_path) as f:
+        mock_responses = json.load(f)
+
+    # Mock the vllm.LLM.generate method based on replay output
+    class MockVLLMOutput:
+        def __init__(self, text, request_id):
+            self.text = text
+            self.request_id = request_id
+            self.finished = True
+            self.prompt = None  # From replay output
+            self.encoder_prompt = None
+            self.metrics = None
+            
+        @property
+        def outputs(self):
+            return [type('MockOutput', (), {'text': self.text})]
+
+    def mock_generate(prompts, sampling_params):
+        """Mock the generate method based on replay output"""
+        assert len(prompts) == 3  # Verify batch size
+        # Verify prompts match the expected format
+        for i, prompt in enumerate(prompts):
+            assert prompt == f"<|im_start|>system\nYou are Qwen, created by Alibaba Cloud. You are a helpful assistant.<|im_end|>\n<|im_start|>user\n{mock_dataset[i]['dish']}<|im_end|>\n<|im_start|>assistant\n"
+        
+        return [MockVLLMOutput(mock_responses[str(i)], i) for i in range(len(prompts))]
+
+    def mock_apply_chat_template(conversation=None, tokenize=None, add_generation_prompt=None, **kwargs):
+        """Mock the tokenizer's apply_chat_template method"""
+        assert len(conversation) == 1  # We expect single message per prompt
+        assert conversation[0]["role"] == "user"
+        return f"<|im_start|>system\nYou are Qwen, created by Alibaba Cloud. You are a helpful assistant.<|im_end|>\n<|im_start|>user\n{conversation[0]['content']}<|im_end|>\n<|im_start|>assistant\n"
+
+    with patch('vllm.LLM') as mock_llm:
+        mock_llm.return_value.generate = mock_generate
+        mock_llm.return_value.get_tokenizer.return_value.apply_chat_template = mock_apply_chat_template
+        
+        dataset = helper.create_basic(
+            temp_working_dir,
+            mock_dataset,
+            backend="vllm",
+        )
+
+        # Verify response content
+        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+        assert _hash_string(recipes) == "606496dab9c92f00eccec0ea4e7dd518155cfd1dbb573fb0c924c85e038e0c8f"

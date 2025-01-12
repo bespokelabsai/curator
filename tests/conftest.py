@@ -7,7 +7,12 @@ import vcr
 from datasets import Dataset
 
 mode = os.environ.get("VCR_MODE", None)
-_KEY_MAP = {"openai": "OPENAI_API_KEY", "litellm": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}
+_KEY_MAP = {
+    "openai": "OPENAI_API_KEY",
+    "litellm": "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "vllm": "VLLM_API_KEY",
+}
 
 
 @pytest.fixture

@@ -120,8 +120,6 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         self,
         generic_request_filepath: str,
         save_filepath: str,
-        resume: bool,
-        resume_no_retry: bool = False,
     ) -> None:
         """Process requests from a file and save responses.
 
@@ -144,7 +142,7 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         status_tracker = OfflineStatusTracker()
 
         # Track completed requests for resume functionality
-        completed_request_ids = self.resume_from_existing_response_file(save_filepath)
+        completed_request_ids = self.validate_existing_response_file(save_filepath)
 
         if not hasattr(self, "model_class"):
             self.load_offline_model()  # Load the offline model if it hasn't been loaded yet
