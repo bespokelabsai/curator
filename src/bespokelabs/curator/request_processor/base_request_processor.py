@@ -96,6 +96,7 @@ class BaseRequestProcessor(ABC):
         """
         self.prompt_formatter = prompt_formatter
         self.working_dir = working_dir
+        self.total_requests = len(dataset) if dataset is not None else 1
 
         # load from already completed dataset
         output_dataset = self.attempt_loading_cached_dataset(parse_func_hash)

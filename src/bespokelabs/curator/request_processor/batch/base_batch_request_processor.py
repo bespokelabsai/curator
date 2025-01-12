@@ -286,15 +286,14 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         else:
             self.tracker = BatchStatusTracker(unsubmitted_request_files=set(request_files))
 
-        # Set model information for tracking
         self.tracker.model = self.prompt_formatter.model_name
+        self.tracker.n_total_requests = self.total_requests
 
         # Set cost information if available
         if self.prompt_formatter.model_name in model_cost:
             # Batch requests are 50% cheaper
             self.tracker.input_cost_per_million = (model_cost[self.prompt_formatter.model_name]["input_cost_per_token"] * 1_000_000) * 0.5
             self.tracker.output_cost_per_million = (model_cost[self.prompt_formatter.model_name]["output_cost_per_token"] * 1_000_000) * 0.5
-
         # Start the tracker with the console from constructor
         self.tracker.start_tracker(self._tracker_console)
 

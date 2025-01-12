@@ -222,11 +222,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         completed_request_ids = self.validate_existing_response_file(response_file)
 
         # Count total requests
-        with open(generic_request_filepath) as f:
-            total_requests = sum(1 for _ in f)
-
         status_tracker.num_tasks_already_completed = len(completed_request_ids)
-        status_tracker.total_requests = total_requests
+        status_tracker.total_requests = self.total_requests
         status_tracker.model = self.prompt_formatter.model_name
         status_tracker.start_tracker(self._tracker_console)
 

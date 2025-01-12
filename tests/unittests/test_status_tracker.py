@@ -182,13 +182,13 @@ def test_batch_status_tracker_final_stats():
     captured = output.getvalue()
 
     # Verify the final statistics table
-    assert "Final Batch Processing Statistics" in captured
-    assert "test-model" in captured
-    assert "Total Tokens Used" in captured
-    assert "1,000" in captured  # Input tokens
-    assert "2,000" in captured  # Output tokens
-    assert "$0.123" in captured  # Cost
-    assert "45" in captured  # Successful requests
-    assert "5" in captured  # Failed requests
-    assert "$0.15" in captured  # Input cost per million
-    assert "$0.60" in captured  # Output cost per million
+    assert "Final Curator Statistics" in captured, captured
+    assert "test-model" in captured, captured
+    assert "Total Tokens Used" in captured, captured
+    assert "1,000" in captured, captured  # Input tokens
+    assert "2,000" in captured, captured  # Output tokens
+    assert "$0.123" in captured, captured  # Cost
+    assert "45" in captured, captured  # Successful requests
+    assert "5" in captured, captured  # Failed requests
+    assert "$0.15" in captured, captured  # Input cost per million
+    assert "$0.60" in captured, captured  # Output cost per million

@@ -73,7 +73,11 @@ class BatchStatusTracker(BaseModel):
         self._task_id = self._progress.add_task(
             description=f"[cyan]Processing batches using {self.model}",
             total=self.n_total_requests,
-            completed=self.n_downloaded_succeeded_requests,
+            # Since we don't automatically retry failed requests within a run, we can count
+            # failed downloaded requests as "completed". Users who require
+            # 100% success rate can set require_all_responses to True and
+            # manually retry.
+            completed=self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests,
             batches_text="[bold white]Batches:[/bold white] [dim]--[/dim]",
             requests_text="[bold white]Requests:[/bold white] [dim]--[/dim]",
             tokens_text="[bold white]Tokens:[/bold white] [dim]--[/dim]",
@@ -148,7 +152,7 @@ class BatchStatusTracker(BaseModel):
         # Update progress display
         self._progress.update(
             self._task_id,
-            completed=self.n_downloaded_succeeded_requests,
+            completed=self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests,
             batches_text=batches_text,
             requests_text=requests_text,
             tokens_text=tokens_text,
@@ -165,6 +169,12 @@ class BatchStatusTracker(BaseModel):
         # Model Information
         table.add_row("Model", "", style="bold magenta")
         table.add_row("Model", f"[blue]{self.model}[/blue]")
+
+        # Batch Statistics
+        table.add_row("Batches", "", style="bold magenta")
+        table.add_row("Total Batches", str(self.n_total_batches))
+        table.add_row("Submitted", f"[yellow]{self.n_submitted_batches}[/yellow]")
+        table.add_row("Downloaded", f"[green]{self.n_downloaded_batches}[/green]")
 
         # Request Statistics
         table.add_row("Requests", "", style="bold magenta")
@@ -198,10 +208,16 @@ class BatchStatusTracker(BaseModel):
         # Performance Statistics
         table.add_row("Performance", "", style="bold magenta")
         elapsed_time = time.time() - self.start_time
+        elapsed_minutes = elapsed_time / 60
+        rpm = (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests) / max(0.001, elapsed_minutes)
+        input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+        output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
 
         table.add_row("Total Time", f"{elapsed_time:.2f}s")
-        if self.n_finished_or_downloaded_succeeded_requests > 0:
-            table.add_row("Average Time per Request", f"{elapsed_time / self.n_finished_or_downloaded_succeeded_requests:.2f}s")
+        table.add_row("Average Time per Request", f"{elapsed_time / max(1, self.n_finished_or_downloaded_succeeded_requests):.2f}s")
+        table.add_row("Requests per Minute", f"{rpm:.1f}")
+        table.add_row("Input Tokens per Minute", f"{input_tpm:.1f}")
+        table.add_row("Output Tokens per Minute", f"{output_tpm:.1f}")
 
         self._console.print(table)
 
@@ -300,7 +316,6 @@ class BatchStatusTracker(BaseModel):
         batch.status = GenericBatchStatus.SUBMITTED
         if batch.request_file in self.unsubmitted_request_files:
             self.unsubmitted_request_files.remove(batch.request_file)
-            self.n_total_requests += n_requests
         else:
             logger.warning(f"Request file {batch.request_file} is being re-submitted.")
         self.submitted_batches[batch.id] = batch
