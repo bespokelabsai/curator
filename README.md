@@ -351,3 +351,15 @@ Offline vLLM inference support batch inference by default, the default batch siz
 ## Contributing
 Thank you to all the contributors for making this project possible!
 Please follow [these instructions](CONTRIBUTING.md) on how to contribute.
+
+## Citation
+If you find Curator useful, please consider citing us!
+
+```
+@software{Curator: A Tool for Synthetic Data Creation,
+  author = {Marten, Ryan and Vu, Trung and Cheng-Jie Ji, Charlie and Dimakis, Alex and Sathiamoorthy, Mahesh},
+  month = jan,
+  title = {{Curator}},
+  year = {2025}
+}
+```
