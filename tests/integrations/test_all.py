@@ -312,6 +312,8 @@ def test_basic_offline(temp_working_dir, mock_dataset):
             "synchronize": lambda: None,
             "empty_cache": lambda: None,
             "is_available": lambda: True,
+            "get_device_name": lambda device: "Mock GPU",
+            "device_count": lambda: 1,
         },
     )
 
