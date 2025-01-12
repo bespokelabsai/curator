@@ -350,4 +350,4 @@ Offline vLLM inference support batch inference by default, the default batch siz
 
 ## Contributing
 Thank you to all the contributors for making this project possible!
-Please follow [CONTRIBUTING.md](these instructions) on how to contribute.
+Please follow [these instructions](CONTRIBUTING.md) on how to contribute.
