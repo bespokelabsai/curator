@@ -203,7 +203,7 @@ class BatchStatusTracker(BaseModel):
         if self.n_finished_or_downloaded_succeeded_requests > 0:
             table.add_row("Average Time per Request", f"{elapsed_time / self.n_finished_or_downloaded_succeeded_requests:.2f}s")
 
-        self.console.print(table)
+        self._console.print(table)
 
     @property
     def n_total_batches(self) -> int:
