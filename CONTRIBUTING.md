@@ -4,21 +4,36 @@ Welcome to the Curator project! We value your contributions and are excited to h
 
 ## Table of Contents
 
-1. [How to Contribute](#how-to-contribute)
-2. [Code of Conduct](#code-of-conduct)
-3. [Setting Up the Project](#setting-up-the-project)
-4. [Submitting Changes](#submitting-changes)
-5. [Issue Reporting](#issue-reporting)
-6. [Pull Request Guidelines](#pull-request-guidelines)
+1. [Setting Up the Project](#setting-up-the-project)
+2. [How to Contribute](#how-to-contribute)
+3. [Submitting Changes](#submitting-changes)
+4. [Issue Reporting](#issue-reporting)
+5. [Pull Request Guidelines](#pull-request-guidelines)
 
 ---
+
+## Setting Up the Project
+
+1. Ensure you have the following tools installed:
+   - Git
+   - Any other dependencies listed in the repository's documentation
+
+2. Install dependencies:
+   ```bash
+   make install
+   ```
+
+4. Run tests to verify your setup:
+   ```bash
+   make test
+   ```
 
 ## How to Contribute
 
 1. **Fork the Repository**: Start by forking the repository to your GitHub account.
 2. **Clone Your Fork**: Clone your fork to your local machine using:
    ```bash
-   git clone https://github.com/bespokelabsai/curator.git
+   git clone https://github.com/<username>/curator.git
    ```
 3. **Create an Issue**: Before starting any work, create an issue in the repository to discuss your proposed changes or enhancements. This helps maintainers guide your contributions effectively.
 4. **Create a Branch**: Create a feature branch for your changes:
@@ -37,25 +52,6 @@ Welcome to the Curator project! We value your contributions and are excited to h
    ```
 9. **Submit a Pull Request**: Open a pull request (PR) to the main repository.
 
-## Code of Conduct
-
-Please read and adhere to our [Code of Conduct](CODE_OF_CONDUCT.md). We are committed to fostering a welcoming and inclusive community.
-
-## Setting Up the Project
-
-1. Ensure you have the following tools installed:
-   - Git
-   - Any other dependencies listed in the repository's documentation
-
-2. Install dependencies:
-   ```bash
-   make install
-   ```
-
-4. Run tests to verify your setup:
-   ```bash
-   make test
-   ```
 
 ## Submitting Changes
 

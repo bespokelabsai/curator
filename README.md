@@ -349,4 +349,5 @@ Offline vLLM inference support batch inference by default, the default batch siz
 - [Use vLLM OpenAI compatible server with structured output](examples/vllm-online/vllm_online_structured.py)
 
 ## Contributing
-Contributions are welcome!
+Thank you to all the contributors for making this project possible!
+Please follow [CONTRIBUTING.md](these instructions) on how to contribute.
