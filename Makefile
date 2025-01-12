@@ -4,8 +4,7 @@ CLEANUP_DIRS = ~/.cache/curator __pycache__ .pytest_cache .tox .coverage .nox *.
 lint: 
 	@echo "Running Linter (Ruff)..."
 	isort tests/ src/
-	poetry run ruff format src/
-	poetry run ruff format tests/
+	poetry run ruff format src tests
 
 test:
 	@echo "Running tests with pytest..."
@@ -18,8 +17,8 @@ test_integration:
 
 check: 
 	@echo "Checking Linter (Ruff)..."
-	poetry run ruff check src/ --output-format=github
-	poetry run ruff check tests/ --output-format=github
+	poetry run ruff check src/ tests/ --output-format=github
+	poetry run ruff format src/ tests/ --check
 clean:
 	@echo "Cleaning up build artifacts and cache..."
 	rm -rf $(CLEANUP_DIRS)
