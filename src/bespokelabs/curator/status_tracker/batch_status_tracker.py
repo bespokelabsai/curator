@@ -49,11 +49,6 @@ class BatchStatusTracker(BaseModel):
     # Track start time
     start_time: float = Field(default_factory=time.time)
 
-    # Progress tracking fields
-    console: Optional[Console] = Field(default=None, exclude=True)
-    progress: Optional[Progress] = Field(default=None, exclude=True)
-    task_id: Optional[str] = Field(default=None, exclude=True)
-
     def start_tracker(self, console: Optional[Console] = None):
         """Start the progress tracker with rich console output."""
         self._console = Console() if console is None else console
@@ -122,13 +117,9 @@ class BatchStatusTracker(BaseModel):
 
         tokens_text = (
             "[bold white]Tokens:[/bold white] "
-            f"[white]Total Input:[/white] [blue]{self.total_prompt_tokens:,} [/blue] "
-            f"[white]•[/white] "
             f"[white]Avg Input:[/white] [blue]{avg_prompt:.0f}[/blue] "
             f"[white]•[/white] "
             f"[white]Avg Output:[/white] [blue]{avg_completion:.0f}[/blue] "
-            f"[white]•[/white] "
-            f"[white]Total Output:[/white] [blue]{self.total_completion_tokens:,} [/blue]"
         )
 
         avg_cost = self.total_cost / max(1, self.n_finished_or_downloaded_succeeded_requests)
