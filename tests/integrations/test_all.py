@@ -304,7 +304,23 @@ def test_basic_offline(temp_working_dir, mock_dataset):
         )
         return template.format(conversation[0]["content"])
 
-    with patch("vllm.LLM") as mock_llm:
+    # Mock CUDA-related methods
+    mock_cuda = type(
+        "MockCuda",
+        (),
+        {
+            "synchronize": lambda: None,
+            "empty_cache": lambda: None,
+            "is_available": lambda: True,
+        },
+    )
+
+    with (
+        patch("vllm.LLM") as mock_llm,
+        patch("torch.cuda", mock_cuda),
+        patch("torch.cuda.synchronize"),
+        patch("torch.cuda.empty_cache"),
+    ):
         mock_llm.return_value.generate = mock_generate
         mock_llm.return_value.get_tokenizer.return_value.apply_chat_template = mock_apply_chat_template
 
