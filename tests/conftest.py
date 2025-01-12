@@ -18,6 +18,7 @@ def temp_working_dir(request):
         os.environ[_KEY_MAP[backend]] = "sk-mocked-**"
     os.environ["HF_DATASETS_CACHE"] = "/dev/null"
     temp_working_dir = f"tests/integrations/{backend}/fixtures/.test_cache"
+
     if cached_working_dir:
         working_dir_zip = f"tests/integrations/{backend}/fixtures/.test_cache.zip"
         with zipfile.ZipFile(working_dir_zip, "r") as zip_ref:

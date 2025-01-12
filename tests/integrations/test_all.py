@@ -1,10 +1,11 @@
 import hashlib
+import importlib
 import logging
 import signal
 import time
 from io import StringIO
+from unittest.mock import patch
 
-import numpy as np
 import pytest
 from rich.console import Console
 
@@ -21,8 +22,8 @@ def _hash_string(input_string):
 
 
 _ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm"}]
-_BATCH_BACKENDS = [{"integration": backend} for backend in {"openai"}]
-_FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"openai"}]
+_FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"anthropic", "openai"}]
+_BATCH_BACKENDS = [{"integration": backend} for backend in {"anthropic", "openai"}]
 
 
 class TimeoutError(Exception):
@@ -78,13 +79,12 @@ def test_basic(temp_working_dir, mock_dataset):
         assert _hash_string(recipes) == hash_book[backend]
 
 
-@pytest.mark.skip
-@pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
-def test_camel(temp_working_dir, camel_gt_dataset):
+@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+def test_camel(temp_working_dir):
     temp_working_dir, _, vcr_config = temp_working_dir
     with vcr_config.use_cassette("camel_completion.yaml"):
         qa_dataset = helper.create_camel(temp_working_dir)
-        assert np.array_equal(qa_dataset.to_pandas().values, camel_gt_dataset.to_pandas().values)
+        assert ["subject", "subsubject", "question", "answer"] == qa_dataset.column_names
 
 
 @pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
@@ -145,12 +145,16 @@ def test_resume(caplog, temp_working_dir, mock_dataset):
 ##############################
 
 
+def _reload_batch_patch_deps():
+    from bespokelabs.curator.request_processor.batch import base_batch_request_processor
+
+    importlib.reload(base_batch_request_processor)
+
+
 @pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
 def test_batch_resume(temp_working_dir, mock_dataset):
-    temp_working_dir, _, vcr_config = temp_working_dir
+    temp_working_dir, backend, vcr_config = temp_working_dir
     with vcr_config.use_cassette("basic_batch_resume.yaml"):
-        from unittest.mock import patch
-
         with patch("bespokelabs.curator.request_processor.event_loop.run_in_event_loop") as mocked_run_loop:
 
             def _run_loop(func):
@@ -160,8 +164,8 @@ def test_batch_resume(temp_working_dir, mock_dataset):
 
             mocked_run_loop.side_effect = _run_loop
             with pytest.raises(ValueError):
-                helper.create_basic(temp_working_dir, mock_dataset, batch=True)
-        mocked_run_loop.side_effect = run_in_event_loop
+                _reload_batch_patch_deps()
+                helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
         from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
 
         tracker_batch_file_path = temp_working_dir + "/testing_hash_123/batch_objects.jsonl"
@@ -171,7 +175,9 @@ def test_batch_resume(temp_working_dir, mock_dataset):
         assert len(tracker.submitted_batches) == 1
         assert len(tracker.downloaded_batches) == 0
 
-        helper.create_basic(temp_working_dir, mock_dataset, batch=True)
+        patch.stopall()
+        _reload_batch_patch_deps()
+        helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
         with open(tracker_batch_file_path, "r") as f:
             tracker = BatchStatusTracker.model_validate_json(f.read())
         assert len(tracker.submitted_batches) == 0
@@ -183,6 +189,7 @@ def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
     temp_working_dir, backend, vcr_config = temp_working_dir
     with vcr_config.use_cassette("failed_request_batch_resume.yaml"):
         tracker_batch_file_path = temp_working_dir + "/testing_hash_123/batch_objects.jsonl"
+
         from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
 
         with open(tracker_batch_file_path, "r") as f:
@@ -196,7 +203,7 @@ def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
         logger = "bespokelabs.curator.status_tracker.batch_status_tracker"
 
         with caplog.at_level(logging.INFO, logger=logger):
-            helper.create_basic(temp_working_dir, mock_dataset, batch=True)
+            helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
             assert RESUBMIT_MSG in caplog.text
 
         with open(tracker_batch_file_path, "r") as f:
@@ -210,8 +217,11 @@ def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
 @pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
 def test_basic_batch(temp_working_dir, mock_dataset):
     temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {"openai": "47127d9dcb428c18e5103dffcb0406ba2f9acab2f1ea974606962caf747b0ad5"}
+    hash_book = {
+        "openai": "47127d9dcb428c18e5103dffcb0406ba2f9acab2f1ea974606962caf747b0ad5",
+        "anthropic": "f38e7406448e95160ebe4d9b6148920ef37b019f23a4e2c57094fdd4bafb09be",
+    }
     with vcr_config.use_cassette("basic_batch_completion.yaml"):
-        dataset = helper.create_basic(temp_working_dir, mock_dataset, batch=True)
+        dataset = helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]

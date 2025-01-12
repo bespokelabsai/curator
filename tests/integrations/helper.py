@@ -71,12 +71,17 @@ def parse_func(row, response):
     return {"recipe": response}
 
 
+_DEFAULT_MODEL_MAP = {"openai": "gpt-3.5-turbo", "anthropic": "claude-3-5-sonnet-20241022", "litellm": "gpt-3.5-turbo"}
+
+
 def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, backend="openai", mocking=None, batch_cancel=False, tracker_console=None):
+    from bespokelabs import curator
+
     llm_params = llm_params or {}
     prompter = curator.LLM(
         prompt_func=prompt_func,
         parse_func=parse_func,
-        model_name="gpt-3.5-turbo",
+        model_name=_DEFAULT_MODEL_MAP[backend],
         backend=backend,
         batch_check_interval=batch_check_interval,
         batch=batch,
