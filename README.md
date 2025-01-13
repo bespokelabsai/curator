@@ -118,7 +118,8 @@ class Poems(BaseModel):
 
 
 llm = curator.LLM(model_name="gpt-4o-mini", response_format=Poems)
-poems = llm(["Write two poems about the importance of data in AI.", "Write three haikus about the importance of data in AI."])
+poems = llm(["Write two poems about the importance of data in AI.", 
+              "Write three haikus about the importance of data in AI."])
 print(poems.to_pandas())
 
 # Output: 
@@ -131,10 +132,7 @@ print(poems.to_pandas())
 Note how each `Poems` object occupies a single row in the dataset. 
 
 
-For more advanced use cases,
-you might need to define more custom parsing and prompting logic. For example, you might want
-to preserve the mapping between each topic and the poem being generated from it. In this case, you can define a `Poet` object that inherits from `LLM`, and define your own
-prompting and parsing logic:
+For more advanced use cases, you might need to define more custom parsing and prompting logic. For example, you might want to preserve the mapping between each topic and the poem being generated from it. In this case, you can define a `Poet` object that inherits from `LLM`, and define your own prompting and parsing logic:
 
 ```python
 from typing import List, Dict
@@ -150,17 +148,17 @@ class Poem(BaseModel):
 
 
 class Poems(BaseModel):
-    poems_list: List[Poem] = Field(description="A list of poems.")
+    poems: List[str] = Field(description="A list of poems.")
 
 
 class Poet(curator.LLM):
     response_format = Poems
 
-    def prompt(cls, input: Dict) -> str:
+    def prompt(self, input: Dict) -> str:
         return f"Write two poems about {input['topic']}."
 
-    def parse(cls, input: Dict, response: Poems) -> Dict:
-        return [{"topic": input["topic"], "poem": p.poem} for p in response.poems_list]
+    def parse(self, input: Dict, response: Poems) -> Dict:
+        return [{"topic": input["topic"], "poem": p} for p in response.poems]
 
 poet = Poet(model_name="gpt-4o-mini")
 
@@ -171,11 +169,11 @@ topics = Dataset.from_dict({"topic": [
 poem = poet(topics)
 print(poem.to_pandas())
 # Output:
-#    topic                                     poem
-# 0  Urban loneliness in a bustling city       In the city's heart, where the sirens wail,\nA...
-# 1  Urban loneliness in a bustling city       City streets hum with a bittersweet song,\nHor...
-# 2  Beauty of Bespoke Labs's Curator library  In whispers of design and crafted grace,\nBesp...
-# 3  Beauty of Bespoke Labs's Curator library  In the hushed breath of parchment and ink,\nBe...
+#                                       topic                         title                                               poem
+# 0       Urban loneliness in a bustling city           The Crowded Silence  Among the throngs, I walk alone,\nWith faces b...
+# 1       Urban loneliness in a bustling city            Concrete Isolation  In the city's heart, where shadows entwine,\nA...
+# 2  Beauty of Bespoke Labs's Curator library     The Art of Curated Dreams  In Bespoke Labs, where visions blend,\nA libra...
+# 3  Beauty of Bespoke Labs's Curator library  Ode to the Curator's Library  Upon the shelves, like stars in night,\nBespok...
 ```
 In the `Poet` class:
 * `response_format` is the structured output class we defined above.
@@ -401,7 +399,7 @@ If you find Curator useful, please consider citing us!
 
 ```
 @software{Curator: A Tool for Synthetic Data Creation,
-  author = {Marten, Ryan and Vu, Trung and Cheng-Jie Ji, Charlie and Dimakis, Alex and Sathiamoorthy, Mahesh},
+  author = {Marten, Ryan and Vu, Trung and Cheng-Jie Ji, Charlie and Sharma, Kartik and Dimakis, Alex and Sathiamoorthy, Mahesh},
   month = jan,
   title = {{Curator}},
   year = {2025}
