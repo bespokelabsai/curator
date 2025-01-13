@@ -166,8 +166,11 @@ class LLM:
             Iterable: A list of structured outputs from the completions
         """
         # We convert from iterable to Dataset because Dataset has random access via row_idx
-        if not isinstance(dataset, Dataset) and dataset is not None:
-
+        if isinstance(dataset, str):
+            # A single string is converted to a dataset with a single row
+            dataset = Dataset.from_list([{"prompt": dataset}])
+        elif not isinstance(dataset, Dataset) and dataset is not None:
+            # Wrap the iterable in a generator to convert strings to dictionaries
             def wrapped_iterable():
                 for input in dataset:
                     if isinstance(input, str):

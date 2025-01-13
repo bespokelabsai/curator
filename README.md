@@ -54,32 +54,105 @@ pip install bespokelabs-curator
 To run the examples below, make sure to set your OpenAI API key in
 the environment variable `OPENAI_API_KEY` by running `export OPENAI_API_KEY=sk-...` in your terminal.
 
-### `LLM`: A powerful interface for synthetic data generation
+### Hello World with `LLM`
 
-Let's use structured outputs to generate poems.
 ```python
 from bespokelabs import curator
-from datasets import Dataset
-from pydantic import BaseModel, Field
-from typing import List
+llm = curator.LLM(model_name="gpt-4o-mini")
+poem = llm("Write a poem about the importance of data in AI.")
+print(poem.to_pandas())
+# Output:
+#                                             response
+# 0  In the realm where silence once held sway,  \n...
 
-topics = Dataset.from_dict({"topic": [
-    "Urban loneliness in a bustling city",
-    "Beauty of Bespoke Labs's Curator library"
-]})
+# Or you can pass a list of prompts to generate multiple responses.
+poems = llm(["Write a poem about the importance of data in AI.",
+            "Write a haiku about the importance of data in AI."])
+print(poems.to_pandas())
+# Output:
+#                                             response
+# 0  In the realm where silence once held sway,  \n...
+# 1  Silent streams of truth,  \nData shapes the le...
 ```
 
-Define a class to encapsulate a list of poems.
+Note that retries and caching are enabled by default.
+So now if you run the same prompt again, you will get the same response, pretty much instantly.
+You can delete the cache at `~/.cache/curator`.
+
+#### Calling other models
+You can also call other [LiteLLM](https://docs.litellm.ai/docs/providers) supported models by
+change the `model_name` argument.
+
 ```python
+from bespokelabs import curator
+llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
+poem = llm("Write a poem about the importance of data in AI.")
+print(poem.to_pandas())
+```
+
+### Visualize in Curator Viewer
+Run `curator-viewer` on the command line to see the dataset in the viewer.
+
+You can click on a run and then click on a specific row to see the LLM request and response.
+![Curator Responses](docs/curator-responses.png)
+
+### Using structured outputs
+
+Let's use structured outputs to generate multiple poems in a single LLM call. We can define a class to encapsulate a list of poems,
+and then pass it to the `LLM` class.
+
+```python
+from typing import List
+
+from pydantic import BaseModel, Field
+
+from bespokelabs import curator
+
+
 class Poem(BaseModel):
     poem: str = Field(description="A poem.")
 
+
 class Poems(BaseModel):
     poems_list: List[Poem] = Field(description="A list of poems.")
+
+
+llm = curator.LLM(model_name="gpt-4o-mini", response_format=Poems)
+poems = llm(["Write two poems about the importance of data in AI.", "Write three haikus about the importance of data in AI."])
+print(poems.to_pandas())
+
+# Output: 
+#                                           poems_list
+# 0  [{'poem': 'In shadows deep where silence lies,...
+# 1  [{'poem': 'Data whispers truth,  
+# Patterns wea...
 ```
 
-We define an `LLM` object that generates poems which gets applied to the topics dataset.
+Note how each `Poems` object occupies a single row in the dataset. 
+
+
+For more advanced use cases,
+you might need to define more custom parsing and prompting logic. For example, you might want
+to preserve the mapping between each topic and the poem being generated from it. In this case, you can define a `Poet` object that inherits from `LLM`, and define your own
+prompting and parsing logic:
+
 ```python
+from typing import List, Dict
+from datasets import Dataset
+
+from pydantic import BaseModel, Field
+
+from bespokelabs import curator
+
+
+class Poem(BaseModel):
+    poem: str = Field(description="A poem.")
+
+
+class Poems(BaseModel):
+    poems_list: List[Poem] = Field(description="A list of poems.")
+
+
 class Poet(curator.LLM):
     response_format = Poems
 
@@ -90,55 +163,32 @@ class Poet(curator.LLM):
         return [{"topic": input["topic"], "poem": p.poem} for p in response.poems_list]
 
 poet = Poet(model_name="gpt-4o-mini")
-poems = poet(topics)
-print(poems.to_pandas())
-```
-Here:
-* `prompt_func` takes a row of the dataset as input and returns the prompt for the LLM.
-* `response_format` is the structured output class we defined above.
-* `parse_func` takes the input (`row`) and the structured output (`poems`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object.
 
-Now we can apply the `LLM` object to the dataset, which reads very pythonic.
-```python
+topics = Dataset.from_dict({"topic": [
+    "Urban loneliness in a bustling city",
+    "Beauty of Bespoke Labs's Curator library"
+]})
 poem = poet(topics)
 print(poem.to_pandas())
-# Example output:
+# Output:
 #    topic                                     poem
 # 0  Urban loneliness in a bustling city       In the city's heart, where the sirens wail,\nA...
 # 1  Urban loneliness in a bustling city       City streets hum with a bittersweet song,\nHor...
 # 2  Beauty of Bespoke Labs's Curator library  In whispers of design and crafted grace,\nBesp...
 # 3  Beauty of Bespoke Labs's Curator library  In the hushed breath of parchment and ink,\nBe...
 ```
-Note that `topics` can be created with `curator.LLM` as well,
+In the `Poet` class:
+* `response_format` is the structured output class we defined above.
+* `prompt` takes a row of the dataset as input and returns the prompt for the LLM.
+* `parse` takes the input (`row`) and the structured output (`poems`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object.
+
+Note that `topics` can be created with another `curator.LLM` class as well,
 and we can scale this up to create tens of thousands of diverse poems.
-You can see a more detailed example in the [examples/poem.py](https://github.com/bespokelabsai/curator/blob/mahesh/update_doc/examples/poem.py) file,
-and other examples in the [examples](https://github.com/bespokelabsai/curator/blob/mahesh/update_doc/examples) directory.
+You can see a more detailed example in the [examples/poem-generation/poem.py](examples/poem-generation/poem.py) file,
+and other examples in the [examples](examples) directory.
 
 See the [docs](https://docs.bespokelabs.ai/) for more details as well as
 for troubleshooting information.
-
-#### Use LiteLLM backend for calling other models
-You can use the [LiteLLM](https://docs.litellm.ai/docs/providers) backend for calling other models.
-
-```python
-from bespokelabs import curator
-poet = curator.LLM(
-    prompt_func=lambda row: f"Write two poems about {row['topic']}.",
-    model_name="claude-3-5-haiku-20241022",
-    response_format=Poems,
-    parse_func=lambda row, poems: [
-        {"topic": row["topic"], "poem": p.poem} for p in poems.poems_list
-    ],
-)
-```
-
-### Visualize in Curator Viewer
-Run `curator-viewer` on the command line to see the dataset in the viewer.
-
-You can click on a run and then click on a specific row to see the LLM request and response.
-![Curator Responses](docs/curator-responses.png)
-More examples below.
-
 
 ## Bespoke Curator Viewer
 
@@ -231,11 +281,10 @@ os.environ["HOSTED_VLLM_API_KEY"] = "token-abc123
 
 poem_prompter = curator.LLM(
     model_name=model_path,
-    prompt_func=lambda row: "Generate a poem",
     backend="litellm",
     base_url=URL,
 )
-poem_prompter()
+poem_prompter("Generate a poem")
 ```
 
 See [here](examples/vllm-online/vllm_online.py) a full example.
@@ -265,7 +314,7 @@ Please refer to the vLLM isntallation [instructions](https://docs.vllm.ai/en/lat
 
 ### Basic usage
 
-To use curator with a local model, povide your model local path in the model argument and set the backend to `vllm`:
+To use curator with a local model, provide your model local path in the model argument and set the backend to `vllm`:
 
 ```python
 model_path = "meta-llama/Meta-Llama-3.1-8B-Instruct"
@@ -302,11 +351,11 @@ We use [vLLM's Guided Decoding](https://docs.vllm.ai/en/latest/usage/structured_
 
   model_path = "/local/path/to/weights/meta-llama/Meta-Llama-3.1-70B-Instruct"
   cuisines_generator = curator.LLM(
-      prompt_func=lambda: f"Generate 10 diverse cuisines.",
       model_name=model_path,
       response_format=Cuisines,
       backend="vllm",
   )
+  cuisines = cuisines_generator("Generate 10 diverse cuisines.")
 ```
 
 See full example [here](examples/vllm-offline/vllm_recipe_structured.py).
@@ -316,12 +365,12 @@ See full example [here](examples/vllm-offline/vllm_recipe_structured.py).
 Offline vLLM inference support batch inference by default, the default batch size (number of sequences to process at a time) is equal to 256. Set the `batch_size` argument to change the default value:
 
 ```python
-  curator.LLM(
+  poet = curator.LLM(
         model_name=model_path,
-        prompt_func=lambda row: f"write a poem",
         backend="vllm",
         batch_size=32
     )
+  poems = poet("Write a poem.")
 ```
 
 ### Details on vLLM specific arguments
@@ -340,7 +389,7 @@ Offline vLLM inference support batch inference by default, the default batch siz
 
 - [Generate recipes with Meta LLama 3.1 8B offline](examples/vllm-offline/vllm_recipe.py)
 - [Recipes with structured output](examples/vllm-offline/vllm_recipe_structured.py)
-- [Use vLLM OpeneAI compatible server](examples/vllm-online/vllm_online.py)
+- [Use vLLM OpenAI compatible server](examples/vllm-online/vllm_online.py)
 - [Use vLLM OpenAI compatible server with structured output](examples/vllm-online/vllm_online_structured.py)
 
 ## Contributing
