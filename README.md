@@ -179,10 +179,10 @@ print(poem.to_pandas())
 ```
 In the `Poet` class:
 * `response_format` is the structured output class we defined above.
-* `prompt` takes a row of the dataset as input and returns the prompt for the LLM.
-* `parse` takes the input (`row`) and the structured output (`poems`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object.
+* `prompt` takes the input (`input`) and returns the prompt for the LLM.
+* `parse` takes the input (`input`) and the structured output (`response`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object.
 
-Note that `topics` can be created with another `curator.LLM` class as well,
+Note that `topics` can be created with another `LLM` class as well,
 and we can scale this up to create tens of thousands of diverse poems.
 You can see a more detailed example in the [examples/poem-generation/poem.py](examples/poem-generation/poem.py) file,
 and other examples in the [examples](examples) directory.
