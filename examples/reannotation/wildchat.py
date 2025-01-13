@@ -40,13 +40,7 @@ def parse_func(row, response):
     return {"instruction": instruction, "new_response": response}
 
 
-distill_prompter = curator.LLM(
-    prompt_func=prompt_func,
-    parse_func=parse_func,
-    model_name="gpt-4o-mini",
-    batch=True,
-    backend_params={"batch_size": 1_000}
-)
+distill_prompter = curator.LLM(prompt_func=prompt_func, parse_func=parse_func, model_name="gpt-4o-mini", batch=True, backend_params={"batch_size": 1_000})
 
 distilled_dataset = distill_prompter(dataset)
 print(distilled_dataset)

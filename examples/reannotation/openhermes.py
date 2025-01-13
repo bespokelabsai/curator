@@ -53,11 +53,7 @@ def parse_func(row, response):
 
 
 distill_prompter = curator.LLM(
-    prompt_func=prompt_func,
-    parse_func=parse_func,
-    model_name="claude-3-5-sonnet-20241022",
-    batch=True,
-    backend_params={"batch_size": 100}
+    prompt_func=prompt_func, parse_func=parse_func, model_name="claude-3-5-sonnet-20241022", batch=True, backend_params={"batch_size": 100}
 )
 
 dataset = load_dataset("teknium/OpenHermes-2.5", split="train")

@@ -82,7 +82,7 @@ def main():
         },
         backend="litellm",
         response_format=Recipe,
-        backend_params={"base_url": f"http://{HOST}:{PORT}/v1"}
+        backend_params={"base_url": f"http://{HOST}:{PORT}/v1"},
     )
 
     # Generate recipes for all cuisines

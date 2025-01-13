@@ -45,7 +45,7 @@ def main():
             "cuisine": row["cuisine"],
         },
         backend="vllm",
-        backend_params={"tensor_parallel_size": 4}
+        backend_params={"tensor_parallel_size": 4},
     )
 
     # Generate recipes for all cuisines
