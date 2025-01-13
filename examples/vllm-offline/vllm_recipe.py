@@ -13,13 +13,11 @@ from bespokelabs import curator
 class RecipeGenerator(curator.LLM):
     """A recipe generator that generates recipes for different cuisines."""
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Generate a prompt for the recipe generator."""
         return f"Generate a random {input['cuisine']} recipe. Be creative but keep it realistic."
 
-    @classmethod
-    def parse(cls, input: dict, response: str) -> dict:
+    def parse(self, input: dict, response: str) -> dict:
         """Parse the model response into the desired output format."""
         return {
             "recipe": response,
