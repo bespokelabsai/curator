@@ -114,7 +114,7 @@ class OfflineRequestProcessorConfig(RequestProcessorConfig):
         pass
 
 
-class BaseBackendParams(t.TypedDict):
+class BaseBackendParams(t.TypedDict, total=False):
     """Base backend params TypedDict class."""
 
     model: t.Optional[str]
@@ -125,7 +125,7 @@ class BaseBackendParams(t.TypedDict):
     generation_params: t.Optional[dict]
 
 
-class OnlineBackendParams(BaseBackendParams):
+class OnlineBackendParams(BaseBackendParams, total=False):
     """TypedDict for online processor."""
 
     max_requests_per_minute: t.Optional[int]
@@ -133,7 +133,7 @@ class OnlineBackendParams(BaseBackendParams):
     seconds_to_pause_on_rate_limit: t.Optional[int]
 
 
-class OfflineBackendParams(BaseBackendParams):
+class OfflineBackendParams(BaseBackendParams, total=False):
     """TypedDict for offline processor. for example, vLLM."""
 
     tensor_parallel_size: t.Optional[int]
@@ -144,7 +144,7 @@ class OfflineBackendParams(BaseBackendParams):
     batch_size: t.Optional[int]
 
 
-class BatchBackendParams(BaseBackendParams):
+class BatchBackendParams(BaseBackendParams, total=False):
     """TypedDict for batch processor."""
 
     batch_size: t.Optional[int]
