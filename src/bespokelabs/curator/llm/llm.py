@@ -125,18 +125,15 @@ class LLM:
             fingerprint = xxh64(os.urandom(8)).hexdigest()
         else:
             # Get the source code of the prompt and parse methods
-            prompt_source = inspect.getsource(self.prompt)
-            parse_source = inspect.getsource(self.parse)
+            prompt_func_hash = _get_function_hash(self.prompt_formatter.prompt_func)
 
             fingerprint_str = "_".join(
                 [
                     str(dataset_hash),
-                    str(xxh64(prompt_source.encode("utf-8")).hexdigest()),
-                    str(xxh64(parse_source.encode("utf-8")).hexdigest()),
+                    str(prompt_func_hash),
                     str(self.prompt_formatter.model_name),
                     str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
                     str(self.batch_mode),
-                    str(self._request_processor.backend),
                 ]
             )
 
