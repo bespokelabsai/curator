@@ -28,8 +28,7 @@ class LLM:
 
     response_format: Type[BaseModel] | None = None
 
-    @classmethod
-    def prompt(cls, input: _DictOrBaseModel) -> _DictOrBaseModel:
+    def prompt(self, input: _DictOrBaseModel) -> _DictOrBaseModel:
         """Prompt the LLM.
 
         Args:
@@ -48,8 +47,7 @@ class LLM:
         """
         return input["prompt"]
 
-    @classmethod
-    def parse(cls, input: _DictOrBaseModel, response: _DictOrBaseModel) -> _DictOrBaseModel:
+    def parse(self, input: _DictOrBaseModel, response: _DictOrBaseModel) -> _DictOrBaseModel:
         """Parse the response from the LLM and combine it with the input.
 
         Args:

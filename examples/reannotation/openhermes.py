@@ -29,13 +29,11 @@ def convert_row(row: dict) -> dict:
 class OpenHermesReannotator(curator.LLM):
     """A reannotator for the OpenHermes dataset."""
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Extract the instruction to be used as the prompt."""
         return input["instruction"]
 
-    @classmethod
-    def parse(cls, input: dict, response: str) -> dict:
+    def parse(self, input: dict, response: str) -> dict:
         """Parse the model response into the desired output format."""
         instruction = input["instruction"]
         return {"instruction": instruction, "new_response": response}

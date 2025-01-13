@@ -41,13 +41,11 @@ class SubjectGenerator(curator.LLM):
 
     response_format = Subjects
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Generate a prompt for the subject generator."""
         return "Generate a diverse list of 3 subjects. Keep it high-level (e.g. Math, Science)."
 
-    @classmethod
-    def parse(cls, input: dict, response: Subjects) -> dict:
+    def parse(self, input: dict, response: Subjects) -> dict:
         """Parse the model response into the desired output format."""
         return response.subjects
 
@@ -57,13 +55,11 @@ class SubsubjectGenerator(curator.LLM):
 
     response_format = Subjects
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Generate a prompt for the subsubject generator."""
         return f"For the given subject {input['subject']}. Generate 3 diverse subsubjects. No explanation."
 
-    @classmethod
-    def parse(cls, input: dict, response: Subjects) -> dict:
+    def parse(self, input: dict, response: Subjects) -> dict:
         """Parse the model response into the desired output format."""
         return [{"subject": input["subject"], "subsubject": subsubject.subject} for subsubject in response.subjects]
 
@@ -73,13 +69,11 @@ class QAGenerator(curator.LLM):
 
     response_format = QAs
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Generate a prompt for the QA generator."""
         return f"For the given subsubject {input['subsubject']}. Generate 3 diverse questions and answers. No explanation."
 
-    @classmethod
-    def parse(cls, input: dict, response: QAs) -> dict:
+    def parse(self, input: dict, response: QAs) -> dict:
         """Parse the model response into the desired output format."""
         return [
             {

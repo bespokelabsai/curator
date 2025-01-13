@@ -57,8 +57,7 @@ def get_generator(template):
     class PersonaGenerator(curator.LLM):
         """A text generator that uses a template to generate text based on personas."""
 
-        @classmethod
-        def prompt(cls, input: dict) -> str:
+        def prompt(self, input: dict) -> str:
             """Generate a prompt using the template and persona."""
             return template.format(persona=input["persona"])
 

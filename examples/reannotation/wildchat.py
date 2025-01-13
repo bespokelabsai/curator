@@ -17,13 +17,11 @@ logger.setLevel(logging.INFO)
 class WildChatReannotator(curator.LLM):
     """A reannotator for the WildChat dataset."""
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Extract the first message from a conversation to use as the prompt."""
         return input["conversation"][0]["content"]
 
-    @classmethod
-    def parse(cls, input: dict, response: str) -> dict:
+    def parse(self, input: dict, response: str) -> dict:
         """Parse the model response into the desired output format."""
         instruction = input["conversation"][0]["content"]
         return {"instruction": instruction, "new_response": response}

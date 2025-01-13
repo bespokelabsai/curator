@@ -36,13 +36,11 @@ class CuisineGenerator(curator.LLM):
 
     response_format = Cuisines
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Generate a prompt for the cuisine generator."""
         return "Generate 10 diverse cuisines."
 
-    @classmethod
-    def parse(cls, input: dict, response: Cuisines) -> dict:
+    def parse(self, input: dict, response: Cuisines) -> dict:
         """Parse the model response into the desired output format."""
         return [{"cuisine": t} for t in response.cuisines_list]
 
@@ -52,13 +50,11 @@ class RecipeGenerator(curator.LLM):
 
     response_format = Recipe
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Generate a prompt for the recipe generator."""
         return f"Generate a random {input['cuisine']} recipe. Be creative but keep it realistic."
 
-    @classmethod
-    def parse(cls, input: dict, response: Recipe) -> dict:
+    def parse(self, input: dict, response: Recipe) -> dict:
         """Parse the model response into the desired output format."""
         return {
             "title": response.title,

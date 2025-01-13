@@ -25,48 +25,40 @@ class QAs(BaseModel):
 
 
 class BasicLLM(curator.LLM):
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         return input["dish"]
 
-    @classmethod
-    def parse(cls, input: dict, response) -> dict:
+    def parse(self, input: dict, response) -> dict:
         return {"recipe": response}
 
 
 class SubjectLLM(curator.LLM):
     response_format = Subjects
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         return "Generate a diverse list of 3 subjects. Keep it high-level (e.g. Math, Science)."
 
-    @classmethod
-    def parse(cls, input: dict, response) -> dict:
+    def parse(self, input: dict, response) -> dict:
         return list(response.subjects)
 
 
 class SubsubjectLLM(curator.LLM):
     response_format = Subjects
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         return f"For the given subject {input['subject']}. Generate 3 diverse subsubjects. No explanation."
 
-    @classmethod
-    def parse(cls, input: dict, response) -> dict:
+    def parse(self, input: dict, response) -> dict:
         return [{"subject": input["subject"], "subsubject": subsubject.subject} for subsubject in response.subjects]
 
 
 class QALLM(curator.LLM):
     response_format = QAs
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         return f"For the given subsubject {input['subsubject']}. Generate 3 diverse questions and answers. No explanation."
 
-    @classmethod
-    def parse(cls, input: dict, response) -> dict:
+    def parse(self, input: dict, response) -> dict:
         return [
             {
                 "subject": input["subject"],

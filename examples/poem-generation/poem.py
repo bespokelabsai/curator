@@ -25,13 +25,11 @@ class TopicGenerator(curator.LLM):
 
     response_format = Topics
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Generate a prompt for the topic generator."""
         return "Generate 10 diverse topics that are suitable for writing poems about."
 
-    @classmethod
-    def parse(cls, input: dict, response: Topics) -> dict:
+    def parse(self, input: dict, response: Topics) -> dict:
         """Parse the model response into the desired output format."""
         return [{"topic": t} for t in response.topics_list]
 
@@ -55,13 +53,11 @@ class Poet(curator.LLM):
 
     response_format = Poems
 
-    @classmethod
-    def prompt(cls, input: dict) -> str:
+    def prompt(self, input: dict) -> str:
         """Generate a prompt using the topic."""
         return f"Write two poems about {input['topic']}."
 
-    @classmethod
-    def parse(cls, input: dict, response: Poems) -> dict:
+    def parse(self, input: dict, response: Poems) -> dict:
         """Parse the model response into the desired output format."""
         return [{"topic": input["topic"], "poem": p} for p in response.poems_list]
 
