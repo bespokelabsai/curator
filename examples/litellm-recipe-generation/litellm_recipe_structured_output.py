@@ -74,8 +74,7 @@ def main():
         },
         response_format=Recipe,
         backend="litellm",
-        max_requests_per_minute=2_000,
-        max_tokens_per_minute=4_000_000,
+        backend_params={'max_requests_per_minute': 2_000, 'max_tokens_per_minute': 4_000_000}
     )
 
     # Generate recipes for all cuisines

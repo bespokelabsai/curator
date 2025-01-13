@@ -60,7 +60,7 @@ def get_generator(template):
     generator = curator.LLM(
         prompt_func=prompt_func,
         model_name="gpt-4o",
-        generation_params={"temperature": 0.7},
+        backend_params={"generation_params": {"temperature": 0.7}},
     )
     return generator
 

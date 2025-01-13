@@ -61,7 +61,7 @@ def main():
             "cuisine": row["cuisine"],
         },
         backend="litellm",
-        base_url=f"http://{HOST}:{PORT}/v1",
+        backend_params={"base_url": f"http://{HOST}:{PORT}/v1"}
     )
 
     # Generate recipes for all cuisines

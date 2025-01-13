@@ -57,7 +57,7 @@ distill_prompter = curator.LLM(
     parse_func=parse_func,
     model_name="claude-3-5-sonnet-20241022",
     batch=True,
-    batch_size=100,
+    backend_params={"batch_size": 100}
 )
 
 dataset = load_dataset("teknium/OpenHermes-2.5", split="train")

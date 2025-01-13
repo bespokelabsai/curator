@@ -45,7 +45,7 @@ distill_prompter = curator.LLM(
     parse_func=parse_func,
     model_name="gpt-4o-mini",
     batch=True,
-    batch_size=1_000,
+    backend_params={"batch_size": 1_000}
 )
 
 distilled_dataset = distill_prompter(dataset)
