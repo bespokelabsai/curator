@@ -5,6 +5,23 @@ from datasets import Dataset
 from bespokelabs import curator
 
 
+class RecipeGenerator(curator.LLM):
+    """A recipe generator that generates recipes for different cuisines."""
+
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        """Generate a prompt using the template and cuisine."""
+        return f"Generate a random {input['cuisine']} recipe. Be creative but keep it realistic."
+
+    @classmethod
+    def parse(cls, input: dict, response: str) -> dict:
+        """Parse the model response into the desired output format."""
+        return {
+            "recipe": response,
+            "cuisine": input["cuisine"],
+        }
+
+
 def main():
     """Generate synthetic recipes for different cuisines."""
     # List of cuisines to generate recipes for
@@ -37,19 +54,14 @@ def main():
     #       (Up to 1,000 requests per day)
     #############################################
 
-    recipe_prompter = curator.LLM(
+    recipe_generator = RecipeGenerator(
         model_name="gemini/gemini-1.5-flash",
-        prompt_func=lambda row: f"Generate a random {row['cuisine']} recipe. Be creative but keep it realistic.",
-        parse_func=lambda row, response: {
-            "recipe": response,
-            "cuisine": row["cuisine"],
-        },
         backend="litellm",
         backend_params={"max_requests_per_minute": 2_000, "max_tokens_per_minute": 4_000_000},
     )
 
     # Generate recipes for all cuisines
-    recipes = recipe_prompter(cuisines)
+    recipes = recipe_generator(cuisines)
 
     # Print results
     print(recipes.to_pandas())

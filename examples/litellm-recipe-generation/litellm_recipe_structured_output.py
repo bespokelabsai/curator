@@ -31,20 +31,56 @@ class Cuisines(BaseModel):
     cuisines_list: List[str] = Field(description="A list of cuisines.")
 
 
+class CuisineGenerator(curator.LLM):
+    """A cuisine generator that generates diverse cuisines."""
+
+    response_format = Cuisines
+
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        """Generate a prompt for the cuisine generator."""
+        return "Generate 10 diverse cuisines."
+
+    @classmethod
+    def parse(cls, input: dict, response: Cuisines) -> dict:
+        """Parse the model response into the desired output format."""
+        return [{"cuisine": t} for t in response.cuisines_list]
+
+
+class RecipeGenerator(curator.LLM):
+    """A recipe generator that generates recipes for different cuisines."""
+
+    response_format = Recipe
+
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        """Generate a prompt using the cuisine."""
+        return f"Generate a random {input['cuisine']} recipe. Be creative but keep it realistic."
+
+    @classmethod
+    def parse(cls, input: dict, response: Recipe) -> dict:
+        """Parse the model response into the desired output format."""
+        return {
+            "title": response.title,
+            "ingredients": response.ingredients,
+            "instructions": response.instructions,
+            "prep_time": response.prep_time,
+            "cook_time": response.cook_time,
+            "servings": response.servings,
+            "cuisine": input["cuisine"],
+        }
+
+
 def main():
     """Main function to generate synthetic recipes."""
-    # We define a prompter that generates cuisines
     #############################################
     # To use Claude models:
     # 1. Go to https://console.anthropic.com/settings/keys
     # 2. Generate an API key or use an existing API key
     # 3. Set environment variable: ANTHROPIC_API_KEY
     #############################################
-    cuisines_generator = curator.LLM(
-        prompt_func=lambda: "Generate 10 diverse cuisines.",
+    cuisines_generator = CuisineGenerator(
         model_name="claude-3-5-haiku-20241022",
-        response_format=Cuisines,
-        parse_func=lambda _, cuisines: [{"cuisine": t} for t in cuisines.cuisines_list],
         backend="litellm",
     )
     cuisines = cuisines_generator()
@@ -60,25 +96,14 @@ def main():
     #       max_tokens_per_minute=1_000_000
     #       (Up to 1,000 requests per day)
     #############################################
-    recipe_prompter = curator.LLM(
+    recipe_generator = RecipeGenerator(
         model_name="gemini/gemini-1.5-flash",
-        prompt_func=lambda row: f"Generate a random {row['cuisine']} recipe. Be creative but keep it realistic.",
-        parse_func=lambda row, response: {
-            "title": response.title,
-            "ingredients": response.ingredients,
-            "instructions": response.instructions,
-            "prep_time": response.prep_time,
-            "cook_time": response.cook_time,
-            "servings": response.servings,
-            "cuisine": row["cuisine"],
-        },
-        response_format=Recipe,
         backend="litellm",
         backend_params={"max_requests_per_minute": 2_000, "max_tokens_per_minute": 4_000_000},
     )
 
     # Generate recipes for all cuisines
-    recipes = recipe_prompter(cuisines)
+    recipes = recipe_generator(cuisines)
 
     # Print results
     print(recipes.to_pandas())

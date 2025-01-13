@@ -31,6 +31,45 @@ class Cuisines(BaseModel):
     cuisines_list: List[str] = Field(description="A list of cuisines.")
 
 
+class CuisineGenerator(curator.LLM):
+    """A cuisine generator that generates diverse cuisines."""
+
+    response_format = Cuisines
+
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        """Generate a prompt for the cuisine generator."""
+        return "Generate 10 diverse cuisines."
+
+    @classmethod
+    def parse(cls, input: dict, response: Cuisines) -> dict:
+        """Parse the model response into the desired output format."""
+        return [{"cuisine": t} for t in response.cuisines_list]
+
+
+class RecipeGenerator(curator.LLM):
+    """A recipe generator that generates recipes for different cuisines."""
+
+    response_format = Recipe
+
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        """Generate a prompt for the recipe generator."""
+        return f"Generate a random {input['cuisine']} recipe. Be creative but keep it realistic."
+
+    @classmethod
+    def parse(cls, input: dict, response: Recipe) -> dict:
+        """Parse the model response into the desired output format."""
+        return {
+            "title": response.title,
+            "ingredients": response.ingredients,
+            "instructions": response.instructions,
+            "prep_time": response.prep_time,
+            "cook_time": response.cook_time,
+            "servings": response.servings,
+        }
+
+
 def main():
     """Generate recipes for different world cuisines using vLLM.
 
@@ -40,33 +79,20 @@ def main():
     """
     # List of cuisines to generate recipes for
     model_path = "Qwen/Qwen2.5-3B-Instruct"
-    cuisines_generator = curator.LLM(
-        prompt_func=lambda: "Generate 10 diverse cuisines.",
+    cuisines_generator = CuisineGenerator(
         model_name=model_path,
-        response_format=Cuisines,
-        parse_func=lambda _, cuisines: [{"cuisine": t} for t in cuisines.cuisines_list],
         backend="vllm",
     )
     cuisines = cuisines_generator()
     print(cuisines.to_pandas())
 
-    recipe_prompter = curator.LLM(
+    recipe_generator = RecipeGenerator(
         model_name=model_path,
-        prompt_func=lambda row: f"Generate a random {row['cuisine']} recipe. Be creative but keep it realistic.",
-        parse_func=lambda row, response: {
-            "title": response.title,
-            "ingredients": response.ingredients,
-            "instructions": response.instructions,
-            "prep_time": response.prep_time,
-            "cook_time": response.cook_time,
-            "servings": response.servings,
-        },
-        response_format=Recipe,
         backend="vllm",
     )
 
     # Generate recipes for all cuisines
-    recipes = recipe_prompter(cuisines)
+    recipes = recipe_generator(cuisines)
 
     # Print results
     print(recipes.to_pandas())

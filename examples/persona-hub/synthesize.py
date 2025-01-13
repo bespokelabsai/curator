@@ -54,15 +54,18 @@ def get_generator(template):
         curator.LLM: A configured LLM generator
     """
 
-    def prompt_func(row):
-        return template.format(persona=row["persona"])
+    class PersonaGenerator(curator.LLM):
+        """A text generator that uses a template to generate text based on personas."""
 
-    generator = curator.LLM(
-        prompt_func=prompt_func,
-        model_name="gpt-4o-mini",
+        @classmethod
+        def prompt(cls, input: dict) -> str:
+            """Generate a prompt using the template and persona."""
+            return template.format(persona=input["persona"])
+
+    return PersonaGenerator(
+        model_name="gpt-4o",
         generation_params={"temperature": 0.7},
     )
-    return generator
 
 
 def main(args):
@@ -93,16 +96,14 @@ if __name__ == "__main__":
         "--sample_size",
         type=int,
         default=10,
-        help=("Number of samples to process from the dataset; " "Set it to 0 if you want to use the full set of 200k personas."),
+        help=("Number of samples to process from the dataset; Set it to 0 if you want to use the full set of 200k personas."),
     )
     parser.add_argument(
         "--template",
         type=str,
         required=True,
         choices=["instruction", "knowledge", "npc", "math"],
-        help=(
-            "Prompt templates. Choose from 'instruction', 'knowledge', 'math' or 'npc'. " "You can also add more customized templates in prompt_templates.py"
-        ),
+        help=("Prompt templates. Choose from 'instruction', 'knowledge', 'math' or 'npc'. You can also add more customized templates in prompt_templates.py"),
     )
     parser.add_argument("--output_path", type=str, required=True, help="Path to the output file.")
 
