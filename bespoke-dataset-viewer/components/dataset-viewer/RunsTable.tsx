@@ -20,47 +20,44 @@ const COLUMNS: Column[] = [
   { key: "response_format", label: "Response Format" }
 ]
 
-const EXAMPLE_CODE = `from bespokelabs import curator
+const EXAMPLE_CODE = `from typing import Dict, List
+
 from datasets import Dataset
 from pydantic import BaseModel, Field
-from typing import List
 
-# Create a dataset object for the topics you want to create the poems.
-topics = Dataset.from_dict({"topic": [
-    "Urban loneliness in a bustling city",
-    "Beauty of Bespoke Labs's Curator library"
-]})
+from bespokelabs import curator
 
-# Define a class to encapsulate a list of poems.
+
 class Poem(BaseModel):
     poem: str = Field(description="A poem.")
 
+
 class Poems(BaseModel):
-    poems_list: List[Poem] = Field(description="A list of poems.")
+    poems: List[Poem] = Field(description="A list of poems.")
 
 
-# We define an LLM object that generates poems which gets applied to the topics dataset.
-poet = curator.LLM(
-    # prompt_func takes a row of the dataset as input.
-    # row is a dictionary with a single key 'topic' in this case.
-    prompt_func=lambda row: f"Write two poems about {row['topic']}.",
-    model_name="gpt-4o-mini",
-    response_format=Poems,
-    # row is the input row, and poems is the Poems class which
-    # is parsed from the structured output from the LLM.
-    parse_func=lambda row, poems: [
-        {"topic": row["topic"], "poem": p.poem} for p in poems.poems_list
-    ],
-)
+class Poet(curator.LLM):
+    response_format = Poems
 
+    def prompt(self, input: Dict) -> str:
+        return f"Write two poems about {input['topic']}."
+
+    def parse(self, input: Dict, response: Poems) -> Dict:
+        return [{"topic": input["topic"], "poem": p.poem} for p in response.poems]
+
+
+poet = Poet(model_name="gpt-4o-mini")
+
+topics = Dataset.from_dict({"topic": ["Urban loneliness in a bustling city", "Beauty of Bespoke Labs's Curator library"]})
 poem = poet(topics)
 print(poem.to_pandas())
-# Example output:
+# Output:
 #                                       topic                                               poem
-# 0       Urban loneliness in a bustling city  In the city's heart, where the sirens wail,\\nA...
-# 1       Urban loneliness in a bustling city  City streets hum with a bittersweet song,\\nHor...
-# 2  Beauty of Bespoke Labs's Curator library  In whispers of design and crafted grace,\\nBesp...
-# 3  Beauty of Bespoke Labs's Curator library  In the hushed breath of parchment and ink,\\nBe...`
+# 0       Urban loneliness in a bustling city  In the city’s heart, where the lights never di...
+# 1       Urban loneliness in a bustling city  Steps echo loudly, pavement slick with rain,\n...
+# 2  Beauty of Bespoke Labs's Curator library  In the heart of Curation’s realm,  \nWhere art...
+# 3  Beauty of Bespoke Labs's Curator library  Step within the library’s embrace,  \nA sanctu...
+`
 
 export function RunsTable() {
   const [runs, setRuns] = useState<Run[]>([])

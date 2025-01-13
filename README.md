@@ -135,9 +135,9 @@ Note how each `Poems` object occupies a single row in the dataset.
 For more advanced use cases, you might need to define more custom parsing and prompting logic. For example, you might want to preserve the mapping between each topic and the poem being generated from it. In this case, you can define a `Poet` object that inherits from `LLM`, and define your own prompting and parsing logic:
 
 ```python
-from typing import List, Dict
-from datasets import Dataset
+from typing import Dict, List
 
+from datasets import Dataset
 from pydantic import BaseModel, Field
 
 from bespokelabs import curator
@@ -148,7 +148,7 @@ class Poem(BaseModel):
 
 
 class Poems(BaseModel):
-    poems: List[str] = Field(description="A list of poems.")
+    poems: List[Poem] = Field(description="A list of poems.")
 
 
 class Poet(curator.LLM):
@@ -158,22 +158,20 @@ class Poet(curator.LLM):
         return f"Write two poems about {input['topic']}."
 
     def parse(self, input: Dict, response: Poems) -> Dict:
-        return [{"topic": input["topic"], "poem": p} for p in response.poems]
+        return [{"topic": input["topic"], "poem": p.poem} for p in response.poems]
+
 
 poet = Poet(model_name="gpt-4o-mini")
 
-topics = Dataset.from_dict({"topic": [
-    "Urban loneliness in a bustling city",
-    "Beauty of Bespoke Labs's Curator library"
-]})
+topics = Dataset.from_dict({"topic": ["Urban loneliness in a bustling city", "Beauty of Bespoke Labs's Curator library"]})
 poem = poet(topics)
 print(poem.to_pandas())
 # Output:
-#                                       topic                         title                                               poem
-# 0       Urban loneliness in a bustling city           The Crowded Silence  Among the throngs, I walk alone,\nWith faces b...
-# 1       Urban loneliness in a bustling city            Concrete Isolation  In the city's heart, where shadows entwine,\nA...
-# 2  Beauty of Bespoke Labs's Curator library     The Art of Curated Dreams  In Bespoke Labs, where visions blend,\nA libra...
-# 3  Beauty of Bespoke Labs's Curator library  Ode to the Curator's Library  Upon the shelves, like stars in night,\nBespok...
+#                                       topic                                               poem
+# 0       Urban loneliness in a bustling city  In the city’s heart, where the lights never di...
+# 1       Urban loneliness in a bustling city  Steps echo loudly, pavement slick with rain,\n...
+# 2  Beauty of Bespoke Labs's Curator library  In the heart of Curation’s realm,  \nWhere art...
+# 3  Beauty of Bespoke Labs's Curator library  Step within the library’s embrace,  \nA sanctu...
 ```
 In the `Poet` class:
 * `response_format` is the structured output class we defined above.

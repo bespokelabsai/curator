@@ -61,8 +61,7 @@ class LLM:
             return {"response": response}
         elif isinstance(response, BaseModel):
             return response.model_dump()
-        else:
-            return response
+        return response
 
     def __init__(
         self,
@@ -111,7 +110,13 @@ class LLM:
         if response_format is not None:
             self.response_format = response_format
 
-        self.prompt_formatter = PromptFormatter(model_name, self.prompt, self.parse, self.response_format, _remove_none_values(generation_params))
+        self.prompt_formatter = PromptFormatter(
+            model_name=model_name,
+            prompt_func=self.prompt,
+            parse_func=self.parse,
+            response_format=self.response_format,
+            generation_params=_remove_none_values(generation_params),
+        )
         self.batch_mode = batch
 
         self._request_processor = _RequestProcessorFactory.create(
