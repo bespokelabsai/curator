@@ -63,9 +63,6 @@ def test_basic(temp_working_dir, mock_dataset):
             temp_working_dir,
             mock_dataset,
             backend=backend,
-            llm_params={
-                "generation_params": {"seed": 42},
-            },
             tracker_console=console,
         )
 

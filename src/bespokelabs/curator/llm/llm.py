@@ -35,6 +35,7 @@ class LLM:
         response_format: Type[BaseModel] | None = None,
         batch: bool = False,
         backend: Optional[str] = None,
+        generation_params: dict | None = None,
         backend_params: BackendParamsType | None = None,
     ):
         """Initialize a LLM.
@@ -50,11 +51,11 @@ class LLM:
                 response format from the LLM
             batch: Whether to use batch processing
             backend: The backend to use ("openai", "litellm", or "vllm"). If None, will be auto-determined
+            generation_params: Additional parameters to pass to the generation API
 
             backend_params: Dictionary parameters for request processing
                     - max_retries: The maximum number of retries to use for the LLM
                     - require_all_responses: Whether to require all responses
-                    - generation_params: Additional parameters to pass to the generation API
 
             Other backend params:
                 - Online:
@@ -74,17 +75,12 @@ class LLM:
                     - max_tokens: The maximum tokens to use for the VLLM backend
                     - gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
         """
-        generation_params = backend_params.get("generation_params") if backend_params else None
-        if generation_params is None:
-            generation_params = {}
-        else:
-            generation_params = _remove_none_values(generation_params)
-
-        self.prompt_formatter = PromptFormatter(model_name, prompt_func, parse_func, response_format, generation_params)
+        generation_params = generation_params or {}
+        self.prompt_formatter = PromptFormatter(model_name, prompt_func, parse_func, response_format, _remove_none_values(generation_params))
         self.batch_mode = batch
 
         self._request_processor = _RequestProcessorFactory.create(
-            params=backend_params, model_name=model_name, batch=batch, response_format=response_format, backend=backend
+            params=backend_params, model_name=model_name, batch=batch, response_format=response_format, backend=backend, generation_params=generation_params
         )
 
     def _hash_fingerprint(self, dataset_hash, disable_cache):

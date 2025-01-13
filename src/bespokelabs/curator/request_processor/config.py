@@ -122,7 +122,6 @@ class BaseBackendParams(t.TypedDict, total=False):
     max_retries: t.Optional[int]
     request_timeout: t.Optional[int]
     require_all_responses: t.Optional[bool]
-    generation_params: t.Optional[dict]
 
 
 class OnlineBackendParams(BaseBackendParams, total=False):

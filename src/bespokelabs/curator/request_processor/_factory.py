@@ -44,7 +44,7 @@ class _RequestProcessorFactory:
     @staticmethod
     def _determine_backend(
         model_name: str,
-        config_params: BackendParamsType | None,
+        config_params: BackendParamsType,
         response_format: t.Type["BaseModel"] | None = None,
         batch: bool = False,
     ) -> str:
@@ -71,7 +71,13 @@ class _RequestProcessorFactory:
 
     @classmethod
     def create(
-        cls, model_name: str, params: BackendParamsType | None, batch: bool, backend: str | None, response_format: t.Type[BaseModel] | None
+        cls,
+        model_name: str,
+        params: BackendParamsType | None,
+        generation_params: t.Dict,
+        batch: bool,
+        backend: str | None,
+        response_format: t.Type[BaseModel] | None,
     ) -> "BaseRequestProcessor":
         """Create appropriate processor instance based on config params."""
         if params:
@@ -79,6 +85,8 @@ class _RequestProcessorFactory:
             _validate_backend_params(params)
         else:
             params = t.cast(BackendParamsType, {"model": model_name})
+
+        params.update({"generation_params": generation_params})  # noqa
 
         if backend is None:
             backend = cls._determine_backend(model_name, params, response_format, batch)
