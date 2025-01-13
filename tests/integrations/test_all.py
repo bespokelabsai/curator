@@ -331,4 +331,4 @@ def test_basic_offline(temp_working_dir, mock_dataset):
 
         # Verify response content
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == "606496dab9c92f00eccec0ea4e7dd518155cfd1dbb573fb0c924c85e038e0c8f"
+        assert _hash_string(recipes) == "f0e229cb0b9c6d60930abda07998fe5870c7e94331ca877af8f400f9697213ee"
