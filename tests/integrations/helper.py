@@ -24,40 +24,78 @@ class QAs(BaseModel):
     qas: t.List[QA] = Field(description="A list of QAs")
 
 
+class BasicLLM(curator.LLM):
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        return input["dish"]
+
+    @classmethod
+    def parse(cls, input: dict, response) -> dict:
+        return {"recipe": response}
+
+
+class SubjectLLM(curator.LLM):
+    response_format = Subjects
+
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        return "Generate a diverse list of 3 subjects. Keep it high-level (e.g. Math, Science)."
+
+    @classmethod
+    def parse(cls, input: dict, response) -> dict:
+        return list(response.subjects)
+
+
+class SubsubjectLLM(curator.LLM):
+    response_format = Subjects
+
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        return f"For the given subject {input['subject']}. Generate 3 diverse subsubjects. No explanation."
+
+    @classmethod
+    def parse(cls, input: dict, response) -> dict:
+        return [{"subject": input["subject"], "subsubject": subsubject.subject} for subsubject in response.subjects]
+
+
+class QALLM(curator.LLM):
+    response_format = QAs
+
+    @classmethod
+    def prompt(cls, input: dict) -> str:
+        return f"For the given subsubject {input['subsubject']}. Generate 3 diverse questions and answers. No explanation."
+
+    @classmethod
+    def parse(cls, input: dict, response) -> dict:
+        return [
+            {
+                "subject": input["subject"],
+                "subsubject": input["subsubject"],
+                "question": qa.question,
+                "answer": qa.answer,
+            }
+            for qa in response.qas
+        ]
+
+
 def create_camel(temp_working_dir, batch=False):
     if batch:
         backend_params = {"batch_check_interval": batch_check_interval}
     else:
         backend_params = {}
 
-    subject_prompter = curator.LLM(
-        prompt_func=lambda: "Generate a diverse list of 3 subjects. Keep it high-level (e.g. Math, Science).",
-        parse_func=lambda _, subjects: list(subjects.subjects),
+    subject_prompter = SubjectLLM(
         model_name="gpt-4o-mini",
-        response_format=Subjects,
         backend_params=backend_params,
     )
-    subsubject_prompter = curator.LLM(
-        prompt_func=lambda subject: f"For the given subject {subject}. Generate 3 diverse subsubjects. No explanation.",
-        parse_func=lambda subject, subsubjects: [{"subject": subject["subject"], "subsubject": subsubject.subject} for subsubject in subsubjects.subjects],
+    subsubject_prompter = SubsubjectLLM(
         model_name="gpt-4o-mini",
-        response_format=Subjects,
         backend_params=backend_params,
     )
 
-    qa_prompter = curator.LLM(
-        prompt_func=lambda subsubject: f"For the given subsubject {subsubject}. Generate 3 diverse questions and answers. No explanation.",
+    qa_prompter = QALLM(
         model_name="gpt-4o-mini",
-        response_format=QAs,
-        parse_func=lambda subsubject, qas: [
-            {
-                "subject": subsubject["subject"],
-                "subsubject": subsubject["subsubject"],
-                "question": qa.question,
-                "answer": qa.answer,
-            }
-            for qa in qas.qas
-        ],
+        backend_params=backend_params,
     )
 
     subject_dataset = subject_prompter()
@@ -65,14 +103,6 @@ def create_camel(temp_working_dir, batch=False):
     qa_dataset = qa_prompter(subsubject_dataset, working_dir=temp_working_dir)
     qa_dataset = qa_dataset.map(lambda row: {"answer": row["answer"].strip()}, num_proc=2)
     return qa_dataset
-
-
-def prompt_func(row):
-    return row["dish"]
-
-
-def parse_func(row, response):
-    return {"recipe": response}
 
 
 _DEFAULT_MODEL_MAP = {
@@ -84,15 +114,11 @@ _DEFAULT_MODEL_MAP = {
 
 
 def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, backend="openai", mocking=None, batch_cancel=False, tracker_console=None):
-    from bespokelabs import curator
-
     llm_params = llm_params or {}
     if batch:
         llm_params["batch_check_interval"] = batch_check_interval
 
-    prompter = curator.LLM(
-        prompt_func=prompt_func,
-        parse_func=parse_func,
+    prompter = BasicLLM(
         model_name=_DEFAULT_MODEL_MAP[backend],
         backend=backend,
         batch=batch,
@@ -113,11 +139,10 @@ def create_llm(batch=False):
     else:
         backend_params = {}
 
-    prompter = curator.LLM(
-        prompt_func=prompt_func,
-        parse_func=parse_func,
+    prompter = BasicLLM(
         model_name="gpt-3.5-turbo",
         backend="openai",
         backend_params=backend_params,
+        batch=batch,
     )
     return prompter

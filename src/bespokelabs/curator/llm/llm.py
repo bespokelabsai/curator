@@ -5,7 +5,7 @@ import logging
 import os
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar
+from typing import Any, Dict, Iterable, Optional, Type, TypeVar
 
 from datasets import Dataset
 from datasets.utils._dill import Pickler
@@ -20,18 +20,56 @@ from bespokelabs.curator.request_processor.config import BackendParamsType
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
 _DictOrBaseModel = Dict[str, Any] | BaseModel
-
 logger = logging.getLogger(__name__)
 
 
 class LLM:
     """Interface for prompting LLMs."""
 
+    response_format: Type[BaseModel] | None = None
+
+    @classmethod
+    def prompt(cls, input: _DictOrBaseModel) -> _DictOrBaseModel:
+        """Prompt the LLM.
+
+        Args:
+            input: The input row used to construct the prompt
+
+        Returns:
+            The prompt to send to the LLM. Can follow the following formats:
+
+            1. A string, corresponding to a single user prompt, e.g.
+            The string "Write a poem about love" will be converted
+            to [{"role": "user", "content": "Write a poem about love"}]
+
+            2. A list of dictionaries, corresponding to a list of messages, e.g.
+            The list [{"role": "user", "content": "Write a poem about love"},
+            {"role": "assistant", "content": "Here is a poem about love"}]
+        """
+        return input["prompt"]
+
+    @classmethod
+    def parse(cls, input: _DictOrBaseModel, response: _DictOrBaseModel) -> _DictOrBaseModel:
+        """Parse the response from the LLM and combine it with the input.
+
+        Args:
+            input: The input row used to construct the prompt
+            response: The response from the LLM
+
+        Returns:
+            The parsed output row that combines the input and response,
+        """
+        if isinstance(response, str):
+            return {"response": response}
+        elif isinstance(response, BaseModel):
+            return response.model_dump()
+        else:
+            return response
+
     def __init__(
         self,
         model_name: str,
-        prompt_func: Callable[[_DictOrBaseModel], _DictOrBaseModel],
-        parse_func: Callable[[_DictOrBaseModel, _DictOrBaseModel], _DictOrBaseModel] | None = None,
+        base_url: str | None = None,
         response_format: Type[BaseModel] | None = None,
         batch: bool = False,
         backend: Optional[str] = None,
@@ -42,17 +80,12 @@ class LLM:
 
         Args:
             model_name: The name of the LLM to use
-            prompt_func: A function that takes a single row
-                and returns either a string (assumed to be a user prompt) or messages list
-            parse_func: A function that takes the input row and
-                response object and returns the parsed output
             base_url: Optional base URL for the API endpoint
             response_format: A Pydantic model specifying the
                 response format from the LLM
             batch: Whether to use batch processing
             backend: The backend to use ("openai", "litellm", or "vllm"). If None, will be auto-determined
             generation_params: Additional parameters to pass to the generation API
-
             backend_params: Dictionary parameters for request processing
                     - max_retries: The maximum number of retries to use for the LLM
                     - require_all_responses: Whether to require all responses
@@ -76,7 +109,11 @@ class LLM:
                     - gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
         """
         generation_params = generation_params or {}
-        self.prompt_formatter = PromptFormatter(model_name, prompt_func, parse_func, response_format, _remove_none_values(generation_params))
+
+        if response_format is not None:
+            self.response_format = response_format
+
+        self.prompt_formatter = PromptFormatter(model_name, self.prompt, self.parse, self.response_format, _remove_none_values(generation_params))
         self.batch_mode = batch
 
         self._request_processor = _RequestProcessorFactory.create(
@@ -87,12 +124,15 @@ class LLM:
         if disable_cache:
             fingerprint = xxh64(os.urandom(8)).hexdigest()
         else:
-            prompt_func_hash = _get_function_hash(self.prompt_formatter.prompt_func)
+            # Get the source code of the prompt and parse methods
+            prompt_source = inspect.getsource(self.prompt)
+            parse_source = inspect.getsource(self.parse)
 
             fingerprint_str = "_".join(
                 [
                     str(dataset_hash),
-                    str(prompt_func_hash),
+                    str(xxh64(prompt_source.encode("utf-8")).hexdigest()),
+                    str(xxh64(parse_source.encode("utf-8")).hexdigest()),
                     str(self.prompt_formatter.model_name),
                     str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
                     str(self.batch_mode),
@@ -127,7 +167,15 @@ class LLM:
         """
         # We convert from iterable to Dataset because Dataset has random access via row_idx
         if not isinstance(dataset, Dataset) and dataset is not None:
-            dataset = Dataset.from_generator(dataset)
+
+            def wrapped_iterable():
+                for input in dataset:
+                    if isinstance(input, str):
+                        yield {"prompt": input}
+                    else:
+                        yield input
+
+            dataset = Dataset.from_generator(wrapped_iterable)
 
         if working_dir is None:
             curator_cache_dir = os.environ.get(
@@ -191,6 +239,16 @@ def _get_function_hash(func) -> str:
     """Get a hash of a function's source code."""
     if func is None:
         return xxh64("").hexdigest()
+
+    # Remove parameter annotations to avoid dill complaining about pickling
+    # pydantic BaseModel: https://github.com/bespokelabsai/curator/issues/229.
+    # For class/instance methods, get the underlying function
+    if hasattr(func, "__func__"):
+        func = func.__func__
+
+    # Clear annotations if they exist
+    if hasattr(func, "__annotations__"):
+        func.__annotations__ = {}
 
     file = BytesIO()
     Pickler(file, recurse=True).dump(func)

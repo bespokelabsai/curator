@@ -39,9 +39,10 @@ Bespoke Curator is an open-source project:
 
 1. **Programmability and Structured Outputs**: Synthetic data generation is lot more than just using a single prompt -- it involves calling LLMs multiple times and orchestrating control-flow. Curator treats structured outputs as first class citizens and helps you design complex pipelines.
 2. **Built-in Performance Optimization**: We often see calling LLMs in loops, or inefficient implementation of multi-threading. We have baked in performance optimizations so that you don't need to worry about those!
-3. **Intelligent Caching and Fault Recovery**: Given LLM calls can add up in cost and time, failures are undesirable but sometimes unavoidable. We cache the LLM requests and responses so that it is easy to recover from a failure. Moreover, when working on a multi-stage pipeline, caching of stages makes it easy to iterate.
-4. **Native HuggingFace Dataset Integration**: Work directly on HuggingFace Dataset objects throughout your pipeline. Your synthetic data is immediately ready for fine-tuning!
-5. **Interactive Curator Viewer**: Improve and iterate on your prompts using our built-in viewer. Inspect LLM requests and responses in real-time, allowing you to iterate and refine your data generation strategy with immediate feedback.
+3. **A Wide Range of Integration Options**: Connect with any API supported by LiteLLM, save cost through batch APIs, or generate data locally using vLLM or Ollama. This versatility allows you to choose the most suitable approach for your specific needs while maintaining consistent performance.
+4. **Intelligent Caching and Fault Recovery**: Given LLM calls can add up in cost and time, failures are undesirable but sometimes unavoidable. We cache the LLM requests and responses so that it is easy to recover from a failure. Moreover, when working on a multi-stage pipeline, caching of stages makes it easy to iterate.
+5. **Native HuggingFace Dataset Integration**: Work directly on HuggingFace Dataset objects throughout your pipeline. Your synthetic data is immediately ready for fine-tuning!
+6. **Interactive Curator Viewer**: Improve and iterate on your prompts using our built-in viewer. Inspect LLM requests and responses in real-time, allowing you to iterate and refine your data generation strategy with immediate feedback.
 
 ## Installation
 
@@ -49,44 +50,11 @@ Bespoke Curator is an open-source project:
 pip install bespokelabs-curator
 ```
 
-## Usage
+## Quickstart
 To run the examples below, make sure to set your OpenAI API key in
 the environment variable `OPENAI_API_KEY` by running `export OPENAI_API_KEY=sk-...` in your terminal.
 
-### Hello World with `SimpleLLM`: A simple interface for calling LLMs
-
-```python
-from bespokelabs import curator
-llm = curator.SimpleLLM(model_name="gpt-4o-mini")
-poem = llm("Write a poem about the importance of data in AI.")
-print(poem)
-# Or you can pass a list of prompts to generate multiple responses.
-poems = llm(["Write a poem about the importance of data in AI.",
-            "Write a haiku about the importance of data in AI."])
-print(poems)
-```
-Note that retries and caching are enabled by default.
-So now if you run the same prompt again, you will get the same response, pretty much instantly.
-You can delete the cache at `~/.cache/curator`.
-
-#### Use LiteLLM backend for calling other models
-You can use the [LiteLLM](https://docs.litellm.ai/docs/providers) backend for calling other models.
-
-```python
-from bespokelabs import curator
-llm = curator.SimpleLLM(model_name="claude-3-5-sonnet-20240620", backend="litellm")
-poem = llm("Write a poem about the importance of data in AI.")
-print(poem)
-```
-
-### Visualize in Curator Viewer
-Run `curator-viewer` on the command line to see the dataset in the viewer.
-
-You can click on a run and then click on a specific row to see the LLM request and response.
-![Curator Responses](docs/curator-responses.png)
-More examples below.
-
-### `LLM`: A more powerful interface for synthetic data generation
+### `LLM`: A powerful interface for synthetic data generation
 
 Let's use structured outputs to generate poems.
 ```python
@@ -112,14 +80,18 @@ class Poems(BaseModel):
 
 We define an `LLM` object that generates poems which gets applied to the topics dataset.
 ```python
-poet = curator.LLM(
-    prompt_func=lambda row: f"Write two poems about {row['topic']}.",
-    model_name="gpt-4o-mini",
-    response_format=Poems,
-    parse_func=lambda row, poems: [
-        {"topic": row["topic"], "poem": p.poem} for p in poems.poems_list
-    ],
-)
+class Poet(curator.LLM):
+    response_format = Poems
+
+    def prompt(cls, input: Dict) -> str:
+        return f"Write two poems about {input['topic']}."
+
+    def parse(cls, input: Dict, response: Poems) -> Dict:
+        return [{"topic": input["topic"], "poem": p.poem} for p in response.poems_list]
+
+poet = Poet(model_name="gpt-4o-mini")
+poems = poet(topics)
+print(poems.to_pandas())
 ```
 Here:
 * `prompt_func` takes a row of the dataset as input and returns the prompt for the LLM.
@@ -144,6 +116,29 @@ and other examples in the [examples](https://github.com/bespokelabsai/curator/bl
 
 See the [docs](https://docs.bespokelabs.ai/) for more details as well as
 for troubleshooting information.
+
+#### Use LiteLLM backend for calling other models
+You can use the [LiteLLM](https://docs.litellm.ai/docs/providers) backend for calling other models.
+
+```python
+from bespokelabs import curator
+poet = curator.LLM(
+    prompt_func=lambda row: f"Write two poems about {row['topic']}.",
+    model_name="claude-3-5-haiku-20241022",
+    response_format=Poems,
+    parse_func=lambda row, poems: [
+        {"topic": row["topic"], "poem": p.poem} for p in poems.poems_list
+    ],
+)
+```
+
+### Visualize in Curator Viewer
+Run `curator-viewer` on the command line to see the dataset in the viewer.
+
+You can click on a run and then click on a specific row to see the LLM request and response.
+![Curator Responses](docs/curator-responses.png)
+More examples below.
+
 
 ## Bespoke Curator Viewer
 

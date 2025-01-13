@@ -14,20 +14,10 @@ def test_same_value_caching(tmp_path, temp_working_dir):
     """Test that using the same value multiple times uses cache."""
     values = []
 
-    # Test with same value multiple times
-
     with vcr_config.use_cassette("basic_diff_cache.yaml"):
         for _ in range(3):
-
-            def prompt_func():
-                return "Say '1'. Do not explain."
-
-            prompter = curator.LLM(
-                prompt_func=prompt_func,
-                model_name="gpt-4o-mini",
-            )
-
-            result = prompter(working_dir=str(tmp_path))
+            prompter = curator.LLM(model_name="gpt-4o-mini")
+            result = prompter(["Say '1'. Do not explain."], working_dir=str(tmp_path))
             values.append(result.to_pandas().iloc[0]["response"])
 
         # Count cache directories, excluding metadata.db
@@ -40,17 +30,15 @@ def test_same_value_caching(tmp_path, temp_working_dir):
 def test_same_dataset_caching(tmp_path, temp_working_dir):
     """Test that using the same dataset multiple times uses cache."""
     _, _, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        dataset = Dataset.from_list([{"instruction": "Say '1'. Do not explain."}])
-        prompter = curator.LLM(
-            prompt_func=lambda x: x["instruction"],
-            model_name="gpt-4o-mini",
-        )
 
-        result = prompter(dataset=dataset, working_dir=str(tmp_path))
+    with vcr_config.use_cassette("basic_diff_cache.yaml"):
+        dataset = Dataset.from_list([{"prompt": "Say '1'. Do not explain."}])
+        prompter = curator.LLM(model_name="gpt-4o-mini")
+
+        result = prompter(dataset, working_dir=str(tmp_path))
         assert result.to_pandas().iloc[0]["response"] == "1"
 
-        result = prompter(dataset=dataset, working_dir=str(tmp_path))
+        result = prompter(dataset, working_dir=str(tmp_path))
         assert result.to_pandas().iloc[0]["response"] == "1"
 
         # Count cache directories, excluding metadata.db
@@ -62,18 +50,16 @@ def test_same_dataset_caching(tmp_path, temp_working_dir):
 def test_different_dataset_caching(tmp_path, temp_working_dir):
     """Test that using different datasets creates different cache entries."""
     _, _, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        dataset1 = Dataset.from_list([{"instruction": "Say '1'. Do not explain."}])
-        dataset2 = Dataset.from_list([{"instruction": "Say '2'. Do not explain."}])
-        prompter = curator.LLM(
-            prompt_func=lambda x: x["instruction"],
-            model_name="gpt-4o-mini",
-        )
 
-        result = prompter(dataset=dataset1, working_dir=str(tmp_path))
+    with vcr_config.use_cassette("basic_diff_cache.yaml"):
+        dataset1 = Dataset.from_list([{"prompt": "Say '1'. Do not explain."}])
+        dataset2 = Dataset.from_list([{"prompt": "Say '2'. Do not explain."}])
+        prompter = curator.LLM(model_name="gpt-4o-mini")
+
+        result = prompter(dataset1, working_dir=str(tmp_path))
         assert result.to_pandas().iloc[0]["response"] == "1"
 
-        result = prompter(dataset=dataset2, working_dir=str(tmp_path))
+        result = prompter(dataset2, working_dir=str(tmp_path))
         assert result.to_pandas().iloc[0]["response"] == "2"
 
         # Count cache directories, excluding metadata.db
@@ -89,21 +75,15 @@ def test_nested_call_caching(tmp_path, temp_working_dir):
     def value_generator():
         return 1
 
-    def prompt_func():
-        return f"Say '{value_generator()}'. Do not explain."
-
     with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        prompter = curator.LLM(
-            prompt_func=prompt_func,
-            model_name="gpt-4o-mini",
-        )
-        result = prompter(working_dir=str(tmp_path))
+        prompter = curator.LLM(model_name="gpt-4o-mini")
+        result = prompter([f"Say '{value_generator()}'. Do not explain."], working_dir=str(tmp_path))
         assert result.to_pandas().iloc[0]["response"] == "1"
 
         def value_generator():  # noqa: F811
             return 2
 
-        result = prompter(working_dir=str(tmp_path))
+        result = prompter([f"Say '{value_generator()}'. Do not explain."], working_dir=str(tmp_path))
         assert result.to_pandas().iloc[0]["response"] == "2"
 
         # Count cache directories, excluding metadata.db
@@ -206,14 +186,14 @@ def test_disable_cache(tmp_path, temp_working_dir):
 
     os.environ["CURATOR_DISABLE_CACHE"] = "true"
 
-    llm = curator.LLM(prompt_func=lambda x: "Say '1'. Do not explain.", model_name="gpt-4o-mini")
+    prompter = curator.LLM(model_name="gpt-4o-mini")
 
     # Run twice and store results
     with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        result1 = llm(working_dir=str(tmp_path))
+        result1 = prompter(["Say '1'. Do not explain."], working_dir=str(tmp_path))
 
     with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        result2 = llm(working_dir=str(tmp_path))
+        result2 = prompter(["Say '1'. Do not explain."], working_dir=str(tmp_path))
 
     # Verify both runs produced the expected output
     assert result1.to_pandas().iloc[0]["response"] == "1"
