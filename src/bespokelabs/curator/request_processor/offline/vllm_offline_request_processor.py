@@ -205,7 +205,8 @@ class VLLMOfflineRequestProcessor(BaseOfflineRequestProcessor):
 
         for completion, request in zip(completions, requests):
             response_message = completion.outputs[0].text
-            response_message = self.fix_json(response_message)
+            if response_format is not None and self.support_structured_output:
+                response_message = self.fix_json(response_message)
 
             raw_response = {
                 "request_id": completion.request_id,
