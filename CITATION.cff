@@ -8,11 +8,13 @@ authors:
     given-names: "Trung"
   - family-names: "Cheng-Jie Ji"
     given-names: "Charlie"
+  - family-names: "Sharma"
+    given-names: "Kartik"
   - family-names: "Dimakis"
     given-names: "Alex"
   - family-names: "Sathiamoorthy"
     given-names: "Mahesh"
-  
+
 date-released: "2025-01-15"
 repository: "https://github.com/bespokelabsai/curator"
 publisher: "GitHub"
