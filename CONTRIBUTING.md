@@ -29,9 +29,9 @@ Welcome to the Curator project! We value your contributions and are excited to h
    ```
 
 4. Activate the virtual environment:
-```bash
-$(poetry env activate)
-```
+   ```bash
+   $(poetry env activate)
+   ```
 
 ## How to Contribute
 
