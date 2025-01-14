@@ -139,7 +139,6 @@ class OfflineBackendParams(BaseBackendParams, total=False):
     enforce_eager: t.Optional[bool]
     max_model_length: t.Optional[int]
     max_tokens: t.Optional[int]
-    min_tokens: t.Optional[int]
     gpu_memory_utilization: t.Optional[float]
     batch_size: t.Optional[int]
 
