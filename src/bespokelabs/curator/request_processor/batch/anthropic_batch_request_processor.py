@@ -208,21 +208,14 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                 errors, token usage, and cost information.
         """
         result_type = raw_response["result"]["type"]
-        if result_type != "succeeded":
-            error = raw_response["result"]["error"]
-            logger.warning(f"custom_id {raw_response['custom_id']} result was '{result_type}' with error '{error}'")
-            response_message = None
-            response_errors = [str(error)]
-            token_usage = None
-            cost = None
-        else:
+
+        token_usage = None
+        cost = None
+        response_message = None
+
+        if result_type == "succeeded":
             response_body = raw_response["result"]["message"]
             response_message_raw = response_body["content"][0]["text"]
-            # TODO(Ryan) will want to resubmit requests like in the online case
-            # if we get max_tokens?
-            # end_turn, max_tokens, stop_sequence, tool_use
-            # stop_reason = response_body["stop_reason"]
-            # stop_sequence = response_body["stop_sequence"]
             usage = response_body.get("usage", {})
 
             token_usage = TokenUsage(
@@ -238,6 +231,15 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                 completion=response_message_raw,
             )
             cost *= 0.5  # 50% off for batch
+        elif result_type == "errored":
+            error = raw_response["result"]["error"]
+            logger.warning(f"custom_id {raw_response['custom_id']} result was '{result_type}' with error '{error}'")
+            response_errors = [str(error)]
+        elif result_type == "expired" or result_type == "canceled":
+            logger.warning(f"custom_id {raw_response['custom_id']} result was '{result_type}'")
+            response_errors = [f"Request {result_type}"]
+        else:
+            raise ValueError(f"Unknown result type: {result_type}")
 
         return GenericResponse(
             response_message=response_message,

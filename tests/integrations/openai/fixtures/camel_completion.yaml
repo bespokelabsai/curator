@@ -28,7 +28,7 @@ interactions:
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 8febd6b16bcb4907-BOM
+      - 900cad81af5646a7-BOM
       Connection:
       - keep-alive
       Content-Length:
@@ -36,168 +36,14 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 08 Jan 2025 11:27:29 GMT
+      - Sun, 12 Jan 2025 11:06:32 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=XPIraZ6uHzRWJsApL74_ikizs7xg3jUCjUWnezHnpAw-1736335649-1.0.1.1-6adWZCYPBWJCq.OAajuVwxQeJOjzkGE3qFc9EUGZgzqu.GY.7Y.PTzG2kpY23uTFY_YffsVt6D45V6mBeSuUVQ;
-        path=/; expires=Wed, 08-Jan-25 11:57:29 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=nW2LbI_48PeYsGUWeSDKQvIV17QFO5torUMLA7wtmg8-1736679992-1.0.1.1-rwAXS9QfuD9Le2ybHUrsg.89o5M1mUnZXj5Q71EVi9fDjqAvT1llRe6ZgRJ.jHP4MpXVBercWLhDpiV92BaGMA;
+        path=/; expires=Sun, 12-Jan-25 11:36:32 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=oCTXEUQnd_iOUskwYxcbSS9vf8hl61KLvw_tMcvoqjQ-1736335649805-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      X-Content-Type-Options:
-      - nosniff
-      access-control-expose-headers:
-      - X-Request-ID
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '21'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9999'
-      x-ratelimit-remaining-tokens:
-      - '199983'
-      x-ratelimit-reset-requests:
-      - 8.64s
-      x-ratelimit-reset-tokens:
-      - 4ms
-      x-request-id:
-      - req_837ec1865fb4e72cb95874e43f04277a
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: '{"model": "gpt-4o-mini", "messages": []}'
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Authorization:
-      - Bearer 
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '40'
-      Content-Type:
-      - application/json
-      User-Agent:
-      - python-requests/2.32.3
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
-        Expected an array with minimum length 1, but got an empty array instead.\",\n
-        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
-        \"empty_array\"\n  }\n}"
-    headers:
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6b42fb0303f-BOM
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '232'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:30 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=k3SDuA6DQuh159wt.nD3oT1tHsEECbtY5ec_xloNBGQ-1736335650-1.0.1.1-1aP.BQv7lfPdA9hcT3gaLpjehcC0E8lGVsqEptzmTc9cAk_svmM29wIG6YbHHApSECTlTXDrAWKe1y2ZbDnLTQ;
-        path=/; expires=Wed, 08-Jan-25 11:57:30 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=UPUYnU7fPgfAqy0rHU0Hgh82DUdOKNRT1p9.jVqbqbk-1736335650222-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      X-Content-Type-Options:
-      - nosniff
-      access-control-expose-headers:
-      - X-Request-ID
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '14'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9998'
-      x-ratelimit-remaining-tokens:
-      - '199983'
-      x-ratelimit-reset-requests:
-      - 16.837s
-      x-ratelimit-reset-tokens:
-      - 4ms
-      x-request-id:
-      - req_50aaf63e1acff67760ade9fbdc234d08
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: '{"model": "gpt-4o-mini", "messages": []}'
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Authorization:
-      - Bearer 
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '40'
-      Content-Type:
-      - application/json
-      User-Agent:
-      - python-requests/2.32.3
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
-        Expected an array with minimum length 1, but got an empty array instead.\",\n
-        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
-        \"empty_array\"\n  }\n}"
-    headers:
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6b66bb33a1e-BOM
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '232'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:30 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=MRX29Ue0F7Hh2rv1ANJdONwM6ejnyIdJvVjJGL9RezM-1736335650-1.0.1.1-UiHAusNFiUIWh0CzFby8HHlQb0g7Vi4vidxehS2UswqTsLTuLOwdCjoOa33U7G3uckJn8CrtBJu7WIRTIGqwqw;
-        path=/; expires=Wed, 08-Jan-25 11:57:30 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=UCZcY_22tc9EGFqxwFF62prrkSZmF.UjiL64xj5n2Z0-1736335650613-0.0.1.1-604800000;
+      - _cfuvid=9W.tq3LiFgYv_VcuHhrsZPfBRIHOHg78xEcULmIK8NA-1736679992855-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       X-Content-Type-Options:
       - nosniff
@@ -209,311 +55,6 @@ interactions:
       - personl-pozv85
       openai-processing-ms:
       - '15'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9997'
-      x-ratelimit-remaining-tokens:
-      - '199983'
-      x-ratelimit-reset-requests:
-      - 25.11s
-      x-ratelimit-reset-tokens:
-      - 4ms
-      x-request-id:
-      - req_5242614408d3c7b71681449b37e72033
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: '{"model": "gpt-4o-mini", "messages": []}'
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Authorization:
-      - Bearer 
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '40'
-      Content-Type:
-      - application/json
-      User-Agent:
-      - python-requests/2.32.3
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
-        Expected an array with minimum length 1, but got an empty array instead.\",\n
-        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
-        \"empty_array\"\n  }\n}"
-    headers:
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6b8da043e45-BOM
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '232'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:30 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=u.1wm7Nd3CJK3ThxHudH13X5p.Hc.GMBQNHTZwnq5cc-1736335650-1.0.1.1-axk9dQCAazkWDZU6MwX_gshCHLpAKIRSwzObA6URHSySp0qxvjuFiRk8pTOfko4RGLPmWdHXdb.xl4kpcBVb2g;
-        path=/; expires=Wed, 08-Jan-25 11:57:30 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=jHGWLxv1LINFoXVNoA7kq88PcyvpV9VsQ7PkoBUAQ18-1736335650974-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      X-Content-Type-Options:
-      - nosniff
-      access-control-expose-headers:
-      - X-Request-ID
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '14'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9996'
-      x-ratelimit-remaining-tokens:
-      - '199983'
-      x-ratelimit-reset-requests:
-      - 33.38s
-      x-ratelimit-reset-tokens:
-      - 4ms
-      x-request-id:
-      - req_8cc5a3c789388b712da2b9e3fba2f0f8
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: '{"model": "gpt-4o-mini", "messages": []}'
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Authorization:
-      - Bearer 
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '40'
-      Content-Type:
-      - application/json
-      User-Agent:
-      - python-requests/2.32.3
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
-        Expected an array with minimum length 1, but got an empty array instead.\",\n
-        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
-        \"empty_array\"\n  }\n}"
-    headers:
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6bbaecf301b-BOM
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '232'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:31 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=ghzKf2BBVChGzsA4yTsZOb7VN8HtherPM0pHb3wn8tA-1736335651-1.0.1.1-U7eIr0P3VbpKFSxlkqfSfniNOfFXdzrAYMHSI2THDyUk3Y03zyERX0Aeajv1TZRoKyn0XkAsqONSRUfmSQR.xQ;
-        path=/; expires=Wed, 08-Jan-25 11:57:31 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=w1EBF6g4mavdxfl5K1ipEf0JG0frYtL4VbIWtsmgfCA-1736335651432-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      X-Content-Type-Options:
-      - nosniff
-      access-control-expose-headers:
-      - X-Request-ID
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '15'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9995'
-      x-ratelimit-remaining-tokens:
-      - '199983'
-      x-ratelimit-reset-requests:
-      - 41.565s
-      x-ratelimit-reset-tokens:
-      - 4ms
-      x-request-id:
-      - req_f73160e7b8377893120ca63a247d8cfd
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: '{"model": "gpt-4o-mini", "messages": []}'
-    headers:
-      Accept:
-      - '*/*'
-      Accept-Encoding:
-      - gzip, deflate
-      Authorization:
-      - Bearer 
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '40'
-      Content-Type:
-      - application/json
-      User-Agent:
-      - python-requests/2.32.3
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
-        Expected an array with minimum length 1, but got an empty array instead.\",\n
-        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
-        \"empty_array\"\n  }\n}"
-    headers:
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6be0d693a1d-BOM
-      Connection:
-      - keep-alive
-      Content-Length:
-      - '232'
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:31 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=vhMQU49Vb_ICAu3gRdheW9lW6rWJ16G4JT.Rm46BGqU-1736335651-1.0.1.1-beu9ruNRiGwDlL1w3HsUirRJbJyM87PbnyrfIocqR64Zr597A_NuXreC_cqr7U3clY6dABa40IhTdyK_EpC5cQ;
-        path=/; expires=Wed, 08-Jan-25 11:57:31 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=Q4f1d1ELeMuJpfIEon00DTvnRGiSVHY6YwTLoVFx3C4-1736335651837-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      X-Content-Type-Options:
-      - nosniff
-      access-control-expose-headers:
-      - X-Request-ID
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '36'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9994'
-      x-ratelimit-remaining-tokens:
-      - '199983'
-      x-ratelimit-reset-requests:
-      - 49.817s
-      x-ratelimit-reset-tokens:
-      - 4ms
-      x-request-id:
-      - req_fe9644ed224493475ba70013115f1333
-    status:
-      code: 400
-      message: Bad Request
-- request:
-    body: null
-    headers:
-      Authorization:
-      - Bearer 
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVhSJbTNoyiCPbmGYFpkc5i193z\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335653,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
-        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"subjects\\\":[{\\\"subject\\\":\\\"Mathematics\\\"},{\\\"subject\\\":\\\"Literature\\\"},{\\\"subject\\\":\\\"Environmental
-        Science\\\"}]}\",\n        \"refusal\": null\n      },\n      \"logprobs\":
-        null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
-        117,\n    \"completion_tokens\": 22,\n    \"total_tokens\": 139,\n    \"prompt_tokens_details\":
-        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
-        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
-    headers:
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6c8fd5a4427-BOM
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:34 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=cXkqlSX.SeRpnuJdr6Z2LKJdilRiH7k9AIqSmG5N7WA-1736335654-1.0.1.1-6ixzSSbyfH07y57Ayf3tVV.YxiR8ceVghTA.P8hOvguFJ5Hd7dg89NBWfRzI.yh5KFWMXGcWJRCAzhPbq3ttSA;
-        path=/; expires=Wed, 08-Jan-25 11:57:34 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=P2Wd8kMLi8RVlsKTQKoPvMWW0z1emNEKvCiBPE.TId4-1736335654210-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      Transfer-Encoding:
-      - chunked
-      X-Content-Type-Options:
-      - nosniff
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '648'
       openai-version:
       - '2020-10-01'
       strict-transport-security:
@@ -525,69 +66,72 @@ interactions:
       x-ratelimit-remaining-requests:
       - '9993'
       x-ratelimit-remaining-tokens:
-      - '199963'
+      - '199983'
       x-ratelimit-reset-requests:
-      - 56.706s
+      - 55.043s
       x-ratelimit-reset-tokens:
-      - 11ms
+      - 4ms
       x-request-id:
-      - req_3a2c44df282aed527cba862174dc25b5
+      - req_912ac14405448d36763c4f16dc3562e4
     status:
-      code: 200
-      message: OK
+      code: 400
+      message: Bad Request
 - request:
-    body: null
+    body: '{"model": "gpt-4o-mini", "messages": []}'
     headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
       Authorization:
       - Bearer 
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
     method: POST
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVjfhPukGJLvTHSCMz7FA4LRk3n\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335655,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
-        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"subjects\\\":[{\\\"subject\\\":\\\"Algebra\\\"},{\\\"subject\\\":\\\"Geometry\\\"},{\\\"subject\\\":\\\"Calculus\\\"}]}\",\n
-        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
-        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 119,\n    \"completion_tokens\":
-        20,\n    \"total_tokens\": 139,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
-        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_f2cd28694a\"\n}\n"
+      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
+        Expected an array with minimum length 1, but got an empty array instead.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
+        \"empty_array\"\n  }\n}"
     headers:
-      Access-Control-Expose-Headers:
-      - X-Request-ID
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 8febd6d7bc2a47b2-BOM
+      - 900cad842c9884fb-BOM
       Connection:
       - keep-alive
-      Content-Encoding:
-      - gzip
+      Content-Length:
+      - '232'
       Content-Type:
       - application/json
       Date:
-      - Wed, 08 Jan 2025 11:27:36 GMT
+      - Sun, 12 Jan 2025 11:06:33 GMT
       Server:
       - cloudflare
       Set-Cookie:
-      - __cf_bm=O_aLb4pvGyM1HiyQlLXYOPAwwURIwQCeYfFKsmdtHFM-1736335656-1.0.1.1-6w0oWSlezfkLh4lTEreRDq3D5RXd5oR_kBtPI.vIcIHXzlMnHsNv8SBjjve4LJrHaeMXMEEoW5gkrInulNrn8w;
-        path=/; expires=Wed, 08-Jan-25 11:57:36 GMT; domain=.api.openai.com; HttpOnly;
+      - __cf_bm=.ao4KnxulFlBQr.ladpZKiqS1pgyPx.dyh0AWAAPiAE-1736679993-1.0.1.1-ZNZCClavroI4plDMJu.AWBnvWdh5eNBZkJhUWLfW7VeTe8oOb69rknU2Xt2cEYdXBw1GYwHf6tsZqLYVk_9GgA;
+        path=/; expires=Sun, 12-Jan-25 11:36:33 GMT; domain=.api.openai.com; HttpOnly;
         Secure; SameSite=None
-      - _cfuvid=JxH7Yc8PbXD0u600aM4VTaAemd9oJVJD37IiXy4lDUA-1736335656423-0.0.1.1-604800000;
+      - _cfuvid=7EEKIlL7whp.vgmgrHrmirP1gI4ShEMKFijBz9lu.dk-1736679993272-0.0.1.1-604800000;
         path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      Transfer-Encoding:
-      - chunked
       X-Content-Type-Options:
       - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
       alt-svc:
       - h3=":443"; ma=86400
       openai-organization:
       - personl-pozv85
       openai-processing-ms:
-      - '524'
+      - '16'
       openai-version:
       - '2020-10-01'
       strict-transport-security:
@@ -599,46 +143,351 @@ interactions:
       x-ratelimit-remaining-requests:
       - '9992'
       x-ratelimit-remaining-tokens:
-      - '199957'
+      - '199983'
       x-ratelimit-reset-requests:
-      - 1m2.989s
+      - 1m3.27s
       x-ratelimit-reset-tokens:
-      - 12ms
+      - 4ms
       x-request-id:
-      - req_53c49215f2d430f0ee6b92ef06f65892
+      - req_217b03e402998249cd21e84e9881bf6c
     status:
-      code: 200
-      message: OK
+      code: 400
+      message: Bad Request
+- request:
+    body: '{"model": "gpt-4o-mini", "messages": []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer 
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
+        Expected an array with minimum length 1, but got an empty array instead.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
+        \"empty_array\"\n  }\n}"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cad86eae93bb6-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '232'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:33 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=cLvSfFqKsfc6.IQ5.Y7nSh0q3v9bk6PIRexDKsY5Cb4-1736679993-1.0.1.1-L_KairEumGQwZ_QjtVF.fSD0g7XGcuyAoEsDf9dyjhWF4apPKHkwV3eiExV9j7OyX6s8xjeebxCW6Kiic0OYkQ;
+        path=/; expires=Sun, 12-Jan-25 11:36:33 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=q1kXa7ou_nGyao3cDpIFo9Kgtw2cMjYq_W5hV9V4K2E-1736679993706-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '17'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9991'
+      x-ratelimit-remaining-tokens:
+      - '199983'
+      x-ratelimit-reset-requests:
+      - 1m11.482s
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_608208f41ab00ac21d7157547010c5e4
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: '{"model": "gpt-4o-mini", "messages": []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer 
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
+        Expected an array with minimum length 1, but got an empty array instead.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
+        \"empty_array\"\n  }\n}"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cad896a133050-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '232'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:34 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=aDneCZ05SqytoXQJ.KJgZvZFuD596MHwdXTMDXQ6wrU-1736679994-1.0.1.1-cjdlCQUMO7xA34MpBHgjFBUYwZIttcOXFBKDM819xEHwbQBS59N9v5v6B6yNEfVw5cCk1dxEV1YSKc.qIMjxsQ;
+        path=/; expires=Sun, 12-Jan-25 11:36:34 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=_lZvkGeehEi2H.tv4A6sXx6Pu.4g1fdZ0SvTLcWzYQo-1736679994104-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '15'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9990'
+      x-ratelimit-remaining-tokens:
+      - '199983'
+      x-ratelimit-reset-requests:
+      - 1m19.714s
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_23950645081a0db606c9bf761255cc36
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: '{"model": "gpt-4o-mini", "messages": []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer 
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
+        Expected an array with minimum length 1, but got an empty array instead.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
+        \"empty_array\"\n  }\n}"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cad8beef33a2e-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '232'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:34 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=H7swK2gYKU3nKfpY5Mfu3jfH7AvAxCEE61rzYAPChEw-1736679994-1.0.1.1-O8G9vLs1ax4IS__blQmmVg1D3f5e2IPdCOYzzPQuK6MxtNRGIP5Jc6DstO7MG8_iV1uSxfsegpmX5I6lr7guKw;
+        path=/; expires=Sun, 12-Jan-25 11:36:34 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=LGiIu66bO22xH8siaEwNNzggRU3U2MIVvJqNi_JXnU4-1736679994503-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '17'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9989'
+      x-ratelimit-remaining-tokens:
+      - '199983'
+      x-ratelimit-reset-requests:
+      - 1m27.963s
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_57640b7eb318fba5e84e8a0d98dfbbf9
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: '{"model": "gpt-4o-mini", "messages": []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer 
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
+        Expected an array with minimum length 1, but got an empty array instead.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
+        \"empty_array\"\n  }\n}"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cad8e8fe429ef-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '232'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:34 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=AIHpIY8YVtcgkQfsUFhhNbKVG_P.itd0MICopdJ9mtU-1736679994-1.0.1.1-TDoUmbfGK4SRdyyB59pz4jbznsGhMtxlQdQLBgUmvz.P_uOYYaQtrn.5V3nhPvpqcL6g8U7Po7ExpsCzz4koXA;
+        path=/; expires=Sun, 12-Jan-25 11:36:34 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=xeskYqUrswdUU.LvW3Pn84C91hk5XKruz.4Ay9AxyVs-1736679994932-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '19'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9988'
+      x-ratelimit-remaining-tokens:
+      - '199983'
+      x-ratelimit-reset-requests:
+      - 1m36.176s
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_29260a5de4c74f23595df7ffb946a659
+    status:
+      code: 400
+      message: Bad Request
 - request:
     body: null
     headers:
       Authorization:
       - Bearer 
-      Cookie:
-      - __cf_bm=O_aLb4pvGyM1HiyQlLXYOPAwwURIwQCeYfFKsmdtHFM-1736335656-1.0.1.1-6w0oWSlezfkLh4lTEreRDq3D5RXd5oR_kBtPI.vIcIHXzlMnHsNv8SBjjve4LJrHaeMXMEEoW5gkrInulNrn8w;
-        _cfuvid=JxH7Yc8PbXD0u600aM4VTaAemd9oJVJD37IiXy4lDUA-1736335656423-0.0.1.1-604800000
     method: POST
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVln61Oi7flqx362Xh6CzNuJth7\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335657,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+      string: "{\n  \"id\": \"chatcmpl-Aoq5cfs5EDh1Fe1ukZKOvXBx9toDk\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736679996,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
         \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"subjects\\\":[{\\\"subject\\\":\\\"Poetry\\\"},{\\\"subject\\\":\\\"Novels\\\"},{\\\"subject\\\":\\\"Drama\\\"}]}\",\n
-        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
-        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 118,\n    \"completion_tokens\":
-        20,\n    \"total_tokens\": 138,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        \"assistant\",\n        \"content\": \"{\\\"subjects\\\":[{\\\"subject\\\":\\\"Mathematics\\\"},{\\\"subject\\\":\\\"History\\\"},{\\\"subject\\\":\\\"Environmental
+        Science\\\"}]}\",\n        \"refusal\": null\n      },\n      \"logprobs\":
+        null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        117,\n    \"completion_tokens\": 21,\n    \"total_tokens\": 138,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
         {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_f2cd28694a\"\n}\n"
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
     headers:
       Access-Control-Expose-Headers:
       - X-Request-ID
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 8febd6df095e47b2-BOM
+      - 900cad998c8f85fa-BOM
       Connection:
       - keep-alive
       Content-Encoding:
@@ -646,9 +495,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 08 Jan 2025 11:27:37 GMT
+      - Sun, 12 Jan 2025 11:06:36 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=K0oza87yS.xZR7iqC.RT.2bWvznTVgOe3Li9SMkqr9Y-1736679996-1.0.1.1-v664VP7_JFNpYQXMugsxZBmGAwcjkiiKGNveBBB5m8jEYsf6DI3oOOPqny6GrxYbze3T6_sxqu10FykHS7qXyg;
+        path=/; expires=Sun, 12-Jan-25 11:36:36 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=ZIPsT7I4wSkTLFJmkSnCYah1ozUjcbyDtI4vikmwynw-1736679996973-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
       X-Content-Type-Options:
@@ -668,323 +523,15 @@ interactions:
       x-ratelimit-limit-tokens:
       - '200000'
       x-ratelimit-remaining-requests:
-      - '9991'
-      x-ratelimit-remaining-tokens:
-      - '199958'
-      x-ratelimit-reset-requests:
-      - 1m10.458s
-      x-ratelimit-reset-tokens:
-      - 12ms
-      x-request-id:
-      - req_780dbd504ce65c5e7c57cc06a5e7c1f9
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Authorization:
-      - Bearer 
-      Cookie:
-      - __cf_bm=O_aLb4pvGyM1HiyQlLXYOPAwwURIwQCeYfFKsmdtHFM-1736335656-1.0.1.1-6w0oWSlezfkLh4lTEreRDq3D5RXd5oR_kBtPI.vIcIHXzlMnHsNv8SBjjve4LJrHaeMXMEEoW5gkrInulNrn8w;
-        _cfuvid=JxH7Yc8PbXD0u600aM4VTaAemd9oJVJD37IiXy4lDUA-1736335656423-0.0.1.1-604800000
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVm7xNzrBFGkjn3QD678wQ5s1oG\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335658,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
-        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"subjects\\\":[{\\\"subject\\\":\\\"Ecology\\\"},{\\\"subject\\\":\\\"Climate
-        Change\\\"},{\\\"subject\\\":\\\"Sustainable Development\\\"}]}\",\n        \"refusal\":
-        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
-        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 118,\n    \"completion_tokens\":
-        22,\n    \"total_tokens\": 140,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
-        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
-    headers:
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6e6ae9f47b2-BOM
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:38 GMT
-      Server:
-      - cloudflare
-      Transfer-Encoding:
-      - chunked
-      X-Content-Type-Options:
-      - nosniff
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '465'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9990'
-      x-ratelimit-remaining-tokens:
-      - '199956'
-      x-ratelimit-reset-requests:
-      - 1m17.871s
-      x-ratelimit-reset-tokens:
-      - 13ms
-      x-request-id:
-      - req_038ba16de0ef290e1727f72901a6df04
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Authorization:
-      - Bearer 
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVo2wjVW5E5wsf0LTf5idZeyiqe\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335660,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
-        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        is the solution to the equation 2x + 3 = 11?\\\",\\\"answer\\\":\\\"x = 4.\\\"},{\\\"question\\\":\\\"How
-        do you factor the quadratic expression x\xB2 - 5x + 6?\\\",\\\"answer\\\":\\\"x\xB2
-        - 5x + 6 = (x - 2)(x - 3).\\\"},{\\\"question\\\":\\\"What is the value of
-        x if 3x/4 = 12?\\\",\\\"answer\\\":\\\"x = 16.\\\"}]}\",\n        \"refusal\":
-        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
-        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 148,\n    \"completion_tokens\":
-        105,\n    \"total_tokens\": 253,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
-        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
-    headers:
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6f449d180a9-BOM
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:42 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=DoO39SLaD2y_.9GPrd3HYKZPZiT8SxXXLbEL5pq4uYc-1736335662-1.0.1.1-MbSwaT_efpADJGecEhZBROsjjX6.H0xdD8MxGCeQwJ2X5DSoVNQwrWFAqBEPt7F6VBNaf_04EZuDbXZhY1O8Wg;
-        path=/; expires=Wed, 08-Jan-25 11:57:42 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=OC0za6baRovhJxWP8Br0TtWJRWuIcBmm.cTWLZLM1iI-1736335662171-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      Transfer-Encoding:
-      - chunked
-      X-Content-Type-Options:
-      - nosniff
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '1692'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9990'
-      x-ratelimit-remaining-tokens:
-      - '199948'
-      x-ratelimit-reset-requests:
-      - 1m24.343s
-      x-ratelimit-reset-tokens:
-      - 15ms
-      x-request-id:
-      - req_0a60787b358e48bbb8266170644037b7
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Authorization:
-      - Bearer 
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVphFTVh1tIa8E0em1Uj0cD0GNm\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335661,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
-        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        is the sum of the interior angles of a triangle?\\\",\\\"answer\\\":\\\"The
-        sum of the interior angles of a triangle is 180 degrees.\\\"},{\\\"question\\\":\\\"How
-        do you calculate the area of a circle?\\\",\\\"answer\\\":\\\"The area of
-        a circle can be calculated using the formula A = \u03C0r\xB2, where r is the
-        radius of the circle.\\\"},{\\\"question\\\":\\\"What is the Pythagorean theorem?\\\",\\\"answer\\\":\\\"The
-        Pythagorean theorem states that in a right triangle, the square of the length
-        of the hypotenuse is equal to the sum of the squares of the lengths of the
-        other two sides, expressed as a\xB2 + b\xB2 = c\xB2.\\\"}]}\",\n        \"refusal\":
-        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
-        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 147,\n    \"completion_tokens\":
-        146,\n    \"total_tokens\": 293,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
-        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
-    headers:
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd6fbc880301e-BOM
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:44 GMT
-      Server:
-      - cloudflare
-      Set-Cookie:
-      - __cf_bm=mTHQ0Ymq0YmeQQnIvDYU0emdbpNwIcsUDMiRw_4qmm8-1736335664-1.0.1.1-NGmqoAzfDFUbdM7gHOXfoDHVzcfJQfDfpOcjVVqpMQRawV4suAvnPDxquJt9aj_oseSq57vd9.h8Sqhnin1x2g;
-        path=/; expires=Wed, 08-Jan-25 11:57:44 GMT; domain=.api.openai.com; HttpOnly;
-        Secure; SameSite=None
-      - _cfuvid=_Sc7T.2JXEuPw4qkD_m1GgxffiI6mpxAHmaCBbW5GMs-1736335664125-0.0.1.1-604800000;
-        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
-      Transfer-Encoding:
-      - chunked
-      X-Content-Type-Options:
-      - nosniff
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '2438'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9989'
-      x-ratelimit-remaining-tokens:
-      - '199948'
-      x-ratelimit-reset-requests:
-      - 1m31.787s
-      x-ratelimit-reset-tokens:
-      - 15ms
-      x-request-id:
-      - req_60e82e2b79f5ba46f5342920712ad684
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Authorization:
-      - Bearer 
-      Cookie:
-      - __cf_bm=DoO39SLaD2y_.9GPrd3HYKZPZiT8SxXXLbEL5pq4uYc-1736335662-1.0.1.1-MbSwaT_efpADJGecEhZBROsjjX6.H0xdD8MxGCeQwJ2X5DSoVNQwrWFAqBEPt7F6VBNaf_04EZuDbXZhY1O8Wg;
-        _cfuvid=OC0za6baRovhJxWP8Br0TtWJRWuIcBmm.cTWLZLM1iI-1736335662171-0.0.1.1-604800000
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVqaBUHVgbh4v6KeLJQA0CtBgZf\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335662,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
-        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        is the derivative of the function f(x) = x^3 + 2x^2 - 5x + 7?\\\",\\\"answer\\\":\\\"f'(x)
-        = 3x^2 + 4x - 5.\\\"},{\\\"question\\\":\\\"How do you evaluate the integral
-        \u222B(2x + 3)dx from 1 to 4?\\\",\\\"answer\\\":\\\"The integral evaluates
-        to 27.\\\"},{\\\"question\\\":\\\"What is the limit of (sin x)/x as x approaches
-        0?\\\",\\\"answer\\\":\\\"The limit is 1.\\\"}]}\",\n        \"refusal\":
-        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
-        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 148,\n    \"completion_tokens\":
-        122,\n    \"total_tokens\": 270,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
-        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
-    headers:
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd7032dcc80a9-BOM
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:44 GMT
-      Server:
-      - cloudflare
-      Transfer-Encoding:
-      - chunked
-      X-Content-Type-Options:
-      - nosniff
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '1502'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
       - '9988'
       x-ratelimit-remaining-tokens:
-      - '199948'
+      - '199963'
       x-ratelimit-reset-requests:
-      - 1m39.227s
+      - 1m43.053s
       x-ratelimit-reset-tokens:
-      - 15ms
+      - 11ms
       x-request-id:
-      - req_fe47f34d6ce187bfcb51df645c8c8749
+      - req_dd8acf487073ddd9a62829e390fb89cb
     status:
       code: 200
       message: OK
@@ -993,40 +540,28 @@ interactions:
     headers:
       Authorization:
       - Bearer 
-      Cookie:
-      - __cf_bm=mTHQ0Ymq0YmeQQnIvDYU0emdbpNwIcsUDMiRw_4qmm8-1736335664-1.0.1.1-NGmqoAzfDFUbdM7gHOXfoDHVzcfJQfDfpOcjVVqpMQRawV4suAvnPDxquJt9aj_oseSq57vd9.h8Sqhnin1x2g;
-        _cfuvid=_Sc7T.2JXEuPw4qkD_m1GgxffiI6mpxAHmaCBbW5GMs-1736335664125-0.0.1.1-604800000
     method: POST
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVtOKiTyaMrb4tbeww9i8IFKa8r\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335665,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+      string: "{\n  \"id\": \"chatcmpl-Aoq5eb5P37ICvyBnGbGaCAUS6oFfd\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736679998,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
         \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        are the main themes explored in George Orwell's '1984'?\\\",\\\"answer\\\":\\\"The
-        main themes of '1984' include totalitarianism, surveillance, censorship, and
-        the manipulation of truth.\\\"},{\\\"question\\\":\\\"How does Jane Austen
-        portray social class in 'Pride and Prejudice'?\\\",\\\"answer\\\":\\\"Jane
-        Austen portrays social class in 'Pride and Prejudice' through the interactions
-        between characters, highlighting the influence of class on marriage and relationships.\\\"},{\\\"question\\\":\\\"What
-        narrative techniques are used in 'The Great Gatsby' by F. Scott Fitzgerald?\\\",\\\"answer\\\":\\\"F.
-        Scott Fitzgerald employs techniques such as first-person narration, symbolism,
-        and vivid imagery to convey themes of the American Dream and social decay.\\\"}]}\",\n
+        \"assistant\",\n        \"content\": \"{\\\"subjects\\\":[{\\\"subject\\\":\\\"Algebra\\\"},{\\\"subject\\\":\\\"Calculus\\\"},{\\\"subject\\\":\\\"Statistics\\\"}]}\",\n
         \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
-        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 147,\n    \"completion_tokens\":
-        150,\n    \"total_tokens\": 297,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 119,\n    \"completion_tokens\":
+        19,\n    \"total_tokens\": 138,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
         0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
         {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
     headers:
       Access-Control-Expose-Headers:
       - X-Request-ID
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 8febd712fa41301e-BOM
+      - 900cada64aadf563-BOM
       Connection:
       - keep-alive
       Content-Encoding:
@@ -1034,9 +569,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 08 Jan 2025 11:27:46 GMT
+      - Sun, 12 Jan 2025 11:06:39 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=4gNxuD_cynUfyY05i7A0R2iQoYj6oxNMLas0rR_hweY-1736679999-1.0.1.1-_xSHikM7izo0DzJu4KR89EYcD_xiGJmpPkwtc123_WIKdCW4NBr6AiGGROY6L9T2BDrq02XSm9Wg_VSL3oKz6A;
+        path=/; expires=Sun, 12-Jan-25 11:36:39 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=5G7M1jrauXXyoflUYoKHaM2ksU3FbDqc6U.KnBwCdQE-1736679999203-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
       X-Content-Type-Options:
@@ -1046,88 +587,7 @@ interactions:
       openai-organization:
       - personl-pozv85
       openai-processing-ms:
-      - '1128'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9986'
-      x-ratelimit-remaining-tokens:
-      - '199948'
-      x-ratelimit-reset-requests:
-      - 1m53.997s
-      x-ratelimit-reset-tokens:
-      - 15ms
-      x-request-id:
-      - req_91fef93f4089fef2ff746f2b46df0698
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Authorization:
-      - Bearer 
-      Cookie:
-      - __cf_bm=DoO39SLaD2y_.9GPrd3HYKZPZiT8SxXXLbEL5pq4uYc-1736335662-1.0.1.1-MbSwaT_efpADJGecEhZBROsjjX6.H0xdD8MxGCeQwJ2X5DSoVNQwrWFAqBEPt7F6VBNaf_04EZuDbXZhY1O8Wg;
-        _cfuvid=OC0za6baRovhJxWP8Br0TtWJRWuIcBmm.cTWLZLM1iI-1736335662171-0.0.1.1-604800000
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVsSSdSEoPK3A2BB4FYqyAD874b\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335664,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
-        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        are the main characteristics of a sonnet?\\\",\\\"answer\\\":\\\"A sonnet
-        typically has 14 lines, is written in iambic pentameter, and follows a specific
-        rhyme scheme, often exploring themes of love, nature, or time.\\\"},{\\\"question\\\":\\\"How
-        does imagery enhance the meaning of a poem?\\\",\\\"answer\\\":\\\"Imagery
-        appeals to the senses and creates vivid mental pictures, allowing readers
-        to connect emotionally and understand the deeper meanings of the poem.\\\"},{\\\"question\\\":\\\"What
-        is the difference between free verse and traditional poetry forms?\\\",\\\"answer\\\":\\\"Free
-        verse poetry does not adhere to a specific meter or rhyme scheme, allowing
-        for greater flexibility and expression, while traditional poetry forms follow
-        established structures like sonnets or haikus.\\\"}]}\",\n        \"refusal\":
-        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
-        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 147,\n    \"completion_tokens\":
-        154,\n    \"total_tokens\": 301,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
-        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
-    headers:
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd70b1d603c1c-BOM
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:47 GMT
-      Server:
-      - cloudflare
-      Transfer-Encoding:
-      - chunked
-      X-Content-Type-Options:
-      - nosniff
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '3351'
+      - '502'
       openai-version:
       - '2020-10-01'
       strict-transport-security:
@@ -1139,13 +599,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '9987'
       x-ratelimit-remaining-tokens:
-      - '199948'
+      - '199957'
       x-ratelimit-reset-requests:
-      - 1m46.608s
+      - 1m49.661s
       x-ratelimit-reset-tokens:
-      - 15ms
+      - 12ms
       x-request-id:
-      - req_274d9b3c3567850ef994422aae899c7e
+      - req_9dec9310f1a0fc790158293c8c9fdb68
     status:
       code: 200
       message: OK
@@ -1155,124 +615,31 @@ interactions:
       Authorization:
       - Bearer 
       Cookie:
-      - __cf_bm=mTHQ0Ymq0YmeQQnIvDYU0emdbpNwIcsUDMiRw_4qmm8-1736335664-1.0.1.1-NGmqoAzfDFUbdM7gHOXfoDHVzcfJQfDfpOcjVVqpMQRawV4suAvnPDxquJt9aj_oseSq57vd9.h8Sqhnin1x2g;
-        _cfuvid=_Sc7T.2JXEuPw4qkD_m1GgxffiI6mpxAHmaCBbW5GMs-1736335664125-0.0.1.1-604800000
+      - __cf_bm=4gNxuD_cynUfyY05i7A0R2iQoYj6oxNMLas0rR_hweY-1736679999-1.0.1.1-_xSHikM7izo0DzJu4KR89EYcD_xiGJmpPkwtc123_WIKdCW4NBr6AiGGROY6L9T2BDrq02XSm9Wg_VSL3oKz6A;
+        _cfuvid=5G7M1jrauXXyoflUYoKHaM2ksU3FbDqc6U.KnBwCdQE-1736679999203-0.0.1.1-604800000
     method: POST
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVuZiwIvtv2gk6fpeTBwTUSRz1z\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335666,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+      string: "{\n  \"id\": \"chatcmpl-Aoq5fViB2bPe8yCPFQTz0pTTWAarI\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736679999,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
         \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        are the key characteristics of a tragic hero in drama?\\\",\\\"answer\\\":\\\"A
-        tragic hero typically possesses noble qualities but also has a fatal flaw
-        (hamartia) that leads to their downfall, evoking sympathy and fear from the
-        audience. Example traits include high status, a moral struggle, and a realization
-        of their mistakes by the end.\\\"},{\\\"question\\\":\\\"How does Shakespeare's
-        use of soliloquies impact character development in his plays?\\\",\\\"answer\\\":\\\"Shakespeare's
-        soliloquies allow characters to express their innermost thoughts and feelings
-        directly to the audience, providing deeper insights into their motivations
-        and conflicts, thus enhancing character depth and complexity.\\\"},{\\\"question\\\":\\\"What
-        is the significance of the 'play within a play' device in drama?\\\",\\\"answer\\\":\\\"The
-        'play within a play' serves multiple purposes: it can reflect the main themes
-        of the larger play, allow characters to explore their motivations, or provide
-        commentary on the actions of the main plot, often revealing truths about the
-        characters and their circumstances.\\\"}]}\",\n        \"refusal\": null\n
-        \     },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n
-        \ ],\n  \"usage\": {\n    \"prompt_tokens\": 146,\n    \"completion_tokens\":
-        211,\n    \"total_tokens\": 357,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
-        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
-    headers:
-      Access-Control-Expose-Headers:
-      - X-Request-ID
-      CF-Cache-Status:
-      - DYNAMIC
-      CF-RAY:
-      - 8febd71a9f3c80a9-BOM
-      Connection:
-      - keep-alive
-      Content-Encoding:
-      - gzip
-      Content-Type:
-      - application/json
-      Date:
-      - Wed, 08 Jan 2025 11:27:48 GMT
-      Server:
-      - cloudflare
-      Transfer-Encoding:
-      - chunked
-      X-Content-Type-Options:
-      - nosniff
-      alt-svc:
-      - h3=":443"; ma=86400
-      openai-organization:
-      - personl-pozv85
-      openai-processing-ms:
-      - '1535'
-      openai-version:
-      - '2020-10-01'
-      strict-transport-security:
-      - max-age=31536000; includeSubDomains; preload
-      x-ratelimit-limit-requests:
-      - '10000'
-      x-ratelimit-limit-tokens:
-      - '200000'
-      x-ratelimit-remaining-requests:
-      - '9985'
-      x-ratelimit-remaining-tokens:
-      - '199950'
-      x-ratelimit-reset-requests:
-      - 2m1.404s
-      x-ratelimit-reset-tokens:
-      - 15ms
-      x-request-id:
-      - req_3964723a77f5ebf7bdc9ad1d7abcd0d5
-    status:
-      code: 200
-      message: OK
-- request:
-    body: null
-    headers:
-      Authorization:
-      - Bearer 
-      Cookie:
-      - __cf_bm=mTHQ0Ymq0YmeQQnIvDYU0emdbpNwIcsUDMiRw_4qmm8-1736335664-1.0.1.1-NGmqoAzfDFUbdM7gHOXfoDHVzcfJQfDfpOcjVVqpMQRawV4suAvnPDxquJt9aj_oseSq57vd9.h8Sqhnin1x2g;
-        _cfuvid=_Sc7T.2JXEuPw4qkD_m1GgxffiI6mpxAHmaCBbW5GMs-1736335664125-0.0.1.1-604800000
-    method: POST
-    uri: https://api.openai.com/v1/chat/completions
-  response:
-    body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVvjD4N42SzlqARi6GNFS07QtlK\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335667,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
-        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
-        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        is the primary focus of ecology as a branch of environmental science?\\\",\\\"answer\\\":\\\"Ecology
-        primarily focuses on the relationships between living organisms and their
-        interactions with the environment.\\\"},{\\\"question\\\":\\\"How do invasive
-        species impact local ecosystems?\\\",\\\"answer\\\":\\\"Invasive species can
-        disrupt local ecosystems by outcompeting native species for resources, harming
-        the native biodiversity, and altering habitat structures.\\\"},{\\\"question\\\":\\\"What
-        is the role of keystone species in an ecosystem?\\\",\\\"answer\\\":\\\"Keystone
-        species play a crucial role in maintaining the structure of an ecological
-        community, influencing the types and numbers of various species, and ensuring
-        ecosystem stability.\\\"}]}\",\n        \"refusal\": null\n      },\n      \"logprobs\":
+        \"assistant\",\n        \"content\": \"{\\\"subjects\\\":[{\\\"subject\\\":\\\"Ancient
+        Civilizations\\\"},{\\\"subject\\\":\\\"World War II\\\"},{\\\"subject\\\":\\\"Cultural
+        Movements\\\"}]}\",\n        \"refusal\": null\n      },\n      \"logprobs\":
         null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
-        147,\n    \"completion_tokens\": 131,\n    \"total_tokens\": 278,\n    \"prompt_tokens_details\":
+        117,\n    \"completion_tokens\": 26,\n    \"total_tokens\": 143,\n    \"prompt_tokens_details\":
         {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
         {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
     headers:
       Access-Control-Expose-Headers:
       - X-Request-ID
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 8febd7223ae0301e-BOM
+      - 900cadad7810f563-BOM
       Connection:
       - keep-alive
       Content-Encoding:
@@ -1280,7 +647,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 08 Jan 2025 11:27:50 GMT
+      - Sun, 12 Jan 2025 11:06:40 GMT
       Server:
       - cloudflare
       Transfer-Encoding:
@@ -1292,7 +659,79 @@ interactions:
       openai-organization:
       - personl-pozv85
       openai-processing-ms:
-      - '2330'
+      - '440'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9986'
+      x-ratelimit-remaining-tokens:
+      - '199958'
+      x-ratelimit-reset-requests:
+      - 1m57.149s
+      x-ratelimit-reset-tokens:
+      - 12ms
+      x-request-id:
+      - req_765c2e115f8bfdfbc08816c22039e281
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=4gNxuD_cynUfyY05i7A0R2iQoYj6oxNMLas0rR_hweY-1736679999-1.0.1.1-_xSHikM7izo0DzJu4KR89EYcD_xiGJmpPkwtc123_WIKdCW4NBr6AiGGROY6L9T2BDrq02XSm9Wg_VSL3oKz6A;
+        _cfuvid=5G7M1jrauXXyoflUYoKHaM2ksU3FbDqc6U.KnBwCdQE-1736679999203-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Aoq5hpx8yKOpBPzTnQYh5XaKWPDrE\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680001,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\\"subjects\\\":[{\\\"subject\\\":\\\"Climate
+        Change and Mitigation\\\"},{\\\"subject\\\":\\\"Biodiversity and Conservation\\\"},{\\\"subject\\\":\\\"Sustainable
+        Resource Management\\\"}]}\",\n        \"refusal\": null\n      },\n      \"logprobs\":
+        null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        118,\n    \"completion_tokens\": 29,\n    \"total_tokens\": 147,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cadb53d4af563-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:41 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '617'
       openai-version:
       - '2020-10-01'
       strict-transport-security:
@@ -1304,13 +743,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '9985'
       x-ratelimit-remaining-tokens:
-      - '199946'
+      - '199956'
       x-ratelimit-reset-requests:
-      - 2m8.828s
+      - 2m4.551s
       x-ratelimit-reset-tokens:
-      - 16ms
+      - 13ms
       x-request-id:
-      - req_e82b71e14ad9edd54a7245b53f0c5810
+      - req_db56cd19fede3226e719709d6b950f7b
     status:
       code: 200
       message: OK
@@ -1319,40 +758,32 @@ interactions:
     headers:
       Authorization:
       - Bearer 
-      Cookie:
-      - __cf_bm=mTHQ0Ymq0YmeQQnIvDYU0emdbpNwIcsUDMiRw_4qmm8-1736335664-1.0.1.1-NGmqoAzfDFUbdM7gHOXfoDHVzcfJQfDfpOcjVVqpMQRawV4suAvnPDxquJt9aj_oseSq57vd9.h8Sqhnin1x2g;
-        _cfuvid=_Sc7T.2JXEuPw4qkD_m1GgxffiI6mpxAHmaCBbW5GMs-1736335664125-0.0.1.1-604800000
     method: POST
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVw00G2MNFImC8ZiCRuqCwM9nef\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335668,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+      string: "{\n  \"id\": \"chatcmpl-Aoq5jAwbSSzByy0SSJLSVVXg7hJMS\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680003,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
         \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
         \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        are the primary greenhouse gases contributing to climate change?\\\",\\\"answer\\\":\\\"The
-        primary greenhouse gases contributing to climate change are carbon dioxide
-        (CO2), methane (CH4), nitrous oxide (N2O), and fluorinated gases.\\\"},{\\\"question\\\":\\\"How
-        does climate change affect ocean levels?\\\",\\\"answer\\\":\\\"Climate change
-        causes ocean levels to rise primarily due to the melting of ice sheets and
-        glaciers and the thermal expansion of seawater as it warms.\\\"},{\\\"question\\\":\\\"What
-        are some of the impacts of climate change on biodiversity?\\\",\\\"answer\\\":\\\"Climate
-        change can lead to habitat loss, altered migration patterns, increased extinction
-        rates, and shifts in species distribution, affecting overall biodiversity.\\\"}]}\",\n
-        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
-        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 147,\n    \"completion_tokens\":
-        142,\n    \"total_tokens\": 289,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
-        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        is the solution of the equation 2x + 3 = 11?\\\",\\\"answer\\\":\\\"x = 4.\\\"},{\\\"question\\\":\\\"What
+        is the quadratic formula used to solve ax\xB2 + bx + c = 0?\\\",\\\"answer\\\":\\\"x
+        = (-b \xB1 \u221A(b\xB2 - 4ac)) / (2a).\\\"},{\\\"question\\\":\\\"If a =
+        3 and b = 5, what is the value of 2a - 3b?\\\",\\\"answer\\\":\\\"The value
+        is -9.\\\"}]}\",\n        \"refusal\": null\n      },\n      \"logprobs\":
+        null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        148,\n    \"completion_tokens\": 113,\n    \"total_tokens\": 261,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
         {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
     headers:
       Access-Control-Expose-Headers:
       - X-Request-ID
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 8febd729c8453c1c-BOM
+      - 900cadc3abe9f2f7-BOM
       Connection:
       - keep-alive
       Content-Encoding:
@@ -1360,9 +791,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 08 Jan 2025 11:27:50 GMT
+      - Sun, 12 Jan 2025 11:06:44 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=H9geOOLi5lWgc01rfqfbUOOAN9PukuEoU_nrBPtJAXA-1736680004-1.0.1.1-rdKKL7ILNJs1PK1a46YNEgdKZReHy398x5766bmYJ1YyBFcZYMgRz.m6EuJ55Zv4bgc_3fJ3X83TGrxmuiusqQ;
+        path=/; expires=Sun, 12-Jan-25 11:36:44 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=KFOoP40kDqz9Ra.CbtPHZ.KHR86mUKboNdN776Iaq.Y-1736680004505-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
       X-Content-Type-Options:
@@ -1372,7 +809,7 @@ interactions:
       openai-organization:
       - personl-pozv85
       openai-processing-ms:
-      - '1692'
+      - '1075'
       openai-version:
       - '2020-10-01'
       strict-transport-security:
@@ -1384,13 +821,13 @@ interactions:
       x-ratelimit-remaining-requests:
       - '9984'
       x-ratelimit-remaining-tokens:
-      - '199945'
+      - '199948'
       x-ratelimit-reset-requests:
-      - 2m16.256s
+      - 2m10.869s
       x-ratelimit-reset-tokens:
-      - 16ms
+      - 15ms
       x-request-id:
-      - req_924aa4d36474765074c26ebc7f757c9b
+      - req_918f53935c543c7311e483dfbf78b491
     status:
       code: 200
       message: OK
@@ -1398,43 +835,35 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer
-      Cookie:
-      - __cf_bm=mTHQ0Ymq0YmeQQnIvDYU0emdbpNwIcsUDMiRw_4qmm8-1736335664-1.0.1.1-NGmqoAzfDFUbdM7gHOXfoDHVzcfJQfDfpOcjVVqpMQRawV4suAvnPDxquJt9aj_oseSq57vd9.h8Sqhnin1x2g;
-        _cfuvid=_Sc7T.2JXEuPw4qkD_m1GgxffiI6mpxAHmaCBbW5GMs-1736335664125-0.0.1.1-604800000
+      - Bearer 
     method: POST
     uri: https://api.openai.com/v1/chat/completions
   response:
     body:
-      string: "{\n  \"id\": \"chatcmpl-AnOVydBWCkuOWvX3KCfUHouzN7NiN\",\n  \"object\":
-        \"chat.completion\",\n  \"created\": 1736335670,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+      string: "{\n  \"id\": \"chatcmpl-Aoq5kusH3KRuj4Sy8paMNXIQG4kUh\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680004,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
         \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
         \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
-        are the three pillars of sustainable development?\\\",\\\"answer\\\":\\\"The
-        three pillars of sustainable development are economic growth, social inclusion,
-        and environmental protection.\\\"},{\\\"question\\\":\\\"How does sustainable
-        development aim to address climate change?\\\",\\\"answer\\\":\\\"Sustainable
-        development seeks to mitigate climate change by promoting renewable energy
-        sources, improving energy efficiency, and encouraging conservation practices
-        that reduce greenhouse gas emissions.\\\"},{\\\"question\\\":\\\"What role
-        do local communities play in sustainable development initiatives?\\\",\\\"answer\\\":\\\"Local
-        communities are crucial in sustainable development as they provide knowledge
-        of local ecosystems, participate in decision-making processes, and implement
-        sustainable practices that reflect their cultural values and needs.\\\"}]}\",\n
-        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
-        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 148,\n    \"completion_tokens\":
-        132,\n    \"total_tokens\": 280,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        is the derivative of f(x) = x^3 + 3x^2 - 5x + 1?\\\",\\\"answer\\\":\\\"f'(x)
+        = 3x^2 + 6x - 5.\\\"},{\\\"question\\\":\\\"How do you find the integral of
+        f(x) = 2x from 0 to 5?\\\",\\\"answer\\\":\\\"The integral of f(x) = 2x from
+        0 to 5 is 25.\\\"},{\\\"question\\\":\\\"What is the definition of a limit
+        in calculus?\\\",\\\"answer\\\":\\\"A limit is the value that a function approaches
+        as the input approaches some value.\\\"}]}\",\n        \"refusal\": null\n
+        \     },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n
+        \ ],\n  \"usage\": {\n    \"prompt_tokens\": 148,\n    \"completion_tokens\":
+        135,\n    \"total_tokens\": 283,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
         0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
         {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
-        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"system_fingerprint\":
-        \"fp_0aa8d3e20b\"\n}\n"
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
     headers:
       Access-Control-Expose-Headers:
       - X-Request-ID
       CF-Cache-Status:
       - DYNAMIC
       CF-RAY:
-      - 8febd7320ef180a9-BOM
+      - 900cadcb5b0c418d-BOM
       Connection:
       - keep-alive
       Content-Encoding:
@@ -1442,9 +871,15 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 08 Jan 2025 11:27:51 GMT
+      - Sun, 12 Jan 2025 11:06:45 GMT
       Server:
       - cloudflare
+      Set-Cookie:
+      - __cf_bm=cMikUqCFE6NvWItdCAYd4kJ7U6RtEhQS0IsDKu0xShY-1736680005-1.0.1.1-H0VGwOCxt.ndUBZ5hroIk7g12zi3VtVNjLT3JOyPKofg3QVyUtnpl1Ay4z2cmNlGIV.zVjuUkR0nD8wVtQF7BQ;
+        path=/; expires=Sun, 12-Jan-25 11:36:45 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=PsTU6L_Fz4zFMrKJrBnbFh6Oyki3788Cnid0eoaO4GA-1736680005739-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
       Transfer-Encoding:
       - chunked
       X-Content-Type-Options:
@@ -1454,7 +889,7 @@ interactions:
       openai-organization:
       - personl-pozv85
       openai-processing-ms:
-      - '1384'
+      - '1090'
       openai-version:
       - '2020-10-01'
       strict-transport-security:
@@ -1466,13 +901,587 @@ interactions:
       x-ratelimit-remaining-requests:
       - '9983'
       x-ratelimit-remaining-tokens:
-      - '199942'
+      - '199948'
       x-ratelimit-reset-requests:
-      - 2m23.552s
+      - 2m18.277s
+      x-ratelimit-reset-tokens:
+      - 15ms
+      x-request-id:
+      - req_b9554aaf1c8454c3360f9be7bb773fd3
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=H9geOOLi5lWgc01rfqfbUOOAN9PukuEoU_nrBPtJAXA-1736680004-1.0.1.1-rdKKL7ILNJs1PK1a46YNEgdKZReHy398x5766bmYJ1YyBFcZYMgRz.m6EuJ55Zv4bgc_3fJ3X83TGrxmuiusqQ;
+        _cfuvid=KFOoP40kDqz9Ra.CbtPHZ.KHR86mUKboNdN776Iaq.Y-1736680004505-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Aoq5le5tV66X4s6lxCsZPZ9Gdjrqi\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680005,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
+        is the mean of the following dataset: 5, 8, 10, 12, 15?\\\",\\\"answer\\\":\\\"The
+        mean is 10.\\\"},{\\\"question\\\":\\\"What does a p-value less than 0.05
+        indicate in hypothesis testing?\\\",\\\"answer\\\":\\\"It indicates that the
+        results are statistically significant and the null hypothesis can be rejected.\\\"},{\\\"question\\\":\\\"What
+        is the purpose of a confidence interval in statistics?\\\",\\\"answer\\\":\\\"A
+        confidence interval provides a range of values that is likely to contain the
+        true population parameter with a certain level of confidence.\\\"}]}\",\n
+        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
+        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 147,\n    \"completion_tokens\":
+        121,\n    \"total_tokens\": 268,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cadd289d4f2f7-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:46 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '1075'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9983'
+      x-ratelimit-remaining-tokens:
+      - '199805'
+      x-ratelimit-reset-requests:
+      - 2m25.777s
+      x-ratelimit-reset-tokens:
+      - 58ms
+      x-request-id:
+      - req_a26e6eb0075b660bce43fe3c10b14800
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=cMikUqCFE6NvWItdCAYd4kJ7U6RtEhQS0IsDKu0xShY-1736680005-1.0.1.1-H0VGwOCxt.ndUBZ5hroIk7g12zi3VtVNjLT3JOyPKofg3QVyUtnpl1Ay4z2cmNlGIV.zVjuUkR0nD8wVtQF7BQ;
+        _cfuvid=PsTU6L_Fz4zFMrKJrBnbFh6Oyki3788Cnid0eoaO4GA-1736680005739-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Aoq5nTaYEYIudgewkIou4AHSlsgSD\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680007,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
+        are the main characteristics of Ancient Mesopotamian civilizations?\\\",\\\"answer\\\":\\\"Ancient
+        Mesopotamian civilizations were known for their development of writing (cuneiform),
+        urbanization, complex governmental structures, advancements in mathematics
+        and astronomy, and impressive architectural achievements such as ziggurats.\\\"},{\\\"question\\\":\\\"What
+        important contributions did the Ancient Egyptians make to the world?\\\",\\\"answer\\\":\\\"The
+        Ancient Egyptians made significant contributions such as the development of
+        hieroglyphics, advances in medicine and surgery, the construction of monumental
+        architecture like the pyramids, and the establishment of a calendar based
+        on their solar observations.\\\"},{\\\"question\\\":\\\"Which Ancient civilization
+        is considered the birthplace of democracy, and why?\\\",\\\"answer\\\":\\\"Ancient
+        Athens is considered the birthplace of democracy due to its establishment
+        of a political system where citizens could participate directly in decision-making,
+        thus laying the foundation for democratic governance.\\\"}]}\",\n        \"refusal\":
+        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 148,\n    \"completion_tokens\":
+        183,\n    \"total_tokens\": 331,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cadda2e92418d-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:48 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '1660'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9982'
+      x-ratelimit-remaining-tokens:
+      - '199806'
+      x-ratelimit-reset-requests:
+      - 2m33.196s
+      x-ratelimit-reset-tokens:
+      - 57ms
+      x-request-id:
+      - req_5e5f8c48a325e66189f38b188cdfb1d7
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=cMikUqCFE6NvWItdCAYd4kJ7U6RtEhQS0IsDKu0xShY-1736680005-1.0.1.1-H0VGwOCxt.ndUBZ5hroIk7g12zi3VtVNjLT3JOyPKofg3QVyUtnpl1Ay4z2cmNlGIV.zVjuUkR0nD8wVtQF7BQ;
+        _cfuvid=PsTU6L_Fz4zFMrKJrBnbFh6Oyki3788Cnid0eoaO4GA-1736680005739-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Aoq5oXXDbv2RHrXZcQUq1YS8IGXn0\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680008,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
+        was the primary cause of World War II?\\\",\\\"answer\\\":\\\"The primary
+        cause of World War II was the aggressive expansionist policies of Nazi Germany,
+        particularly after Adolf Hitler came to power in 1933, leading to the invasion
+        of Poland in 1939.\\\"},{\\\"question\\\":\\\"Which countries were part of
+        the Axis Powers during World War II?\\\",\\\"answer\\\":\\\"The main countries
+        that formed the Axis Powers were Germany, Italy, and Japan.\\\"},{\\\"question\\\":\\\"What
+        was the significance of the Battle of Stalingrad in World War II?\\\",\\\"answer\\\":\\\"The
+        Battle of Stalingrad marked a turning point in World War II as the Soviet
+        Union successfully halted the German advance into Eastern Europe, leading
+        to a series of Soviet victories.\\\"}]}\",\n        \"refusal\": null\n      },\n
+        \     \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n
+        \ \"usage\": {\n    \"prompt_tokens\": 147,\n    \"completion_tokens\": 154,\n
+        \   \"total_tokens\": 301,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cade2783ef2f7-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:50 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '2252'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9981'
+      x-ratelimit-remaining-tokens:
+      - '199948'
+      x-ratelimit-reset-requests:
+      - 2m40.51s
+      x-ratelimit-reset-tokens:
+      - 15ms
+      x-request-id:
+      - req_a4e42794546731908b2614e1afae22b0
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=cMikUqCFE6NvWItdCAYd4kJ7U6RtEhQS0IsDKu0xShY-1736680005-1.0.1.1-H0VGwOCxt.ndUBZ5hroIk7g12zi3VtVNjLT3JOyPKofg3QVyUtnpl1Ay4z2cmNlGIV.zVjuUkR0nD8wVtQF7BQ;
+        _cfuvid=PsTU6L_Fz4zFMrKJrBnbFh6Oyki3788Cnid0eoaO4GA-1736680005739-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Aoq5p07DmkwMx9dV2vVgGovFEuD8t\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680009,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
+        was the primary focus of the Renaissance cultural movement?\\\",\\\"answer\\\":\\\"The
+        Renaissance cultural movement primarily focused on the revival of classical
+        learning and wisdom from ancient Greece and Rome, emphasizing humanism, art,
+        and science.\\\"},{\\\"question\\\":\\\"How did the Harlem Renaissance influence
+        American literature?\\\",\\\"answer\\\":\\\"The Harlem Renaissance significantly
+        influenced American literature by promoting African American cultural identity
+        and pride, leading to a flourishing of literature that explored racial issues,
+        social conditions, and the complexities of African American life.\\\"},{\\\"question\\\":\\\"What
+        role did the counterculture movement of the 1960s play in shaping societal
+        norms?\\\",\\\"answer\\\":\\\"The counterculture movement of the 1960s played
+        a pivotal role in challenging established societal norms, promoting ideas
+        of peace, love, and civil rights while advocating for social change through
+        music, art, and protests against the Vietnam War.\\\"}]}\",\n        \"refusal\":
+        null\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 148,\n    \"completion_tokens\":
+        177,\n    \"total_tokens\": 325,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cadea2fee418d-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:50 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '1155'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9980'
+      x-ratelimit-remaining-tokens:
+      - '199947'
+      x-ratelimit-reset-requests:
+      - 2m47.919s
+      x-ratelimit-reset-tokens:
+      - 15ms
+      x-request-id:
+      - req_8cf75223c993e122c5bafcd778b44f76
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=cMikUqCFE6NvWItdCAYd4kJ7U6RtEhQS0IsDKu0xShY-1736680005-1.0.1.1-H0VGwOCxt.ndUBZ5hroIk7g12zi3VtVNjLT3JOyPKofg3QVyUtnpl1Ay4z2cmNlGIV.zVjuUkR0nD8wVtQF7BQ;
+        _cfuvid=PsTU6L_Fz4zFMrKJrBnbFh6Oyki3788Cnid0eoaO4GA-1736680005739-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Aoq5qePvdSXq9A8co7a0ZZINICym9\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680010,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
+        are the primary greenhouse gases responsible for climate change?\\\",\\\"answer\\\":\\\"The
+        primary greenhouse gases responsible for climate change include carbon dioxide
+        (CO2), methane (CH4), nitrous oxide (N2O), and fluorinated gases.\\\"},{\\\"question\\\":\\\"What
+        is the role of renewable energy in mitigating climate change?\\\",\\\"answer\\\":\\\"Renewable
+        energy sources like solar, wind, and hydroelectric power reduce reliance on
+        fossil fuels, lower greenhouse gas emissions, and help mitigate the impacts
+        of climate change.\\\"},{\\\"question\\\":\\\"How does deforestation contribute
+        to climate change?\\\",\\\"answer\\\":\\\"Deforestation contributes to climate
+        change by releasing stored carbon dioxide in trees when they are cut down,
+        reducing the capacity of forests to absorb CO2 from the atmosphere.\\\"}]}\",\n
+        \       \"refusal\": null\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
+        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 150,\n    \"completion_tokens\":
+        154,\n    \"total_tokens\": 304,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cadf21997f3d1-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:52 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '1933'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9979'
+      x-ratelimit-remaining-tokens:
+      - '199941'
+      x-ratelimit-reset-requests:
+      - 2m55.271s
       x-ratelimit-reset-tokens:
       - 17ms
       x-request-id:
-      - req_0faee1f518261577b78cf8e6ab700335
+      - req_c9cb93b01958b53bd69dde6119747692
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=cMikUqCFE6NvWItdCAYd4kJ7U6RtEhQS0IsDKu0xShY-1736680005-1.0.1.1-H0VGwOCxt.ndUBZ5hroIk7g12zi3VtVNjLT3JOyPKofg3QVyUtnpl1Ay4z2cmNlGIV.zVjuUkR0nD8wVtQF7BQ;
+        _cfuvid=PsTU6L_Fz4zFMrKJrBnbFh6Oyki3788Cnid0eoaO4GA-1736680005739-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Aoq5saMP4RFhYRuUzchCvRMl4tnjc\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680012,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
+        is biodiversity and why is it important for ecosystem health?\\\",\\\"answer\\\":\\\"Biodiversity
+        refers to the variety of life forms in an ecosystem, including species diversity,
+        genetic diversity, and ecosystem diversity. It is important for ecosystem
+        health because it promotes resilience, aids in the provision of ecosystem
+        services, supports food security, and enhances the capacity of ecosystems
+        to adapt to environmental changes.\\\"},{\\\"question\\\":\\\"What are some
+        major threats to biodiversity today?\\\",\\\"answer\\\":\\\"Major threats
+        to biodiversity include habitat loss due to urbanization and deforestation,
+        climate change, pollution, overfishing, invasive species, and unsustainable
+        agricultural practices.\\\"},{\\\"question\\\":\\\"What role do conservation
+        strategies, such as protected areas, play in preserving biodiversity?\\\",\\\"answer\\\":\\\"Conservation
+        strategies like protected areas are crucial for preserving biodiversity as
+        they provide safe habitats for various species, help in maintaining ecosystem
+        functions, reduce human-wildlife conflict, and serve as sites for scientific
+        research and education.\\\"}]}\",\n        \"refusal\": null\n      },\n      \"logprobs\":
+        null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        150,\n    \"completion_tokens\": 197,\n    \"total_tokens\": 347,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cadf97b21f2f7-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:53 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '1425'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9978'
+      x-ratelimit-remaining-tokens:
+      - '199941'
+      x-ratelimit-reset-requests:
+      - 3m2.749s
+      x-ratelimit-reset-tokens:
+      - 17ms
+      x-request-id:
+      - req_2be77bdc4e176d0e6f7422236b1c2d72
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=cMikUqCFE6NvWItdCAYd4kJ7U6RtEhQS0IsDKu0xShY-1736680005-1.0.1.1-H0VGwOCxt.ndUBZ5hroIk7g12zi3VtVNjLT3JOyPKofg3QVyUtnpl1Ay4z2cmNlGIV.zVjuUkR0nD8wVtQF7BQ;
+        _cfuvid=PsTU6L_Fz4zFMrKJrBnbFh6Oyki3788Cnid0eoaO4GA-1736680005739-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Aoq5tFhVl9w2UijpPo7kfp3dXlzjI\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736680013,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"{\\\"qas\\\":[{\\\"question\\\":\\\"What
+        are some key principles of sustainable resource management?\\\",\\\"answer\\\":\\\"Some
+        key principles include conserving resources, minimizing waste, replenishing
+        natural ecosystems, and promoting equitable access for communities.\\\"},{\\\"question\\\":\\\"How
+        can technology contribute to sustainable resource management?\\\",\\\"answer\\\":\\\"Technology
+        can enhance resource efficiency through innovations like precision agriculture,
+        renewable energy systems, and smart water management tools that optimize resource
+        use.\\\"},{\\\"question\\\":\\\"What role does community involvement play
+        in sustainable resource management?\\\",\\\"answer\\\":\\\"Community involvement
+        is crucial as it ensures local knowledge is utilized, fosters stewardship,
+        and encourages sustainable practices that are culturally adapted and widely
+        accepted.\\\"}]}\",\n        \"refusal\": null\n      },\n      \"logprobs\":
+        null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        149,\n    \"completion_tokens\": 128,\n    \"total_tokens\": 277,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_72ed7ab54c\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900cae010c2a418d-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 11:06:54 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '951'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9977'
+      x-ratelimit-remaining-tokens:
+      - '199940'
+      x-ratelimit-reset-requests:
+      - 3m10.174s
+      x-ratelimit-reset-tokens:
+      - 18ms
+      x-request-id:
+      - req_5aadf00331472b3b8dddd069818fb506
     status:
       code: 200
       message: OK

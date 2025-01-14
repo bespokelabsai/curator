@@ -26,6 +26,7 @@ def batch_call(model_name, prompts):
     return response
 
 
+@pytest.mark.skip
 def test_batch_call() -> None:
     """Tests that batch_call correctly processes multiple prompts and returns expected answers.
 

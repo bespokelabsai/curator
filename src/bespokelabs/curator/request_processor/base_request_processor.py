@@ -96,6 +96,7 @@ class BaseRequestProcessor(ABC):
         """
         self.prompt_formatter = prompt_formatter
         self.working_dir = working_dir
+        self.total_requests = len(dataset) if dataset is not None else 1
 
         # load from already completed dataset
         output_dataset = self.attempt_loading_cached_dataset(parse_func_hash)
@@ -107,7 +108,7 @@ class BaseRequestProcessor(ABC):
         self.prompt_formatter = prompt_formatter
         if self.prompt_formatter.response_format:
             if not self.check_structured_output_support():
-                raise ValueError(f"Model {self.config.model} does not support structured output, " f"response_format: {self.prompt_formatter.response_format}")
+                raise ValueError(f"Model {self.config.model} does not support structured output, response_format: {self.prompt_formatter.response_format}")
         generic_request_files = self.create_request_files(dataset)
 
         self.requests_to_responses(generic_request_files)
@@ -289,9 +290,8 @@ class BaseRequestProcessor(ABC):
         if os.path.exists(dataset_file):
             logger.debug(f"Loading dataset from {dataset_file}")
             try:
-                output_dataset = Dataset.from_file(dataset_file)
                 logger.info(f"Using cached output dataset. {CACHE_MSG}")
-                return output_dataset
+                return self._load_from_dataset_file(dataset_file)
             except pyarrow.lib.ArrowInvalid:
                 os.remove(dataset_file)
                 logger.warning(
@@ -379,7 +379,7 @@ class BaseRequestProcessor(ABC):
                             if not isinstance(row, dict):
                                 os.remove(dataset_file)
                                 raise ValueError(
-                                    f"Got invalid row {row} of type {type(row)} from `parse_func`. " f"This should be type <class 'dict'>. {error_help}"
+                                    f"Got invalid row {row} of type {type(row)} from `parse_func`. This should be type <class 'dict'>. {error_help}"
                                 )
                             if not row:
                                 os.remove(dataset_file)
@@ -421,30 +421,79 @@ class BaseRequestProcessor(ABC):
                     os.remove(dataset_file)
                     raise ValueError("Some requests do not have responses and require_all_responses is True.")
 
+        return self._load_from_dataset_file(dataset_file)
+
+    def _load_from_dataset_file(self, dataset_file: str) -> Dataset:
         d = Dataset.from_file(dataset_file)
         d = d.sort("__original_row_idx")
         d = d.remove_columns("__original_row_idx")
         return d
 
+    def validate_existing_response_file(self, response_file: str) -> set[int]:
+        """Parse an existing response file to identify completed requests and removes failed requests.
 
-def parse_response_message(response_message: str, response_format: Optional[BaseModel]) -> tuple[Optional[dict | str], Optional[list[str]]]:
-    """Parse a response message into the expected format.
+        Args:
+            response_file: Path to the response file to parse
 
-    Args:
-        response_message: Raw response string from LLM
-        response_format: Expected format for structured responses
+        Returns:
+            set[int]: Set of completed request IDs that were already successfully processed
+        """
+        completed_request_ids = set()
+        failed_request_ids = set()
 
-    Returns:
-        Tuple containing:
-        - Parsed response (dict or str) or None if parsing failed
-        - List of error messages if parsing failed, None otherwise
-    """
-    response_errors = None
-    if response_format:
+        if os.path.exists(response_file):
+            logger.info(f"Resuming progress by reading existing file: {response_file}")
+            logger.debug(f"Removing all failed requests from {response_file} so they can be retried")
+            temp_filepath = response_file + ".temp"
+
+            parsing_error_responses = 0
+            with open(response_file, "r") as input_file, open(temp_filepath, "w") as output_file:
+                for line in input_file:
+                    try:
+                        response = GenericResponse.model_validate_json(line)
+                    except (json.JSONDecodeError, ValidationError):
+                        logger.warning("Skipping response due to error parsing line")
+                        parsing_error_responses += 1
+                        continue
+                    row_id = response.generic_request.original_row_idx
+                    if response.response_errors:
+                        logger.debug(f"Request {row_id} previously failed due to errors: {response.response_errors}, removing from output and will retry")
+                        failed_request_ids.add(row_id)
+                    elif response.response_message is None:
+                        logger.debug(f"Request {row_id} previously failed due to no response. Removing from output and will retry.")
+                        failed_request_ids.add(row_id)
+                    else:
+                        completed_request_ids.add(row_id)
+                        output_file.write(line)
+
+            logger.info(
+                f"Found {len(completed_request_ids)} successful requests and {len(failed_request_ids)} "
+                f"previously failed requests and {parsing_error_responses} parsing errors in {response_file}"
+            )
+            os.replace(temp_filepath, response_file)
+
+        return completed_request_ids
+
+    def read_metadata_file(self, request_file: str) -> int:
+        """Read the number of jobs from the metadata file.
+
+        Args:
+            request_file: Path to the request file to get metadata for
+
+        Returns:
+            int: Number of total batch requests
+
+        Raises:
+            ValueError: If metadata file is missing or invalid
+        """
+        metadata_file = request_file.replace("requests_", "metadata_").replace(".jsonl", ".json")
+
+        if not os.path.exists(metadata_file):
+            raise ValueError(f"Metadata file not found: {metadata_file}")
+
         try:
-            response_message = json.loads(response_message)
-        except json.JSONDecodeError:
-            logger.warning(f"Failed to parse response as JSON: {response_message}, skipping this response.")
-            response_message = None
-            response_errors = [f"Failed to parse response as JSON: {response_message}"]
-    return response_message, response_errors
+            with open(metadata_file, "r") as f:
+                metadata = json.load(f)
+                return metadata
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in metadata file: {metadata_file}. Delete cache directory 'rm -rf {self.working_dir}' and try again.") from e

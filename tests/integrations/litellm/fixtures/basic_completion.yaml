@@ -428,7 +428,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=aF9kZqXQMRQAIqiyTIToap4hUHJXySDBYlGGXr7F93o-1736425613-1.0.1.1-UGcBGuftYrNFSaYkjXOlms2jiNxIoTmEvlbO3NVg9Nhu3PaMgKEzP1vDIEbWChqkPf6WQ7Qma_rbP5XWwz5_bA;
         _cfuvid=.X8aFdMw6do2dbKxNkI9myMoYyGgVv.M4erhlK2Hun4-1736425613752-0.0.1.1-604800000
@@ -437,7 +437,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -478,7 +478,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=aF9kZqXQMRQAIqiyTIToap4hUHJXySDBYlGGXr7F93o-1736425613-1.0.1.1-UGcBGuftYrNFSaYkjXOlms2jiNxIoTmEvlbO3NVg9Nhu3PaMgKEzP1vDIEbWChqkPf6WQ7Qma_rbP5XWwz5_bA;
         _cfuvid=.X8aFdMw6do2dbKxNkI9myMoYyGgVv.M4erhlK2Hun4-1736425613752-0.0.1.1-604800000
@@ -487,7 +487,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -528,7 +528,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -537,7 +537,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -572,7 +572,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -581,7 +581,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -616,7 +616,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -625,7 +625,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -660,7 +660,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -669,7 +669,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -704,7 +704,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -713,7 +713,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -748,7 +748,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -757,7 +757,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -792,7 +792,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -801,7 +801,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -836,7 +836,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -845,7 +845,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -880,7 +880,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -889,7 +889,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -924,7 +924,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -933,7 +933,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -968,7 +968,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -977,7 +977,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -1012,7 +1012,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -1021,7 +1021,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -1056,7 +1056,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -1065,7 +1065,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:
@@ -1100,7 +1100,7 @@ interactions:
     body: null
     headers:
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Cookie:
       - __cf_bm=Dk.R0UxXW2rklRaSdi7NpQONh2ckXbIyNS0oWo6LE8U-1736425728-1.0.1.1-J.CvDChIhYiBe4zIcuHvtvm8YaiLpTK4UF7SJtm1SJeQ.cna.65q3t1U2I7153A5bAaHBKTRbMt65TxT1wlvqw;
         _cfuvid=44CIShnUv5H9eUxtkiGenSmKVzieIxGu.CP3ul3i1x0-1736425728544-0.0.1.1-604800000
@@ -1109,7 +1109,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:

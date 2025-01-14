@@ -37,6 +37,6 @@ jobs:
           poetry run ruff check . --output-format=github
           poetry run ruff format . --check
 
-      - name: Run integrations tests
+      - name: Run tests with coverage
         run: |
-          poetry run pytest tests/integrations/
+          poetry run pytest --cov='bespokelabs' --cov-report=html --cov-fail-under=80  tests/

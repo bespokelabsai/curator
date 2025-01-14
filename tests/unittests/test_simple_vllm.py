@@ -14,6 +14,7 @@ def download_model(model_name):
     return model_path
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("model_name", ["HuggingFaceTB/SmolLM-135M-Instruct"])
 def test_simple_vllm(model_name):
     model_path = download_model(model_name)

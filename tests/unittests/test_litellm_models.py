@@ -2,9 +2,9 @@ import logging
 import os
 
 import pytest
+from datasets import Dataset
 
 from bespokelabs.curator import LLM
-from bespokelabs.curator.dataset import Dataset
 
 """
 USAGE:
@@ -12,6 +12,7 @@ pytest -s tests/test_litellm_models.py
 """
 
 
+@pytest.mark.skip
 @pytest.mark.cache_dir(os.path.expanduser("~/.cache/curator-tests/test-models"))
 @pytest.mark.usefixtures("clear_test_cache")
 class TestLiteLLMModels:

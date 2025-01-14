@@ -1,5 +1,7 @@
+import json
+
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter, _validate_messages
 
@@ -38,7 +40,15 @@ def test_prompt_formatter_create_generic_request():
     """Tests that PromptFormatter correctly creates GenericRequest objects."""
     # Test with string prompt
     formatter = PromptFormatter(model_name="test-model", prompt_func=lambda x: "Hello", response_format=TestResponse)
+    assert formatter.response_to_response_format(json.dumps({"text": "response"})) == TestResponse(text="response")
+    assert formatter.parse_response_message(json.dumps({"text": "response"})) == ({"text": "response"}, None)
+
     request = formatter.create_generic_request({"input": "test"}, 0)
+    with pytest.raises(json.JSONDecodeError):
+        formatter.response_to_response_format("'text': 'response'}")
+    with pytest.raises(ValidationError):
+        formatter.response_to_response_format(json.dumps({"other": "response"}))
+    formatter.parse_response_message("'text': 'response'}")
 
     assert request.model == "test-model"
     assert request.messages == [{"role": "user", "content": "Hello"}]
@@ -54,6 +64,7 @@ def test_prompt_formatter_create_generic_request():
             {"role": "user", "content": "Hi"},
         ],
     )
+
     request = formatter.create_generic_request({"input": "test"}, 1)
 
     assert len(request.messages) == 2

@@ -19,16 +19,23 @@ class Topics(BaseModel):
     topics_list: List[str] = Field(description="A list of topics.")
 
 
-# We define a prompter that generates topics.
-topic_generator = curator.LLM(
-    prompt_func=lambda: "Generate 10 diverse topics that are suitable for writing poems about.",
-    model_name="gpt-4o-mini",
-    response_format=Topics,
-    parse_func=lambda _, topics: [{"topic": t} for t in topics.topics_list],
-)
+# We define a topic generator class that inherits from LLM
+class TopicGenerator(curator.LLM):
+    """A topic generator that generates diverse topics for poems."""
 
-# We call the prompter to generate the dataset.
-# When no input dataset is provided, an "empty" dataset with a single row is used as a starting point.
+    response_format = Topics
+
+    def prompt(self, input: dict) -> str:
+        """Generate a prompt for the topic generator."""
+        return "Generate 10 diverse topics that are suitable for writing poems about."
+
+    def parse(self, input: dict, response: Topics) -> dict:
+        """Parse the model response along with the input to the model into the desired output format.."""
+        return [{"topic": t} for t in response.topics_list]
+
+
+# We instantiate the topic generator and call it to generate topics
+topic_generator = TopicGenerator(model_name="gpt-4o-mini")
 topics: Dataset = topic_generator()
 print(topics["topic"])
 
@@ -40,18 +47,23 @@ class Poems(BaseModel):
     poems_list: List[str] = Field(description="A list of poems.")
 
 
-# We define an `LLM` object that generates poems which gets applied to the topics dataset.
-poet = curator.LLM(
-    # The prompt_func takes a row of the dataset as input.
-    # The row is a dictionary with a single key 'topic' in this case.
-    prompt_func=lambda row: f"Write two poems about {row['topic']}.",
-    model_name="gpt-4o-mini",
-    response_format=Poems,
-    # `row` is the input row, and `poems` is the Poems class which is parsed from the structured output from the LLM.
-    parse_func=lambda row, poems: [{"topic": row["topic"], "poem": p} for p in poems.poems_list],
-)
+# We define a poet class that inherits from LLM
+class Poet(curator.LLM):
+    """A poet that generates poems about given topics."""
 
-# We apply the prompter to the topics dataset.
+    response_format = Poems
+
+    def prompt(self, input: dict) -> str:
+        """Generate a prompt using the topic."""
+        return f"Write two poems about {input['topic']}."
+
+    def parse(self, input: dict, response: Poems) -> dict:
+        """Parse the model response along with the input to the model into the desired output format.."""
+        return [{"topic": input["topic"], "poem": p} for p in response.poems_list]
+
+
+# We instantiate the poet and apply it to the topics dataset
+poet = Poet(model_name="gpt-4o-mini")
 poems = poet(topics)
 print(poems.to_pandas())
 

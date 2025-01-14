@@ -1,0 +1,2659 @@
+interactions:
+- request:
+    body: '{"requests": [{"custom_id": "0", "params": {"model": "claude-3-5-sonnet-20241022",
+      "max_tokens": 8192, "messages": [{"role": "user", "content": "Spagetti"}]}},
+      {"custom_id": "1", "params": {"model": "claude-3-5-sonnet-20241022", "max_tokens":
+      8192, "messages": [{"role": "user", "content": "Sushi"}]}}, {"custom_id": "2",
+      "params": {"model": "claude-3-5-sonnet-20241022", "max_tokens": 8192, "messages":
+      [{"role": "user", "content": "Ramen"}]}}]}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-length:
+      - '446'
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: POST
+    uri: https://api.anthropic.com/v1/messages/batches
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb581d4ef31b-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:14 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01RBcxpwtzWH6fKgJ8CqjRmy
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb5e6e073a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:15 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01StrNJoKH1wGxVLyF4ACnRo
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb66db323a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:16 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01X64n6WQXUamMTbfkdzf7uw
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb6f493c3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:17 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_011bHnFhnYNzosg5SuTnQoQQ
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb77ce253a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:19 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01GVjV3HtC4PJfWv7j4T61BP
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb803c3e3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:20 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01N6HLojEF2XREMAuwaSwhv2
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb88aaf43a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:22 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01RQG1CsMBbtgR62JfDH21ur
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb956b743a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:24 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01EXwc11WQQ82QNGKNb7M32p
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeb9dc8f83a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:25 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01JhMSZjhGXjVUtcwJcPr1pa
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aeba62f683a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:26 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01FxzkghmXH3bw4qZoYsP8LJ
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebae9c973a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:28 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_018RcEKezZE9YZhcRA41K1Hz
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebb71b5f3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:29 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_013MginoV5mM2FQLFCkpPvuX
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebbf78ac3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:30 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01SENHPNR2tGHjgqM4cEbMA3
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebc7de133a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:32 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01EXqcLHgY9okRgkoob7K3ou
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebd06c793a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:33 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01UD6cJnrxTApwW1WLR8TJd1
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - Mock
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebd8da3f3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:34 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01GWXDJP15VkXgvKH4Zib2zk
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebe13fa73a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:36 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01E8K6D4pijPhLtoy1EDGtYd
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebe9ce913a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:37 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01Bm5oGS8Po6Btq23ajsW114
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebf23d083a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:38 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01XMVReTQC2j9Ux1yJW3dr9s
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aebfaaa5e3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:40 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01YRgpgowm8gJgvVj31VZ6CL
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec030fd33a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:41 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01HVcSYeDo3RiCC2JZAfHSbb
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec0bcd573a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:43 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_019pqWn7E3ipuaYQhPUM8r89
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec143b533a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:44 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01D3H394zBntbGnyRzK416QR
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec1ca9503a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:45 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01U6TL2acavFKryRuUMnARr2
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec251f383a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:47 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01XDWoiVBQnR3Sfr6AHjFaRr
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec2d9dad3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:48 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_018zeX5oN2ZvTo9fGNssjya8
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec35fc183a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:49 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01JrqzzEPHnVuj5dSjqp18q9
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec3e7a273a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:51 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01G4xofAtU7GUdHYszLbfUEq
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec46e8503a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:52 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01HrLaPQ9etfA3Fd4xkLBTng
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec5148223a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:54 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01M51xeNPSYyStoswFB8N1Se
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec59de6a3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:55 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01RcSi2r5BmmFeGmmLyJNbdz
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec624bed3a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:56 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_011bNuMhNQc7ipM2sT9FH2Mz
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA3SOy04DMQxF/8VbUpTMA2myQ0Ks2l03rKKQWNOgkBlspypU/XdEp0WAxM6659jX
+        R0gRLLzy+Owl7Jw2m0Nct+tt95A+pkHal7vHp+F+BgXyPuOXisx+RHf2QcFMU0DmVEbH4qUyWEjF
+        zTSNhMyggPCtIosLUy3CYI8/dsC2CriGgBgxgtUKkGiiyxx8CZiv4DCnBZwUYIkYnRewpeasIBB6
+        uSTQ6KZfabMyzVb3th+s6W5N37XG3GhttYbrMf7jt//6nsIu7X9Xnp9zqSRJ390LIuSahV2lvESn
+        TwAAAP//AwCLt477aQEAAA==
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec6b19f33a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:58 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01Qdkv7ZFDywzSfRrCpE7bMU
+      retry-after:
+      - '10'
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4SRzWrDMBCE32WvVSzJPwHrVig9pbdcejKqvMQqjqxqVyFtyLuXxG4ohdDbLvMx
+        s8yewPdgYE+7N8tu6JR+OfabarOtn/zX1HL1vn5+bR8jCODPiBcUiewOuysPAmKaHBL5sOuILWcC
+        Axh67EFAwo+MxJ2bcmACc/pFg1ECKDuHeIFNJQBTmtJlVgKcDQ7HZcFj9LNwFrN5ZxkMlKpsVkqv
+        dLlVjWla07SFWtfrtnlQyigFAlxCy3d5XRe6qSutb/wcRX/46i5vkxv8YQkIeRx/Tu988Oxv2bOU
+        kPLI1OU0goGBOZKR0kZf2MBDmqJ3hZv28qDl0jPJa9FI8t8fycUdzt8AAAD//wMAHBXdI9YBAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec7378353a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:59 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01DwKu4kUL5x13QYG8cjkxpK
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4SRzWrDMBCE32WvVSzJPwHrVig9pbdcejKqvMQqjqxqVyFtyLuXxG4ohdDbLvMx
+        s8yewPdgYE+7N8tu6JR+OfabarOtn/zX1HL1vn5+bR8jCODPiBcUiewOuysPAmKaHBL5sOuILWcC
+        Axh67EFAwo+MxJ2bcmACc/pFg1ECKDuHeIFNJQBTmtJlVgKcDQ7HZcFj9LNwFrN5ZxkMlKpsVkqv
+        dLlVjWla07SFWtfrtnlQyigFAlxCy3d5XRe6qSutb/wcRX/46i5vkxv8YQkIeRx/Tu988Oxv2bOU
+        kPLI1OU0goGBOZKR0kZf2MBDmqJ3hZv28qDl0jPJa9FI8t8fycUdzt8AAAD//wMAHBXdI9YBAAA=
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec75aa083a1e-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 12 Jan 2025 05:59:59 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      request-id:
+      - req_01L5EZWcozUQEFLR8DHE5t2h
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: ''
+    headers:
+      accept:
+      - application/binary
+      accept-encoding:
+      - gzip, deflate
+      anthropic-version:
+      - '2023-06-01'
+      connection:
+      - keep-alive
+      content-type:
+      - application/json
+      host:
+      - api.anthropic.com
+      user-agent:
+      - AsyncAnthropic/Python 0.42.0
+      x-api-key:
+      - mocked-key-**
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - async:asyncio
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 0.42.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.7
+    method: GET
+    uri: https://api.anthropic.com/v1/messages/batches/msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap/results
+  response:
+    body:
+      string: "{\"custom_id\":\"0\",\"result\":{\"type\":\"succeeded\",\"message\":{\"id\":\"msg_01RCYATmUJZFc3vBxVtCSDov\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"claude-3-5-sonnet-20241022\",\"content\":[{\"type\":\"text\",\"text\":\"Here's
+        a basic spaghetti recipe:\\n\\nIngredients:\\n- 1 pound spaghetti pasta\\n-
+        1 pound ground beef (optional)\\n- 1 onion, diced\\n- 2-3 cloves garlic, minced\\n-
+        2 cans (28 oz) crushed tomatoes\\n- 1 tablespoon Italian seasoning\\n- Salt
+        and pepper to taste\\n- Grated Parmesan cheese (optional)\\n\\nInstructions:\\n1.
+        Boil water in a large pot and cook spaghetti according to package directions\\n\\n2.
+        In a large pan:\\n- Brown ground beef (if using)\\n- Saut\xE9 onions and garlic\\n-
+        Add crushed tomatoes and seasonings\\n- Simmer sauce for 20-30 minutes\\n\\n3.
+        Combine cooked pasta with sauce\\n\\n4. Serve hot with:\\n- Grated Parmesan\\n-
+        Fresh basil (optional)\\n- Garlic bread (optional)\\n\\nTips:\\n- Salt your
+        pasta water\\n- Reserve some pasta water to help sauce stick to noodles\\n-
+        Don't rinse pasta after cooking\\n- For best results, finish cooking pasta
+        in the sauce\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":11,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":273}}}}\n{\"custom_id\":\"1\",\"result\":{\"type\":\"succeeded\",\"message\":{\"id\":\"msg_01DyTJNYKDoDJJAcDddDvsgV\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"claude-3-5-sonnet-20241022\",\"content\":[{\"type\":\"text\",\"text\":\"Sushi
+        is a Japanese dish featuring specially prepared vinegared rice combined with
+        various ingredients, which may include seafood (raw or cooked), vegetables,
+        and sometimes tropical fruits.\\n\\nCommon types of sushi include:\\n\\n1.
+        Nigiri - Hand-pressed rice topped with fish or seafood\\n2. Maki - Rice and
+        fillings wrapped in nori (seaweed)\\n3. Uramaki - \\\"Inside-out\\\" rolls
+        with rice on the outside\\n4. Temaki - Hand-rolled cone-shaped sushi\\n5.
+        Sashimi - Sliced raw fish (technically not sushi as it doesn't include rice)\\n\\nPopular
+        ingredients:\\n- Salmon\\n- Tuna\\n- Yellowtail\\n- Cucumber\\n- Avocado\\n-
+        Cream cheese\\n\\nCommon accompaniments:\\n- Wasabi\\n- Pickled ginger (gari)\\n-
+        Soy sauce\\n\\nSushi is traditionally eaten with:\\n- Chopsticks\\n- Hands
+        (especially for nigiri)\\n\\nThe art of making sushi requires extensive training,
+        with sushi chefs (itamae) often spending years perfecting their craft.\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":10,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":259}}}}\n{\"custom_id\":\"2\",\"result\":{\"type\":\"succeeded\",\"message\":{\"id\":\"msg_014SWrnxk42Mvypdbp5G9EQY\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"claude-3-5-sonnet-20241022\",\"content\":[{\"type\":\"text\",\"text\":\"Ramen
+        is a popular Japanese noodle dish that consists of Chinese-style wheat noodles
+        served in a meat or fish-based broth. Here are some key points about ramen:\\n\\nCommon
+        components:\\n1. Broth (soup base)\\n- Shoyu (soy sauce)\\n- Miso (fermented
+        soybean paste)\\n- Shio (salt)\\n- Tonkotsu (pork bone)\\n\\n2. Noodles\\n-
+        Wheat-based\\n- Various thicknesses and textures\\n\\n3. Common toppings:\\n-
+        Chashu (braised pork)\\n- Nori (seaweed)\\n- Menma (fermented bamboo shoots)\\n-
+        Soft-boiled egg\\n- Green onions\\n- Bean sprouts\\n- Corn\\n- Naruto (fish
+        cake)\\n\\nRegional variations:\\n- Sapporo (miso-based)\\n- Tokyo (shoyu-based)\\n-
+        Hakata (tonkotsu-based)\\n- Yokohama (ie-kei style)\\n\\nHistory:\\n- Originally
+        from China\\n- Introduced to Japan in the early 20th century\\n- Became popular
+        after World War II\\n- Now considered a cultural icon of Japanese cuisine\\n\\nTypes:\\n-
+        Traditional restaurant ramen\\n- Instant ramen\\n- Cup noodles\\n- Regional
+        specialty versions\"}],\"stop_reason\":\"end_turn\",\"stop_sequence\":null,\"usage\":{\"input_tokens\":10,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":0,\"output_tokens\":313}}}}"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 900aec77fbf13a1e-BOM
+      Connection:
+      - keep-alive
+      Date:
+      - Sun, 12 Jan 2025 06:00:00 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Robots-Tag:
+      - none
+      content-disposition:
+      - attachment; filename="msgbatch_01MxdL3LT4Dizo9t3j6FY9Ap_results.jsonl"
+      request-id:
+      - req_017VXhRN2nWTE6uKguqsHkXP
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+version: 1

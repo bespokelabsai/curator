@@ -18,6 +18,21 @@ from datasets import Dataset
 from bespokelabs import curator
 
 
+class RecipeGenerator(curator.LLM):
+    """A recipe generator that generates recipes for different cuisines."""
+
+    def prompt(self, input: dict) -> str:
+        """Generate a prompt for the recipe generator."""
+        return f"Generate a random {input['cuisine']} recipe. Be creative but keep it realistic."
+
+    def parse(self, input: dict, response: str) -> dict:
+        """Parse the model response along with the input to the model into the desired output format.."""
+        return {
+            "recipe": response,
+            "cuisine": input["cuisine"],
+        }
+
+
 def main():
     """Generate recipes for different world cuisines using vLLM.
 
@@ -53,19 +68,14 @@ def main():
     PORT = 8787
     HOST = "localhost"
 
-    recipe_prompter = curator.LLM(
+    recipe_generator = RecipeGenerator(
         model_name=model_path,
-        prompt_func=lambda row: f"Generate a random {row['cuisine']} recipe. Be creative but keep it realistic.",
-        parse_func=lambda row, response: {
-            "recipe": response,
-            "cuisine": row["cuisine"],
-        },
         backend="litellm",
-        base_url=f"http://{HOST}:{PORT}/v1",
+        backend_params={"base_url": f"http://{HOST}:{PORT}/v1"},
     )
 
     # Generate recipes for all cuisines
-    recipes = recipe_prompter(cuisines)
+    recipes = recipe_generator(cuisines)
 
     # Print results
     print(recipes.to_pandas())

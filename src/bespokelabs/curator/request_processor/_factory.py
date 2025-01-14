@@ -1,7 +1,15 @@
 import logging
 import typing as t
 
-from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig, OfflineRequestProcessorConfig, OnlineRequestProcessorConfig
+from pydantic import BaseModel
+
+from bespokelabs.curator.request_processor.config import (
+    BackendParamsType,
+    BatchRequestProcessorConfig,
+    OfflineRequestProcessorConfig,
+    OnlineRequestProcessorConfig,
+    _validate_backend_params,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +43,12 @@ class _RequestProcessorFactory:
 
     @staticmethod
     def _determine_backend(
-        config_params: t.Dict,
-        response_format: t.Optional["BaseModel"] = None,
+        model_name: str,
+        config_params: BackendParamsType,
+        response_format: t.Type["BaseModel"] | None = None,
         batch: bool = False,
     ) -> str:
-        model_name = config_params["model"].lower()
+        model_name = model_name.lower()
 
         # TODO: Move the following logic to corresponding client implementation
         # GPT-4o models with response format should use OpenAI
@@ -61,47 +70,26 @@ class _RequestProcessorFactory:
         return "litellm"
 
     @classmethod
-    def create(cls, params, batch: bool, backend, response_format) -> "BaseRequestProcessor":
+    def create(
+        cls,
+        model_name: str,
+        params: BackendParamsType | None,
+        generation_params: t.Dict,
+        batch: bool,
+        backend: str | None,
+        response_format: t.Type[BaseModel] | None,
+    ) -> "BaseRequestProcessor":
         """Create appropriate processor instance based on config params."""
-        if backend == "vllm":
-            config_params = {
-                "model": params["model"],
-                "generation_params": params["generation_params"],
-                "tensor_parallel_size": params["tensor_parallel_size"],
-                "enforce_eager": params["enforce_eager"],
-                "max_model_length": params["max_model_length"],
-                "max_tokens": params["max_tokens"],
-                "gpu_memory_utilization": params["gpu_memory_utilization"],
-                "batch_size": params["batch_size"] if params["batch_size"] is not None else 256,
-            }
-        elif batch:
-            config_params = {
-                "model": params["model"],
-                "base_url": params["base_url"],
-                "batch_size": params["batch_size"],
-                "batch_check_interval": params["batch_check_interval"],
-                "delete_successful_batch_files": params["delete_successful_batch_files"],
-                "delete_failed_batch_files": params["delete_failed_batch_files"],
-                "max_retries": params["max_retries"],
-                "require_all_responses": params["require_all_responses"],
-                "generation_params": params["generation_params"],
-            }
+        if params:
+            params["model"] = model_name
+            _validate_backend_params(params)
         else:
-            config_params = {
-                "model": params["model"],
-                "base_url": params["base_url"],
-                "max_requests_per_minute": params["max_requests_per_minute"],
-                "max_tokens_per_minute": params["max_tokens_per_minute"],
-                "max_retries": params["max_retries"],
-                "require_all_responses": params["require_all_responses"],
-                "generation_params": params["generation_params"],
-                "seconds_to_pause_on_rate_limit": params["seconds_to_pause_on_rate_limit"],
-            }
+            params = t.cast(BackendParamsType, {"model": model_name})
 
-        if backend is not None:
-            backend = backend
-        else:
-            backend = cls._determine_backend(config_params, response_format, batch)
+        params.update({"generation_params": generation_params})  # noqa
+
+        if backend is None:
+            backend = cls._determine_backend(model_name, params, response_format, batch)
 
         config = cls._create_config(params, batch, backend)
 

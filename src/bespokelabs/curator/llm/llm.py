@@ -5,7 +5,7 @@ import logging
 import os
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Callable, Dict, Iterable, Optional, Type, TypeVar
+from typing import Any, Dict, Iterable, Optional, Type, TypeVar
 
 from datasets import Dataset
 from datasets.utils._dill import Pickler
@@ -15,103 +15,138 @@ from xxhash import xxh64
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
+from bespokelabs.curator.request_processor.config import BackendParamsType
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
 _DictOrBaseModel = Dict[str, Any] | BaseModel
-
 logger = logging.getLogger(__name__)
 
 
 class LLM:
     """Interface for prompting LLMs."""
 
+    response_format: Type[BaseModel] | None = None
+
+    def prompt(self, input: _DictOrBaseModel) -> _DictOrBaseModel:
+        """Prompt the LLM.
+
+        Args:
+            input: The input row used to construct the prompt
+
+        Returns:
+            The prompt to send to the LLM. Can follow the following formats:
+
+            1. A string, corresponding to a single user prompt, e.g.
+            The string "Write a poem about love" will be converted
+            to [{"role": "user", "content": "Write a poem about love"}]
+
+            2. A list of dictionaries, corresponding to a list of messages, e.g.
+            The list [{"role": "user", "content": "Write a poem about love"},
+            {"role": "assistant", "content": "Here is a poem about love"}]
+        """
+        return input["prompt"]
+
+    def parse(self, input: _DictOrBaseModel, response: _DictOrBaseModel) -> _DictOrBaseModel:
+        """Parse the response from the LLM and combine it with the input.
+
+        Args:
+            input: The input row used to construct the prompt
+            response: The response from the LLM
+
+        Returns:
+            The parsed output row that combines the input and response,
+        """
+        if isinstance(response, str):
+            return {"response": response}
+        elif isinstance(response, BaseModel):
+            return response.model_dump()
+        return response
+
     def __init__(
         self,
         model_name: str,
-        prompt_func: Callable[[_DictOrBaseModel], _DictOrBaseModel],
-        parse_func: Callable[[_DictOrBaseModel, _DictOrBaseModel], _DictOrBaseModel] | None = None,
-        base_url: str | None = None,
         response_format: Type[BaseModel] | None = None,
         batch: bool = False,
-        backend: str | None = None,
-        max_requests_per_minute: int | None = None,
-        max_tokens_per_minute: int | None = None,
-        batch_size: int | None = None,
-        batch_check_interval: int | None = None,
-        delete_successful_batch_files: bool | None = None,
-        delete_failed_batch_files: bool | None = None,
-        max_retries: int | None = None,
-        require_all_responses: bool | None = None,
+        backend: Optional[str] = None,
         generation_params: dict | None = None,
-        seconds_to_pause_on_rate_limit: int | None = None,
-        tensor_parallel_size: int | None = None,
-        enforce_eager: bool | None = None,
-        max_model_length: int | None = None,
-        max_tokens: int | None = None,
-        gpu_memory_utilization: float | None = None,
+        backend_params: BackendParamsType | None = None,
     ):
         """Initialize a LLM.
 
         Args:
             model_name: The name of the LLM to use
-            prompt_func: A function that takes a single row
-                and returns either a string (assumed to be a user prompt) or messages list
-            parse_func: A function that takes the input row and
-                response object and returns the parsed output
-            base_url: Optional base URL for the API endpoint
             response_format: A Pydantic model specifying the
                 response format from the LLM
             batch: Whether to use batch processing
             backend: The backend to use ("openai", "litellm", or "vllm"). If None, will be auto-determined
-            max_requests_per_minute: Maximum number of requests per minute for rate limiting
-            max_tokens_per_minute: Maximum number of tokens per minute for rate limiting
-            batch_size: The size of the batch to use, only used if batch is True
-            batch_check_interval: The interval to check for batch completions, only used if batch is True
-            delete_successful_batch_files: Whether to delete successful batch files, only used if batch is True
-            delete_failed_batch_files: Whether to delete failed batch files, only used if batch is True
-            max_retries: The maximum number of retries to use for the LLM
-            require_all_responses: Whether to require all responses
             generation_params: Additional parameters to pass to the generation API
-            seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited
-            tensor_parallel_size: The tensor parallel size to use for the VLLM backend
-            enforce_eager: Whether to enforce eager execution for the VLLM backend
-            max_model_length: The maximum model length to use for the VLLM backend
-            max_tokens: The maximum tokens to use for the VLLM backend
-            gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
-        """
-        if generation_params is None:
-            generation_params = {}
-        else:
-            generation_params = _remove_none_values(generation_params)
+            backend_params: Dictionary parameters for request processing
+                    - max_retries: The maximum number of retries to use for the LLM
+                    - require_all_responses: Whether to require all responses
 
-        self.prompt_formatter = PromptFormatter(model_name, prompt_func, parse_func, response_format, generation_params)
+            Other backend params:
+                - Online:
+                    - max_requests_per_minute: Maximum number of requests per minute for rate limiting
+                    - max_tokens_per_minute: Maximum number of tokens per minute for rate limiting
+                    - seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited
+
+                - Batch:
+                    - batch_size: The size of the batch to use, only used if batch is True
+                    - batch_check_interval: The interval to check for batch completions, only used if batch is True
+                    - delete_successful_batch_files: Whether to delete successful batch files, only used if batch is True
+                    - delete_failed_batch_files: Whether to delete failed batch files, only used if batch is True
+                - Offline:
+                    - tensor_parallel_size: The tensor parallel size to use for the VLLM backend
+                    - enforce_eager: Whether to enforce eager execution for the VLLM backend
+                    - max_model_length: The maximum model length to use for the VLLM backend
+                    - max_tokens: The maximum tokens to use for the VLLM backend
+                    - gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
+        """
+        generation_params = generation_params or {}
+
+        if response_format is not None:
+            self.response_format = response_format
+
+        self.prompt_formatter = PromptFormatter(
+            model_name=model_name,
+            prompt_func=self.prompt,
+            parse_func=self.parse,
+            response_format=self.response_format,
+            generation_params=_remove_none_values(generation_params),
+        )
         self.batch_mode = batch
 
-        backend_params = {
-            "model": model_name,
-            "base_url": base_url,
-            "batch_size": batch_size,
-            "batch_check_interval": batch_check_interval,
-            "delete_successful_batch_files": delete_successful_batch_files,
-            "delete_failed_batch_files": delete_failed_batch_files,
-            "require_all_responses": require_all_responses,
-            "generation_params": generation_params,
-            "max_requests_per_minute": max_requests_per_minute,
-            "max_tokens_per_minute": max_tokens_per_minute,
-            "max_retries": max_retries,
-            "seconds_to_pause_on_rate_limit": seconds_to_pause_on_rate_limit,
-            "tensor_parallel_size": tensor_parallel_size,
-            "enforce_eager": enforce_eager,
-            "max_model_length": max_model_length,
-            "max_tokens": max_tokens,
-            "gpu_memory_utilization": gpu_memory_utilization,
-        }
+        self._request_processor = _RequestProcessorFactory.create(
+            params=backend_params, model_name=model_name, batch=batch, response_format=response_format, backend=backend, generation_params=generation_params
+        )
 
-        self._request_processor = _RequestProcessorFactory.create(backend_params, batch=batch, response_format=response_format, backend=backend)
+    def _hash_fingerprint(self, dataset_hash, disable_cache):
+        if disable_cache:
+            fingerprint = xxh64(os.urandom(8)).hexdigest()
+        else:
+            # Get the source code of the prompt and parse methods
+            prompt_func_hash = _get_function_hash(self.prompt_formatter.prompt_func)
 
-    def _hash_fingerprint(self, fingerprint_str):
-        return xxh64(fingerprint_str.encode("utf-8")).hexdigest()
+            fingerprint_str = "_".join(
+                [
+                    str(dataset_hash),
+                    str(prompt_func_hash),
+                    str(self.prompt_formatter.model_name),
+                    str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
+                    str(self.batch_mode),
+                ]
+            )
+
+            if self.prompt_formatter.generation_params:
+                generation_params_str = str(sorted(self.prompt_formatter.generation_params.items()))
+                fingerprint_str += f"_{generation_params_str}"
+
+            fingerprint = xxh64(fingerprint_str.encode("utf-8")).hexdigest()
+            logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
+            logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
+
+        return fingerprint
 
     def __call__(
         self,
@@ -129,8 +164,19 @@ class LLM:
             Iterable: A list of structured outputs from the completions
         """
         # We convert from iterable to Dataset because Dataset has random access via row_idx
-        if not isinstance(dataset, Dataset) and dataset is not None:
-            dataset = Dataset.from_generator(dataset)
+        if isinstance(dataset, str):
+            # A single string is converted to a dataset with a single row
+            dataset = Dataset.from_list([{"prompt": dataset}])
+        elif not isinstance(dataset, Dataset) and dataset is not None:
+            # Wrap the iterable in a generator to convert strings to dictionaries
+            def wrapped_iterable():
+                for input in dataset:
+                    if isinstance(input, str):
+                        yield {"prompt": input}
+                    else:
+                        yield input
+
+            dataset = Dataset.from_generator(wrapped_iterable)
 
         if working_dir is None:
             curator_cache_dir = os.environ.get(
@@ -142,30 +188,8 @@ class LLM:
 
         dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
 
-        prompt_func_hash = _get_function_hash(self.prompt_formatter.prompt_func)
-
-        # Used to name the dataset .arrow file, but not the cache directory name
-        # Modifying `parse_func` creates a new dataset file from cached responses
-        parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
-
-        fingerprint_str = "_".join(
-            [
-                str(dataset_hash),
-                str(prompt_func_hash),
-                str(self.prompt_formatter.model_name),
-                str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
-                str(self.batch_mode),
-                str(self._request_processor.backend),
-            ]
-        )
-
-        if self.prompt_formatter.generation_params:
-            generation_params_str = str(sorted(self.prompt_formatter.generation_params.items()))
-            fingerprint_str += f"_{generation_params_str}"
-
-        fingerprint = self._hash_fingerprint(fingerprint_str)
-        logger.debug(f"Curator Cache Fingerprint String: {fingerprint_str}")
-        logger.debug(f"Curator Cache Fingerprint: {fingerprint}")
+        disable_cache = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
+        fingerprint = self._hash_fingerprint(dataset_hash, disable_cache)
 
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
         metadata_db = MetadataDB(metadata_db_path)
@@ -201,6 +225,7 @@ class LLM:
                 working_dir=run_cache_dir,
             )
         else:
+            parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
             dataset = self._request_processor.run(
                 dataset=dataset,
                 working_dir=run_cache_dir,
@@ -215,6 +240,16 @@ def _get_function_hash(func) -> str:
     """Get a hash of a function's source code."""
     if func is None:
         return xxh64("").hexdigest()
+
+    # Remove parameter annotations to avoid dill complaining about pickling
+    # pydantic BaseModel: https://github.com/bespokelabsai/curator/issues/229.
+    # For class/instance methods, get the underlying function
+    if hasattr(func, "__func__"):
+        func = func.__func__
+
+    # Clear annotations if they exist
+    if hasattr(func, "__annotations__"):
+        func.__annotations__ = {}
 
     file = BytesIO()
     Pickler(file, recurse=True).dump(func)

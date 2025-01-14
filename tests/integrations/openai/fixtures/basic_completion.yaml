@@ -320,7 +320,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate
       Authorization:
-      - Bearer sk-mocked-**
+      - Bearer mocked-key-****
       Connection:
       - keep-alive
       Content-Length:
@@ -334,7 +334,7 @@ interactions:
   response:
     body:
       string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
-        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        mocked-key-****. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
         \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
         \"invalid_api_key\"\n    }\n}\n"
     headers:

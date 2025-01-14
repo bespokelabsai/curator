@@ -1,7 +1,8 @@
 import logging
+import typing as t
 
 import litellm
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,11 @@ class RequestProcessorConfig(BaseModel):
     request_timeout: int = Field(default=10 * 60, gt=0)
     require_all_responses: bool = Field(default=True)
     generation_params: dict = Field(default_factory=dict)
+
+    class Config:
+        """BaseModel Setup class."""
+
+        extra = "forbid"
 
     def __post_init__(self):
         """Post-initialization hook to validate generation parameters.
@@ -106,3 +112,56 @@ class OfflineRequestProcessorConfig(RequestProcessorConfig):
         Overrides base class validation since offline models have different parameter requirements.
         """
         pass
+
+
+class BaseBackendParams(t.TypedDict, total=False):
+    """Base backend params TypedDict class."""
+
+    model: t.Optional[str]
+    base_url: t.Optional[str]
+    max_retries: t.Optional[int]
+    request_timeout: t.Optional[int]
+    require_all_responses: t.Optional[bool]
+
+
+class OnlineBackendParams(BaseBackendParams, total=False):
+    """TypedDict for online processor."""
+
+    max_requests_per_minute: t.Optional[int]
+    max_tokens_per_minute: t.Optional[int]
+    seconds_to_pause_on_rate_limit: t.Optional[int]
+
+
+class OfflineBackendParams(BaseBackendParams, total=False):
+    """TypedDict for offline processor. for example, vLLM."""
+
+    tensor_parallel_size: t.Optional[int]
+    enforce_eager: t.Optional[bool]
+    max_model_length: t.Optional[int]
+    max_tokens: t.Optional[int]
+    gpu_memory_utilization: t.Optional[float]
+    batch_size: t.Optional[int]
+
+
+class BatchBackendParams(BaseBackendParams, total=False):
+    """TypedDict for batch processor."""
+
+    batch_size: t.Optional[int]
+    batch_check_interval: t.Optional[int]
+    delete_successful_batch_files: t.Optional[bool]
+    delete_failed_batch_files: t.Optional[bool]
+
+
+BackendParamsType = t.Union[OnlineBackendParams, BatchBackendParams, OfflineBackendParams]
+
+
+def _validate_backend_params(params: BackendParamsType):
+    validators = (BatchRequestProcessorConfig, OnlineRequestProcessorConfig, OfflineRequestProcessorConfig)
+    for validator in validators:
+        try:
+            validator.validate(params)
+        except ValidationError:
+            continue
+        else:
+            return validator(**params)
+    raise ValueError(f"Backend params are not valid, please refer {validators} for more info on backend params.")

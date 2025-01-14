@@ -1,0 +1,284 @@
+interactions:
+- request:
+    body: '{"model": "gpt-4o-mini", "messages": []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer 
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"error\": {\n    \"message\": \"Invalid 'messages': empty array.
+        Expected an array with minimum length 1, but got an empty array instead.\",\n
+        \   \"type\": \"invalid_request_error\",\n    \"param\": \"messages\",\n    \"code\":
+        \"empty_array\"\n  }\n}"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ffc49e46c473a33-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '232'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 10 Jan 2025 11:22:20 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=_qlM9os7R0lsPdqaxdeE6hsHZTUxj0xSv1LunX0u2Hc-1736508140-1.0.1.1-yNVUwzh5u__PVUqYrjAFTbIotxMS4sUj4Ap8mkuSKP94g_4vOxQ8_aOHsCOq8fOEuJ681ODOXDoely.kd2e.iQ;
+        path=/; expires=Fri, 10-Jan-25 11:52:20 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=6K7QD6qVt_QNUNqfboEvfbZfK1oUHu41sNHCqZB6bJA-1736508140589-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      access-control-expose-headers:
+      - X-Request-ID
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '70'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9999'
+      x-ratelimit-remaining-tokens:
+      - '199983'
+      x-ratelimit-reset-requests:
+      - 8.64s
+      x-ratelimit-reset-tokens:
+      - 4ms
+      x-request-id:
+      - req_540f53ec60e624e854636fc8e20ca604
+    status:
+      code: 400
+      message: Bad Request
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Ao7NmdSAApE5u8wmYoHyPX9irdvCf\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736508142,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"1\",\n        \"refusal\": null\n      },\n
+        \     \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n
+        \ \"usage\": {\n    \"prompt_tokens\": 15,\n    \"completion_tokens\": 2,\n
+        \   \"total_tokens\": 17,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_f2cd28694a\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ffc49ef49a4f3cd-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 10 Jan 2025 11:22:22 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=3vAq7SalPJEVzprMG5Gl2jcOqM7QCXqzCqU9hGhIwPo-1736508142-1.0.1.1-gOLkhJbwt2oZm_fvXwDbgtLV.s7yXoMs8u7Dp6e1OQ2xWMub90fm9fkkvrw2cLSzuX0C3anAVAGXjk9Tl73JUA;
+        path=/; expires=Fri, 10-Jan-25 11:52:22 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=sWKMba65wr1qK3Aiml7qBvLASaqchFkPd0EgI4Wc5p4-1736508142431-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '206'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9998'
+      x-ratelimit-remaining-tokens:
+      - '199977'
+      x-ratelimit-reset-requests:
+      - 15.54s
+      x-ratelimit-reset-tokens:
+      - 6ms
+      x-request-id:
+      - req_e2e2b7ea496994f5345f38fb2d81db09
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-Ao7NoK9dJOSHxXV56W9rScj9HJF4K\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1736508144,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"2\",\n        \"refusal\": null\n      },\n
+        \     \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n  ],\n
+        \ \"usage\": {\n    \"prompt_tokens\": 15,\n    \"completion_tokens\": 2,\n
+        \   \"total_tokens\": 17,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_01aeff40ea\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ffc49fb58243de0-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 10 Jan 2025 11:22:24 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=UJkuNqffRIeZ7f8o8quhRhQNkXODQ4BdsvHqqoYGuis-1736508144-1.0.1.1-RjxrLmjmtSA45FoZ93s5dT0J6cY5.Jx_D.quIybd1nQ1fhKSMo6CzeYo5H9Anknnw56_wBd5YfJe9_L6a3VzPQ;
+        path=/; expires=Fri, 10-Jan-25 11:52:24 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=s9PsDFoQm36rUG2ZBcV8dU9xtdw3Jh2N4HZD2.KXv7M-1736508144402-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      openai-organization:
+      - personl-pozv85
+      openai-processing-ms:
+      - '235'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-ratelimit-limit-requests:
+      - '10000'
+      x-ratelimit-limit-tokens:
+      - '200000'
+      x-ratelimit-remaining-requests:
+      - '9997'
+      x-ratelimit-remaining-tokens:
+      - '199977'
+      x-ratelimit-reset-requests:
+      - 22.25s
+      x-ratelimit-reset-tokens:
+      - 6ms
+      x-request-id:
+      - req_a51432c579d8c507cee240212e62898b
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "gpt-4o-mini", "messages": []}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer sk-mocked-**
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '40'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 8ffc4d49ede93b61-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 10 Jan 2025 11:24:39 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=.XxbjXGnzF80d3qH8pWNp0Q83CdwiI9Mg9hiIaAXRQQ-1736508279-1.0.1.1-P0gQj3yDv8yRU9jAS7laF0CqOeXY6h1nLgvLq9jxBlzDSaQAxEZRBI5pzIxRT.WJI6Il3IaP5FZo52ygce07Zw;
+        path=/; expires=Fri, 10-Jan-25 11:54:39 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=AQ2RxKzLmm_JLM_o0ixnMxzcmyGw5S7HHU27FG5SAis-1736508279596-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      vary:
+      - Origin
+      x-request-id:
+      - req_13fbceb154aaa60ff3490b793fe10d0f
+    status:
+      code: 401
+      message: Unauthorized
+version: 1

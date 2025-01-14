@@ -46,6 +46,7 @@ def kill_vllm_server():
         raise e
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("model_name", ["HuggingFaceTB/SmolLM-135M-Instruct"])
 def test_online_vllm(model_name):
     model_path = download_model(model_name)

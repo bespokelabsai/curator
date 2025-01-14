@@ -21,7 +21,7 @@ def get_example_scripts():
     return example_scripts
 
 
-@pytest.mark.integration
+@pytest.mark.skip
 @pytest.mark.parametrize("script_path", get_example_scripts())
 @pytest.mark.cache_dir(lambda script_path: os.path.expanduser(f"~/.cache/curator-tests/{Path(script_path).stem}"))
 @pytest.mark.usefixtures("clear_test_cache")

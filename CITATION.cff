@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software in your work, please cite it as below."
+title: "Curator: A Tool for Synthetic Data Creation"
+authors:
+  - family-names: "Marten"
+    given-names: "Ryan"
+  - family-names: "Vu"
+    given-names: "Trung"
+  - family-names: "Cheng-Jie Ji"
+    given-names: "Charlie"
+  - family-names: "Dimakis"
+    given-names: "Alex"
+  - family-names: "Sathiamoorthy"
+    given-names: "Mahesh"
+  
+date-released: "2025-01-15"
+repository: "https://github.com/bespokelabsai/curator"
+publisher: "GitHub"
+type: "software"
