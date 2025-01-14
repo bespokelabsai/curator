@@ -85,6 +85,8 @@ class LLM:
             backend_params: Dictionary parameters for request processing
                     - max_retries: The maximum number of retries to use for the LLM
                     - require_all_responses: Whether to require all responses
+                    - base_url: Optional base URL for API endpoint
+                    - request_timeout: Timeout in seconds for each request
 
             Other backend params:
                 - Online:
@@ -97,12 +99,15 @@ class LLM:
                     - batch_check_interval: The interval to check for batch completions, only used if batch is True
                     - delete_successful_batch_files: Whether to delete successful batch files, only used if batch is True
                     - delete_failed_batch_files: Whether to delete failed batch files, only used if batch is True
+
                 - Offline:
                     - tensor_parallel_size: The tensor parallel size to use for the VLLM backend
                     - enforce_eager: Whether to enforce eager execution for the VLLM backend
                     - max_model_length: The maximum model length to use for the VLLM backend
                     - max_tokens: The maximum tokens to use for the VLLM backend
+                    - min_tokens: The minimum tokens to use for the VLLM backend
                     - gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
+                    - batch_size: The size of the batch to use, only used if batch is True
         """
         generation_params = generation_params or {}
 

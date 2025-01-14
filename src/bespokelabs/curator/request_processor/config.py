@@ -133,17 +133,6 @@ class OnlineBackendParams(BaseBackendParams, total=False):
     seconds_to_pause_on_rate_limit: t.Optional[int]
 
 
-class OfflineBackendParams(BaseBackendParams, total=False):
-    """TypedDict for offline processor. for example, vLLM."""
-
-    tensor_parallel_size: t.Optional[int]
-    enforce_eager: t.Optional[bool]
-    max_model_length: t.Optional[int]
-    max_tokens: t.Optional[int]
-    gpu_memory_utilization: t.Optional[float]
-    batch_size: t.Optional[int]
-
-
 class BatchBackendParams(BaseBackendParams, total=False):
     """TypedDict for batch processor."""
 
@@ -151,6 +140,18 @@ class BatchBackendParams(BaseBackendParams, total=False):
     batch_check_interval: t.Optional[int]
     delete_successful_batch_files: t.Optional[bool]
     delete_failed_batch_files: t.Optional[bool]
+
+
+class OfflineBackendParams(BaseBackendParams, total=False):
+    """TypedDict for offline processor. for example, vLLM."""
+
+    tensor_parallel_size: t.Optional[int]
+    enforce_eager: t.Optional[bool]
+    max_model_length: t.Optional[int]
+    max_tokens: t.Optional[int]
+    min_tokens: t.Optional[int]
+    gpu_memory_utilization: t.Optional[float]
+    batch_size: t.Optional[int]
 
 
 BackendParamsType = t.Union[OnlineBackendParams, BatchBackendParams, OfflineBackendParams]
