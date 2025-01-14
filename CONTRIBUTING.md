@@ -23,10 +23,15 @@ Welcome to the Curator project! We value your contributions and are excited to h
    make install
    ```
 
-4. Run tests to verify your setup:
+3. Run tests to verify your setup:
    ```bash
    make test
    ```
+
+4. Activate the virtual environment:
+```bash
+$(poetry env activate)
+```
 
 ## How to Contribute
 
