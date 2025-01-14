@@ -66,7 +66,6 @@ class LLM:
     def __init__(
         self,
         model_name: str,
-        base_url: str | None = None,
         response_format: Type[BaseModel] | None = None,
         batch: bool = False,
         backend: Optional[str] = None,
@@ -77,7 +76,6 @@ class LLM:
 
         Args:
             model_name: The name of the LLM to use
-            base_url: Optional base URL for the API endpoint
             response_format: A Pydantic model specifying the
                 response format from the LLM
             batch: Whether to use batch processing
