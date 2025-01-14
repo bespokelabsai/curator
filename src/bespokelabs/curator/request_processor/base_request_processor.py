@@ -8,12 +8,10 @@ import os
 import resource
 from abc import ABC, abstractmethod
 from math import ceil
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 import aiofiles
 import pyarrow
-from datasets import Dataset
-from datasets.arrow_writer import ArrowWriter
 from pydantic import BaseModel, ValidationError
 
 from bespokelabs.curator.file_utilities import count_lines
@@ -21,6 +19,10 @@ from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig, RequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.generic_response import GenericResponse
+
+if TYPE_CHECKING:
+    from datasets import Dataset
+
 
 logger = logging.getLogger(__name__)
 
@@ -75,11 +77,11 @@ class BaseRequestProcessor(ABC):
 
     def run(
         self,
-        dataset: Dataset,
+        dataset: "Dataset",
         working_dir: str,
         parse_func_hash: str,
         prompt_formatter: PromptFormatter,
-    ) -> Dataset:
+    ) -> "Dataset":
         """Uses the API to completing the specific map by calling the LLM.
 
         Args:
@@ -115,7 +117,7 @@ class BaseRequestProcessor(ABC):
 
         return self.create_dataset_files(parse_func_hash)
 
-    def _verify_existing_request_files(self, dataset: Optional[Dataset]) -> List[int]:
+    def _verify_existing_request_files(self, dataset: Optional["Dataset"]) -> List[int]:
         """Verify integrity of the cache and identify files needing regeneration.
 
         Checks that each request file has associated metadata and correct number of rows.
@@ -164,7 +166,7 @@ class BaseRequestProcessor(ABC):
             incomplete_files = list(range(expected_num_files))
             return incomplete_files
 
-    def create_request_files(self, dataset: Optional[Dataset]) -> list[str]:
+    def create_request_files(self, dataset: Optional["Dataset"]) -> list[str]:
         """Creates request files if they don't exist or uses existing ones.
 
         Args:
@@ -243,7 +245,7 @@ class BaseRequestProcessor(ABC):
 
     async def acreate_request_file(
         self,
-        dataset: Dataset,
+        dataset: "Dataset",
         request_file: str,
         metadata_file: str,
         start_idx: int = 0,
@@ -277,7 +279,7 @@ class BaseRequestProcessor(ABC):
 
         logger.info(f"Wrote {num_requests} requests to {request_file}.")
 
-    def attempt_loading_cached_dataset(self, parse_func_hash: str) -> Optional[Dataset]:
+    def attempt_loading_cached_dataset(self, parse_func_hash: str) -> Optional["Dataset"]:
         """Attempt to load a cached dataset file.
 
         Args:
@@ -303,7 +305,7 @@ class BaseRequestProcessor(ABC):
     def create_dataset_files(
         self,
         parse_func_hash: str,
-    ) -> Dataset:
+    ) -> "Dataset":
         """Creates dataset from response files.
 
         Args:
@@ -330,6 +332,8 @@ class BaseRequestProcessor(ABC):
         failed_responses_count = 0
         error_sample = []
         dataset_file = os.path.join(self.working_dir, f"{parse_func_hash}.arrow")
+        from datasets.arrow_writer import ArrowWriter
+
         with ArrowWriter(path=dataset_file) as writer:
             for responses_file in responses_files:
                 with open(responses_file, "r") as f_in:
@@ -423,7 +427,9 @@ class BaseRequestProcessor(ABC):
 
         return self._load_from_dataset_file(dataset_file)
 
-    def _load_from_dataset_file(self, dataset_file: str) -> Dataset:
+    def _load_from_dataset_file(self, dataset_file: str) -> "Dataset":
+        from datasets import Dataset
+
         d = Dataset.from_file(dataset_file)
         d = d.sort("__original_row_idx")
         d = d.remove_columns("__original_row_idx")

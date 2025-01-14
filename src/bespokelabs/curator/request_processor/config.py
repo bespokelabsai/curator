@@ -1,7 +1,6 @@
 import logging
 import typing as t
 
-import litellm
 from pydantic import BaseModel, Field, ValidationError
 
 logger = logging.getLogger(__name__)
@@ -42,6 +41,8 @@ class RequestProcessorConfig(BaseModel):
         Raises:
             ValueError: If an unsupported generation parameter is provided
         """
+        import litellm
+
         self.supported_params = litellm.get_supported_openai_params(model=self.model)
         logger.debug(f"Automatically detected supported params using litellm for {self.model}: {self.supported_params}")
 

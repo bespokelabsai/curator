@@ -5,10 +5,8 @@ import logging
 import os
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Dict, Iterable, Optional, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar
 
-from datasets import Dataset
-from datasets.utils._dill import Pickler
 from pydantic import BaseModel
 from xxhash import xxh64
 
@@ -16,6 +14,9 @@ from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
 from bespokelabs.curator.request_processor.config import BackendParamsType
+
+if TYPE_CHECKING:
+    from datasets import Dataset
 
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
@@ -153,7 +154,7 @@ class LLM:
         dataset: Optional[Iterable] = None,
         working_dir: str = None,
         batch_cancel: bool = False,
-    ) -> Dataset:
+    ) -> "Dataset":
         """Apply structured completions in parallel to a dataset using specified model and prompts.
 
         Args:
@@ -164,6 +165,8 @@ class LLM:
             Iterable: A list of structured outputs from the completions
         """
         # We convert from iterable to Dataset because Dataset has random access via row_idx
+        from datasets import Dataset
+
         if isinstance(dataset, str):
             # A single string is converted to a dataset with a single row
             dataset = Dataset.from_list([{"prompt": dataset}])
@@ -252,6 +255,8 @@ def _get_function_hash(func) -> str:
         func.__annotations__ = {}
 
     file = BytesIO()
+    from datasets.utils._dill import Pickler
+
     Pickler(file, recurse=True).dump(func)
     return xxh64(file.getvalue()).hexdigest()
 
