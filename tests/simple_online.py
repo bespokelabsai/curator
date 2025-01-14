@@ -1,7 +1,9 @@
-from bespokelabs.curator import LLM
-from datasets import Dataset
-import logging
 import argparse
+import logging
+
+from datasets import Dataset
+
+from bespokelabs.curator import LLM
 
 # python tests/simple_online.py --log-level DEBUG --model claude-3-5-haiku-20241022
 
@@ -38,12 +40,8 @@ if __name__ == "__main__":
         help="Set the logging level (e.g., DEBUG, INFO, WARNING, ERROR, CRITICAL)",
     )
     parser.add_argument("--model", type=str, help="Model to use", default="gemini/gemini-1.5-flash")
-    parser.add_argument(
-        "--max-requests-per-minute", type=int, help="Max requests per minute", default=None
-    )
-    parser.add_argument(
-        "--max-tokens-per-minute", type=int, help="Max tokens per minute", default=None
-    )
+    parser.add_argument("--max-requests-per-minute", type=int, help="Max requests per minute", default=None)
+    parser.add_argument("--max-tokens-per-minute", type=int, help="Max tokens per minute", default=None)
     parser.add_argument("--max-retries", type=int, help="Max retries", default=None)
     parser.add_argument(
         "--partial-responses",

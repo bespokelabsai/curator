@@ -40,8 +40,8 @@ export function DetailsSidebar({ item, onClose }: DetailsSidebarProps) {
 
   return (
     <Sheet open={!!item} onOpenChange={() => item && onClose()}>
-      <SheetContent 
-        side="right" 
+      <SheetContent
+        side="right"
         className="w-full sm:w-[540px] p-0 fixed inset-y-0 border-l"
         style={{ height: '100vh' }}
       >
@@ -49,7 +49,7 @@ export function DetailsSidebar({ item, onClose }: DetailsSidebarProps) {
           <div className="p-6 border-b flex items-center justify-between">
             <h2 className="text-lg font-semibold">Response Details</h2>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto p-6">
             <CardContent className="space-y-6">
               <div className="space-y-2">
@@ -64,10 +64,10 @@ export function DetailsSidebar({ item, onClose }: DetailsSidebarProps) {
                     <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                       {item.generic_request.messages.find(m => m.role === "system")?.content}
                     </p>
-                    <Button 
-                      onClick={() => copyToClipboard(item.generic_request.messages.find(m => m.role === "system")?.content || "")} 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      onClick={() => copyToClipboard(item.generic_request.messages.find(m => m.role === "system")?.content || "")}
+                      variant="outline"
+                      size="sm"
                       className="mt-2"
                     >
                       <Copy className="h-4 w-4 mr-2" />
@@ -82,10 +82,10 @@ export function DetailsSidebar({ item, onClose }: DetailsSidebarProps) {
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                   {item.generic_request.messages.find(m => m.role === "user")?.content}
                 </p>
-                <Button 
-                  onClick={() => copyToClipboard(item.generic_request.messages.find(m => m.role === "user")?.content || "")} 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  onClick={() => copyToClipboard(item.generic_request.messages.find(m => m.role === "user")?.content || "")}
+                  variant="outline"
+                  size="sm"
                   className="mt-2"
                 >
                   <Copy className="h-4 w-4 mr-2" />
@@ -96,18 +96,18 @@ export function DetailsSidebar({ item, onClose }: DetailsSidebarProps) {
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold">Assistant Message</h3>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                  {typeof item.response_message === 'object' 
+                  {typeof item.response_message === 'object'
                     ? JSON.stringify(item.response_message, null, 2)
                     : item.response_message}
                 </p>
-                <Button 
+                <Button
                   onClick={() => copyToClipboard(
-                    typeof item.response_message === 'object' 
+                    typeof item.response_message === 'object'
                       ? JSON.stringify(item.response_message, null, 2)
                       : item.response_message || ""
-                  )} 
-                  variant="outline" 
-                  size="sm" 
+                  )}
+                  variant="outline"
+                  size="sm"
                   className="mt-2"
                 >
                   <Copy className="h-4 w-4 mr-2" />

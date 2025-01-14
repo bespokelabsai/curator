@@ -1,0 +1,42 @@
+name: Curator testing workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Set Locale
+        run: |
+          sudo locale-gen "en_US.UTF-8"
+          export LC_ALL=en_US.UTF-8
+          export LANG=en_US.UTF-8
+
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          poetry install
+
+      - name: Run ruff
+        run: |
+          poetry run ruff check . --output-format=github
+          poetry run ruff format . --check
+
+      - name: Run integrations tests
+        run: |
+          poetry run pytest tests/integrations/

@@ -11,7 +11,7 @@ def test_same_value_caching(tmp_path):
     for _ in range(3):
 
         def prompt_func():
-            return f"Say '1'. Do not explain."
+            return "Say '1'. Do not explain."
 
         prompter = curator.LLM(
             prompt_func=prompt_func,
@@ -32,8 +32,10 @@ def test_different_values_caching(tmp_path):
 
     # Test with different values
     for x in [1, 2, 3]:
+        # Bind x to avoid late binding closure issue
+        x_val = x
 
-        def prompt_func():
+        def prompt_func(x=x_val):
             return f"Say '{x}'. Do not explain."
 
         prompter = curator.LLM(
@@ -104,7 +106,7 @@ def test_nested_call_caching(tmp_path):
     result = prompter(working_dir=str(tmp_path))
     assert result.to_pandas().iloc[0]["response"] == "1"
 
-    def value_generator():
+    def value_generator():  # noqa: F811
         return 2
 
     result = prompter(working_dir=str(tmp_path))
@@ -118,8 +120,6 @@ def test_nested_call_caching(tmp_path):
 def test_function_hash_dir_change():
     """Test that identical functions in different directories but same base filename produce the same hash."""
     import logging
-    import os
-    import sys
     import tempfile
     from pathlib import Path
 
@@ -127,9 +127,7 @@ def test_function_hash_dir_change():
 
     # Set up logging to write to a file in the current directory
     debug_log = Path("function_debug.log")
-    logging.basicConfig(
-        level=logging.DEBUG, format="%(message)s", filename=str(debug_log), filemode="w"
-    )
+    logging.basicConfig(level=logging.DEBUG, format="%(message)s", filename=str(debug_log), filemode="w")
     logger = logging.getLogger(__name__)
 
     def dump_function_details(func, prefix):
@@ -197,10 +195,10 @@ def test_func():
         # Both should produce the same hash
         hash1 = _get_function_hash(func1)
         hash2 = _get_function_hash(func2)
-        print(f"\nHash comparison:")  # Print to stdout
+        print("\nHash comparison:")  # Print to stdout
         print(f"  hash1: {hash1}")
         print(f"  hash2: {hash2}")
-        logger.debug(f"\nHash comparison:")
+        logger.debug("\nHash comparison:")
         logger.debug(f"  hash1: {hash1}")
         logger.debug(f"  hash2: {hash2}")
 

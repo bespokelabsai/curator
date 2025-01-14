@@ -1,7 +1,9 @@
-from dataclasses import dataclass, field
+"""Module for formatting prompts and handling responses for LLM interactions."""
+
 import inspect
 import json
 import logging
+from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel, ValidationError
@@ -29,26 +31,27 @@ def _validate_messages(messages: list[dict]) -> None:
 
     for msg in messages:
         if not isinstance(msg, dict):
-            raise ValueError(
-                "In the return value (a list) of the prompt_func, each "
-                "message must be a dictionary"
-            )
+            raise ValueError("In the return value (a list) of the prompt_func, each " "message must be a dictionary")
 
         if "role" not in msg or "content" not in msg:
-            raise ValueError(
-                "In the return value (a list) of the prompt_func, each "
-                "message must contain 'role' and 'content' keys"
-            )
+            raise ValueError("In the return value (a list) of the prompt_func, each " "message must contain 'role' and 'content' keys")
 
         if msg["role"] not in valid_roles:
-            raise ValueError(
-                f"In the return value (a list) of the prompt_func, "
-                f"each message role must be one of: {', '.join(sorted(valid_roles))}"
-            )
+            raise ValueError(f"In the return value (a list) of the prompt_func, " f"each message role must be one of: {', '.join(sorted(valid_roles))}")
 
 
 @dataclass
 class PromptFormatter:
+    """Class for formatting prompts and handling responses for LLM interactions.
+
+    Attributes:
+        model_name: Name of the LLM model to use
+        prompt_func: Function that takes input and returns formatted prompts
+        parse_func: Optional function to parse model responses
+        response_format: Optional Pydantic model defining expected response format
+        generation_params: Dictionary of parameters for generation
+    """
+
     model_name: str
     prompt_func: Callable[[_DictOrBaseModel], Dict[str, str]]
     parse_func: Optional[Callable[[_DictOrBaseModel, _DictOrBaseModel], T]] = None
@@ -56,7 +59,18 @@ class PromptFormatter:
     generation_params: dict = field(default_factory=dict)
 
     def create_generic_request(self, row: _DictOrBaseModel, idx: int) -> GenericRequest:
-        """Format the request object based off of `LLM` attributes."""
+        """Format the request object based off of `LLM` attributes.
+
+        Args:
+            row: Input data to format into a prompt
+            idx: Index of the row in the dataset
+
+        Returns:
+            GenericRequest object containing the formatted request
+
+        Raises:
+            ValueError: If prompt_func has invalid number of arguments or returns invalid format
+        """
         sig = inspect.signature(self.prompt_func)
         if len(sig.parameters) == 0:
             prompts = self.prompt_func()
@@ -82,15 +96,12 @@ class PromptFormatter:
             messages=messages,
             original_row=row,
             original_row_idx=idx,
-            response_format=(
-                self.response_format.model_json_schema() if self.response_format else None
-            ),
+            response_format=(self.response_format.model_json_schema() if self.response_format else None),
             generation_params=self.generation_params,
         )
 
     def response_to_response_format(self, response_message: str | dict) -> Optional[dict | str]:
-        """
-        Converts a response message to a specified Pydantic model format.
+        """Converts a response message to a specified Pydantic model format.
 
         This method takes a response message (either as a string or dict) and validates/converts it
         according to the provided Pydantic model format. If the response message is a string,
@@ -98,13 +109,11 @@ class PromptFormatter:
         an instance of the specified Pydantic model.
 
         Args:
-            response_message (str | dict): The response message to convert, either as a JSON string
+            response_message: The response message to convert, either as a JSON string
                 or a dictionary.
-            response_format (Optional[BaseModel]): The Pydantic model class that defines the
-                expected format of the response.
 
         Returns:
-            Optional[dict | str]: The validated response message as a Pydantic model instance.
+            The validated response message as a Pydantic model instance.
 
         Raises:
             json.JSONDecodeError: If the response_message is a string but cannot be parsed as valid JSON.
@@ -121,10 +130,7 @@ class PromptFormatter:
                 try:
                     response_dict = json.loads(response_message)
                 except json.JSONDecodeError as e:
-                    logger.warning(
-                        f"Failed to parse response message as JSON: {response_message}. "
-                        f"The model likely returned an invalid JSON format."
-                    )
+                    logger.warning(f"Failed to parse response message as JSON: {response_message}. " f"The model likely returned an invalid JSON format.")
                     raise e
             else:
                 response_dict = response_message
@@ -141,17 +147,23 @@ class PromptFormatter:
             )
             raise e
 
-    def parse_response_message(
-        self, response_message: str
-    ) -> tuple[Optional[dict | str], Optional[list[str]]]:
+    def parse_response_message(self, response_message: str) -> tuple[Optional[dict | str], Optional[list[str]]]:
+        """Parse a response message from the model.
+
+        Args:
+            response_message: Raw response string from the model
+
+        Returns:
+            Tuple containing:
+                - Parsed response message (as dict or str) or None if parsing failed
+                - List of error messages if any occurred during parsing, or None
+        """
         response_errors = None
         if self.response_format:
             try:
                 response_message = json.loads(response_message)
             except json.JSONDecodeError:
-                logger.warning(
-                    f"Failed to parse response as JSON: {response_message}, skipping this response."
-                )
+                logger.warning(f"Failed to parse response as JSON: {response_message}, skipping this response.")
                 response_message = None
                 response_errors = [f"Failed to parse response as JSON: {response_message}"]
         return response_message, response_errors

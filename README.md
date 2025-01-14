@@ -24,9 +24,6 @@
   <a href="https://discord.gg/KqpXvpzVBS">
     <img alt="Discord" src="https://img.shields.io/discord/1230990265867698186">
   </a>
-  <a href="https://github.com/psf/black">
-    <img alt="Code style: black" src="https://img.shields.io/badge/Code%20style-black-000000.svg">
-  </a>
 </p>
 
 ## Overview
@@ -53,7 +50,7 @@ pip install bespokelabs-curator
 ```
 
 ## Usage
-To run the examples below, make sure to set your OpenAI API key in 
+To run the examples below, make sure to set your OpenAI API key in
 the environment variable `OPENAI_API_KEY` by running `export OPENAI_API_KEY=sk-...` in your terminal.
 
 ### Hello World with `SimpleLLM`: A simple interface for calling LLMs
@@ -145,7 +142,7 @@ and we can scale this up to create tens of thousands of diverse poems.
 You can see a more detailed example in the [examples/poem.py](https://github.com/bespokelabsai/curator/blob/mahesh/update_doc/examples/poem.py) file,
 and other examples in the [examples](https://github.com/bespokelabsai/curator/blob/mahesh/update_doc/examples) directory.
 
-See the [docs](https://docs.bespokelabs.ai/) for more details as well as 
+See the [docs](https://docs.bespokelabs.ai/) for more details as well as
 for troubleshooting information.
 
 ## Bespoke Curator Viewer
@@ -300,7 +297,7 @@ curator.LLM(
 
 ### Structured output
 
-We use [vLLM's Guided Decoding](https://docs.vllm.ai/en/latest/usage/structured_outputs.html#offline-inference) to obtain structured output from local models during offline inference: 
+We use [vLLM's Guided Decoding](https://docs.vllm.ai/en/latest/usage/structured_outputs.html#offline-inference) to obtain structured output from local models during offline inference:
 
 ```python
   from pydantic import BaseModel, Field
@@ -352,4 +349,4 @@ Offline vLLM inference support batch inference by default, the default batch siz
 - [Use vLLM OpenAI compatible server with structured output](examples/vllm-online/vllm_online_structured.py)
 
 ## Contributing
-Contributions are welcome! 
+Contributions are welcome!

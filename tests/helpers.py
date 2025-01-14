@@ -1,9 +1,9 @@
-import pytest
-import subprocess
-import time
-import shutil
 import os
 import re
+import shutil
+import subprocess
+
+import pytest
 
 
 @pytest.fixture
@@ -27,9 +27,7 @@ def clear_test_cache(request):
 
 
 def run_script(script, stop_line_pattern=None, env=None):
-    process = subprocess.Popen(
-        script, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env
-    )
+    process = subprocess.Popen(script, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
 
     lines = ""
     for line in process.stderr:

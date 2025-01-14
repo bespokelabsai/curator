@@ -14,23 +14,61 @@ T = TypeVar("T")
 
 
 class Dataset:
+    """A dataset class that can be constructed from an iterable or working directory.
+
+    This class provides functionality to work with datasets, including iterating over items,
+    converting to different formats, and saving/loading from disk.
+
+    Args:
+        iterable: An optional iterable of dictionaries or BaseModel objects to construct the dataset from
+        working_dir: Optional directory path where dataset files are stored
+        prompt_formatter: Optional PromptFormatter instance for formatting prompts and responses
+    """
+
     def __init__(
         self,
         iterable: Iterable[Dict[str, Any] | BaseModel] | None = None,
         working_dir: str | None = None,
         prompt_formatter: PromptFormatter | None = None,
     ):
+        """Initialize the Dataset instance."""
         self.working_dir = working_dir
         self.prompt_formatter = prompt_formatter
         self.iterable = iterable
 
+    @staticmethod
     def from_iterable(iterable: Iterable[Dict[str, Any] | BaseModel]):
+        """Creates a Dataset instance from an iterable.
+
+        Args:
+            iterable: An iterable of dictionaries or BaseModel objects
+
+        Returns:
+            Dataset: A new Dataset instance
+        """
         return Dataset(iterable=iterable)
 
+    @staticmethod
     def from_working_dir(working_dir: str, prompt_formatter: PromptFormatter):
+        """Creates a Dataset instance from a working directory.
+
+        Args:
+            working_dir: Directory path containing dataset files
+            prompt_formatter: PromptFormatter instance for formatting prompts and responses
+
+        Returns:
+            Dataset: A new Dataset instance
+        """
         return Dataset(working_dir=working_dir, prompt_formatter=prompt_formatter)
 
     def __iter__(self) -> Iterator[Dict[str, Any] | BaseModel]:
+        """Iterates over items in the dataset.
+
+        Yields items either from the provided iterable or from response files in the working directory.
+
+        Yields:
+            Dict[str, Any] | BaseModel: Dataset items
+        """
         if self.iterable is not None:
             yield from self.iterable
             return
@@ -53,19 +91,29 @@ class Dataset:
                     yield response
 
     def to_list(self) -> List[Dict[str, Any] | BaseModel]:
+        """Converts the dataset to a list.
+
+        Returns:
+            List[Dict[str, Any] | BaseModel]: List containing all dataset items
+        """
         return list(self)
 
     def to_huggingface(self, in_memory: bool = False) -> None:
-        """
-        Returns a HuggingFace Dataset
+        """Converts the dataset to a HuggingFace Dataset format.
+
+        Processes response files in the working directory and writes them to an Arrow file,
+        which is then loaded as a HuggingFace Dataset.
 
         Args:
-            in_memory (bool): Whether to load the dataset into memory
+            in_memory: Whether to load the dataset into memory
 
         Returns:
-            Dataset: Completed dataset
-        """
+            HFDataset: A HuggingFace Dataset instance
 
+        Raises:
+            ValueError: If no response files are found or if all requests failed
+            ValueError: If the Arrow writer encounters schema inference errors
+        """
         total_responses_count = 0
         failed_responses_count = 0
 
@@ -74,9 +122,7 @@ class Dataset:
         dataset_file = os.path.join(self.working_dir, "dataset.arrow")
         responses_files = glob.glob(os.path.join(self.working_dir, "responses_*.jsonl"))
         if len(responses_files) == 0:
-            raise ValueError(
-                f"No responses files found in {self.working_dir}, can't construct dataset"
-            )
+            raise ValueError(f"No responses files found in {self.working_dir}, can't construct dataset")
 
         # Process all response files
         with ArrowWriter(path=dataset_file) as writer:
@@ -86,18 +132,14 @@ class Dataset:
                         total_responses_count += 1
                         response = GenericResponse.model_validate_json(line)
                         if self.prompt_formatter.response_format:
-                            response.response = self.prompt_formatter.response_format(
-                                **response.response
-                            )
+                            response.response = self.prompt_formatter.response_format(**response.response)
 
                         if response is None:
                             failed_responses_count += 1
                             continue
 
                         if self.prompt_formatter.parse_func:
-                            dataset_rows = self.prompt_formatter.parse_func(
-                                response.row, response.response
-                            )
+                            dataset_rows = self.prompt_formatter.parse_func(response.row, response.response)
                         else:
                             dataset_rows = [response.response]
 
@@ -116,7 +158,7 @@ class Dataset:
             try:
                 writer.finalize()
             except SchemaInferenceError as e:
-                raise ValueError(
+                raise ValueError(  # type: ignore
                     "Arrow writer is complaining about the schema: likely all of your parsed rows were None and writer.write only wrote None objects."
                 ) from e
 

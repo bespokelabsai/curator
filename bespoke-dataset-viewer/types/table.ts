@@ -32,4 +32,4 @@ export interface SortableTableProps {
   initialSortDirection?: SortDirection
   pageSize?: number
   rowProps?: (row: any) => { className?: string }
-} 
+}

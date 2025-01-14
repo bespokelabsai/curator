@@ -20,10 +20,10 @@ interface TimePoint {
 
 function aggregateByTimeUnit(data: DataItem[], unit: TimeUnit): TimePoint[] {
   const timePoints = new Map<number, TimePoint>()
-  
+
   // Convert to milliseconds
-  const interval = unit === 'second' ? 1000 : 
-                  unit === 'minute' ? 60 * 1000 : 
+  const interval = unit === 'second' ? 1000 :
+                  unit === 'minute' ? 60 * 1000 :
                   60 * 60 * 1000
 
   // Find min and max timestamps
@@ -48,12 +48,12 @@ function aggregateByTimeUnit(data: DataItem[], unit: TimeUnit): TimePoint[] {
   data.forEach(item => {
     const createdTime = Math.floor(new Date(item.created_at).getTime() / interval) * interval
     const finishedTime = Math.floor(new Date(item.finished_at).getTime() / interval) * interval
-    
+
     const createdPoint = timePoints.get(createdTime)
     if (createdPoint) {
       createdPoint.requestsSent++
     }
-    
+
     const finishedPoint = timePoints.get(finishedTime)
     if (finishedPoint) {
       finishedPoint.responsesReceived++
@@ -67,18 +67,18 @@ function aggregateByTimeUnit(data: DataItem[], unit: TimeUnit): TimePoint[] {
 function formatTimeLabel(timestamp: number, unit: TimeUnit): string {
   const date = new Date(timestamp)
   if (unit === 'second') {
-    return date.toLocaleTimeString([], { 
+    return date.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit'
     })
   } else if (unit === 'minute') {
-    return date.toLocaleTimeString([], { 
+    return date.toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit'
     })
   } else {
-    return date.toLocaleTimeString([], { 
+    return date.toLocaleTimeString([], {
       hour: '2-digit'
     })
   }
@@ -93,21 +93,21 @@ export function TimeSeriesChart({ data }: TimeSeriesChartProps) {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Requests and Responses Over Time</h2>
         <div className="flex gap-2">
-          <Button 
+          <Button
             variant={timeUnit === 'second' ? 'default' : 'outline'}
             onClick={() => setTimeUnit('second')}
             size="sm"
           >
             Per Second
           </Button>
-          <Button 
+          <Button
             variant={timeUnit === 'minute' ? 'default' : 'outline'}
             onClick={() => setTimeUnit('minute')}
             size="sm"
           >
             Per Minute
           </Button>
-          <Button 
+          <Button
             variant={timeUnit === 'hour' ? 'default' : 'outline'}
             onClick={() => setTimeUnit('hour')}
             size="sm"
@@ -116,7 +116,7 @@ export function TimeSeriesChart({ data }: TimeSeriesChartProps) {
           </Button>
         </div>
       </div>
-      
+
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
@@ -183,4 +183,4 @@ export function TimeSeriesChart({ data }: TimeSeriesChartProps) {
       </div>
     </div>
   );
-} 
+}

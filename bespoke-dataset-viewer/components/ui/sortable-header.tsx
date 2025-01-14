@@ -12,23 +12,23 @@ import {
 import { Input } from "@/components/ui/input"
 import { SortableHeaderProps } from "@/types/table"
 
-export function SortableHeader({ 
+export function SortableHeader({
   column,
-  onSort, 
-  sortColumn, 
+  onSort,
+  sortColumn,
   sortDirection,
   onFilter,
   filterValue,
 }: SortableHeaderProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ 
-    id: column.key 
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: column.key
   })
-  
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   }
-  
+
   return (
     <TableHead ref={setNodeRef} style={style} className="whitespace-nowrap">
       <div className="flex items-center space-x-2">
@@ -41,7 +41,7 @@ export function SortableHeader({
         <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button 
+              <button
                 className="hover:bg-muted rounded p-1"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -81,4 +81,4 @@ export function SortableHeader({
       </div>
     </TableHead>
   )
-} 
+}
