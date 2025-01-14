@@ -30,7 +30,7 @@ class TopicGenerator(curator.LLM):
         return "Generate 10 diverse topics that are suitable for writing poems about."
 
     def parse(self, input: dict, response: Topics) -> dict:
-        """Parse the model response into the desired output format."""
+        """Parse the model response along with the input to the model into the desired output format.."""
         return [{"topic": t} for t in response.topics_list]
 
 
@@ -58,7 +58,7 @@ class Poet(curator.LLM):
         return f"Write two poems about {input['topic']}."
 
     def parse(self, input: dict, response: Poems) -> dict:
-        """Parse the model response into the desired output format."""
+        """Parse the model response along with the input to the model into the desired output format.."""
         return [{"topic": input["topic"], "poem": p} for p in response.poems_list]
 
 

@@ -46,7 +46,7 @@ class SubjectGenerator(curator.LLM):
         return "Generate a diverse list of 3 subjects. Keep it high-level (e.g. Math, Science)."
 
     def parse(self, input: dict, response: Subjects) -> dict:
-        """Parse the model response into the desired output format."""
+        """Parse the model response along with the input to the model into the desired output format.."""
         return response.subjects
 
 
@@ -60,7 +60,7 @@ class SubsubjectGenerator(curator.LLM):
         return f"For the given subject {input['subject']}. Generate 3 diverse subsubjects. No explanation."
 
     def parse(self, input: dict, response: Subjects) -> dict:
-        """Parse the model response into the desired output format."""
+        """Parse the model response along with the input to the model into the desired output format.."""
         return [{"subject": input["subject"], "subsubject": subsubject.subject} for subsubject in response.subjects]
 
 
@@ -74,7 +74,7 @@ class QAGenerator(curator.LLM):
         return f"For the given subsubject {input['subsubject']}. Generate 3 diverse questions and answers. No explanation."
 
     def parse(self, input: dict, response: QAs) -> dict:
-        """Parse the model response into the desired output format."""
+        """Parse the model response along with the input to the model into the desired output format.."""
         return [
             {
                 "subject": input["subject"],

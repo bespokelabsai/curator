@@ -34,7 +34,7 @@ class OpenHermesReannotator(curator.LLM):
         return input["instruction"]
 
     def parse(self, input: dict, response: str) -> dict:
-        """Parse the model response into the desired output format."""
+        """Parse the model response along with the input to the model into the desired output format.."""
         instruction = input["instruction"]
         return {"instruction": instruction, "new_response": response}
 

@@ -13,7 +13,7 @@ class RecipeGenerator(curator.LLM):
         return f"Generate a random {input['cuisine']} recipe. Be creative but keep it realistic."
 
     def parse(self, input: dict, response: str) -> dict:
-        """Parse the model response into the desired output format."""
+        """Parse the model response along with the input to the model into the desired output format.."""
         return {
             "recipe": response,
             "cuisine": input["cuisine"],
