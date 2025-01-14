@@ -69,6 +69,7 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         self.min_tokens: int = config.min_tokens
         self.batch_size: int = config.batch_size
         self.generation_params = config.generation_params
+        self.support_structured_output = False
 
     @property
     def backend(self):

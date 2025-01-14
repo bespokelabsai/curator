@@ -50,8 +50,6 @@ class LLM:
         max_model_length: int | None = None,
         max_tokens: int | None = None,
         gpu_memory_utilization: float | None = None,
-        distributed_executor_backend: str | None = None,
-        pipeline_parallel_size: int | None = None,
     ):
         """Initialize a LLM.
 

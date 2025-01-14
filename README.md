@@ -232,7 +232,7 @@ model_path = "hosted_vllm/NousResearch/Meta-Llama-3-8B-Instruct" # Make sure to 
 PORT = 8787
 HOST = "localhost"
 URL = f"http://{HOST}:{PORT}/v1"
-os.environ["HOSTED_VLLM_API_KEY"] = "token-abc123
+os.environ["HOSTED_VLLM_API_KEY"] = "token-abc123"
 
 poem_prompter = curator.LLM(
     model_name=model_path,
