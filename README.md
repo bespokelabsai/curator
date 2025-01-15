@@ -24,9 +24,9 @@
   <a href="https://discord.gg/KqpXvpzVBS">
     <img alt="Discord" src="https://img.shields.io/discord/1230990265867698186">
   </a>
-  \[ English | [中文](README_zh.md) \]
-</p>
 
+</p>
+\[ English | [中文](README_zh.md) \]
 ## Overview
 
 Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structure, Curator will prepare high-quality data quickly and robustly.
