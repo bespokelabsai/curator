@@ -10,6 +10,7 @@
 <h1 align="center">Bespoke Curator</h1>
 <h3 align="center" style="font-size: 20px; margin-bottom: 4px">Data Curation for Post-Training & Structured Data Extraction</h3>
 <br/>
+
 <p align="center">
   <a href="https://docs.bespokelabs.ai/">
     <img alt="Static Badge" src="https://img.shields.io/badge/Docs-docs.bespokelabs.ai-blue?style=flat&link=https%3A%2F%2Fdocs.bespokelabs.ai">
@@ -24,13 +25,14 @@
   <a href="https://discord.gg/KqpXvpzVBS">
     <img alt="Discord" src="https://img.shields.io/discord/1230990265867698186">
   </a>
-
 </p>
-
+<div align="center">
+[ English | <a href="README_zh.md">中文</a> ]
+</div>
 
 
 ## Overview
-\[ English | [中文](README_zh.md) \]
+
 
 Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structure, Curator will prepare high-quality data quickly and robustly.
 

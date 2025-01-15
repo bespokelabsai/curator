@@ -25,11 +25,11 @@
     <img alt="Discord" src="https://img.shields.io/discord/1230990265867698186">
   </a>
 </p>
-
-
+<div align="center">
+[ [English](README.md) | 中文 ]
+</div>
 
 ## 概述
-\[ [English](README.md) | 中文 \]
 
 Bespoke Curator 让创建合成数据流程变得简单。无论您是在训练模型还是提取结构化数据，Curator 都能快速且稳健地准备高质量数据。
 
