@@ -37,10 +37,10 @@
 Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structure, Curator will prepare high-quality data quickly and robustly.
 
 * Rich Python based library for generating and curating synthetic data.
-* Interactive viewer to monitor data while it is being generated
-* First class support for structured outputs
-* Built-in performance optimizations for asynchronous operations, caching, and fault recovery at every scale
-* Support for a wide range of inference options via LiteLLM, vLLM, and popular batch APIs
+* Interactive viewer to monitor data while it is being generated.
+* First class support for structured outputs.
+* Built-in performance optimizations for asynchronous operations, caching, and fault recovery at every scale.
+* Support for a wide range of inference options via LiteLLM, vLLM, and popular batch APIs.
 
 ![CLI in action](docs/curator-cli.gif)
 
@@ -82,7 +82,7 @@ In addition to a wide range of API providers, local web servers (hosted by [vLLM
 > Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
 
 > [!TIP]
-> If you are generating large datasets, you may want to use [batch mode](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode) to save costs. Currently batch APIs from [OpenAI](https://platform.openai.com/docs/guides/batch) and [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) are supported. With curator this is as simple as setting `batch_mode=True` in the `LLM` class.
+> If you are generating large datasets, you may want to use [batch mode](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode) to save costs. Currently batch APIs from [OpenAI](https://platform.openai.com/docs/guides/batch) and [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) are supported. With curator this is as simple as setting `batch=True` in the `LLM` class.
 
 ### Using structured outputs
 
