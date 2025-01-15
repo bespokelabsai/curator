@@ -44,8 +44,7 @@ Bespoke Curator makes it easy to create synthetic data pipelines. Whether you ar
 
 ![CLI in action](docs/curator-cli.gif)
 
-> [!TIP]
-> Check out [docs.bespokelabs.ai](https://docs.bespokelabs.ai) for [getting started](https://docs.bespokelabs.ai/bespoke-curator/getting-started), [tutorials](https://docs.bespokelabs.ai/bespoke-curator/tutorials), [guides](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides) and detailed [reference](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation).
+Check out [docs.bespokelabs.ai](https://docs.bespokelabs.ai) for [getting started](https://docs.bespokelabs.ai/bespoke-curator/getting-started), [tutorials](https://docs.bespokelabs.ai/bespoke-curator/tutorials), [guides](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides) and detailed [reference](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation).
 
 ## Installation
 
@@ -77,7 +76,7 @@ changing the `model_name` argument.
 llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
 ```
 
-In addition to a wide range of API providers, local web servers (hosted by vLLM or Ollama) are supported by litellm. For completely offline inference directly through vLLM, see the [local models](docs/local_models.md) documentation.
+In addition to a wide range of API providers, local web servers (hosted by vLLM or Ollama) are supported by LiteLLM. For completely offline inference directly through vLLM, see the [local models](docs/local_models.md) documentation.
 
 > [!TIP]
 > Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
