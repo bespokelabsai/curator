@@ -46,7 +46,7 @@ pip install bespokelabs-curator
 
 ## Quickstart
 
-### Hello World with `LLM`
+### Using `curator.LLM`
 
 ```python
 from bespokelabs import curator
