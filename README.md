@@ -61,7 +61,7 @@ print(poem['response'])
 > You can delete the cache at `~/.cache/curator` or disable it with `export CURATOR_DISABLE_CACHE=true`.
 
 #### Calling other models
-You can also call other [LiteLLM](https://docs.litellm.ai/docs/providers) supported models by
+You can also call other [LiteLLM](https://docs.litellm.ai/docs/) supported models by
 change the `model_name` argument.
 
 ```python
@@ -70,7 +70,7 @@ llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
 
 
 > [!TIP]
-> Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous to examples. A full list of supported models and their API keys environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
+> Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their API keys environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
 
 ### Using structured outputs
 
