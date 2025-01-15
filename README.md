@@ -70,7 +70,7 @@ llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
 
 
 > [!TIP]
-> Make sure to set your API keys as environment variables. For the HelloWorld example below you can do this with `export OPENAI_API_KEY=sk-...`. A full list of supported models and their API keys environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
+> Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous to examples. A full list of supported models and their API keys environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
 
 ### Using structured outputs
 
