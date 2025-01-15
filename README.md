@@ -24,6 +24,7 @@
   <a href="https://discord.gg/KqpXvpzVBS">
     <img alt="Discord" src="https://img.shields.io/discord/1230990265867698186">
   </a>
+  \[ English | [中文](README_zh.md) \]
 </p>
 
 ## Overview
