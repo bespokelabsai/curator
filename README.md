@@ -60,7 +60,7 @@ pip install bespokelabs-curator
 from bespokelabs import curator
 llm = curator.LLM(model_name="gpt-4o-mini")
 poem = llm("Write a poem about the importance of data in AI.")
-print(poems.to_pandas())
+print(poem.to_pandas())
 ```
 
 > [!NOTE]
