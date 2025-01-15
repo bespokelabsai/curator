@@ -28,21 +28,15 @@
 
 ## Overview
 
-Bespoke Curator makes it very easy to create high-quality synthetic data at scale, which you can use to finetune models or use for structured data extraction at scale.
+Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structure, Curator will prepare high-quality data quickly and robustly.
 
-Bespoke Curator is an open-source project:
-* That comes with a rich Python based library for generating and curating synthetic data.
-* A Curator Viewer which makes it easy to view the datasets, thus aiding in the dataset creation.
-* We will also be releasing high-quality datasets that should move the needle on post-training.
+* Rich Python based library for generating and curating synthetic data.
+* Interactive viewer to monitor data while it is being generated
+* First class support for structured outputs
+* Built-in performance optimizations for asynchronous operations, caching, and fault recovery at every scale
+* Support for a wide range of inference options via LiteLLM, vLLM, and popular batch APIs
 
-## Key Features
-
-1. **Programmability and Structured Outputs**: Synthetic data generation is lot more than just using a single prompt -- it involves calling LLMs multiple times and orchestrating control-flow. Curator treats structured outputs as first class citizens and helps you design complex pipelines.
-2. **Built-in Performance Optimization**: We often see calling LLMs in loops, or inefficient implementation of multi-threading. We have baked in performance optimizations so that you don't need to worry about those!
-3. **A Wide Range of Integration Options**: Connect with any API supported by LiteLLM, save cost through batch APIs, or generate data locally using vLLM or Ollama. This versatility allows you to choose the most suitable approach for your specific needs while maintaining consistent performance.
-4. **Intelligent Caching and Fault Recovery**: Given LLM calls can add up in cost and time, failures are undesirable but sometimes unavoidable. We cache the LLM requests and responses so that it is easy to recover from a failure. Moreover, when working on a multi-stage pipeline, caching of stages makes it easy to iterate.
-5. **Native HuggingFace Dataset Integration**: Work directly on HuggingFace Dataset objects throughout your pipeline. Your synthetic data is immediately ready for fine-tuning!
-6. **Interactive Curator Viewer**: Improve and iterate on your prompts using our built-in viewer. Inspect LLM requests and responses in real-time, allowing you to iterate and refine your data generation strategy with immediate feedback.
+![CLI in action](docs/curator-cli.gif)
 
 ## Installation
 
@@ -89,12 +83,6 @@ llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
 poem = llm("Write a poem about the importance of data in AI.")
 print(poem.to_pandas())
 ```
-
-### Visualize in Curator Viewer
-Run `curator-viewer` on the command line to see the dataset in the viewer.
-
-You can click on a run and then click on a specific row to see the LLM request and response.
-![Curator Responses](docs/curator-responses.png)
 
 ### Using structured outputs
 
@@ -188,6 +176,8 @@ for troubleshooting information.
 
 ## Bespoke Curator Viewer
 
+![Viewer in action](docs/curator-viewer.gif)
+
 To run the bespoke dataset viewer:
 
 ```bash
@@ -196,12 +186,7 @@ curator-viewer
 
 This will pop up a browser window with the viewer running on `127.0.0.1:3000` by default if you haven't specified a different host and port.
 
-The dataset viewer shows all the different runs you have made.
-![Curator Runs](docs/curator-runs.png)
-
-You can also see the dataset and the responses from the LLM.
-![Curator Dataset](docs/curator-dataset.png)
-
+The dataset viewer shows all the different runs you have made. Once a run is selected, you can see the dataset and the responses from the LLM.
 
 Optional parameters to run the viewer on a different host and port:
 ```bash
