@@ -145,7 +145,7 @@ class OnlineStatusTracker:
             f"[white]•[/white] "
             f"[white]Projected:[/white] [magenta]${projected_cost:.3f}[/magenta] "
             f"[white]•[/white] "
-            f"[white]Rate:[/white] [magenta]${self.total_cost / max(.01, elapsed_minutes):.3f}/min[/magenta]"
+            f"[white]Rate:[/white] [magenta]${self.total_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]"
         )
 
         model_name_text = f"[bold white]Model:[/bold white] [blue]{self.model}[/blue]"
@@ -245,7 +245,7 @@ class OnlineStatusTracker:
             f"Failed: {self.num_tasks_failed}, "
             f"Already Completed: {self.num_tasks_already_completed}\n"
             f"Errors - API: {self.num_api_errors}, "
-            f"e Limit: {self.num_rate_limit_errors}, "
+            f"Rate Limit: {self.num_rate_limit_errors}, "
             f"Other: {self.num_other_errors}, "
             f"Total: {self.num_other_errors + self.num_api_errors + self.num_rate_limit_errors}"
         )
