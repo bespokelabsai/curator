@@ -76,10 +76,13 @@ changing the `model_name` argument.
 llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
 ```
 
-In addition to a wide range of API providers, local web servers (hosted by vLLM or Ollama) are supported by LiteLLM. For completely offline inference directly through vLLM, see the [local models](docs/local_models.md) documentation.
+In addition to a wide range of API providers, local web servers (hosted by [vLLM](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#online-mode-server) or [Ollama](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-ollama-with-curator)) are supported via LiteLLM. For completely offline inference directly through vLLM, see the [documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#offline-mode-local).
+
+> [!IMPORTANT]
+> Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
 
 > [!TIP]
-> Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
+> If you generating large datasets, you may want to use a [batch API](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode) to save costs. This is as simple as setting `batch_mode=True` in the `LLM` class. Currently batch APIs from [OpenAI](https://platform.openai.com/docs/guides/batch) and [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) are supported.
 
 ### Using structured outputs
 
