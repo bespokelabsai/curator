@@ -69,10 +69,7 @@ You can also call other [LiteLLM](https://docs.litellm.ai/docs/providers) suppor
 change the `model_name` argument.
 
 ```python
-from bespokelabs import curator
 llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
-poem = llm("Write a poem about the importance of data in AI.")
-print(poem.to_pandas())
 ```
 
 ### Using structured outputs
@@ -82,11 +79,8 @@ and then pass it to the `LLM` class.
 
 ```python
 from typing import List
-
 from pydantic import BaseModel, Field
-
 from bespokelabs import curator
-
 
 class Poem(BaseModel):
     poem: str = Field(description="A poem.")
@@ -99,13 +93,7 @@ class Poems(BaseModel):
 llm = curator.LLM(model_name="gpt-4o-mini", response_format=Poems)
 poems = llm(["Write two poems about the importance of data in AI.", 
               "Write three haikus about the importance of data in AI."])
-print(poems.to_pandas())
-
-# Output: 
-#                                           poems_list
-# 0  [{'poem': 'In shadows deep where silence lies,...
-# 1  [{'poem': 'Data whispers truth,  
-# Patterns wea...
+print(poems['responses'])
 ```
 
 Note how each `Poems` object occupies a single row in the dataset. 
