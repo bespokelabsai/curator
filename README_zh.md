@@ -58,7 +58,7 @@ pip install bespokelabs-curator
 from bespokelabs import curator
 llm = curator.LLM(model_name="gpt-4o-mini")
 poem = llm("写一首关于 AI 中数据重要性的诗。")
-print(poem['response'])
+print(poems.to_pandas())
 ```
 
 > [!注意]
@@ -101,7 +101,7 @@ class Poems(BaseModel):
 llm = curator.LLM(model_name="gpt-4o-mini", response_format=Poems)
 poems = llm(["写两首关于 AI 中数据重要性的诗。", 
             "写三首关于 AI 中数据重要性的俳句。"])
-print(poems['responses'])
+print(poems.to_pandas())
 ```
 
 注意每个 `Poems` 对象在数据集中占据一行。
