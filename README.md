@@ -26,7 +26,9 @@
   </a>
 
 </p>
+
 \[ English | [中文](README_zh.md) \]
+
 ## Overview
 
 Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structure, Curator will prepare high-quality data quickly and robustly.
