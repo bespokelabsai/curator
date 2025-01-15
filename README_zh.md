@@ -26,7 +26,7 @@
   </a>
 </p>
 <div align="center">
-[ [English](README.md) | 中文 ]
+[ <a href="README.md">English</a> | 中文 ]
 </div>
 
 ## 概述
