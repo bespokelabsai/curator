@@ -44,6 +44,9 @@ Bespoke Curator makes it easy to create synthetic data pipelines. Whether you ar
 
 ![CLI in action](docs/curator-cli.gif)
 
+> [!TIP]
+> Check out our full documentation at [docs.bespokelabs.ai](https://docs.bespokelabs.ai) for getting started, [tutorials](https://docs.bespokelabs.ai/bespoke-curator/tutorials), [guides](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides) and detailed [reference](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation).
+
 ## Installation
 
 ```bash
