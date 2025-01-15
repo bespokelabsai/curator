@@ -56,24 +56,13 @@ pip install bespokelabs-curator
 from bespokelabs import curator
 llm = curator.LLM(model_name="gpt-4o-mini")
 poem = llm("Write a poem about the importance of data in AI.")
-print(poem.to_pandas())
-# Output:
-#                                             response
-# 0  In the realm where silence once held sway,  \n...
-
-# Or you can pass a list of prompts to generate multiple responses.
-poems = llm(["Write a poem about the importance of data in AI.",
-            "Write a haiku about the importance of data in AI."])
-print(poems.to_pandas())
-# Output:
-#                                             response
-# 0  In the realm where silence once held sway,  \n...
-# 1  Silent streams of truth,  \nData shapes the le...
+print(poem['response'])
 ```
 
-Note that retries and caching are enabled by default.
-So now if you run the same prompt again, you will get the same response, pretty much instantly.
-You can delete the cache at `~/.cache/curator`.
+> [!NOTE]
+> Retries and caching are enabled by default.
+> So now if you run the same prompt again, you will get the same response, pretty much instantly.
+> You can delete the cache at `~/.cache/curator` or disable it with `export CURATOR_DISABLE_CACHE=true`.
 
 #### Calling other models
 You can also call other [LiteLLM](https://docs.litellm.ai/docs/providers) supported models by
