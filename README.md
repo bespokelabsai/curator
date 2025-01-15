@@ -45,8 +45,10 @@ pip install bespokelabs-curator
 ```
 
 ## Quickstart
-To run the examples below, make sure to set your OpenAI API key in
-the environment variable `OPENAI_API_KEY` by running `export OPENAI_API_KEY=sk-...` in your terminal.
+
+> [!TIP]
+> To run the examples below, make sure to set your OpenAI API key in
+> the environment variable `OPENAI_API_KEY` by running `export OPENAI_API_KEY=sk-...` in your terminal.
 
 ### Hello World with `LLM`
 
