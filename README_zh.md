@@ -79,7 +79,7 @@ llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
 > 确保将您调用的模型的 API 密钥设置为环境变量。例如，运行 `export OPENAI_API_KEY=sk-...` 和 `export ANTHROPIC_API_KEY=ant-...` 将允许您运行前面的两个示例。支持的模型及其相关环境变量名称的完整列表可以在 [litellm 文档](https://docs.litellm.ai/docs/providers)中找到。
 
 > [!提示]
-> 如果您正在生成大型数据集，您可能想要使用[批处理 API](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode)来节省成本。只需在 `LLM` 类中设置 `batch_mode=True` 即可。目前支持来自 [OpenAI](https://platform.openai.com/docs/guides/batch) 和 [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) 的批处理 API。
+> 如果您正在生成大型数据集，您可能想要使用[批处理 API 与 Curator](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode)来节省成本。目前支持来自 [OpenAI](https://platform.openai.com/docs/guides/batch) 和 [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) 的批处理 API。使用 curator 时，只需在 `LLM` 类中设置 `batch_mode=True` 即可。
 
 ### 使用结构化输出
 
