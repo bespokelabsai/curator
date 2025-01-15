@@ -46,9 +46,6 @@ pip install bespokelabs-curator
 
 ## Quickstart
 
-> [!TIP]
-> Make sure to the environment variables with your API keys. For example, run `export OPENAI_API_KEY=sk-...` in your terminal for the HelloWorld example.
-
 ### Hello World with `LLM`
 
 ```python
@@ -70,6 +67,10 @@ change the `model_name` argument.
 ```python
 llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
 ```
+
+
+> [!TIP]
+> Make sure to set your API keys as environment variables. For the HelloWorld example below you can do this with `export OPENAI_API_KEY=sk-...`. A full list of supported models and their API keys environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
 
 ### Using structured outputs
 
