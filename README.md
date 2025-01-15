@@ -56,7 +56,7 @@ print(poem['response'])
 ```
 
 > [!NOTE]
-> Retries and caching are enabled by default.
+> Retries and caching are enabled by default to help you rapidly iterate your data pipelines.
 > So now if you run the same prompt again, you will get the same response, pretty much instantly.
 > You can delete the cache at `~/.cache/curator` or disable it with `export CURATOR_DISABLE_CACHE=true`.
 
