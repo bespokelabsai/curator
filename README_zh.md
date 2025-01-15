@@ -11,7 +11,7 @@
 <h3 align="center" style="font-size: 20px; margin-bottom: 4px">用于后训练和结构化数据提取的数据管理工具</h3>
 <br/>
 <p align="center">
-  <a href="https://docs.bespokelabs.ai/">
+  <a href="https://docs.bespokelabs.ai/bespoke-curator/getting-started">
     <img alt="Static Badge" src="https://img.shields.io/badge/Docs-docs.bespokelabs.ai-blue?style=flat&link=https%3A%2F%2Fdocs.bespokelabs.ai">
   </a>
   <a href="https://bespokelabs.ai/">
@@ -41,7 +41,7 @@ Bespoke Curator 让创建合成数据流程变得简单。无论您是在训练�
 
 ![CLI 运行示例](docs/curator-cli.gif)
 
-访问 [docs.bespokelabs.ai](https://docs.bespokelabs.ai) 获取[入门指南](https://docs.bespokelabs.ai/bespoke-curator/getting-started)、[教程](https://docs.bespokelabs.ai/bespoke-curator/tutorials)、[指南](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides)和详细的[参考文档](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation)。
+查看我们完整的文档，包括[入门指南](https://docs.bespokelabs.ai/bespoke-curator/getting-started)、[教程](https://docs.bespokelabs.ai/bespoke-curator/tutorials)、[使用指南](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides)和详细的[参考文档](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation)。
 
 
 ## 安装
