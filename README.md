@@ -1,8 +1,8 @@
 <p align="center">
   <a href="https://bespokelabs.ai/" target="_blank">
     <picture>
-      <source media="(prefers-color-scheme: light)" width="80px" srcset="https://raw.githubusercontent.com/bespokelabsai/curator/main/docs/Bespoke-Labs-Logomark-Red.png">
-      <img alt="Bespoke Labs Logo" width="80px" src="https://raw.githubusercontent.com/bespokelabsai/curator/main/docs/Bespoke-Labs-Logomark-Red-on-Black.png">
+      <source media="(prefers-color-scheme: light)" width="100px" srcset="docs/Bespoke-Labs-Logomark-Red-Crop.png">
+      <img alt="Bespoke Labs Logo" width="100px" src="docs/Bespoke-Labs-Logomark-Red-Crop.png">
     </picture>
   </a>
 </p>
