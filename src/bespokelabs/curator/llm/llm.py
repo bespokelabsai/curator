@@ -176,10 +176,10 @@ class LLM:
             # A single string is converted to a dataset with a single row
             dataset = Dataset.from_list([{"prompt": dataset}])
         elif not isinstance(dataset, Dataset) and dataset is not None:
-            # Wrap the iterable in a generator to convert strings to dictionaries
+            # Wrap the iterable in a generator, the prompt is expected to be a prompt string or a list of messages
             def wrapped_iterable():
                 for input in dataset:
-                    if isinstance(input, str):
+                    if isinstance(input, str) or isinstance(input, list):
                         yield {"prompt": input}
                     else:
                         yield input
