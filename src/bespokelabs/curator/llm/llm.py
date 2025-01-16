@@ -175,6 +175,9 @@ class LLM:
         if isinstance(dataset, str):
             # A single string is converted to a dataset with a single row
             dataset = Dataset.from_list([{"prompt": dataset}])
+        elif isinstance(dataset, list) and all(isinstance(item, dict) and "role" in item and "content" in item for item in dataset):
+            # A list of messages is converted to a dataset with a single row
+            dataset = Dataset.from_list([{"prompt": dataset}])
         elif not isinstance(dataset, Dataset) and dataset is not None:
             # Wrap the iterable in a generator, the prompt is expected to be a prompt string or a list of messages
             def wrapped_iterable():
