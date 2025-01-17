@@ -35,6 +35,8 @@ nest-asyncio = "^1.6.0"
 rich = "^13.7.0"
 litellm = "^1.52.11"
 isort = "^5.13.2"
+google-cloud-aiplatform = "^1.77.0"
+google-cloud-storage = "^2.19.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"
