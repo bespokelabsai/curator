@@ -7,6 +7,7 @@ from datetime import datetime
 from io import BytesIO
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar
 
+from datasets import Dataset
 from pydantic import BaseModel
 from xxhash import xxh64
 
@@ -170,24 +171,7 @@ class LLM:
             Iterable: A list of structured outputs from the completions
         """
         # We convert from iterable to Dataset because Dataset has random access via row_idx
-        from datasets import Dataset
-
-        if isinstance(dataset, str):
-            # A single string is converted to a dataset with a single row
-            dataset = Dataset.from_list([{"prompt": dataset}])
-        elif isinstance(dataset, list) and all(isinstance(item, dict) and "role" in item and "content" in item for item in dataset):
-            # A list of messages is converted to a dataset with a single row
-            dataset = Dataset.from_list([{"prompt": dataset}])
-        elif not isinstance(dataset, Dataset) and dataset is not None:
-            # Wrap the iterable in a generator, the prompt is expected to be a prompt string or a list of messages
-            def wrapped_iterable():
-                for input in dataset:
-                    if isinstance(input, str) or isinstance(input, list):
-                        yield {"prompt": input}
-                    else:
-                        yield input
-
-            dataset = Dataset.from_generator(wrapped_iterable)
+        dataset = _convert_to_dataset(dataset)
 
         if working_dir is None:
             curator_cache_dir = os.environ.get(
@@ -286,3 +270,32 @@ def _get_function_source(func) -> str:
 def _remove_none_values(d: dict) -> dict:
     """Remove all None values from a dictionary."""
     return {k: v for k, v in d.items() if v is not None}
+
+
+def _is_message_list(list: list) -> bool:
+    """Check if a list is a list of messages."""
+    return all(isinstance(item, dict) and "role" in item and "content" in item for item in list)
+
+
+def _convert_to_dataset(iterable: Iterable) -> "Dataset":
+    """Convert an iterable to a Dataset.
+
+    The prompt is expected to be a prompt string or a list of messages.
+    """
+    if isinstance(iterable, str) or _is_message_list(iterable):
+        # A single string or list of messages is converted to a dataset with a single row
+        dataset = Dataset.from_list([{"prompt": iterable}])
+    elif not isinstance(iterable, Dataset) and iterable is not None:
+        # Wrap the iterable in a generator, the prompt is expected to be a prompt string or a list of messages
+        def wrapped_iterable():
+            for input in iterable:
+                if isinstance(input, str) or _is_message_list(input):
+                    yield {"prompt": input}
+                else:
+                    yield input
+
+        dataset = Dataset.from_generator(wrapped_iterable)
+    else:
+        dataset = iterable
+
+    return dataset
