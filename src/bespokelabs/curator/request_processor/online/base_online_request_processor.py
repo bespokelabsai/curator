@@ -10,6 +10,7 @@ import json
 import logging
 import time
 from abc import ABC, abstractmethod
+from collections import deque
 from dataclasses import dataclass, field
 
 import aiofiles
@@ -20,12 +21,14 @@ from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+_MAX_OUTPUT_MVA_WINDOW = 50
 
 
 @dataclass
@@ -64,6 +67,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the BaseOnlineRequestProcessor."""
         super().__init__(config)
+        self.token_limit_strategy = TokenLimitStrategy.default
         self.manual_max_requests_per_minute = config.max_requests_per_minute
         self.manual_max_tokens_per_minute = config.max_tokens_per_minute
         self.default_max_requests_per_minute = 10
@@ -73,6 +77,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         # The rich.Console used for the status tracker, only set for testing
         self._tracker_console = None
+        self._output_tokens_window = deque(maxlen=_MAX_OUTPUT_MVA_WINDOW)
 
     @property
     def backend(self) -> str:
@@ -212,7 +217,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """
         # Initialize trackers
         queue_of_requests_to_retry: asyncio.Queue[APIRequest] = asyncio.Queue()
-        status_tracker = OnlineStatusTracker()
+        status_tracker = OnlineStatusTracker(token_limit_strategy=self.token_limit_strategy)
 
         # Get rate limits
         status_tracker.max_requests_per_minute = self.max_requests_per_minute
@@ -388,6 +393,14 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 await self.append_generic_response(generic_response, response_file)
                 status_tracker.num_tasks_in_progress -= 1
                 status_tracker.num_tasks_failed += 1
+        else:
+            self._add_output_token_moving_window(generic_response.token_usage.completion_tokens)
+
+    def _add_output_token_moving_window(self, tokens):
+        self._output_tokens_window.append(tokens)
+
+    def _output_tokens_moving_average(self):
+        return sum(self._output_tokens_window) / (len(self._output_tokens_window) or _MAX_OUTPUT_MVA_WINDOW)
 
     @abstractmethod
     async def call_single_request(

@@ -96,14 +96,14 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         except Exception:
             return 0
 
-    def estimate_total_tokens(self, messages: list) -> int:
+    def estimate_total_tokens(self, messages: list) -> dict:
         """Estimate total tokens for a request using OpenAI's token counting rules.
 
         Args:
             messages (list): List of message dictionaries with role and content
 
         Returns:
-            int: Estimated total tokens including message formatting tokens
+            dict: Estimated total tokens including message formatting tokens
 
         Note:
             Includes:
@@ -126,7 +126,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         num_tokens += 2  # every reply is primed with <im_start>assistant
         output_tokens = self.estimate_output_tokens()
-        return num_tokens + output_tokens
+        return {"input": num_tokens, "output": output_tokens}
 
     def check_structured_output_support(self) -> bool:
         """Check if the model supports structured output based on model name and date.

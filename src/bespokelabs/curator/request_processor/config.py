@@ -81,6 +81,8 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
 
     max_requests_per_minute: int | None = Field(default=None, gt=0)
     max_tokens_per_minute: int | None = Field(default=None, gt=0)
+    max_input_tokens_per_minute: int | None = Field(default=None, gt=0)
+    max_output_tokens_per_minute: int | None = Field(default=None, gt=0)
     seconds_to_pause_on_rate_limit: int = Field(default=10, gt=0)
 
 
