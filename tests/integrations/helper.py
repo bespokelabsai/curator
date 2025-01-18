@@ -105,13 +105,15 @@ _DEFAULT_MODEL_MAP = {
 }
 
 
-def create_basic(temp_working_dir, mock_dataset, llm_params=None, batch=False, backend="openai", mocking=None, batch_cancel=False, tracker_console=None):
+def create_basic(
+    temp_working_dir, mock_dataset, llm_params=None, batch=False, backend="openai", mocking=None, batch_cancel=False, tracker_console=None, model=None
+):
     llm_params = llm_params or {}
     if batch:
         llm_params["batch_check_interval"] = batch_check_interval
 
     prompter = BasicLLM(
-        model_name=_DEFAULT_MODEL_MAP[backend],
+        model_name=model or _DEFAULT_MODEL_MAP[backend],
         backend=backend,
         batch=batch,
         backend_params=llm_params,

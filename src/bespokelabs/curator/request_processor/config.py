@@ -76,6 +76,8 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
     Attributes:
         max_requests_per_minute: Maximum number of requests allowed per minute
         max_tokens_per_minute: Maximum number of tokens allowed per minute
+        max_input_tokens_per_minute: Maximum number of input tokens allowed per minute
+        max_output_tokens_per_minute: Maximum number of output tokens allowed per minute
         seconds_to_pause_on_rate_limit: Duration to pause when rate limit is hit
     """
 

@@ -14,7 +14,7 @@ def test_special_token_handling():
 
     try:
         total_tokens = processor.estimate_total_tokens(messages)
-        assert total_tokens > 0, "Token estimation should return a positive number"
+        assert (total_tokens.input + total_tokens.output) > 0, "Token estimation should return a positive number"
     except ValueError as e:
         if "<|endoftext|>" in str(e):
             pytest.fail("Special token <|endoftext|> should not raise ValueError")
