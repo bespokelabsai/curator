@@ -1,7 +1,6 @@
 import datetime
 import logging
 import time
-import typing as t
 
 import aiohttp
 import instructor
@@ -11,7 +10,7 @@ from pydantic import BaseModel
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, _TokenCount
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsage
 
@@ -52,11 +51,10 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     def _set_manual_tpm(self, config):
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             self.manual_max_tokens_per_minute = config.max_tokens_per_minute
+        elif config.max_input_tokens_per_minute and config.max_output_tokens_per_minute:
+            self.manual_max_tokens_per_minute = _TokenCount(input=config.max_input_tokens_per_minute, output=config.max_output_tokens_per_minute)
         else:
-            if config.max_input_tokens_per_minute and config.max_output_tokens_per_minute:
-                self.manual_max_tokens_per_minute = {"input": config.max_input_tokens_per_minute, "output": config.max_output_tokens_per_minute}
-            else:
-                self.manual_max_tokens_per_minute = None
+            self.manual_max_tokens_per_minute = None
 
     def _validate_config(self, config):
         if self.token_limit_strategy == TokenLimitStrategy.combined:
@@ -129,7 +127,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         except Exception:
             return 0
 
-    def estimate_total_tokens(self, messages: list) -> t.Dict:
+    def estimate_total_tokens(self, messages: list) -> _TokenCount:
         """Calculate the total token usage for a request.
 
         Uses LiteLLM's token_counter for accurate input token counting
@@ -139,11 +137,11 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             messages (list): List of message dictionaries
 
         Returns:
-            int: Total estimated tokens (input + output)
+            _TokenCount: Total estimated tokens (input and output)
         """
         input_tokens = litellm.token_counter(model=self.config.model, messages=messages)
         output_tokens = self.estimate_output_tokens()
-        return {"input": input_tokens, "output": output_tokens}
+        return _TokenCount(input=input_tokens, output=output_tokens)
 
     def test_call(self):
         """Test call to get rate limits."""
@@ -162,11 +160,12 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         logger.info(f"Test call headers: {headers}")
         return headers
 
-    def get_header_based_rate_limits(self) -> tuple[int, t.Union[int, dict]]:
+    def get_header_based_rate_limits(self) -> tuple[int, _TokenCount | int]:
         """Retrieve rate limits from the LLM provider via LiteLLM.
 
         Returns:
-            tuple[int, int]: Contains 'max_requests_per_minute' and 'max_tokens_per_minute'
+            tuple[int, _TokenCount | int]: Contains 'max_requests_per_minute' and
+                                           'max_tokens_per_minute' info.
 
         Note:
             - Makes a test request to get rate limit information from response headers.
@@ -179,12 +178,12 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         output_token_key = f"llm_provider-{provider}-ratelimit-output-tokens-remaining"
         rpm = int(headers.get("x-ratelimit-limit-requests", 0))
         if output_token_key in headers:
-            self.token_limit_strategy = "seperate"
+            self.token_limit_strategy = TokenLimitStrategy.seperate
             output_tpm = int(headers.get(output_token_key, 0))
 
             input_token_key = f"llm_provider-{provider}-ratelimit-input-tokens-remaining"
             input_tpm = int(headers.get(input_token_key, 0))
-            tpm = {"input": input_tpm, "output": output_tpm}
+            tpm = _TokenCount(input=input_tpm, output=output_tpm)
 
         else:
             tpm = int(headers.get("x-ratelimit-limit-tokens", 0))

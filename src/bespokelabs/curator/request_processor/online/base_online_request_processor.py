@@ -217,11 +217,11 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """
         # Initialize trackers
         queue_of_requests_to_retry: asyncio.Queue[APIRequest] = asyncio.Queue()
-        status_tracker = OnlineStatusTracker(token_limit_strategy=self.token_limit_strategy)
-
-        # Get rate limits
-        status_tracker.max_requests_per_minute = self.max_requests_per_minute
-        status_tracker.max_tokens_per_minute = self.max_tokens_per_minute
+        status_tracker = OnlineStatusTracker(
+            token_limit_strategy=self.token_limit_strategy,
+            max_requests_per_minute=self.max_requests_per_minute,
+            max_tokens_per_minute=self.max_tokens_per_minute,
+        )
 
         # Resume if a response file exists
         completed_request_ids = self.validate_existing_response_file(response_file)

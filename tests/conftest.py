@@ -20,7 +20,8 @@ def temp_working_dir(request):
     backend = request.param["integration"]
     cached_working_dir = request.param.get("cached_working_dir", False)
     if mode is None:
-        os.environ[_KEY_MAP[backend]] = "sk-mocked-**"
+        os.environ[_KEY_MAP[backend.split("/")[-1]]] = "sk-mocked-**"
+        backend = backend.split("/")[0]
     os.environ["HF_DATASETS_CACHE"] = "/dev/null"
     temp_working_dir = f"tests/integrations/{backend}/fixtures/.test_cache"
 
