@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 litellm.suppress_debug_info = True
 
+_CONCURRENT_ONLY_RATELIMIT_PROVIDERS = {"deepinfra"}
+
 
 class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     """LiteLLM implementation of the OnlineRequestProcessor for multi-provider LLM support.
@@ -39,11 +41,54 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the LiteLLMOnlineRequestProcessor."""
+        self.default_max_concurrent_requests = 200
+
         super().__init__(config)
         if self.config.base_url is not None:
             litellm.api_base = self.config.base_url
         self.client = instructor.from_litellm(litellm.acompletion)
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+
+    @property
+    def max_concurrent_requests(self) -> int | float:
+        """Gets the maximum concurrent requests rate limit.
+
+        Returns the manually set limit if available, falls back to header-based limit,
+        or uses default value as last resort.
+        """
+        max_concurrent_requests = super().max_concurrent_requests
+        if max_concurrent_requests == float("inf") and self._concurrency_only_rate_limited:
+            return self.default_max_concurrent_requests
+        return max_concurrent_requests
+
+    @property
+    def max_requests_per_minute(self) -> int | float:
+        """Gets the maximum requests per minute rate limit.
+
+        Returns the manually set limit if available, falls back to header-based limit,
+        or uses default value as last resort.
+        """
+        if self._concurrency_only_rate_limited:
+            return float("inf")
+        else:
+            return super().max_requests_per_minute
+
+    @property
+    def max_tokens_per_minute(self) -> int | float:
+        """Gets the maximum tokens per minute rate limit.
+
+        Returns the manually set limit if available, falls back to header-based limit,
+        or uses default value as last resort.
+        """
+        if self._concurrency_only_rate_limited:
+            return float("inf")
+        else:
+            return super().max_tokens_per_minute
+
+    @property
+    def _concurrency_only_rate_limited(self):
+        provider = self.config.model.split("/")[0]
+        return provider in _CONCURRENT_ONLY_RATELIMIT_PROVIDERS
 
     @property
     def backend(self):
