@@ -21,6 +21,7 @@ litellm.suppress_debug_info = True
 
 _OTPM_LIMIT = defaultdict(lambda: "output_tokens")
 _OTPM_LIMIT["anthropic"] = "max_tokens"
+_CONCURRENT_ONLY_RATELIMIT_PROVIDERS = {"deepinfra"}
 
 
 class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
@@ -43,6 +44,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the LiteLLMOnlineRequestProcessor."""
+        self.default_max_concurrent_requests = 200
+
         super().__init__(config)
         if self.config.base_url is not None:
             litellm.api_base = self.config.base_url
@@ -68,6 +71,43 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     @property
     def _provider(self):
         return self.config.model.split("/")[0]
+
+    @property
+    def max_concurrent_requests(self) -> int | float:
+        """Gets the maximum concurrent requests rate limit.
+
+        Returns the manually set limit if available, falls back to header-based limit,
+        or uses default value as last resort.
+        """
+        max_concurrent_requests = super().max_concurrent_requests
+        if max_concurrent_requests is None and self._concurrency_only_rate_limited:
+            return self.default_max_concurrent_requests
+        return max_concurrent_requests
+
+    @property
+    def max_requests_per_minute(self) -> int | None:
+        """Gets the maximum requests per minute rate limit.
+
+        Returns the manually set limit if available, falls back to header-based limit,
+        or uses default value as last resort.
+        """
+        if not self._concurrency_only_rate_limited:
+            return super().max_requests_per_minute
+
+    @property
+    def max_tokens_per_minute(self) -> int | None:
+        """Gets the maximum tokens per minute rate limit.
+
+        Returns the manually set limit if available, falls back to header-based limit,
+        or uses default value as last resort.
+        """
+        if not self._concurrency_only_rate_limited:
+            return super().max_tokens_per_minute
+
+    @property
+    def _concurrency_only_rate_limited(self):
+        provider = self.config.model.split("/")[0]
+        return provider in _CONCURRENT_ONLY_RATELIMIT_PROVIDERS
 
     @property
     def backend(self):

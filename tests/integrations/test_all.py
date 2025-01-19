@@ -155,7 +155,7 @@ def test_resume(caplog, temp_working_dir, mock_dataset):
     temp_working_dir, _, vcr_config = temp_working_dir
     with vcr_config.use_cassette("basic_resume.yaml"):
         with pytest.raises(TimeoutError):
-            with Timeout(3):
+            with Timeout(5):
                 helper.create_basic(temp_working_dir, mock_dataset, llm_params={"max_requests_per_minute": 1})
 
         logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"

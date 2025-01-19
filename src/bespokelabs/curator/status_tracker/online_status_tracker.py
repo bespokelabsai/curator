@@ -27,11 +27,13 @@ class TokenLimitStrategy(Enum):
 
 
 class _TokenCount(BaseModel):
-    input: int | float = 0
-    output: int | float = 0
+    input: int | float | None = 0
+    output: int | float | None = 0
 
     @property
     def total(self):
+        if self.input is None:
+            return None
         return self.input + self.output
 
 
@@ -52,6 +54,8 @@ class OnlineStatusTracker:
     last_update_time: float = field(default_factory=time.time)
     max_requests_per_minute: int = 0
     max_tokens_per_minute: int | _TokenCount = 0
+    max_concurrent_requests: int | None = None
+    max_tokens_per_minute: int = 0
     pbar: tqdm = field(default=None)
     response_cost: float = 0
     time_of_last_rate_limit_error: float = field(default=0.0)
@@ -141,6 +145,7 @@ class OnlineStatusTracker:
         current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
 
         # Format the text for each line with properly closed tags
+
         requests_text = (
             "[bold white]Requests:[/bold white] "
             f"[white]•[/white] "
@@ -201,7 +206,6 @@ class OnlineStatusTracker:
         )
 
         # Update the progress display
-
         self._progress.update(
             self._task_id,
             completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
@@ -287,31 +291,32 @@ class OnlineStatusTracker:
         """Update available capacity based on time elapsed."""
         current_time = time.time()
         seconds_since_update = current_time - self.last_update_time
-
-        self.available_request_capacity = min(
-            self.available_request_capacity + self.max_requests_per_minute * seconds_since_update / 60.0,
-            self.max_requests_per_minute,
-        )
-        if self.token_limit_strategy == TokenLimitStrategy.combined:
-            self.available_token_capacity = t.cast(int, self.available_token_capacity)
-            self.max_tokens_per_minute = t.cast(int, self.max_tokens_per_minute)
-            self.available_token_capacity = min(
-                self.available_token_capacity + self.max_tokens_per_minute * seconds_since_update / 60.0,
-                self.max_tokens_per_minute,
+        if self.max_requests_per_minute is not None:
+            self.available_request_capacity = min(
+                self.available_request_capacity + self.max_requests_per_minute * seconds_since_update / 60.0,
+                self.max_requests_per_minute,
             )
+
+        if self.token_limit_strategy == TokenLimitStrategy.combined:
+            if self.max_tokens_per_minute is not None:
+                self.available_token_capacity = t.cast(int, self.available_token_capacity)
+                self.max_tokens_per_minute = t.cast(int, self.max_tokens_per_minute)
+                self.available_token_capacity = min(
+                    self.available_token_capacity + self.max_tokens_per_minute * seconds_since_update / 60.0,
+                    self.max_tokens_per_minute,
+                )
         else:
             self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
             self.max_tokens_per_minute = t.cast(_TokenCount, self.max_tokens_per_minute)
-
-            self.available_token_capacity.input = min(
-                self.available_token_capacity.input + self.max_tokens_per_minute.input * seconds_since_update / 60.0,
-                self.max_tokens_per_minute.input,
-            )
-
-            self.available_token_capacity.output = min(
-                self.available_token_capacity.output + self.max_tokens_per_minute.output * seconds_since_update / 60.0,
-                self.max_tokens_per_minute.output,
-            )
+            if self.max_tokens_per_minute.input is not None:
+                self.available_token_capacity.input = min(
+                    self.available_token_capacity.input + self.max_tokens_per_minute.input * seconds_since_update / 60.0,
+                    self.max_tokens_per_minute.input,
+                )
+            if self.max_tokens_per_minute.output is not None:
+                self.available_token_capacity.output = min(
+                    self.available_token_capacity.output + self.max_tokens_per_minute.output * seconds_since_update / 60.0, self.max_tokens_per_minute.output
+                )
 
         self.last_update_time = current_time
 
@@ -333,12 +338,18 @@ class OnlineStatusTracker:
 
     def _check_combined_capacity(self, token_estimate):
         self.available_token_capacity = t.cast(int, self.available_token_capacity)
+        if self.max_requests_per_minute is None and self.max_tokens_per_minute is None:
+            return True
+
         token_estimate = token_estimate.total
         has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
         return has_capacity
 
     def _check_seperate_capacity(self, token_estimate: _TokenCount):
         self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
+        if self.max_tokens_per_minute.total is None and self.max_requests_per_minute is None:
+            return True
+
         has_capacity = (
             self.available_request_capacity >= 1
             and self.available_token_capacity.input >= token_estimate.input
@@ -348,14 +359,20 @@ class OnlineStatusTracker:
 
     def consume_capacity(self, token_estimate: _TokenCount):
         """Consume capacity for a request."""
-        self.available_request_capacity -= 1
+        if self.max_requests_per_minute is not None:
+            self.available_request_capacity -= 1
         if self.token_limit_strategy == TokenLimitStrategy.combined:
-            self.available_token_capacity = t.cast(float, self.available_token_capacity)
-            self.available_token_capacity -= token_estimate.total
+            if self.max_tokens_per_minute is not None:
+                self.available_token_capacity = t.cast(float, self.available_token_capacity)
+                self.available_token_capacity -= token_estimate.total
         else:
             self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
-            self.available_token_capacity.input -= token_estimate.input
-            self.available_token_capacity.output -= token_estimate.output
+
+            if self.max_tokens_per_minute.input is not None:
+                self.available_token_capacity.input -= token_estimate.input
+
+            if self.max_tokens_per_minute.output is not None:
+                self.available_token_capacity.output -= token_estimate.output
 
     def free_capacity(self, used: _TokenCount, blocked: _TokenCount):
         """Free extra consumed capacity.

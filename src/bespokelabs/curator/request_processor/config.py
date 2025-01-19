@@ -79,11 +79,13 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
         max_tokens_per_minute: Maximum number of tokens allowed per minute
         max_input_tokens_per_minute: Maximum number of input tokens allowed per minute
         max_output_tokens_per_minute: Maximum number of output tokens allowed per minute
+        max_concurrent_requests: Maximum number of concurrent requests
         seconds_to_pause_on_rate_limit: Duration to pause when rate limit is hit
         invalid_finish_reasons: List of api finish reasons which are considered failed.
     """
 
     max_requests_per_minute: int | None = Field(default=None, gt=0)
+    max_concurrent_requests: int | None = Field(default=None, gt=0)
     max_tokens_per_minute: int | None = Field(default=None, gt=0)
     max_input_tokens_per_minute: int | None = Field(default=None, gt=0)
     max_output_tokens_per_minute: int | None = Field(default=None, gt=0)
