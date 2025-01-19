@@ -266,6 +266,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                             retry_queue=queue_of_requests_to_retry,
                             response_file=response_file,
                             status_tracker=status_tracker,
+                            blocked_capacity=token_estimate,
                         )
                     )
                     pending_requests.append(task)
@@ -305,6 +306,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                             retry_queue=queue_of_requests_to_retry,
                             response_file=response_file,
                             status_tracker=status_tracker,
+                            blocked_capacity=token_estimate,
                         )
                     )
                     pending_retries.add(task)
@@ -322,6 +324,10 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         if status_tracker.num_tasks_failed > 0:
             logger.warning(f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} requests failed. Errors logged to {response_file}.")
 
+    def _free_capacity(self, status_tracker: OnlineStatusTracker, actual_tokens: int, blocked_capacity: int):
+        if actual_tokens != blocked_capacity:
+            status_tracker.free_capacity(blocked_capacity - actual_tokens)
+
     async def handle_single_request_with_retries(
         self,
         request: APIRequest,
@@ -329,6 +335,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         retry_queue: asyncio.Queue,
         response_file: str,
         status_tracker: OnlineStatusTracker,
+        blocked_capacity: int,
     ) -> None:
         """Common wrapper for handling a single request with error handling and retries.
 
@@ -341,6 +348,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             retry_queue: Queue for failed requests
             response_file: Path where the response data will be saved
             status_tracker: Tracks request status
+            blocked_capacity: Blocked token capacity
         """
         try:
             generic_response = await self.call_single_request(
@@ -353,11 +361,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
 
-            # Save response in the base class
-            await self.append_generic_response(generic_response, response_file)
-
-            status_tracker.num_tasks_in_progress -= 1
-            status_tracker.num_tasks_succeeded += 1
+            # Free the extra capacity blocked before request with actual consumed capacity.
+            self._free_capacity(status_tracker, generic_response.token_usage.total_tokens, blocked_capacity=blocked_capacity)
 
         except Exception as e:
             status_tracker.num_other_errors += 1
@@ -388,6 +393,13 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 await self.append_generic_response(generic_response, response_file)
                 status_tracker.num_tasks_in_progress -= 1
                 status_tracker.num_tasks_failed += 1
+            return
+
+        # Save response in the base class
+        await self.append_generic_response(generic_response, response_file)
+
+        status_tracker.num_tasks_in_progress -= 1
+        status_tracker.num_tasks_succeeded += 1
 
     @abstractmethod
     async def call_single_request(

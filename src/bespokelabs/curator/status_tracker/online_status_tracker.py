@@ -284,6 +284,14 @@ class OnlineStatusTracker:
         self.available_request_capacity -= 1
         self.available_token_capacity -= token_estimate
 
+    def free_capacity(self, free: int):
+        """Free extra consumed capacity.
+
+        Note: This can be a negative number
+        incase of under estimation of consumed capacity.
+        """
+        self.available_token_capacity += free
+
     def __del__(self):
         """Ensure progress is stopped on deletion."""
         if hasattr(self, "_progress"):
