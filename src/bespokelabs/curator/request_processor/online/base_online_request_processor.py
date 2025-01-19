@@ -21,7 +21,7 @@ from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, _TokenCount
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 
@@ -274,6 +274,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                             retry_queue=queue_of_requests_to_retry,
                             response_file=response_file,
                             status_tracker=status_tracker,
+                            blocked_capacity=token_estimate,
                         )
                     )
                     pending_requests.append(task)
@@ -313,6 +314,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                             retry_queue=queue_of_requests_to_retry,
                             response_file=response_file,
                             status_tracker=status_tracker,
+                            blocked_capacity=token_estimate,
                         )
                     )
                     pending_retries.add(task)
@@ -330,6 +332,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         if status_tracker.num_tasks_failed > 0:
             logger.warning(f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} requests failed. Errors logged to {response_file}.")
 
+    def _free_capacity(self, status_tracker: OnlineStatusTracker, used_capacity: "_TokenCount", blocked_capacity: "_TokenCount"):
+        status_tracker.free_capacity(used_capacity, blocked_capacity)
+
     async def handle_single_request_with_retries(
         self,
         request: APIRequest,
@@ -337,6 +342,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         retry_queue: asyncio.Queue,
         response_file: str,
         status_tracker: OnlineStatusTracker,
+        blocked_capacity: "_TokenCount",
     ) -> None:
         """Common wrapper for handling a single request with error handling and retries.
 
@@ -349,6 +355,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             retry_queue: Queue for failed requests
             response_file: Path where the response data will be saved
             status_tracker: Tracks request status
+            blocked_capacity: Blocked token capacity
         """
         try:
             generic_response = await self.call_single_request(
@@ -370,11 +377,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
 
-            # Save response in the base class
-            await self.append_generic_response(generic_response, response_file)
-
-            status_tracker.num_tasks_in_progress -= 1
-            status_tracker.num_tasks_succeeded += 1
+            # Free the extra capacity blocked before request with actual consumed capacity.
+            used_capacity = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
+            self._free_capacity(status_tracker, used_capacity=used_capacity, blocked_capacity=blocked_capacity)
 
         except Exception as e:
             status_tracker.num_other_errors += 1
@@ -405,8 +410,15 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 await self.append_generic_response(generic_response, response_file)
                 status_tracker.num_tasks_in_progress -= 1
                 status_tracker.num_tasks_failed += 1
+            return
         else:
             self._add_output_token_moving_window(generic_response.token_usage.completion_tokens)
+
+        # Save response in the base class
+        await self.append_generic_response(generic_response, response_file)
+
+        status_tracker.num_tasks_in_progress -= 1
+        status_tracker.num_tasks_succeeded += 1
 
     def _add_output_token_moving_window(self, tokens):
         self._output_tokens_window.append(tokens)

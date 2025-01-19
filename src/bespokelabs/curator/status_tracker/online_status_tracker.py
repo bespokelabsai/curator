@@ -30,6 +30,10 @@ class _TokenCount(BaseModel):
     input: int | float = 0
     output: int | float = 0
 
+    @property
+    def total(self):
+        return self.input + self.output
+
 
 @dataclass
 class OnlineStatusTracker:
@@ -329,7 +333,7 @@ class OnlineStatusTracker:
 
     def _check_combined_capacity(self, token_estimate):
         self.available_token_capacity = t.cast(int, self.available_token_capacity)
-        token_estimate = token_estimate.input + token_estimate.output
+        token_estimate = token_estimate.total
         has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
         return has_capacity
 
@@ -347,11 +351,26 @@ class OnlineStatusTracker:
         self.available_request_capacity -= 1
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             self.available_token_capacity = t.cast(float, self.available_token_capacity)
-            self.available_token_capacity -= token_estimate.input + token_estimate.output
+            self.available_token_capacity -= token_estimate.total
         else:
             self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
             self.available_token_capacity.input -= token_estimate.input
             self.available_token_capacity.output -= token_estimate.output
+
+    def free_capacity(self, used: _TokenCount, blocked: _TokenCount):
+        """Free extra consumed capacity.
+
+        Note: This can be a negative number
+        incase of under estimation of consumed capacity.
+        """
+        if self.token_limit_strategy == TokenLimitStrategy.seperate:
+            input_free = blocked.input - used.input
+            output_free = blocked.output - used.output
+            self.available_token_capacity.input += input_free
+            self.available_token_capacity.output += output_free
+        else:
+            free = blocked.total - used.total
+            self.available_token_capacity += free
 
     def __del__(self):
         """Ensure progress is stopped on deletion."""
