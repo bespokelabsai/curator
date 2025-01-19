@@ -31,6 +31,7 @@ class OnlineStatusTracker:
     available_token_capacity: float = 0
     last_update_time: float = field(default_factory=time.time)
     max_requests_per_minute: int = 0
+    max_concurrent_requests: int | float = float("inf")
     max_tokens_per_minute: int = 0
     pbar: tqdm = field(default=None)
     response_cost: float = 0
@@ -55,6 +56,7 @@ class OnlineStatusTracker:
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
         self._console = Console() if console is None else console
+
         self._progress = Progress(
             TextColumn(
                 "[cyan]{task.description}[/cyan]\n"
@@ -109,6 +111,7 @@ class OnlineStatusTracker:
         current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
 
         # Format the text for each line with properly closed tags
+
         requests_text = (
             "[bold white]Requests:[/bold white] "
             f"[white]•[/white] "
@@ -255,22 +258,29 @@ class OnlineStatusTracker:
         current_time = time.time()
         seconds_since_update = current_time - self.last_update_time
 
-        self.available_request_capacity = min(
-            self.available_request_capacity + self.max_requests_per_minute * seconds_since_update / 60.0,
-            self.max_requests_per_minute,
-        )
+        if self.max_requests_per_minute != float("inf"):
+            self.available_request_capacity = min(
+                self.available_request_capacity + self.max_requests_per_minute * seconds_since_update / 60.0,
+                self.max_requests_per_minute,
+            )
 
-        self.available_token_capacity = min(
-            self.available_token_capacity + self.max_tokens_per_minute * seconds_since_update / 60.0,
-            self.max_tokens_per_minute,
-        )
+        if self.max_tokens_per_minute != float("inf"):
+            self.available_token_capacity = min(
+                self.available_token_capacity + self.max_tokens_per_minute * seconds_since_update / 60.0,
+                self.max_tokens_per_minute,
+            )
 
         self.last_update_time = current_time
 
-    def has_capacity(self, token_estimate: int) -> bool:
+    def has_capacity(self, token_estimate: int | float) -> bool:
         """Check if there's enough capacity for a request."""
         self.update_capacity()
-        has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
+        if self.max_tokens_per_minute == float("inf"):
+            has_token_capacity = True
+        else:
+            has_token_capacity = self.available_token_capacity >= token_estimate
+
+        has_capacity = self.available_request_capacity >= 1 and has_token_capacity
         if not has_capacity:
             logger.debug(
                 f"No capacity for request with {token_estimate} tokens. "
@@ -279,10 +289,13 @@ class OnlineStatusTracker:
             )
         return has_capacity
 
-    def consume_capacity(self, token_estimate: int):
+    def consume_capacity(self, token_estimate: int | float):
         """Consume capacity for a request."""
-        self.available_request_capacity -= 1
-        self.available_token_capacity -= token_estimate
+        if self.max_requests_per_minute != float("inf"):
+            self.available_request_capacity -= 1
+
+        if self.max_tokens_per_minute != float("inf"):
+            self.available_token_capacity -= token_estimate
 
     def __del__(self):
         """Ensure progress is stopped on deletion."""

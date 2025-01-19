@@ -76,10 +76,12 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
     Attributes:
         max_requests_per_minute: Maximum number of requests allowed per minute
         max_tokens_per_minute: Maximum number of tokens allowed per minute
+        max_concurrent_requests: Maximum number of concurrent requests
         seconds_to_pause_on_rate_limit: Duration to pause when rate limit is hit
     """
 
     max_requests_per_minute: int | None = Field(default=None, gt=0)
+    max_concurrent_requests: int | None = Field(default=None, gt=0)
     max_tokens_per_minute: int | None = Field(default=None, gt=0)
     seconds_to_pause_on_rate_limit: int = Field(default=10, gt=0)
 

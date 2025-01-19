@@ -53,9 +53,8 @@ def main():
     #############################################
 
     recipe_generator = RecipeGenerator(
-        model_name="gemini/gemini-1.5-flash",
+        model_name="deepinfra/meta-llama/Llama-2-70b-chat-hf",
         backend="litellm",
-        backend_params={"max_requests_per_minute": 2_000, "max_tokens_per_minute": 4_000_000},
     )
 
     # Generate recipes for all cuisines

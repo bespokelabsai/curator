@@ -1,7 +1,7 @@
 """Base class for online request processors that make real-time API calls.
 
 This module provides the core functionality for making API requests in real-time,
-handling rate limiting, retries, and parallel processing.
+handling rate limiting, retries, and concurrent processing.
 """
 
 import asyncio
@@ -9,6 +9,7 @@ import datetime
 import json
 import logging
 import time
+import typing as t
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
@@ -64,6 +65,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the BaseOnlineRequestProcessor."""
         super().__init__(config)
+
         self.manual_max_requests_per_minute = config.max_requests_per_minute
         self.manual_max_tokens_per_minute = config.max_tokens_per_minute
         self.default_max_requests_per_minute = 10
@@ -71,13 +73,36 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self.header_based_max_requests_per_minute = None
         self.header_based_max_tokens_per_minute = None
 
+        self.manual_max_concurrent_requests = config.max_concurrent_requests
+        self.header_based_max_concurrent_requests = None
+
         # The rich.Console used for the status tracker, only set for testing
         self._tracker_console = None
+        self._semaphore = None
+        if self.max_concurrent_requests != float("inf"):
+            self._semaphore = asyncio.Semaphore(t.cast(int, self.max_concurrent_requests))
 
     @property
     def backend(self) -> str:
         """Backend property."""
         return "base"
+
+    @property
+    def max_concurrent_requests(self) -> int | None:
+        """Gets the maximum concurrent requests rate limit.
+
+        Returns the manually set limit if available, falls back to header-based limit,
+        or uses default value as last resort.
+        """
+        if self.manual_max_concurrent_requests:
+            logger.info(f"Manually set max_concurrent_requests to {self.manual_max_concurrent_requests}")
+            return self.manual_max_concurrent_requests
+
+        elif self.header_based_max_concurrent_requests:
+            logger.info(f"Automatically set max_concurrent_requests to {self.header_based_max_concurrent_requests}")
+            return self.header_based_max_concurrent_requests
+        else:
+            return float("inf")
 
     @property
     def max_requests_per_minute(self) -> int:
@@ -199,6 +224,84 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             logger.warn(f"Pausing for {int(remaining_seconds_to_pause)} seconds")
             await asyncio.sleep(remaining_seconds_to_pause)
 
+    async def handle_single_request_with_retries(
+        self,
+        request: APIRequest,
+        session: aiohttp.ClientSession,
+        retry_queue: asyncio.Queue,
+        response_file: str,
+        status_tracker: OnlineStatusTracker,
+    ) -> None:
+        """Common wrapper for handling a single request with error handling and retries.
+
+        This method implements the common try/except logic and retry mechanism,
+        while delegating the actual API call to call_single_request.
+
+        Args:
+            request: The request to process
+            session: Async HTTP session
+            retry_queue: Queue for failed requests
+            response_file: Path where the response data will be saved
+            status_tracker: Tracks request status
+        """
+        generic_response = None
+        try:
+            generic_response = await self.call_single_request(
+                request=request,
+                session=session,
+                status_tracker=status_tracker,
+            )
+            status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+
+            # Free blocked capacity
+            self.free_capacity(status_tracker, generic_response.token_usage.completion_tokens)
+
+            # Allows us to retry on responses that don't match the response format
+            self.prompt_formatter.response_to_response_format(generic_response.response_message)
+            # Save response in the base class
+            await self.append_generic_response(generic_response, response_file)
+
+            status_tracker.num_tasks_in_progress -= 1
+            status_tracker.num_tasks_succeeded += 1
+
+        except Exception as e:
+            status_tracker.num_other_errors += 1
+            request.result.append(e)
+
+            if request.attempts_left > 0:
+                request.attempts_left -= 1
+                logger.warning(
+                    f"Encountered '{e.__class__.__name__}: {e}' during attempt "
+                    f"{self.config.max_retries - request.attempts_left} of {self.config.max_retries} "
+                    f"while processing request {request.task_id}"
+                )
+                retry_queue.put_nowait(request)
+            else:
+                logger.error(
+                    f"Request {request.task_id} failed permanently after exhausting all {self.config.max_retries} retry attempts. "
+                    f"Errors: {[str(e) for e in request.result]}"
+                )
+                generic_response = GenericResponse(
+                    response_message=None,
+                    response_errors=[str(e) for e in request.result],
+                    raw_request=request.api_specific_request,
+                    raw_response=None,
+                    generic_request=request.generic_request,
+                    created_at=request.created_at,
+                    finished_at=datetime.datetime.now(),
+                )
+                await self.append_generic_response(generic_response, response_file)
+                status_tracker.num_tasks_in_progress -= 1
+                status_tracker.num_tasks_failed += 1
+            return
+
+        finally:
+            if self._semaphore:
+                self._semaphore.release()
+
+    def free_capacity(self, tracker, tokens):
+        """Free blocked capacity."""
+
     async def process_requests_from_file(
         self,
         generic_request_filepath: str,
@@ -213,10 +316,12 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         # Initialize trackers
         queue_of_requests_to_retry: asyncio.Queue[APIRequest] = asyncio.Queue()
         status_tracker = OnlineStatusTracker()
+        token_estimate = float("inf")
 
         # Get rate limits
         status_tracker.max_requests_per_minute = self.max_requests_per_minute
         status_tracker.max_tokens_per_minute = self.max_tokens_per_minute
+        status_tracker.max_concurrent_requests = self.max_concurrent_requests
 
         # Resume if a response file exists
         completed_request_ids = self.validate_existing_response_file(response_file)
@@ -228,12 +333,14 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         status_tracker.start_tracker(self._tracker_console)
 
         # Use higher connector limit for better throughput
-        connector = aiohttp.TCPConnector(limit=10 * status_tracker.max_requests_per_minute)
+        tcp_limit = self.max_concurrent_requests if status_tracker.max_requests_per_minute is float("inf") else status_tracker.max_requests_per_minute
+        connector = aiohttp.TCPConnector(limit=10 * tcp_limit)
         async with aiohttp.ClientSession(connector=connector) as session:
             async with aiofiles.open(generic_request_filepath) as file:
                 pending_requests = []
-
                 async for line in file:
+                    if self._semaphore:
+                        await self._semaphore.acquire()
                     generic_request = GenericRequest.model_validate_json(line)
 
                     if generic_request.original_row_idx in completed_request_ids:
@@ -247,7 +354,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                         prompt_formatter=self.prompt_formatter,
                     )
 
-                    token_estimate = self.estimate_total_tokens(request.generic_request.messages)
+                    if self.max_tokens_per_minute != float("inf"):
+                        token_estimate = self.estimate_total_tokens(request.generic_request.messages)
 
                     # Wait for capacity if needed
                     while not status_tracker.has_capacity(token_estimate):
@@ -258,7 +366,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
                     # Consume capacity before making request
                     status_tracker.consume_capacity(token_estimate)
-
                     task = asyncio.create_task(
                         self.handle_single_request_with_retries(
                             request=request,
@@ -273,7 +380,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     status_tracker.num_tasks_started += 1
                     status_tracker.num_tasks_in_progress += 1
 
-            # Wait for all tasks to complete
             if pending_requests:
                 await asyncio.gather(*pending_requests)
 
@@ -281,9 +387,14 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             pending_retries = set()
             while not queue_of_requests_to_retry.empty() or pending_retries:
                 # Process new items from the queue if we have capacity
+                if self._semaphore:
+                    await self._semaphore.acquire()
+
                 if not queue_of_requests_to_retry.empty():
                     retry_request = await queue_of_requests_to_retry.get()
-                    token_estimate = self.estimate_total_tokens(retry_request.generic_request.messages)
+                    if self.max_tokens_per_minute != float("inf"):
+                        token_estimate = self.estimate_total_tokens(retry_request.generic_request.messages)
+
                     attempt_number = self.config.max_retries - retry_request.attempts_left
                     logger.debug(
                         f"Retrying request {retry_request.task_id} "
@@ -321,73 +432,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         if status_tracker.num_tasks_failed > 0:
             logger.warning(f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} requests failed. Errors logged to {response_file}.")
-
-    async def handle_single_request_with_retries(
-        self,
-        request: APIRequest,
-        session: aiohttp.ClientSession,
-        retry_queue: asyncio.Queue,
-        response_file: str,
-        status_tracker: OnlineStatusTracker,
-    ) -> None:
-        """Common wrapper for handling a single request with error handling and retries.
-
-        This method implements the common try/except logic and retry mechanism,
-        while delegating the actual API call to call_single_request.
-
-        Args:
-            request: The request to process
-            session: Async HTTP session
-            retry_queue: Queue for failed requests
-            response_file: Path where the response data will be saved
-            status_tracker: Tracks request status
-        """
-        try:
-            generic_response = await self.call_single_request(
-                request=request,
-                session=session,
-                status_tracker=status_tracker,
-            )
-            status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
-
-            # Allows us to retry on responses that don't match the response format
-            self.prompt_formatter.response_to_response_format(generic_response.response_message)
-
-            # Save response in the base class
-            await self.append_generic_response(generic_response, response_file)
-
-            status_tracker.num_tasks_in_progress -= 1
-            status_tracker.num_tasks_succeeded += 1
-
-        except Exception as e:
-            status_tracker.num_other_errors += 1
-            request.result.append(e)
-
-            if request.attempts_left > 0:
-                request.attempts_left -= 1
-                logger.warning(
-                    f"Encountered '{e.__class__.__name__}: {e}' during attempt "
-                    f"{self.config.max_retries - request.attempts_left} of {self.config.max_retries} "
-                    f"while processing request {request.task_id}"
-                )
-                retry_queue.put_nowait(request)
-            else:
-                logger.error(
-                    f"Request {request.task_id} failed permanently after exhausting all {self.config.max_retries} retry attempts. "
-                    f"Errors: {[str(e) for e in request.result]}"
-                )
-                generic_response = GenericResponse(
-                    response_message=None,
-                    response_errors=[str(e) for e in request.result],
-                    raw_request=request.api_specific_request,
-                    raw_response=None,
-                    generic_request=request.generic_request,
-                    created_at=request.created_at,
-                    finished_at=datetime.datetime.now(),
-                )
-                await self.append_generic_response(generic_response, response_file)
-                status_tracker.num_tasks_in_progress -= 1
-                status_tracker.num_tasks_failed += 1
 
     @abstractmethod
     async def call_single_request(
