@@ -21,6 +21,7 @@ Attributes:
     finished_at: The datetime when the request was finished.
     token_usage: Token usage information for the request.
     response_cost: The cost of the request in USD.
+    finish_reason: The reason for completion finish.
 """
 
 
@@ -36,3 +37,4 @@ class GenericResponse(BaseModel):
     finished_at: datetime.datetime
     token_usage: Optional[TokenUsage] = None
     response_cost: Optional[float] = None
+    finish_reason: Optional[str] = None

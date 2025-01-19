@@ -1,6 +1,7 @@
 import datetime
 import logging
 import time
+import typing as t
 
 import aiohttp
 import instructor
@@ -65,6 +66,11 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     def backend(self):
         """Backend property."""
         return "litellm"
+
+    @property
+    def invalid_finish_reasons(self) -> t.Sequence:
+        """List of api finish reasons which are considered failed."""
+        return ("length", "content_filter") or self.config.invalid_finish_reasons
 
     def check_structured_output_support(self):
         """Verify if the model supports structured output via instructor.
@@ -296,10 +302,6 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         cost = self.completion_cost(completion_obj.model_dump())
 
         finish_reason = completion_obj.choices[0].finish_reason
-        invalid_finish_reasons = ["length", "content_filter"]
-        if finish_reason in invalid_finish_reasons:
-            logger.debug(f"Invalid finish_reason {finish_reason}. Raw response {completion_obj.model_dump()} for request {request.generic_request.messages}")
-            raise ValueError(f"finish_reason was {finish_reason}")
 
         if response_message is None:
             raise ValueError(f"response_message was None with raw response {completion_obj.model_dump()}")
@@ -315,4 +317,5 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             finished_at=datetime.datetime.now(),
             token_usage=token_usage,
             response_cost=cost,
+            finish_reason=finish_reason,
         )

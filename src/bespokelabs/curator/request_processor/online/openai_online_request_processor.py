@@ -223,6 +223,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                 response_message = dict(response)
             else:
                 response_message = response["choices"][0]["message"]["content"]
+            finish_reason = response["choices"][0].get("finish_reason", "unkown")
             usage = response["usage"]
             token_usage = TokenUsage(
                 prompt_tokens=usage["prompt_tokens"],
@@ -243,6 +244,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                 finished_at=datetime.datetime.now(),
                 token_usage=token_usage,
                 response_cost=cost,
+                finish_reason=finish_reason,
             )
 
     def get_token_encoding(self) -> str:
