@@ -77,11 +77,13 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
         max_requests_per_minute: Maximum number of requests allowed per minute
         max_tokens_per_minute: Maximum number of tokens allowed per minute
         seconds_to_pause_on_rate_limit: Duration to pause when rate limit is hit
+        invalid_finish_reasons: List of api finish reasons which are considered failed.
     """
 
     max_requests_per_minute: int | None = Field(default=None, gt=0)
     max_tokens_per_minute: int | None = Field(default=None, gt=0)
     seconds_to_pause_on_rate_limit: int = Field(default=10, gt=0)
+    invalid_finish_reasons: list = Field(default_factory=list)
 
 
 class OfflineRequestProcessorConfig(RequestProcessorConfig):
