@@ -43,6 +43,7 @@ vllm = ["vllm"]
 [tool.poetry.group.dev.dependencies]
 twine = "^5.0.0"
 ruff = "^0.8.6"
+vcrpy = "^7.0.0"
 pre-commit = "^4.0.1"
 pytest-dependency = "^0.6.0"
 pytest-timeout = "^2.3.1"
