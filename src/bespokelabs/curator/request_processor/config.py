@@ -88,7 +88,7 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
     max_input_tokens_per_minute: int | None = Field(default=None, gt=0)
     max_output_tokens_per_minute: int | None = Field(default=None, gt=0)
     seconds_to_pause_on_rate_limit: int = Field(default=10, gt=0)
-    invalid_finish_reasons: list = Field(default_factory=list)
+    invalid_finish_reasons: list = Field(default_factory=lambda: ["content_filter", "length"])
 
 
 class OfflineRequestProcessorConfig(RequestProcessorConfig):

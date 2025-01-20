@@ -1,7 +1,6 @@
 import datetime
 import logging
 import time
-import typing as t
 
 import aiohttp
 import instructor
@@ -66,11 +65,6 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     def backend(self):
         """Backend property."""
         return "litellm"
-
-    @property
-    def invalid_finish_reasons(self) -> t.Sequence:
-        """List of api finish reasons which are considered failed."""
-        return ("length", "content_filter") or self.config.invalid_finish_reasons
 
     def check_structured_output_support(self):
         """Verify if the model supports structured output via instructor.

@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import importlib
 import logging
@@ -10,6 +11,7 @@ import pytest
 from rich.console import Console
 
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+from bespokelabs.curator.types.generic_response import GenericRequest, GenericResponse
 from tests.integrations import helper
 
 ##############################
@@ -138,32 +140,49 @@ def test_resume(caplog, temp_working_dir, mock_dataset):
             assert resume_msg in caplog.text
 
 
-@pytest.mark.parametrize("temp_working_dir", ([{"integration": "litellm/anthropic"}]), indirect=True)
-def test_seperate_rpm_tpm(caplog, temp_working_dir, mock_dataset):
+@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+def test_invalid_failed_reason(caplog, temp_working_dir, mock_dataset):
     temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {
-        "litellm": "8c4d5d0d647a04bc724c9000db14619a444c918d9b6423fbe31f7308e6f8f94c",
-    }
 
-    with vcr_config.use_cassette("basic_completion_seperate_rpm_tpm.yaml"):
-        # Capture the output to verify status tracker
+    def _invalid_failed_reason(reason):
+        patch.stopall()
+        now = datetime.datetime.now()
         output = StringIO()
         console = Console(file=output, width=300)
+        request = GenericRequest(model="", messages=[{}], original_row={}, original_row_idx=0)
 
+        # default invalid reason
+        invalid_reason_response = GenericResponse(
+            finish_reason=reason, generic_request=request, raw_response={"choices": [{"finish_reason": reason}]}, created_at=now, finished_at=now
+        )
         logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
-        RPM_MSG = "Automatically set max_requests_per_minute to 4000"
-        TPM_MSG = "Automatically set max_tokens_per_minute to input=400000 output=80000"
+        REASON_MSG = f"Encountered 'ValueError: finish_reason was {reason}' during attempt 1 of 10 while processing request 0"
+        if backend == "openai":
+            patcher = patch("bespokelabs.curator.request_processor.online.openai_online_request_processor.OpenAIOnlineRequestProcessor.call_single_request")
+        else:
+            patcher = patch("bespokelabs.curator.request_processor.online.litellm_online_request_processor.LiteLLMOnlineRequestProcessor.call_single_request")
 
-        with caplog.at_level(logging.INFO, logger=logger):
-            dataset = helper.create_basic(temp_working_dir, mock_dataset, backend=backend, tracker_console=console, model="anthropic/claude-3-haiku-20240307")
+        mock = patcher.start()
+        mock.return_value = invalid_reason_response
+        try:
+            with pytest.raises(TimeoutError):
+                with Timeout(3):
+                    with caplog.at_level(logging.WARN, logger=logger):
+                        llm_params = {"max_requests_per_minute": 1}
+                        if reason not in ["content_filter", "length"]:
+                            llm_params["invalid_finish_reasons"] = [reason]
 
-        assert RPM_MSG in caplog.text
-        assert TPM_MSG in caplog.text
-        captured = output.getvalue()
-        assert "with seperate input and output" in captured
-        assert "input=400000 output=80000" in captured
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
+                        helper.create_basic(temp_working_dir, mock_dataset, llm_params=llm_params, tracker_console=console, backend=backend)
+        finally:
+            patcher.stop()
+            patch.stopall()
+        assert REASON_MSG in caplog.text
+
+    with vcr_config.use_cassette("basic_completion.yaml"):
+        # Default
+        _invalid_failed_reason("length")
+        # Custom
+        _invalid_failed_reason("tool_calls")
 
 
 ##############################
