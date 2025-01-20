@@ -25,7 +25,7 @@ clean:
 
 install:
 	@echo "Installing dependencies..."
-	poetry install
+	poetry install --with dev
 	poetry run pre-commit install
 
 all: lint test clean
