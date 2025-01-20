@@ -1,10 +1,13 @@
 import logging
 import time
+import typing as t
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Optional
 
 import tqdm
 from litellm import model_cost
+from pydantic import BaseModel
 from rich import box
 from rich.console import Console
 from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn, TimeRemainingColumn
@@ -13,6 +16,19 @@ from rich.table import Table
 from bespokelabs.curator.types.generic_response import TokenUsage
 
 logger = logging.getLogger(__name__)
+
+
+class TokenLimitStrategy(Enum):
+    """Token limit Strategy enum."""
+
+    combined = "combined"
+    seperate = "seperate"
+    default = "combined"
+
+
+class _TokenInfo(BaseModel):
+    input: int | float = 0
+    output: int | float = 0
 
 
 @dataclass
@@ -28,10 +44,10 @@ class OnlineStatusTracker:
     num_other_errors: int = 0
     num_rate_limit_errors: int = 0
     available_request_capacity: float = 1.0
-    available_token_capacity: float = 0
+    available_token_capacity: float | _TokenInfo = 0
     last_update_time: float = field(default_factory=time.time)
     max_requests_per_minute: int = 0
-    max_tokens_per_minute: int = 0
+    max_tokens_per_minute: int | _TokenInfo = 0
     pbar: tqdm = field(default=None)
     response_cost: float = 0
     time_of_last_rate_limit_error: float = field(default=0.0)
@@ -51,10 +67,22 @@ class OnlineStatusTracker:
 
     # Add model name field
     model: str = ""
+    token_limit_strategy: TokenLimitStrategy = TokenLimitStrategy.default
+
+    def __post_init__(self):
+        """Post init."""
+        if self.token_limit_strategy == TokenLimitStrategy.combined:
+            self.available_token_capacity = t.cast(int, self.available_token_capacity)
+        else:
+            self.available_token_capacity = t.cast(_TokenInfo, self.available_token_capacity)
+            self.available_token_capacity = _TokenInfo()
+            if not self.max_tokens_per_minute:
+                self.max_tokens_per_minute = _TokenInfo()
 
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
         self._console = Console() if console is None else console
+
         self._progress = Progress(
             TextColumn(
                 "[cyan]{task.description}[/cyan]\n"
@@ -75,7 +103,7 @@ class OnlineStatusTracker:
             console=self._console,
         )
         self._task_id = self._progress.add_task(
-            description=f"[cyan]Generating data using {self.model}",
+            description=f"[cyan]Generating data using {self.model} with {self.token_limit_strategy.value} input and output token Strategy.",
             total=self.total_requests,
             completed=self.num_tasks_already_completed,
             requests_text="[bold white]Requests:[/bold white] [dim]--[/dim]",
@@ -169,6 +197,7 @@ class OnlineStatusTracker:
         )
 
         # Update the progress display
+
         self._progress.update(
             self._task_id,
             completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
@@ -259,30 +288,71 @@ class OnlineStatusTracker:
             self.available_request_capacity + self.max_requests_per_minute * seconds_since_update / 60.0,
             self.max_requests_per_minute,
         )
+        if self.token_limit_strategy == TokenLimitStrategy.combined:
+            self.available_token_capacity = t.cast(int, self.available_token_capacity)
+            self.max_tokens_per_minute = t.cast(int, self.max_tokens_per_minute)
+            self.available_token_capacity = min(
+                self.available_token_capacity + self.max_tokens_per_minute * seconds_since_update / 60.0,
+                self.max_tokens_per_minute,
+            )
+        else:
+            # TODO: May need to add a threading lock in case of threads, since mutable object.
+            self.available_token_capacity = t.cast(_TokenInfo, self.available_token_capacity)
+            self.max_tokens_per_minute = t.cast(_TokenInfo, self.max_tokens_per_minute)
 
-        self.available_token_capacity = min(
-            self.available_token_capacity + self.max_tokens_per_minute * seconds_since_update / 60.0,
-            self.max_tokens_per_minute,
-        )
+            self.available_token_capacity.input = min(
+                self.available_token_capacity.input + self.max_tokens_per_minute.input * seconds_since_update / 60.0,
+                self.max_tokens_per_minute.input,
+            )
+
+            self.available_token_capacity.output = min(
+                self.available_token_capacity.output + self.max_tokens_per_minute.output * seconds_since_update / 60.0,
+                self.max_tokens_per_minute.output,
+            )
 
         self.last_update_time = current_time
 
-    def has_capacity(self, token_estimate: int) -> bool:
+    def has_capacity(self, token_estimate: _TokenInfo) -> bool:
         """Check if there's enough capacity for a request."""
         self.update_capacity()
-        has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
+        if self.token_limit_strategy == TokenLimitStrategy.combined:
+            has_capacity = self._handle_combined_capacity(token_estimate)
+        else:
+            has_capacity = self._handle_seperate_capacity(token_estimate)
+
         if not has_capacity:
             logger.debug(
-                f"No capacity for request with {token_estimate} tokens. "
-                f"Available capacity: {int(self.available_token_capacity)} tokens, "
+                f"No capacity for request with {token_estimate} tokens."
+                f"Available capacity: {self.available_token_capacity} tokens, "
                 f"{int(self.available_request_capacity)} requests."
             )
         return has_capacity
 
-    def consume_capacity(self, token_estimate: int):
+    def _handle_combined_capacity(self, token_estimate):
+        self.available_token_capacity = t.cast(int, self.available_token_capacity)
+        token_estimate = token_estimate.input + token_estimate.output
+        has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
+        return has_capacity
+
+    def _handle_seperate_capacity(self, token_estimate: _TokenInfo):
+        self.available_token_capacity = t.cast(_TokenInfo, self.available_token_capacity)
+        has_capacity = (
+            self.available_request_capacity >= 1
+            and self.available_token_capacity.input >= token_estimate.input
+            and self.available_token_capacity.output >= token_estimate.output
+        )
+        return has_capacity
+
+    def consume_capacity(self, token_estimate: _TokenInfo):
         """Consume capacity for a request."""
         self.available_request_capacity -= 1
-        self.available_token_capacity -= token_estimate
+        if self.token_limit_strategy == TokenLimitStrategy.combined:
+            self.available_token_capacity = t.cast(int, self.available_token_capacity)
+            self.available_token_capacity -= token_estimate.input + token_estimate.output
+        else:
+            self.available_token_capacity = t.cast(_TokenInfo, self.available_token_capacity)
+            self.available_token_capacity.input -= token_estimate.input
+            self.available_token_capacity.output -= token_estimate.output
 
     def __del__(self):
         """Ensure progress is stopped on deletion."""

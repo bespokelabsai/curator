@@ -138,6 +138,34 @@ def test_resume(caplog, temp_working_dir, mock_dataset):
             assert resume_msg in caplog.text
 
 
+@pytest.mark.parametrize("temp_working_dir", ([{"integration": "litellm"}]), indirect=True)
+def test_seperate_rpm_tpm(caplog, temp_working_dir, mock_dataset):
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    hash_book = {
+        "litellm": "97317e6bf0f203ddb658dda433e2bc0dbe183c3b80ed4ca21177411c46350fa7",
+    }
+
+    with vcr_config.use_cassette("basic_completion_seperate_rpm_tpm.yaml"):
+        # Capture the output to verify status tracker
+        output = StringIO()
+        console = Console(file=output, width=300)
+
+        logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
+        RPM_MSG = "Automatically set max_requests_per_minute to 4000"
+        TPM_MSG = "Automatically set max_tokens_per_minute to input=400000 output=80000"
+
+        with caplog.at_level(logging.INFO, logger=logger):
+            dataset = helper.create_basic(temp_working_dir, mock_dataset, backend=backend, tracker_console=console, model="anthropic/claude-3-haiku-20240307")
+
+        assert RPM_MSG in caplog.text
+        assert TPM_MSG in caplog.text
+        captured = output.getvalue()
+        assert "with seperate input and output" in captured
+        assert "input=400000 output=80000" in captured
+        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+        assert _hash_string(recipes) == hash_book[backend]
+
+
 ##############################
 # Batch                      #
 ##############################
