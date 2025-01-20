@@ -15,8 +15,8 @@ Welcome to the Curator project! We value your contributions and are excited to h
 ## Setting Up the Project
 
 1. Ensure you have the following tools installed:
-   - Git
-   - Any other dependencies listed in the repository's documentation
+   - `git`
+   - `poetry` [(Installation Instructions)](https://python-poetry.org/docs/#installation)
 
 2. Install dependencies:
    ```bash
