@@ -178,7 +178,8 @@ class LLM:
             Iterable: A list of structured outputs from the completions
         """
         # We convert from iterable to Dataset because Dataset has random access via row_idx
-        dataset = _convert_to_dataset(dataset)
+        if dataset:
+            dataset = _convert_to_dataset(dataset)
 
         if working_dir is None:
             curator_cache_dir = os.environ.get(
