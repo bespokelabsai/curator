@@ -1,6 +1,7 @@
 import datetime
 import logging
 import time
+from collections import defaultdict
 
 import aiohttp
 import instructor
@@ -17,6 +18,9 @@ from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsa
 logger = logging.getLogger(__name__)
 
 litellm.suppress_debug_info = True
+
+_OTPM_LIMIT = defaultdict(lambda: "output_tokens")
+_OTPM_LIMIT["anthropic"] = "max_tokens"
 
 
 class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
@@ -60,6 +64,10 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             assert config.max_input_tokens_per_minute is None, "`max_input_tokens_per_minute` cannot be used with `combined` token strategy"
             assert config.max_output_tokens_per_minute is None, "`max_output_tokens_per_minute` cannot be used with `combined` token strategy"
+
+    @property
+    def _provider(self):
+        return self.config.model.split("/")[0]
 
     @property
     def backend(self):
@@ -118,14 +126,14 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             Falls back to 0 if token estimation fails
         """
         try:
-            token_mva = self._output_tokens_moving_average()
-            if token_mva:
-                return token_mva
-
-            max_tokens = litellm.get_max_tokens(model=self.config.model)
-            return max_tokens // 4
+            if _OTPM_LIMIT[self._provider] == "max_tokens":
+                return self._get_max_tokens()
+            return self._output_tokens_moving_average() or self._get_max_tokens() // 4
         except Exception:
             return 0
+
+    def _get_max_tokens(self):
+        return litellm.get_max_tokens(model=self.config.model)
 
     def estimate_total_tokens(self, messages: list) -> _TokenCount:
         """Calculate the total token usage for a request.
