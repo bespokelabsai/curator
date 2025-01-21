@@ -1,17 +1,16 @@
-"""
-The logic in this file largely borrows from Qwen2.5-Math codebase at https://github.com/QwenLM/Qwen2.5-Math:
-"""
+# ruff: noqa
+"""The logic in this file largely borrows from Qwen2.5-Math codebase at https://github.com/QwenLM/Qwen2.5-Math:"""
 
 import re
-import regex
-from word2number import w2n
 from math import isclose
-from collections import defaultdict
 
-from sympy import simplify, N
-from sympy.parsing.sympy_parser import parse_expr
-from sympy.parsing.latex import parse_latex
+import regex
 from latex2sympy2 import latex2sympy
+from sympy import N, simplify
+from sympy.parsing.latex import parse_latex
+from sympy.parsing.sympy_parser import parse_expr
+from word2number import w2n
+
 
 def convert_word_number(text: str) -> str:
     try:
@@ -19,6 +18,7 @@ def convert_word_number(text: str) -> str:
     except:
         pass
     return text
+
 
 def _fix_fracs(string):
     substrs = string.split("\\frac")
@@ -73,6 +73,7 @@ def _fix_sqrt(string):
     _string = re.sub(r"\\sqrt(\w+)", r"\\sqrt{\1}", string)
     return _string
 
+
 def strip_answer_string(string):
     string = str(string).strip()
     # linebreaks
@@ -95,11 +96,7 @@ def strip_answer_string(string):
     # replace tfrac and dfrac with frac
     string = string.replace("tfrac", "frac")
     string = string.replace("dfrac", "frac")
-    string = (
-        string.replace("\\neq", "\\ne")
-        .replace("\\leq", "\\le")
-        .replace("\\geq", "\\ge")
-    )
+    string = string.replace("\\neq", "\\ne").replace("\\leq", "\\le").replace("\\geq", "\\ge")
 
     # remove \left and \right
     string = string.replace("\\left", "")
@@ -111,9 +108,10 @@ def strip_answer_string(string):
     def replace_match(match):
         word = match.group(1).lower()
         if convert_word_number(word) == word:
-          return match.group(0)
+            return match.group(0)
         else:
-          return convert_word_number(word)
+            return convert_word_number(word)
+
     string = re.sub(r"\\text\{([a-zA-Z]+)\}", replace_match, string)
 
     # Before removing unit, check if the unit is squared (for surface area)
@@ -146,7 +144,7 @@ def strip_answer_string(string):
 
     # remove percentage
     string = string.replace("\\%", "")
-    string = string.replace("\%", "")
+    string = string.replace(r"\%", "")
     string = string.replace("%", "")
 
     # " 0." equivalent to " ." and "{0." equivalent to "{." Alternatively, add "0" if "." is the start of the string
@@ -223,17 +221,18 @@ def strip_answer_string(string):
     if re.fullmatch(r"(\s*-?\d+\s*,)*\s*-?\d+\s*", string):
         # Split the string into a list of integers
         try:
-            integer_list = list(map(int, string.split(',')))
+            integer_list = list(map(int, string.split(",")))
         except:
-            integer_list = list(map(int, "-1,-1".split(',')))
+            integer_list = list(map(int, "-1,-1".split(",")))
 
         # Sort the list in ascending order
         sorted_list = sorted(integer_list)
 
         # Join the sorted list back into a comma-separated string
-        string = ','.join(map(str, sorted_list))
+        string = ",".join(map(str, sorted_list))
 
     return string
+
 
 def extract_answer(pred_str, use_last_number=True):
     pred_str = pred_str.replace("\u043a\u0438", "")
@@ -271,7 +270,7 @@ def extract_answer(pred_str, use_last_number=True):
         pred = pred_str.split("答案是")[1].strip().split("\n\n")[0].strip()
     else:  # use the last number
         if use_last_number:
-            pattern = "-?\d*\.?\d+"
+            pattern = r"-?\d*\.?\d+"
             pred = re.findall(pattern, pred_str.replace(",", ""))
             if len(pred) >= 1:
                 pred = pred[-1]
@@ -292,6 +291,7 @@ def extract_answer(pred_str, use_last_number=True):
     pred = strip_answer_string(pred)
     return pred
 
+
 def get_multiple_choice_answer(pred: str):
     tmp = re.findall(r"\b(A|B|C|D)\b", pred.upper())
     if tmp:
@@ -302,12 +302,13 @@ def get_multiple_choice_answer(pred: str):
     if len(pred) == 0:
         pred = ""
     else:
-      pred = pred[-1]
+        pred = pred[-1]
 
     # Remove the period at the end, again!
     pred = pred.rstrip(".").rstrip("/")
 
     return pred
+
 
 def mmlu_pro_extract_answer(text):
     pattern = r"answer is \(?([A-J])\)?"
@@ -316,7 +317,7 @@ def mmlu_pro_extract_answer(text):
         return match.group(1)
     else:
         # print("1st answer extract failed\n" + text)
-        match = re.search(r'.*[aA]nswer:\s*([A-J])', text)
+        match = re.search(r".*[aA]nswer:\s*([A-J])", text)
         if match:
             return match.group(1)
         else:
@@ -325,6 +326,7 @@ def mmlu_pro_extract_answer(text):
             match = re.search(pattern, text, re.DOTALL)
             if match:
                 return match.group(0)
+
 
 def choice_answer_clean(pred: str):
     pred = pred.strip("\n").rstrip(".").rstrip("/").strip(" ").lstrip(":")
@@ -381,8 +383,7 @@ def math_equal(
     is_close: bool = True,
     timeout: bool = False,
 ) -> bool:
-    """
-    Exact match of math if and only if:
+    """Exact match of math if and only if:
     1. numerical equal: both can convert to float and are equal
     2. symbolic equal: both can convert to sympy expression and are equal
     """
@@ -390,10 +391,7 @@ def math_equal(
         return False
     if str(prediction.strip().lower()) == str(reference.strip().lower()):
         return True
-    if (
-        reference in ["A", "B", "C", "D", "E"]
-        and choice_answer_clean(prediction) == reference
-    ):
+    if reference in ["A", "B", "C", "D", "E"] and choice_answer_clean(prediction) == reference:
         return True
 
     try:  # 1. numerical equal
@@ -427,19 +425,13 @@ def math_equal(
     prediction = str(prediction).strip()
 
     ## pmatrix (amps)
-    if "pmatrix" in prediction and not "pmatrix" in reference:
+    if "pmatrix" in prediction and "pmatrix" not in reference:
         reference = str_to_pmatrix(reference)
 
     ## deal with [], (), {}
     pred_str, ref_str = prediction, reference
-    if (
-        prediction.startswith("[")
-        and prediction.endswith("]")
-        and not reference.startswith("(")
-    ) or (
-        prediction.startswith("(")
-        and prediction.endswith(")")
-        and not reference.startswith("[")
+    if (prediction.startswith("[") and prediction.endswith("]") and not reference.startswith("(")) or (
+        prediction.startswith("(") and prediction.endswith(")") and not reference.startswith("[")
     ):
         pred_str = pred_str.strip("[]()")
         ref_str = ref_str.strip("[]()")
@@ -450,53 +442,20 @@ def math_equal(
         return True
 
     ## [a, b] vs. [c, d], return a==c and b==d
-    if (
-        regex.match(r"(\(|\[).+(\)|\])", prediction) is not None
-        and regex.match(r"(\(|\[).+(\)|\])", reference) is not None
-    ):
+    if regex.match(r"(\(|\[).+(\)|\])", prediction) is not None and regex.match(r"(\(|\[).+(\)|\])", reference) is not None:
         pred_parts = prediction[1:-1].split(",")
         ref_parts = reference[1:-1].split(",")
         if len(pred_parts) == len(ref_parts):
-            if all(
-                [
-                    math_equal(
-                        pred_parts[i], ref_parts[i], include_percentage, is_close
-                    )
-                    for i in range(len(pred_parts))
-                ]
-            ):
+            if all([math_equal(pred_parts[i], ref_parts[i], include_percentage, is_close) for i in range(len(pred_parts))]):
                 return True
     if (
-        (
-            prediction.startswith("\\begin{pmatrix}")
-            or prediction.startswith("\\begin{bmatrix}")
-        )
-        and (
-            prediction.endswith("\\end{pmatrix}")
-            or prediction.endswith("\\end{bmatrix}")
-        )
-        and (
-            reference.startswith("\\begin{pmatrix}")
-            or reference.startswith("\\begin{bmatrix}")
-        )
-        and (
-            reference.endswith("\\end{pmatrix}") or reference.endswith("\\end{bmatrix}")
-        )
+        (prediction.startswith("\\begin{pmatrix}") or prediction.startswith("\\begin{bmatrix}"))
+        and (prediction.endswith("\\end{pmatrix}") or prediction.endswith("\\end{bmatrix}"))
+        and (reference.startswith("\\begin{pmatrix}") or reference.startswith("\\begin{bmatrix}"))
+        and (reference.endswith("\\end{pmatrix}") or reference.endswith("\\end{bmatrix}"))
     ):
-        pred_lines = [
-            line.strip()
-            for line in prediction[
-                len("\\begin{pmatrix}") : -len("\\end{pmatrix}")
-            ].split("\\\\")
-            if line.strip()
-        ]
-        ref_lines = [
-            line.strip()
-            for line in reference[
-                len("\\begin{pmatrix}") : -len("\\end{pmatrix}")
-            ].split("\\\\")
-            if line.strip()
-        ]
+        pred_lines = [line.strip() for line in prediction[len("\\begin{pmatrix}") : -len("\\end{pmatrix}")].split("\\\\") if line.strip()]
+        ref_lines = [line.strip() for line in reference[len("\\begin{pmatrix}") : -len("\\end{pmatrix}")].split("\\\\") if line.strip()]
         matched = True
         if len(pred_lines) == len(ref_lines):
             for pred_line, ref_line in zip(pred_lines, ref_lines):
@@ -532,23 +491,11 @@ def math_equal(
         ref = f"{ref[0].strip()} - ({ref[1].strip()})"
         if symbolic_equal(pred, ref) or symbolic_equal(f"-({pred})", ref):
             return True
-    elif (
-        prediction.count("=") == 1
-        and len(prediction.split("=")[0].strip()) <= 2
-        and "=" not in reference
-    ):
-        if math_equal(
-            prediction.split("=")[1], reference, include_percentage, is_close
-        ):
+    elif prediction.count("=") == 1 and len(prediction.split("=")[0].strip()) <= 2 and "=" not in reference:
+        if math_equal(prediction.split("=")[1], reference, include_percentage, is_close):
             return True
-    elif (
-        reference.count("=") == 1
-        and len(reference.split("=")[0].strip()) <= 2
-        and "=" not in prediction
-    ):
-        if math_equal(
-            prediction, reference.split("=")[1], include_percentage, is_close
-        ):
+    elif reference.count("=") == 1 and len(reference.split("=")[0].strip()) <= 2 and "=" not in prediction:
+        if math_equal(prediction, reference.split("=")[1], include_percentage, is_close):
             return True
 
     if symbolic_equal(prediction, reference):

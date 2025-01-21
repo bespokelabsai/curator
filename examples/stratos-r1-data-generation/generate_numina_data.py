@@ -1,21 +1,31 @@
-from bespokelabs import curator
-from datasets import load_dataset, concatenate_datasets
-import re
+from datasets import concatenate_datasets, load_dataset
 from pydantic import BaseModel
-from util.testing.math import strip_answer_string, extract_answer, math_equal
 from util.prompt import SKY_T1_SYSTEM_PROMPT
+from util.testing.math import extract_answer, strip_answer_string
+
+from bespokelabs import curator
+
 
 def extract_boxed_answer(text):
+    """Extract the boxed answer from the text."""
     text = strip_answer_string(text)
     return extract_answer(text)
 
+
 class JudgeResult(BaseModel):
+    """Result of the judge's evaluation."""
+
     correct: bool
     reasoning: str
 
+
 class Judge(curator.LLM):
+    """Curator class for processing Numina dataset."""
+
     response_format = JudgeResult
+
     def prompt(self, input):
+        """Create a prompt for the judge to evaluate the correctness of a solution."""
         return f"""
         You are a judge that evaluates the correctness of a solution.
         You will be given a solution and a ground truth solution.
@@ -25,23 +35,26 @@ class Judge(curator.LLM):
         SOLUTION: {input["deepseek_solution"]}
         GROUND TRUTH SOLUTION: {input["ground_truth_solution"]}
         """
+
     def parse(self, input, response):
-        return {
-            **input,
-            "correct": response.correct,
-            "judge_reasoning": response.reasoning
-        }
-    
+        """Parse the judge's response to extract correctness and reasoning."""
+        return {**input, "correct": response.correct, "judge_reasoning": response.reasoning}
+
+
 class Reasoner(curator.LLM):
+    """Curator class for processing Numina dataset."""
+
     return_completions_object = True
 
     def prompt(self, input):
+        """Create a prompt for the LLM to reason about the problem."""
         return [
             {"role": "system", "content": SKY_T1_SYSTEM_PROMPT},
             {"role": "user", "content": input["problem"]},
         ]
 
     def parse(self, input, response):
+        """Parse the LLM response to extract reasoning and solution."""
         return [
             {
                 "problem": input["problem"],
@@ -53,12 +66,10 @@ class Reasoner(curator.LLM):
             }
         ]
 
+
 # amc_aime
-numina_162k_amc_aime_problems = (
-    load_dataset("NovaSky-AI/labeled_numina_difficulty_162K", trust_remote_code=True)[
-        "train"
-    ]
-    .filter(lambda x: x["source"] == "amc_aime")
+numina_162k_amc_aime_problems = load_dataset("NovaSky-AI/labeled_numina_difficulty_162K", trust_remote_code=True)["train"].filter(
+    lambda x: x["source"] == "amc_aime"
 )
 llm = Reasoner(
     model_name="deepseek-reasoner",
@@ -72,21 +83,13 @@ numina_162k_amc_aime_problems_response = llm(numina_162k_amc_aime_problems)
 numina_162k_amc_aime_problems_response.push_to_hub("bespokelabs/sky-t1-numina-amc-aime-subset-unfiltered", private=True)
 
 # math
-numina_162k_math_problems = (
-    load_dataset("NovaSky-AI/labeled_numina_difficulty_162K", trust_remote_code=True)[
-        "train"
-    ]
-    .filter(lambda x: x["source"] == "math")
-)
+numina_162k_math_problems = load_dataset("NovaSky-AI/labeled_numina_difficulty_162K", trust_remote_code=True)["train"].filter(lambda x: x["source"] == "math")
 numina_162k_math_problems_response = llm(numina_162k_math_problems)
 numina_162k_math_problems_response.push_to_hub("bespokelabs/sky-t1-numina-math-subset-unfiltered", private=True)
 
 # olympiads
 numina_162k_olympiads_problems = (
-    load_dataset("NovaSky-AI/labeled_numina_difficulty_162K", trust_remote_code=True)[
-        "train"
-    ]
-    .filter(lambda x: x["source"] == "olympiads")
+    load_dataset("NovaSky-AI/labeled_numina_difficulty_162K", trust_remote_code=True)["train"].filter(lambda x: x["source"] == "olympiads")
 ).take(20_000)
 numina_162k_olympiads_problems_response = llm(numina_162k_olympiads_problems)
 numina_162k_olympiads_problems_response.push_to_hub("bespokelabs/sky-t1-numina-olympiads-subset-unfiltered", private=True)
