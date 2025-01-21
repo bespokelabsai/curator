@@ -1,0 +1,6 @@
+word2number==1.1
+scipy==1.15.1
+datasets==3.2.0
+latex2sympy2==1.9.1
+bespokelabs-curator==0.1.6
+timeout-decorator==0.5.0
