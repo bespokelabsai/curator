@@ -38,12 +38,6 @@ python generate_taco_data.py --split train
 python generate_taco_data.py --split test
 ```
 
-### STILL-2
-
-```bash
-python generate_still_2_data.py
-```
-
 ### Combine the datasets
 
 ```bash
