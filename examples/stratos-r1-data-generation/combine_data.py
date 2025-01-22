@@ -1,3 +1,5 @@
+"""Combine curated data from different datasets."""
+
 import json
 
 from datasets import concatenate_datasets, load_dataset

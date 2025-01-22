@@ -1,3 +1,5 @@
+"""Code execution for TACO dataset."""
+
 import multiprocessing
 import re
 from multiprocessing import Pool

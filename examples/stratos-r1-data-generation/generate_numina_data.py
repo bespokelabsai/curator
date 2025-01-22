@@ -1,3 +1,5 @@
+"""Curate data using curator on the Numina dataset."""
+
 from datasets import concatenate_datasets, load_dataset
 from pydantic import BaseModel
 from util.prompt import SKY_T1_SYSTEM_PROMPT

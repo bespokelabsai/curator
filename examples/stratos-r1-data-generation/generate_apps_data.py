@@ -1,4 +1,5 @@
-# Import required libraries
+"""Curate data using curator on the APPS dataset."""
+
 import argparse
 import json
 
@@ -8,9 +9,8 @@ from util.prompt import SKY_T1_SYSTEM_PROMPT, generate_prompt
 
 from bespokelabs import curator
 
-# Uncomment to set DeepSeek API key
-# import os
-# os.environ['DEEPSEEK_API_KEY'] = ''
+# Uncomment to set DeepSeek API key, or set in environment variable
+# import os; os.environ['DEEPSEEK_API_KEY'] = ''
 
 
 class APPSCurator(curator.LLM):

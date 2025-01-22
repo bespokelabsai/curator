@@ -1,3 +1,5 @@
+"""Curate data using curator on the TACO dataset."""
+
 import argparse
 import json
 import resource
@@ -8,8 +10,8 @@ from util.prompt import SKY_T1_SYSTEM_PROMPT, generate_prompt
 
 from bespokelabs import curator
 
-# import os
-# os.environ['DEEPSEEK_API_KEY'] = ''
+# Uncomment to set DeepSeek API key, or set in environment variable
+# import os; os.environ['DEEPSEEK_API_KEY'] = ''
 
 
 class TACOCurator(curator.LLM):
