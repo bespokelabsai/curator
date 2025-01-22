@@ -1,4 +1,5 @@
 # ruff: noqa
+"""Code from https://github.com/NovaSky-AI/SkyThought/blob/e855aad095f4eeee00ba6a909dfe4300faf6d853/skythought/tools/util/taco/testing_util.py"""
 # modifed from https://github.com/hendrycks/apps/blob/main/eval/testing_util.py to fix some evaluation bugs and add instructions
 
 import faulthandler
@@ -407,7 +408,7 @@ def print_debug_info(inputs, outputs, exec_outputs):
     nl = "\n"
     if not isinstance(inputs, list):
         print(
-            f"exec output = {exec_outputs}, test outputs = {outputs}, inputs = {inputs.replace(nl,' new-line ')}, {type(inputs)}, {exec_outputs == [outputs]}"
+            f"exec output = {exec_outputs}, test outputs = {outputs}, inputs = {inputs.replace(nl, ' new-line ')}, {type(inputs)}, {exec_outputs == [outputs]}"
         )
     else:
         print(f"exec output = {exec_outputs}, test outputs = {outputs}, inputs = {inputs}, {type(inputs)}, {exec_outputs == [outputs]}")

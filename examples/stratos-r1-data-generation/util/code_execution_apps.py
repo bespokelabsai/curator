@@ -1,4 +1,7 @@
-"""Code execution for APPS dataset."""
+"""Code execution for APPS dataset.
+
+Code from https://github.com/NovaSky-AI/SkyThought/blob/e855aad095f4eeee00ba6a909dfe4300faf6d853/skythought/tools/util/task_handlers.py
+"""
 
 import copy
 import json

@@ -1,4 +1,7 @@
-"""Code execution for TACO dataset."""
+"""Code execution for TACO dataset.
+
+Code from https://github.com/NovaSky-AI/SkyThought/blob/e855aad095f4eeee00ba6a909dfe4300faf6d853/skythought/tools/util/task_handlers.py
+"""
 
 import multiprocessing
 import re
@@ -98,15 +101,15 @@ def process_dataset_parallel(df: Dataset, num_cpus: int = None, batch_size: int 
     for i in range(0, total_rows, batch_size):
         batch = data[i : i + batch_size]
         with Pool(processes=num_cpus) as pool:
-            batch_results = list(tqdm(pool.map(process_single_row, batch), total=len(batch), desc=f"Processing batch {i//batch_size + 1}"))
+            batch_results = list(tqdm(pool.map(process_single_row, batch), total=len(batch), desc=f"Processing batch {i // batch_size + 1}"))
 
         all_results.extend(batch_results)
 
         # Calculate and print statistics for this batch
         batch_correct = sum(1 for r in batch_results if r.get("correctness", False))
-        print(f"\nBatch {i//batch_size + 1} Results:")
+        print(f"\nBatch {i // batch_size + 1} Results:")
         print(f"Processed examples: {len(all_results)}/{total_rows}")
-        print(f"Correct in this batch: {batch_correct}/{len(batch_results)} ({batch_correct/len(batch_results)*100:.2f}%)")
+        print(f"Correct in this batch: {batch_correct}/{len(batch_results)} ({batch_correct / len(batch_results) * 100:.2f}%)")
         print(f"Total correct so far: {sum(1 for r in all_results if r.get('correctness', False))}/{len(all_results)}\n")
 
     return Dataset.from_list(all_results)

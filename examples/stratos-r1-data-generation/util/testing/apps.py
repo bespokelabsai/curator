@@ -1,4 +1,6 @@
 # ruff: noqa
+"""Code from https://github.com/NovaSky-AI/SkyThought/blob/e855aad095f4eeee00ba6a909dfe4300faf6d853/skythought/tools/util/apps/testing_util.py"""
+
 # From APPS
 import argparse
 import faulthandler
@@ -334,7 +336,7 @@ def run_test(problem=None, problem_list: List[str] = None, prob_index: int = Non
                         nl = "\n"
                         if not isinstance(inputs, list):
                             print(
-                                f"not passed output = {output}, test outputs = {in_outs['outputs'][index]}, inputs = {inputs.replace(nl,' new-line ')}, {type(inputs)}, {output == [in_outs['outputs'][index]]}"
+                                f"not passed output = {output}, test outputs = {in_outs['outputs'][index]}, inputs = {inputs.replace(nl, ' new-line ')}, {type(inputs)}, {output == [in_outs['outputs'][index]]}"
                             )
                         else:
                             print(
@@ -399,7 +401,7 @@ def run_test(problem=None, problem_list: List[str] = None, prob_index: int = Non
                     nl = "\n"
                     if not isinstance(inputs, list):
                         print(
-                            f"output = {output}, test outputs = {in_outs['outputs'][index]}, inputs = {inputs.replace(nl,' new-line ')}, {type(inputs)}, {output == [in_outs['outputs'][index]]}"
+                            f"output = {output}, test outputs = {in_outs['outputs'][index]}, inputs = {inputs.replace(nl, ' new-line ')}, {type(inputs)}, {output == [in_outs['outputs'][index]]}"
                         )
                     else:
                         print(
@@ -488,7 +490,7 @@ def run_test(problem=None, problem_list: List[str] = None, prob_index: int = Non
                     nl = "\n"
                     if not isinstance(inputs, list):
                         print(
-                            f"output = {output}, test outputs = {in_outs['outputs'][index]}, inputs = {inputs.replace(nl,' new-line ')}, {type(inputs)}, {output == [in_outs['outputs'][index]]}"
+                            f"output = {output}, test outputs = {in_outs['outputs'][index]}, inputs = {inputs.replace(nl, ' new-line ')}, {type(inputs)}, {output == [in_outs['outputs'][index]]}"
                         )
                     else:
                         print(
