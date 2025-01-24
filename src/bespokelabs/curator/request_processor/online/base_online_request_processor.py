@@ -370,7 +370,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             logger.warning(f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} requests failed. Errors logged to {response_file}.")
 
     def _free_capacity(self, status_tracker: OnlineStatusTracker, used_capacity: "_TokenCount", blocked_capacity: "_TokenCount"):
-        status_tracker.free_capacity(used_capacity, blocked_capacity)
+        if status_tracker.max_tokens_per_minute is not None:
+            status_tracker.free_capacity(used_capacity, blocked_capacity)
 
     async def handle_single_request_with_retries(
         self,

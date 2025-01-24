@@ -368,10 +368,8 @@ class OnlineStatusTracker:
         else:
             self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
 
-            if self.max_tokens_per_minute.input is not None:
+            if self.max_tokens_per_minute is not None:
                 self.available_token_capacity.input -= token_estimate.input
-
-            if self.max_tokens_per_minute.output is not None:
                 self.available_token_capacity.output -= token_estimate.output
 
     def free_capacity(self, used: _TokenCount, blocked: _TokenCount):

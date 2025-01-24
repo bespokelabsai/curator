@@ -81,6 +81,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         """
         max_concurrent_requests = super().max_concurrent_requests
         if max_concurrent_requests is None and self._concurrency_only_rate_limited:
+            logging.info("Current provider implements concurrency only rate limit, " f"Using default concurrency of {self.default_max_concurrent_requests}")
             return self.default_max_concurrent_requests
         return max_concurrent_requests
 
