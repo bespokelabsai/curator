@@ -111,6 +111,10 @@ class _RequestProcessorFactory:
             from bespokelabs.curator.request_processor.batch.anthropic_batch_request_processor import AnthropicBatchRequestProcessor
 
             _request_processor = AnthropicBatchRequestProcessor(config)
+        elif backend == "gemini" and batch:
+            from bespokelabs.curator.request_processor.batch.gemini_batch_request_processor import GeminiBatchRequestProcessor
+
+            _request_processor = GeminiBatchRequestProcessor(config)
         elif backend == "anthropic" and not batch:
             raise ValueError("Online mode is not currently supported with Anthropic backend.")
         elif backend == "litellm" and batch:
