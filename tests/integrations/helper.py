@@ -120,7 +120,16 @@ _DEFAULT_MODEL_MAP = {
 
 
 def create_basic(
-    temp_working_dir, mock_dataset, llm_params=None, batch=False, backend="openai", mocking=None, batch_cancel=False, tracker_console=None, model=None
+    temp_working_dir,
+    mock_dataset,
+    llm_params=None,
+    batch=False,
+    backend="openai",
+    mocking=None,
+    batch_cancel=False,
+    tracker_console=None,
+    model=None,
+    return_prompter=False,
 ):
     llm_params = llm_params or {}
     if batch:
@@ -149,6 +158,8 @@ def create_basic(
         dataset = prompter(mock_dataset, working_dir=temp_working_dir, batch_cancel=batch_cancel)
     else:
         dataset = prompter(working_dir=temp_working_dir, batch_cancel=batch_cancel)
+    if return_prompter:
+        return dataset, prompter
     return dataset
 
 

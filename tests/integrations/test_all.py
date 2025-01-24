@@ -24,6 +24,7 @@ def _hash_string(input_string):
 
 
 _ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm"}]
+_ONLINE_CONCURRENT_ONLY_BACKENDS = [{"integration": backend} for backend in {"litellm/deepinfra"}]
 _FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"anthropic", "openai"}]
 _BATCH_BACKENDS = [{"integration": backend} for backend in {"anthropic", "openai"}]
 
@@ -101,6 +102,32 @@ def test_basic(temp_working_dir, mock_dataset):
         # Verify response content
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
+
+
+@pytest.mark.parametrize("temp_working_dir", (_ONLINE_CONCURRENT_ONLY_BACKENDS), indirect=True)
+def test_basic_concurrent_only(temp_working_dir, mock_dataset):
+    temp_working_dir, backend, vcr_config = temp_working_dir
+
+    with vcr_config.use_cassette("basic_concurrent_completion.yaml"):
+        # Capture the output to verify status tracker
+        output = StringIO()
+        console = Console(file=output, width=300)
+
+        dataset, prompter = helper.create_basic(
+            temp_working_dir, mock_dataset, backend=backend, tracker_console=console, model="deepinfra/meta-llama/Llama-2-70b-chat-hf", return_prompter=True
+        )
+
+        assert prompter._request_processor.max_requests_per_minute is None
+        assert prompter._request_processor.max_tokens_per_minute is None
+        assert prompter._request_processor.max_concurrent_requests == 200
+        # Verify status tracker output
+        captured = output.getvalue()
+        msg = "Generating data using deepinfra/meta-llama/Llama-2-70b-chat-hf with combined input and output token"
+        assert msg in captured
+        assert "3" in captured  # Verify total requests processed
+        assert "Final Curator Statistics" in captured, captured
+        # Verify response content
+        assert len(dataset) == 3
 
 
 @pytest.mark.skip
