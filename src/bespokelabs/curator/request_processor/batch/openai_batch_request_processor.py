@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import warnings
 
 import litellm
 from openai import AsyncOpenAI, NotFoundError
@@ -17,6 +18,9 @@ from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import TokenUsage
 
 logger = logging.getLogger(__name__)
+
+_PROGRESS_STATE = {"validating", "finalizing", "cancelling", "in_progress", "pre_schedule"}
+_FINISHED_STATE = {"completed", "failed", "expired", "cancelled"}
 
 
 class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin):
@@ -103,14 +107,24 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         Raises:
             ValueError: If the batch status is unknown.
         """
-        if batch.status in ["validating", "finalizing", "cancelling", "in_progress", "pre_schedule"]:
+        if batch.status in _PROGRESS_STATE:
             status = GenericBatchStatus.SUBMITTED
-        elif batch.status in ["completed", "failed", "expired", "cancelled"]:
+        elif batch.status in _FINISHED_STATE:
             status = GenericBatchStatus.FINISHED
         else:
             raise ValueError(f"Unknown batch status: {batch.status}")
 
         finished_at = batch.completed_at or batch.failed_at or batch.expired_at or batch.cancelled_at
+
+        with warnings.catch_warnings():
+            # Filter out UserWarning related to Pydantic serialization
+            warnings.filterwarnings("ignore", category=UserWarning, message="Pydantic serializer warnings")
+
+            raw_batch = batch.model_dump()
+            # Patch errors list type to empty dict
+            # This is required for some providers returning `errors` as list.
+            raw_batch["errors"] = raw_batch["errors"] or {}
+
         return GenericBatch(
             request_file=request_file,
             id=batch.id,
@@ -118,8 +132,8 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             finished_at=finished_at,
             status=status,
             api_key_suffix=self.client.api_key[-4:],
+            raw_batch=raw_batch,
             request_counts=self.parse_api_specific_request_counts(batch.request_counts),
-            raw_batch=batch.model_dump(),
             raw_status=batch.status,
         )
 
