@@ -1,4 +1,4 @@
-# Using [Bespoke Curator](https://github.com/bespokelabsai/curator) to generate datasets for the Bespoke-Stratos models.
+# Using [Bespoke Curator](https://github.com/bespokelabsai/curator) to generate the [Bespoke-Stratos](https://huggingface.co/datasets/bespokelabs/Bespoke-Stratos-17k) dataset.
 
 ## Setup
 
