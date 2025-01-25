@@ -29,8 +29,11 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         """Initialize the OpenAIBatchRequestProcessor."""
         super().__init__(config)
+
         if self.config.base_url is None:
-            self.client = AsyncOpenAI(max_retries=self.config.max_retries)
+            self.client = AsyncOpenAI(
+                max_retries=self.config.max_retries,
+            )
         else:
             self.client = AsyncOpenAI(max_retries=self.config.max_retries, base_url=self.config.base_url)
         self.web_dashboard = "https://platform.openai.com/batches"
@@ -100,7 +103,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         Raises:
             ValueError: If the batch status is unknown.
         """
-        if batch.status in ["validating", "finalizing", "cancelling", "in_progress"]:
+        if batch.status in ["validating", "finalizing", "cancelling", "in_progress", "pre_schedule"]:
             status = GenericBatchStatus.SUBMITTED
         elif batch.status in ["completed", "failed", "expired", "cancelled"]:
             status = GenericBatchStatus.FINISHED
@@ -108,9 +111,8 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             raise ValueError(f"Unknown batch status: {batch.status}")
 
         finished_at = batch.completed_at or batch.failed_at or batch.expired_at or batch.cancelled_at
-
         return GenericBatch(
-            request_file=batch.metadata["request_file"],
+            request_file=request_file,
             id=batch.id,
             created_at=batch.created_at,
             finished_at=finished_at,
@@ -170,12 +172,15 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
                 total_tokens=usage.get("total_tokens", 0),
             )
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
-
-            cost = litellm.completion_cost(
-                model=self.config.model,
-                prompt=str(generic_request.messages),
-                completion=response_message_raw,
-            )
+            try:
+                cost = litellm.completion_cost(
+                    model=self.config.model,
+                    prompt=str(generic_request.messages),
+                    completion=response_message_raw,
+                )
+            except litellm.exceptions.BadRequestError:
+                cost = 0.0
+                logging.warn(f"Could not retrieve cost for the model: {self.config.model}")
             cost *= 0.5  # 50% off for batch
 
         return GenericResponse(
@@ -234,12 +239,10 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         # When submitting a file, sometimes the file is not ready immediately for status checking
         # Which results in a file not found error, so we briefly pause before checking the status
         await asyncio.sleep(1)
-
         try:
             batch_file_upload = await self.client.files.wait_for_processing(batch_file_upload.id)
-        except Exception as e:
-            logger.error(f"Error waiting for batch file to be processed: {e}")
-            raise e
+        except NotFoundError:
+            logger.warn("Could not check file upload status, file may not have been created!")
 
         logger.debug(f"File uploaded with id {batch_file_upload.id}")
 
@@ -288,7 +291,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             file_content = self.create_batch_file(requests)
             batch_file_upload = await self.upload_batch_file(file_content)
             batch = await self.create_batch(batch_file_upload.id, metadata)
-            return self.parse_api_specific_batch_object(batch)
+            return self.parse_api_specific_batch_object(batch, request_file=metadata["request_file"])
 
     async def retrieve_batch(self, batch: GenericBatch) -> GenericBatch:
         """Retrieve current status of a batch from OpenAI's API.
@@ -305,11 +308,12 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             - Uses API key suffix to help identify access issues
         """
         try:
+            request_file = batch.request_file
             batch = await self.client.batches.retrieve(batch.id)
         except NotFoundError:
             logger.warning(f"batch object {batch.id} not found. " f"Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
             return None
-        return self.parse_api_specific_batch_object(batch)
+        return self.parse_api_specific_batch_object(batch, request_file=request_file)
 
     async def delete_file(self, file_id: str, semaphore: asyncio.Semaphore):
         """Deletes a file from OpenAI's storage.
