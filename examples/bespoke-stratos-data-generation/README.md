@@ -1,4 +1,4 @@
-# Using [Bespoke Curator](https://github.com/bespokelabsai/curator) to generate datasets for the Stratos-R1 model.
+# Using [Bespoke Curator](https://github.com/bespokelabsai/curator) to generate datasets for the Bespoke-Stratos models.
 
 ## Setup
 
