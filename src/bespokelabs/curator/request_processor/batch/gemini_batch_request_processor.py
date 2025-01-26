@@ -55,7 +55,6 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
     https://cloud.google.com/vertex-ai/generative-ai/docs/quotas#batch-requests
 
     Attributes:
-        client: Gemini client instance for making API calls.
         web_dashboard: URL to Gemini's web dashboard for batch monitoring.
     """
 
@@ -63,6 +62,10 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         """Initialize the GeminiBatchRequestProcessor."""
         super().__init__(config)
 
+        self.web_dashboard = f"https://console.cloud.google.com/ai/platform/locations/{self._location}/batch-predictions"
+        self._initialize_cloud()
+
+    def _initialize_cloud(self):
         self._location = os.environ.get("GOOGLE_CLOUD_REGION", "us-central1")
         self._project_id = str(os.environ.get("GOOGLE_CLOUD_PROJECT"))
         self._bucket_name = os.environ.get("GEMINI_BUCKET_NAME")
@@ -72,15 +75,8 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         assert self._location is not None, "GOOGLE_CLOUD_REGION environment variable is not set"
 
         vertexai.init(project=self._project_id, location=self._location)
-        if self.config.base_url is None:
-            self.client = None
-        else:
-            self.client = None
 
-        storage_client = storage.Client()
-        self._bucket = storage_client.bucket(self._bucket_name)
-
-        self.web_dashboard = "https://console.cloud.google.com/ai/platform/locations/us-central1/batch-predictions"
+        self._bucket = storage.Client().bucket(self._bucket_name)
 
     @property
     def backend(self):
@@ -271,7 +267,6 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             response_errors = [f"Request {result_type}"]
 
         # TODO: may be move it to GenericBatch
-        finished_at = raw_response["processed_time"]
         return GenericResponse(
             response_message=response_message,
             response_errors=response_errors,
@@ -279,7 +274,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             raw_request=None,
             generic_request=generic_request,
             created_at=batch.created_at,
-            finished_at=finished_at,
+            finished_at=raw_response["processed_time"],
             token_usage=token_usage,
             response_cost=cost,
         )
@@ -301,8 +296,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         return gcs_path
 
     def _create_batch(self, input_dataset: str):
-        bucket = os.environ["GS_BUCKET"]
-        output_bucket = f"gs://{bucket}"
+        output_bucket = f"gs://{self._bucket_name}"
         try:
             job = BatchPredictionJob.submit(source_model=self.config.model, input_dataset=input_dataset, output_uri_prefix=output_bucket)
         except Exception as e:
@@ -327,10 +321,6 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         Side Effects:
             - Updates tracker with submitted batch status
         """
-        # TODO: Currently added for debugging, remove it post ready for review
-        # resource_name = "projects/319533213591/locations/us-central1/batchPredictionJobs/9074342547198836736"
-        # batch = aiplatform.BatchPredictionJob(resource_name)
-
         async with self.semaphore:
             input_dataset = self._upload_batch_file(requests, metadata)
 
@@ -362,7 +352,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         async with self.semaphore:
             try:
                 job = self._get_batch_job_object(batch.id)
-            # TODO: check for other exceptions
+            # TODO: check for specific not found exceptions
             except Exception as e:
                 logger.warning(f"batch object {batch.id} not found. :: reason {e}")
                 return None
@@ -385,7 +375,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             - Converts each result to a dictionary format.
         """
         async with self.semaphore:
-            # TODO: validate batch
+            # TODO: validate batch (check if it even makes sense)
 
             responses = []
             job = self._get_batch_job_object(batch.id)

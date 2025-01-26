@@ -4,8 +4,6 @@ from pydantic import BaseModel, Field
 
 from bespokelabs import curator
 
-batch_check_interval = 1
-
 
 class Subject(BaseModel):
     subject: str = Field(description="A subject")
@@ -84,7 +82,7 @@ class QALLM(curator.LLM):
         ]
 
 
-def create_camel(temp_working_dir, batch=False):
+def create_camel(temp_working_dir, batch=False, batch_check_interval=1):
     if batch:
         backend_params = {"batch_check_interval": batch_check_interval}
     else:
@@ -116,6 +114,7 @@ _DEFAULT_MODEL_MAP = {
     "anthropic": "claude-3-5-sonnet-20241022",
     "litellm": "gpt-3.5-turbo",
     "vllm": "Qwen/Qwen2.5-1.5B-Instruct",
+    "gemini": "gemini-1.5-flash-002",
 }
 
 
@@ -130,6 +129,7 @@ def create_basic(
     tracker_console=None,
     model=None,
     return_prompter=False,
+    batch_check_interval=1,
 ):
     llm_params = llm_params or {}
     if batch:
@@ -163,7 +163,7 @@ def create_basic(
     return dataset
 
 
-def create_llm(batch=False):
+def create_llm(batch=False, batch_check_interval=1):
     if batch:
         backend_params = {"batch_check_interval": batch_check_interval}
     else:
