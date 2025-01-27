@@ -6,7 +6,6 @@ from functools import lru_cache
 import litellm
 import vertexai
 from google.cloud import aiplatform, storage
-from vertexai.batch_prediction import BatchPredictionJob
 
 from bespokelabs.curator import constants
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
@@ -62,8 +61,8 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         """Initialize the GeminiBatchRequestProcessor."""
         super().__init__(config)
 
-        self.web_dashboard = f"https://console.cloud.google.com/ai/platform/locations/{self._location}/batch-predictions"
         self._initialize_cloud()
+        self.web_dashboard = f"https://console.cloud.google.com/ai/platform/locations/{self._location}/batch-predictions"
 
     def _initialize_cloud(self):
         self._location = os.environ.get("GOOGLE_CLOUD_REGION", "us-central1")
@@ -117,7 +116,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         # TODO: This is not for ratelimiting
         return 4
 
-    def parse_api_specific_request_counts(self, batch: "BatchPredictionJob") -> GenericBatchRequestCounts:
+    def parse_api_specific_request_counts(self, batch: "aiplatform.BatchPredictionJob") -> GenericBatchRequestCounts:
         """Converts Gemini-specific request counts to generic format.
 
         Handles the following Gemini request count statuses:
@@ -139,12 +138,11 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             succeeded = batch.completion_stats.successful_count
         elif batch.state.name in _FAILED:
             failed = batch.completion_stats.failed_count
-
         return GenericBatchRequestCounts(
             failed=failed,
             succeeded=succeeded,
             total=processing + succeeded + failed,
-            raw_request_counts_object=batch.completion_stats or {},
+            raw_request_counts_object={},
         )
 
     def parse_api_specific_batch_object(self, batch, request_file: str | None = None) -> GenericBatch:
@@ -298,7 +296,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
     def _create_batch(self, input_dataset: str):
         output_bucket = f"gs://{self._bucket_name}"
         try:
-            job = BatchPredictionJob.submit(source_model=self.config.model, input_dataset=input_dataset, output_uri_prefix=output_bucket)
+            job = aiplatform.BatchPredictionJob.submit(source_model=self.config.model, input_dataset=input_dataset, output_uri_prefix=output_bucket)
         except Exception as e:
             logger.error(f"Could not create batch prediction job for {input_dataset} :: reason {e}")
             raise
@@ -323,7 +321,6 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         """
         async with self.semaphore:
             input_dataset = self._upload_batch_file(requests, metadata)
-
             batch = self._create_batch(input_dataset)
             return self.parse_api_specific_batch_object(batch, request_file=metadata["request_file"])
 

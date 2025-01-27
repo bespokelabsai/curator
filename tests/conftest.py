@@ -13,6 +13,7 @@ _KEY_MAP = {
     "anthropic": "ANTHROPIC_API_KEY",
     "deepinfra": "DEEPINFRA_API_KEY",
     "vllm": "VLLM_API_KEY",
+    "gemini": "GEMINI_API_KEY",
 }
 
 

@@ -337,14 +337,6 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         assert "Failed                     │ 0" in captured, captured
 
 
-@pytest.mark.skip(reason="VCR could not register google cloud and vertex ai interactions.")
-@pytest.mark.parametrize("temp_working_dir", ([{"integration": "gemini"}]), indirect=True)
-def test_basic_batch_gemini(temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    dataset = helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend, batch_check_interval=60)
-    assert len(dataset) == 3
-
-
 ##############################
 # Offline                    #
 ##############################
