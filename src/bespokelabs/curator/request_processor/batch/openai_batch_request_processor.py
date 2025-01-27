@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 _PROGRESS_STATE = {"validating", "finalizing", "cancelling", "in_progress", "pre_schedule"}
 _FINISHED_STATE = {"completed", "failed", "expired", "cancelled"}
 
+_UNSUPPORTED_FILE_STATUS_API_PROVIDERS = ("api.kluster.ai",)
+
 
 class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin):
     """OpenAI-specific implementation of the BatchRequestProcessor.
@@ -34,11 +36,15 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         """Initialize the OpenAIBatchRequestProcessor."""
         super().__init__(config)
 
+        self._skip_file_status_check = False
         if self.config.base_url is None:
             self.client = AsyncOpenAI(
                 max_retries=self.config.max_retries,
             )
         else:
+            if any(k in self.config.base_url for k in _UNSUPPORTED_FILE_STATUS_API_PROVIDERS):
+                self._skip_file_status_check = True
+
             self.client = AsyncOpenAI(max_retries=self.config.max_retries, base_url=self.config.base_url)
         self.web_dashboard = "https://platform.openai.com/batches"
 
@@ -255,8 +261,12 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         await asyncio.sleep(1)
         try:
             batch_file_upload = await self.client.files.wait_for_processing(batch_file_upload.id)
-        except NotFoundError:
-            logger.warn("Could not check file upload status, file may not have been created!")
+        except Exception as e:
+            if self._skip_file_status_check:
+                logger.warn("skipping uploaded file status check, provider does not support file checks.")
+            else:
+                logger.error(f"Error waiting for batch file to be processed: {e}")
+                raise e
 
         logger.debug(f"File uploaded with id {batch_file_upload.id}")
 
