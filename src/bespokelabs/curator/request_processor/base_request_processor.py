@@ -104,7 +104,6 @@ class BaseRequestProcessor(ABC):
         output_dataset = self.attempt_loading_cached_dataset(parse_func_hash)
         if output_dataset is not None:
             return output_dataset
-
         logger.info(f"Running {self.__class__.__name__} completions with model: {self.config.model}")
 
         self.prompt_formatter = prompt_formatter

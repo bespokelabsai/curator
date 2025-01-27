@@ -61,20 +61,24 @@ class _MockedGoogleBucket:
 
 @pytest.mark.parametrize("temp_working_dir", ([{"integration": "gemini"}]), indirect=True)
 def test_basic_batch_gemini(temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
+    temp_working_dir, backend, _ = temp_working_dir
 
-    with patch("google.cloud.aiplatform.BatchPredictionJob", new=_create_mock_batch_job()):
-        with patch("bespokelabs.curator.request_processor.batch.gemini_batch_request_processor.GeminiBatchRequestProcessor.__init__") as init:
-            init.return_value = None
-            prompter = BasicLLM(
-                model_name="gemini-1.5-flash-002",
-                backend="gemini",
-                batch=True,
-            )
-            prompter._request_processor._location = "mocked_location"
-            prompter._request_processor._project_id = "mocked_id"
-            prompter._request_processor._bucket_name = "mocked_bucket"
-            prompter._request_processor._bucket = _MockedGoogleBucket()
+    with patch("vertexai.batch_prediction.BatchPredictionJob.submit") as mocked_batch_job:
+        with patch("google.cloud.aiplatform.BatchPredictionJob", new=_create_mock_batch_job()):
+            with patch("bespokelabs.curator.request_processor.batch.gemini_batch_request_processor.GeminiBatchRequestProcessor._initialize_cloud") as init:
+                init.return_value = None
+                job = MagicMock()
+                job.name = "mocked_job"
+                mocked_batch_job.return_value = job
+                prompter = BasicLLM(
+                    model_name="gemini-1.5-flash-002",
+                    backend="gemini",
+                    batch=True,
+                )
+                prompter._request_processor._location = "mocked_location"
+                prompter._request_processor._project_id = "mocked_id"
+                prompter._request_processor._bucket_name = "mocked_bucket"
+                prompter._request_processor._bucket = _MockedGoogleBucket()
 
-            dataset = prompter(mock_dataset)
-            assert len(dataset) == 3
+                dataset = prompter(mock_dataset, working_dir=temp_working_dir)
+                assert len(dataset) == 3

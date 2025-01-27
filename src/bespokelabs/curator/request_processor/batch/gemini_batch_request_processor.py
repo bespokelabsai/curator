@@ -6,6 +6,8 @@ from functools import lru_cache
 import litellm
 import vertexai
 from google.cloud import aiplatform, storage
+from pydantic import BaseModel
+from vertexai.batch_prediction import BatchPredictionJob
 
 from bespokelabs.curator import constants
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
@@ -42,6 +44,28 @@ _PROGRESS = {"JOB_STATE_CANCELLING", "JOB_STATE_PENDING", "JOB_STATE_QUEUED", "J
 _FINISHED = {"JOB_STATE_CANCELLED", "JOB_STATE_PARTIALLY_SUCCEEDED", "JOB_STATE_SUCCEEDED"}
 
 
+def _response_format_to_json(cls: BaseModel):
+    schema = cls.model_json_schema()
+    if "$defs" not in schema:
+        return schema
+
+    defs = schema.pop("$defs")
+
+    def _resolve(schema):
+        if "$ref" in schema:
+            ref = schema.pop("$ref")
+            schema.update(defs[ref.split("/")[-1]])
+        if "properties" in schema:
+            for prop in schema["properties"].values():
+                _resolve(prop)
+        if "items" in schema:
+            _resolve(schema["items"])
+        schema.pop("title", None)
+
+    _resolve(schema)
+    return schema
+
+
 class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
     """Gemini-specific implementation of the BatchRequestProcessor.
 
@@ -61,7 +85,6 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         super().__init__(config)
 
         self._initialize_cloud()
-        self.web_dashboard = f"https://console.cloud.google.com/ai/platform/locations/{self._location}/batch-predictions"
 
     def _initialize_cloud(self):
         self._location = os.environ.get("GOOGLE_CLOUD_REGION", "us-central1")
@@ -75,6 +98,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         vertexai.init(project=self._project_id, location=self._location)
 
         self._bucket = storage.Client().bucket(self._bucket_name)
+        self.web_dashboard = f"https://console.cloud.google.com/ai/platform/locations/{self._location}/batch-predictions"
 
     @property
     def backend(self):
@@ -115,7 +139,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         # TODO: This is not for ratelimiting
         return 4
 
-    def parse_api_specific_request_counts(self, batch: "aiplatform.BatchPredictionJob") -> GenericBatchRequestCounts:
+    def parse_api_specific_request_counts(self, batch: "BatchPredictionJob") -> GenericBatchRequestCounts:
         """Converts Gemini-specific request counts to generic format.
 
         Handles the following Gemini request count statuses:
@@ -197,12 +221,19 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         contents = []
         for message in generic_request.messages:
             contents.append({"role": message["role"], "parts": [{"text": message["content"]}]})
+        request_object = {"contents": contents}
+        if generic_request.response_format:
+            request_object.update(
+                {
+                    "generationConfig": {
+                        "responseMimeType": "application/json",
+                        "responseSchema": _response_format_to_json(self.prompt_formatter.response_format),
+                    }
+                }
+            )
 
-        # NOTE: we cannot add a custom id in gemini request
         return {
-            "request": {
-                "contents": contents,
-            },
+            "request": request_object,
             constants.BATCH_REQUEST_ID_TAG: str(generic_request.original_row_idx),
         }
 
@@ -295,7 +326,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
     def _create_batch(self, input_dataset: str):
         output_bucket = f"gs://{self._bucket_name}"
         try:
-            job = aiplatform.BatchPredictionJob.submit(source_model=self.config.model, input_dataset=input_dataset, output_uri_prefix=output_bucket)
+            job = BatchPredictionJob.submit(source_model=self.config.model, input_dataset=input_dataset, output_uri_prefix=output_bucket)
         except Exception as e:
             logger.error(f"Could not create batch prediction job for {input_dataset} :: reason {e}")
             raise
