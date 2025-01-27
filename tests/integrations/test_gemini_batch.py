@@ -63,8 +63,8 @@ def test_basic_batch_gemini(temp_working_dir, mock_dataset):
     temp_working_dir, backend, vcr_config = temp_working_dir
 
     with patch("google.cloud.aiplatform.BatchPredictionJob", new=_create_mock_batch_job()):
-        with patch("bespokelabs.curator.request_processor.batch.gemini_batch_request_processor.GeminiBatchRequestProcessor._initialize_cloud") as init_cloud:
-            init_cloud.return_value = None
+        with patch("bespokelabs.curator.request_processor.batch.gemini_batch_request_processor.GeminiBatchRequestProcessor.__init__") as init:
+            init.return_value = None
             prompter = BasicLLM(
                 model_name="gemini-1.5-flash-002",
                 backend="gemini",
