@@ -1,10 +1,15 @@
 import datetime
+import hashlib
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from bespokelabs.curator.request_processor.batch.gemini_batch_request_processor import GeminiBatchRequestProcessor  # noqa
 from tests.integrations.helper import BasicLLM
+
+
+def _hash_string(input_string):
+    return hashlib.sha256(input_string.encode("utf-8")).hexdigest()
 
 
 def _mock_job_side_effect(*args, **kwargs):
@@ -85,6 +90,8 @@ def test_basic_batch_gemini(temp_working_dir, mock_dataset):
                 prompter._request_processor._bucket = _MockedGoogleBucket()
 
                 dataset = prompter(mock_dataset, working_dir=temp_working_dir)
+                recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+                assert _hash_string(recipes) == "2131be1c57623eb8e27bc4437476990bfd4b0c954a274ed3af6d46dc26138d1e"
                 assert len(dataset) == 3
 
 
@@ -148,4 +155,6 @@ def test_polled_batch_gemini(temp_working_dir, mock_dataset):
                         mock_dataset,
                         working_dir=temp_working_dir,
                     )
+                    recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+                    assert _hash_string(recipes) == "2131be1c57623eb8e27bc4437476990bfd4b0c954a274ed3af6d46dc26138d1e"
                     assert len(dataset) == 3

@@ -91,7 +91,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         self._project_id = str(os.environ.get("GOOGLE_CLOUD_PROJECT"))
         self._bucket_name = os.environ.get("GEMINI_BUCKET_NAME")
 
-        assert self._bucket_name, "Gemini batch processor requires google cloud bucket"
+        assert self._bucket_name, "GEMINI_BUCKET_NAME environment variable is not set"
         assert self._project_id is not None, "GOOGLE_CLOUD_PROJECT environment variable is not set"
         assert self._location is not None, "GOOGLE_CLOUD_REGION environment variable is not set"
 
