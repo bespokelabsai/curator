@@ -4,7 +4,7 @@ from bespokelabs.curator.types.generic_request import GenericRequest
 
 
 class OpenAIRequestMixin:
-    """Mixin class for creating OpenAI-specific API requests.
+    """Mixin class for creating OpenAI-specific API request schema.
 
     Provides shared functionality for both batch and online OpenAI request processors.
     """
