@@ -370,7 +370,6 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         metadata = {"request_file": request_file}
         requests = self.requests_from_generic_request_file(request_file, completed_request_ids)
         batch = await self.submit_batch(requests, metadata)
-
         self.tracker.mark_as_submitted(batch, len(requests))
         await self.update_batch_objects_file()
 

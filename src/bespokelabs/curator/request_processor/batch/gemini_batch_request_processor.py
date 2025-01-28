@@ -137,6 +137,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             int: The maximum number of concurrent operations (4).
         """
         # TODO: This is not for ratelimiting
+        # https://cloud.google.com/vertex-ai/generative-ai/docs/quotas#batch-requests
         return 4
 
     def parse_api_specific_request_counts(self, batch: "BatchPredictionJob") -> GenericBatchRequestCounts:
@@ -190,7 +191,6 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             status = GenericBatchStatus.FINISHED
         else:
             raise ValueError(f"Unknown batch status: {batch.state.name}")
-
         return GenericBatch(
             request_file=request_file,
             id=batch.name,
@@ -246,6 +246,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         """Parses an Gemini API response into generic format.
 
         Processes the raw response from Gemini's batch API, handling both
+
         successful and failed responses, including token usage and cost calculation.
         For batch requests, a 50% discount is applied to the cost.
 
