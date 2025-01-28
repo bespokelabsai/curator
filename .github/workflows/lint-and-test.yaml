@@ -21,6 +21,18 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Load cached Poetry installation
+        uses: actions/cache@v3
+        with:
+          path: ~/.local
+          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Load cached venv
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
       - name: Set Locale
         run: |
           sudo locale-gen "en_US.UTF-8"
@@ -30,7 +42,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install poetry
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry config virtualenvs.in-project true
           poetry install --with dev --extras "vllm code_execution"
 
       - name: Run ruff
