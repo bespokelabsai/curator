@@ -1,4 +1,5 @@
 import logging
+import os
 import typing as t
 
 from pydantic import BaseModel
@@ -17,8 +18,6 @@ if t.TYPE_CHECKING:
     from pydantic import BaseModel
 
     from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
-
-_EXTERNAL_OPENAI_COMPATIBLES = {"deepseek", "klusterai"}
 
 
 # TODO: Redundant move to misc module.
@@ -59,7 +58,7 @@ class _RequestProcessorFactory:
             return "openai"
 
         # GPT models and O1 models and DeepSeek without response format should use OpenAI
-        if not response_format and any(x in model_name for x in ["gpt-", "o1-preview", "o1-mini", *list(_EXTERNAL_OPENAI_COMPATIBLES)]):
+        if not response_format and any(x in model_name for x in ["gpt-", "o1-preview", "o1-mini"]):
             logger.info(f"Requesting text output from {model_name}, using OpenAI backend")
             return "openai"
 
@@ -97,7 +96,23 @@ class _RequestProcessorFactory:
         params["return_completions_object"] = return_completions_object
         config = cls._create_config(params, batch, backend)
 
-        if backend == "openai" and not batch:
+        if backend == "klusterai" and not batch:
+            config.base_url = "https://api.kluster.ai/v1"
+            config.api_key = config.api_key or os.getenv("KLUSTERAI_API_KEY")
+            if not config.api_key:
+                raise ValueError("KLUSTERAI_API_KEY is not set")
+            from bespokelabs.curator.request_processor.online.openai_online_request_processor import OpenAIOnlineRequestProcessor
+
+            _request_processor = OpenAIOnlineRequestProcessor(config)
+        elif backend == "klusterai" and batch:
+            config.base_url = "https://api.kluster.ai/v1"
+            config.api_key = config.api_key or os.getenv("KLUSTERAI_API_KEY")
+            if not config.api_key:
+                raise ValueError("KLUSTERAI_API_KEY is not set")
+            from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
+
+            _request_processor = OpenAIBatchRequestProcessor(config)
+        elif backend == "openai" and not batch:
             from bespokelabs.curator.request_processor.online.openai_online_request_processor import OpenAIOnlineRequestProcessor
 
             _request_processor = OpenAIOnlineRequestProcessor(config)

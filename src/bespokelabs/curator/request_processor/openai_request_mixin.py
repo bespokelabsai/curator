@@ -43,17 +43,3 @@ class OpenAIRequestMixin:
             request[key] = value
 
         return request
-
-    @classmethod
-    def patch_external_openai_compatibles(cls, config):
-        """Patch the configuration for external OpenAI-compatible models."""
-        # Route DeepSeek to OpenAI online backend since LiteLLM does not return
-        # reasoning_content
-        if "deepseek" in config.model:
-            config.base_url = "https://api.deepseek.com"
-            logger.warn("Overriding base_url to https://api.deepseek.com config")
-
-        elif "klusterai" in config.model:
-            config.base_url = "https://api.kluster.ai/v1"
-            logger.warn("Overriding base_url to https://api.kluster.ai/v1 config")
-        return config

@@ -34,7 +34,6 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
 
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         """Initialize the OpenAIBatchRequestProcessor."""
-        config = OpenAIRequestMixin.patch_external_openai_compatibles(config)
         super().__init__(config)
 
         self._skip_file_status_check = False

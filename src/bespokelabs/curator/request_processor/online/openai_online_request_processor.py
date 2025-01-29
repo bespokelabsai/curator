@@ -39,7 +39,6 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the OpenAIOnlineRequestProcessor."""
-        config = OpenAIRequestMixin.patch_external_openai_compatibles(config)
         super().__init__(config)
 
         if self.config.base_url is None:
@@ -56,9 +55,9 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             # https://api-docs.deepseek.com/quick_start/rate_limit.
             # And sending an empty request for rate limits results in a 400 error like this:
             # {'error': {'message': 'Empty input messages', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_request_error'}}
-            self.api_key = os.getenv("DEEPSEEK_API_KEY") or self.config.api_key
+            self.api_key = self.config.api_key or os.getenv("DEEPSEEK_API_KEY")
         else:
-            self.api_key = os.getenv("OPENAI_API_KEY") or self.config.api_key
+            self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
             self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
         self.token_encoding = self.get_token_encoding()
 
@@ -198,6 +197,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         if "/deployments" in self.url:  # Azure deployment
             request_header = {"api-key": f"{self.api_key}"}
 
+        breakpoint()
         async with session.post(
             self.url,
             headers=request_header,
