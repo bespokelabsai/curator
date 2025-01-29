@@ -21,8 +21,7 @@ from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.generic_response import GenericResponse
 
 if TYPE_CHECKING:
-    from datasets import Dataset
-
+    from bespokelabs.curator.dataset import Dataset
 
 logger = logging.getLogger(__name__)
 
@@ -427,11 +426,12 @@ class BaseRequestProcessor(ABC):
         return self._load_from_dataset_file(dataset_file)
 
     def _load_from_dataset_file(self, dataset_file: str) -> "Dataset":
-        from datasets import Dataset
+        from bespokelabs.curator.dataset import Dataset
 
         d = Dataset.from_file(dataset_file)
         d = d.sort("__original_row_idx")
         d = d.remove_columns("__original_row_idx")
+        d.push_to_hub = Dataset.push_to_hub
         return d
 
     def validate_existing_response_file(self, response_file: str) -> set[int]:
