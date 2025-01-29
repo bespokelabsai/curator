@@ -197,7 +197,6 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         if "/deployments" in self.url:  # Azure deployment
             request_header = {"api-key": f"{self.api_key}"}
 
-        breakpoint()
         async with session.post(
             self.url,
             headers=request_header,
