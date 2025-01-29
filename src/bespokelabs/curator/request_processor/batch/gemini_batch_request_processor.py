@@ -232,6 +232,12 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
                 }
             )
 
+        if self.config.generation_params:
+            if "generationConfig" in request_object:
+                request_object["generationConfig"].update(self.config.generation_params)
+            else:
+                request_object.update({"generationConfig": self.config.generation_params})
+
         return {
             "request": request_object,
             constants.BATCH_REQUEST_ID_TAG: str(generic_request.original_row_idx),
