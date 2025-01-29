@@ -172,6 +172,7 @@ BackendParamsType = t.Union[OnlineBackendParams, BatchBackendParams, OfflineBack
 
 def _validate_backend_params(params: BackendParamsType):
     validators = (BatchRequestProcessorConfig, OnlineRequestProcessorConfig, OfflineRequestProcessorConfig)
+    breakpoint()
     for validator in validators:
         try:
             validator.validate(params)
