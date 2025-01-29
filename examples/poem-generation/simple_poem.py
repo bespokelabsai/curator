@@ -19,11 +19,4 @@ poems = llm(
     ]
 )
 
-poems = poems.select(lambda x: x["response"].startswith("Write a sonnet"))
-poems = poems.filter(lambda x: x["response"].startswith("Write a sonnet"))
-
-# import pdb; pdb.set_trace()
-poems.push_to_hub("pimpalgaonkar/poems_test")
-
-# print(poems.to_pandas()["response"].tolist())
-
+print(poems.to_pandas()["response"].tolist())
