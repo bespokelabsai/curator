@@ -34,18 +34,17 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
 
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         """Initialize the OpenAIBatchRequestProcessor."""
+        config = OpenAIRequestMixin.patch_external_openai_compatibles(config)
         super().__init__(config)
 
         self._skip_file_status_check = False
         if self.config.base_url is None:
-            self.client = AsyncOpenAI(
-                max_retries=self.config.max_retries,
-            )
+            self.client = AsyncOpenAI(max_retries=self.config.max_retries, api_key=self.config.api_key)
         else:
             if any(k in self.config.base_url for k in _UNSUPPORTED_FILE_STATUS_API_PROVIDERS):
                 self._skip_file_status_check = True
 
-            self.client = AsyncOpenAI(max_retries=self.config.max_retries, base_url=self.config.base_url)
+            self.client = AsyncOpenAI(max_retries=self.config.max_retries, api_key=self.config.api_key, base_url=self.config.base_url)
         self.web_dashboard = "https://platform.openai.com/batches"
 
     @property
@@ -259,12 +258,12 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         # When submitting a file, sometimes the file is not ready immediately for status checking
         # Which results in a file not found error, so we briefly pause before checking the status
         await asyncio.sleep(1)
-        try:
-            batch_file_upload = await self.client.files.wait_for_processing(batch_file_upload.id)
-        except Exception as e:
-            if self._skip_file_status_check:
-                logger.warn("skipping uploaded file status check, provider does not support file checks.")
-            else:
+        if self._skip_file_status_check:
+            logger.warn("skipping uploaded file status check, provider does not support file checks.")
+        else:
+            try:
+                batch_file_upload = await self.client.files.wait_for_processing(batch_file_upload.id)
+            except Exception as e:
                 logger.error(f"Error waiting for batch file to be processed: {e}")
                 raise e
 
@@ -289,7 +288,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             batch = await self.client.batches.create(
                 input_file_id=batch_file_id,
                 endpoint="/v1/chat/completions",
-                completion_window="24h",
+                completion_window=self.config.completion_window,
                 metadata=metadata,
             )
             logger.debug(f"Batch submitted with id {batch.id}")

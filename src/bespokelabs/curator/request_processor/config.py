@@ -18,6 +18,7 @@ class RequestProcessorConfig(BaseModel):
         request_timeout: Timeout in seconds for each request
         require_all_responses: Whether to require successful responses for all requests
         generation_params: Dictionary of model-specific generation parameters
+        api_key: Optional API key for authentication
     """
 
     model: str
@@ -27,6 +28,7 @@ class RequestProcessorConfig(BaseModel):
     require_all_responses: bool = Field(default=True)
     generation_params: dict = Field(default_factory=dict)
     return_completions_object: bool = False
+    api_key: str | None = None
 
     class Config:
         """BaseModel Setup class."""
@@ -61,12 +63,14 @@ class BatchRequestProcessorConfig(RequestProcessorConfig):
         batch_check_interval: Time in seconds between batch status checks
         delete_successful_batch_files: Whether to delete batch files after successful processing
         delete_failed_batch_files: Whether to delete batch files after failed processing
+        completion_window: Time window to wait for batch completion
     """
 
     batch_size: int = Field(default=10_000, gt=0)
     batch_check_interval: int = Field(default=60, gt=0)
     delete_successful_batch_files: bool = False
     delete_failed_batch_files: bool = False
+    completion_window: str = "24h"
 
 
 class OnlineRequestProcessorConfig(RequestProcessorConfig):

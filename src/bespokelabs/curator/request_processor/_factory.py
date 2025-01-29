@@ -18,6 +18,8 @@ if t.TYPE_CHECKING:
 
     from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 
+_EXTERNAL_OPENAI_COMPATIBLES = {"deepseek", "klusterai"}
+
 
 # TODO: Redundant move to misc module.
 def _remove_none_values(d: dict) -> dict:
@@ -57,7 +59,7 @@ class _RequestProcessorFactory:
             return "openai"
 
         # GPT models and O1 models and DeepSeek without response format should use OpenAI
-        if not response_format and any(x in model_name for x in ["gpt-", "o1-preview", "o1-mini", "deepseek"]):
+        if not response_format and any(x in model_name for x in ["gpt-", "o1-preview", "o1-mini", *list(_EXTERNAL_OPENAI_COMPATIBLES)]):
             logger.info(f"Requesting text output from {model_name}, using OpenAI backend")
             return "openai"
 
@@ -98,10 +100,6 @@ class _RequestProcessorFactory:
         if backend == "openai" and not batch:
             from bespokelabs.curator.request_processor.online.openai_online_request_processor import OpenAIOnlineRequestProcessor
 
-            # Route DeepSeek to OpenAI online backend since LiteLLM does not return
-            # reasoning_content
-            if "deepseek" in model_name:
-                config.base_url = "https://api.deepseek.com"
             _request_processor = OpenAIOnlineRequestProcessor(config)
         elif backend == "openai" and batch:
             from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
