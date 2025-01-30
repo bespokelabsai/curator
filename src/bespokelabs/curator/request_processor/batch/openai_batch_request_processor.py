@@ -202,7 +202,8 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
                 except litellm.exceptions.BadRequestError:
                     cost = 0.0
                     logging.warn(f"Could not retrieve cost for the model: {self.config.model}")
-                cost *= 0.5  # 50% off for batch
+                if self.backend == "openai":
+                    cost *= 0.5  # 50% off for batch, only for openai models. In klusterai, our litellm model registration cost is accurate, no need for this 50% discount.
 
         return GenericResponse(
             response_message=response_message,
