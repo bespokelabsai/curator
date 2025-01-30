@@ -190,7 +190,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
                 total_tokens=usage.get("total_tokens", 0),
             )
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
-            if self.config.backend == "klusterai":
+            if self.backend == "klusterai":
                 cost = 0.0
             else:
                 try:
