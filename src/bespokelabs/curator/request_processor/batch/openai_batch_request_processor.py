@@ -258,7 +258,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         # Which results in a file not found error, so we briefly pause before checking the status
         await asyncio.sleep(1)
         if self._skip_file_status_check:
-            logger.warn("skipping uploaded file status check, provider does not support file checks.")
+            logger.debug("skipping uploaded file status check, provider does not support file checks.")
         else:
             try:
                 batch_file_upload = await self.client.files.wait_for_processing(batch_file_upload.id)
