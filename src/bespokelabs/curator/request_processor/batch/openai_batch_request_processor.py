@@ -190,16 +190,19 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
                 total_tokens=usage.get("total_tokens", 0),
             )
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
-            try:
-                cost = litellm.completion_cost(
-                    model=self.config.model,
-                    prompt=str(generic_request.messages),
-                    completion=response_message_raw,
-                )
-            except litellm.exceptions.BadRequestError:
+            if self.config.backend == "klusterai":
                 cost = 0.0
-                logging.warn(f"Could not retrieve cost for the model: {self.config.model}")
-            cost *= 0.5  # 50% off for batch
+            else:
+                try:
+                    cost = litellm.completion_cost(
+                        model=self.config.model,
+                        prompt=str(generic_request.messages),
+                        completion=response_message_raw,
+                    )
+                except litellm.exceptions.BadRequestError:
+                    cost = 0.0
+                    logging.warn(f"Could not retrieve cost for the model: {self.config.model}")
+                cost *= 0.5  # 50% off for batch
 
         return GenericResponse(
             response_message=response_message,
