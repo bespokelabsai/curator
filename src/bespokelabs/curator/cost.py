@@ -14,11 +14,11 @@ class _LitellmCostProcessor:
     def cost(self, *args, completion_window="*", **kwargs):
         import litellm
 
-        try:
+        model = kwargs.get("model", None)
+        cost_to_complete = 0.0
+        if model in litellm.model_cost:
             cost_to_complete = litellm.completion_cost(*args, **kwargs)
-        except litellm.exceptions.BadRequestError:
-            cost_to_complete = 0.0
-            model = kwargs.get("model", None)
+        else:
             logging.warn(f"Could not retrieve cost for the model: {model}")
         if self.batch:
             cost_to_complete *= 0.5
