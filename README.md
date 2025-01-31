@@ -30,6 +30,23 @@
 [ English | <a href="README_zh.md">中文</a> ]
 </div>
 
+## 🎉 What's New 
+
+#### [2025.01.30] Batch Processing Support
+
+- [Batch Mode](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half: Batch Processing Made Easy with Curator
+```python
+from bespokelabs import curator
+
+llm = curator.LLM(
+    model_name="deepseek-ai/DeepSeek-R1",
+    backend="klusterai",
+    batch=True,
+    backend_params={"max_retries": 1, "completion_window": "1h"},
+)
+```
+
+
 
 ## Overview
 
