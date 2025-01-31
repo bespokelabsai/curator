@@ -176,7 +176,6 @@ def _validate_backend_params(params: BackendParamsType):
         try:
             validator.validate(params)
         except ValidationError:
-            breakpoint()
             continue
         else:
             return validator(**params)
