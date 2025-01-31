@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
+from .prompt import _MultiModalPrompt
 
 """A generic request model for LLM API requests.
 
@@ -18,7 +19,7 @@ class GenericRequest(BaseModel):
     """A generic request model for LLM API requests."""
 
     model: str
-    messages: List[Dict[str, Any]]
+    messages: List[Dict[str, Any]] | _MultiModalPrompt
     response_format: Dict[str, Any] | None = None
     original_row: Dict[str, Any]
     original_row_idx: int

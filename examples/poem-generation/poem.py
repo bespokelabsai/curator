@@ -11,65 +11,50 @@ from pydantic import BaseModel, Field
 from bespokelabs import curator
 
 
-# We use Pydantic and structured outputs to define the format of the response.
-# This defines a list of topics, which is the response format for the topic generator.
-class Topics(BaseModel):
-    """A list of topics."""
+import base64
+from pydantic import BaseModel, Field
+from bespokelabs import curator
 
-    topics_list: List[str] = Field(description="A list of topics.")
-
-
-# We define a topic generator class that inherits from LLM
-class TopicGenerator(curator.LLM):
-    """A topic generator that generates diverse topics for poems."""
-
-    response_format = Topics
-
-    def prompt(self, input: dict) -> str:
-        """Generate a prompt for the topic generator."""
-        return "Generate 10 diverse topics that are suitable for writing poems about."
-
-    def parse(self, input: dict, response: Topics) -> dict:
-        """Parse the model response along with the input to the model into the desired output format.."""
-        return [{"topic": t} for t in response.topics_list]
+class MultiModalRecipe(BaseModel):
+    recipe: str
+    title: str
+    instructions: str
+    cook_time: str
+    ingredients: str
 
 
-# We instantiate the topic generator and call it to generate topics
-topic_generator = TopicGenerator(model_name="gpt-4o-mini")
-topics: Dataset = topic_generator()
-print(topics["topic"])
+class MultiModalRecipeGenerator(curator.LLM):
+    """A recipe generator that can handle multimodal inputs and outputs."""
+
+    response_format = MultiModalRecipe
+
+    def prompt(self, input: dict) -> curator.MultiModalPrompt:
+        prompt = f"Generate a {input['cuisine']} recipe given ingredients in the image. Be creative but keep it realistic."
+        return prompt, curator.types.Image(url=input["ingredients_url"])
 
 
-# Define a list of poems.
-class Poems(BaseModel):
-    """A list of poems."""
-
-    poems_list: List[str] = Field(description="A list of poems.")
-
-
-# We define a poet class that inherits from LLM
-class Poet(curator.LLM):
-    """A poet that generates poems about given topics."""
-
-    response_format = Poems
-
-    def prompt(self, input: dict) -> str:
-        """Generate a prompt using the topic."""
-        return f"Write two poems about {input['topic']}."
-
-    def parse(self, input: dict, response: Poems) -> dict:
-        """Parse the model response along with the input to the model into the desired output format.."""
-        return [{"topic": input["topic"], "poem": p} for p in response.poems_list]
+    def parse(self, input: dict, response: MultiModalRecipe) -> dict:
+        result = {
+            "title": response.title,
+            "ingredients": response.ingredients,
+            "instructions": response.instructions,
+            "cook_time": response.cook_time,
+            "cuisine": input["cuisine"],
+        }
+        return result
 
 
-# We instantiate the poet and apply it to the topics dataset
-poet = Poet(model_name="gpt-4o-mini")
-poems = poet(topics)
-print(poems.to_pandas())
+def main():
+    """Example usage of multimodal recipe generation."""
+    recipe_generator = MultiModalRecipeGenerator(
+        model_name="gpt-4o",
+        backend="openai",
+        backend_params={"max_requests_per_minute": 2_000, "max_tokens_per_minute": 4_000_000},
+    )
 
-# Expected output:
-#                                           topic                                               poem
-# 0                            Dreams vs. reality  In the realm where dreams take flight,\nWhere ...
-# 1                            Dreams vs. reality  Reality stands with open eyes,\nA weighty thro...
-# 2           Urban loneliness in a bustling city  In the city's heart where shadows blend,\nAmon...
-# 3           Urban loneliness in a bustling city  Among the crowds, I walk alone,\nA sea of face...
+    recipe = recipe_generator({
+        "cuisine": "Italian",
+        "food_image": "path/to/pizza_reference.jpg"
+    })
+
+    print(recipe.to_pandas())
