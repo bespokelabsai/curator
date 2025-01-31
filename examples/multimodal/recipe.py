@@ -1,4 +1,4 @@
-"""Generate synthetic recipes for different cuisines using curator."""
+"""Generate synthetic recipes from ingrients image and cuisine using curator."""
 
 from datasets import Dataset
 
@@ -10,13 +10,13 @@ class RecipeGenerator(curator.LLM):
 
     def prompt(self, input: dict) -> str:
         """Generate a prompt using the template and cuisine."""
-        return f"Generate a random {input['cuisine']} recipe. Be creative but keep it realistic."
+        prompt = f"Create me a recipe for {input['cuisine']} cuisine and ingrients from the image."
+        return prompt, curator.types.Image(url=input["image_url"])
 
     def parse(self, input: dict, response: str) -> dict:
         """Parse the model response along with the input to the model into the desired output format.."""
         return {
             "recipe": response,
-            "cuisine": input["cuisine"],
         }
 
 
@@ -24,18 +24,10 @@ def main():
     """Generate synthetic recipes for different cuisines."""
     # List of cuisines to generate recipes for
     cuisines = [
-        {"cuisine": cuisine}
+        {"cuisine": cuisine[0], "image_url": cuisine[1]}
         for cuisine in [
-            "Chinese",
-            "Italian",
-            "Mexican",
-            "French",
-            "Japanese",
-            "Indian",
-            "Thai",
-            "Korean",
-            "Vietnamese",
-            "Brazilian",
+            ("Indian", "https://cdn.tasteatlas.com//images/ingredients/fcee541cd2354ed8b68b50d1aa1acad8.jpeg"),
+            ("Thai", "https://cdn.tasteatlas.com//images/dishes/da5fd425608f48b09555f5257a8d3a86.jpg"),
         ]
     ]
     cuisines = Dataset.from_list(cuisines)
@@ -53,8 +45,8 @@ def main():
     #############################################
 
     recipe_generator = RecipeGenerator(
-        model_name="deepinfra/meta-llama/Llama-2-70b-chat-hf",
-        backend="litellm",
+        model_name="gpt-4o",
+        backend="openai",
     )
 
     # Generate recipes for all cuisines
