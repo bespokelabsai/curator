@@ -34,7 +34,8 @@
 
 #### [2025.01.30] Batch Processing Support
 
-- [Batch Mode](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half: Batch Processing Made Easy with Curator
+- [Batch Mode](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half: 
+  We’re launching Curator batch mode with support for OpenAI, Anthropic, and other compatible APIs. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). Please [fill out this form](https://docs.google.com/forms/d/e/1FAIpQLSeBeBKA_19ljeUCkpwkUuUL5YXUUPKUExpjmBaSfmF2XAhwVA/viewform?usp=dialog) to claim your credit.
 ```python
 from bespokelabs import curator
 
