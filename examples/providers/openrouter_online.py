@@ -30,13 +30,15 @@ class Reasoner(curator.LLM):
         ]
 
 
-# https://openrouter.ai/announcements/reasoning-tokens-for-thinking-models
-# to get the reasoning traces we need to do extra_body={"include_reasoning": True} above
-# without it we get
-# ['2 + 2 equals 4. This is a fundamental result in arithmetic where the sum of the integers 2 and 2 is 4.']
-# with it we get
-#
-# 101.71s
+"""
+https://openrouter.ai/announcements/reasoning-tokens-for-thinking-models
+to get the reasoning traces we need to do extra_body={"include_reasoning": True} above
+101.71s
+
+REASONING:  ["\nOkay, so I need to figure out what 2 plus 2 is. Let me think...
+SOLUTION:  ['**Answer:**  \n2 + 2 equals **4**.  \n\n**Explanation:**..
+"""
+
 
 llm = Reasoner(
     model_name="deepseek/deepseek-r1",
@@ -58,7 +60,6 @@ print("SOLUTION: ", response["deepseek_solution"])
 #     generation_params={"include_reasoning": True, "max_tokens": 40000},
 #     backend_params={"max_retries": 0},
 # )
-
-response = llm(dataset)
-print("REASONING: ", response["deepseek_reasoning"])
-print("SOLUTION: ", response["deepseek_solution"])
+# response = llm(dataset)
+# print("REASONING: ", response["deepseek_reasoning"])
+# print("SOLUTION: ", response["deepseek_solution"])
