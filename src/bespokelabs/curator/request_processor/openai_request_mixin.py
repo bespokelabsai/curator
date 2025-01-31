@@ -1,6 +1,8 @@
-import logging
 import base64
+import logging
 from typing import Any
+
+import pydantic
 
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.prompt import _MultiModalPrompt
@@ -46,21 +48,27 @@ class OpenAIRequestMixin:
         return request
 
     def _unpack(self, messages):
-        if isinstance(messages['content'], _MultiModalPrompt):
-            return self._handle_multi_modal_prompt(messages)
-        return messages
-    
-    def _handle_multi_modal_prompt(self, messages):
+        unpacked_messages = []
+        for message in messages:
+            try:
+                content = _MultiModalPrompt.model_validate(message["content"])
+                content = self._handle_multi_modal_prompt(content)
+                message["content"] = content
+                unpacked_messages.append(message)
+
+            except pydantic.ValidationError:
+                unpacked_messages.append(message)
+        return unpacked_messages
+
+    def _handle_multi_modal_prompt(self, message):
         content = []
-        texts = messages['content'].texts
+        texts = message.texts
         for text in texts:
             content.append({"type": "text", "text": text})
-        for image in messages['content'].images:
+        for image in message.images:
             if image.url:
                 content.append({"type": "image_url", "image_url": {"url": image.url}})
             elif image.content:
-                image_base64 =  base64.b64encode(image.content).decode("utf-8")
+                image_base64 = base64.b64encode(image.content).decode("utf-8")
                 content.append({"type": "image_url", "image_url": {"url": image_base64}})
-
-        messages['content'] = content
-        return messages
+        return content

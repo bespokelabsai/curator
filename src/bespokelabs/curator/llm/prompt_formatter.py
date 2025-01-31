@@ -86,7 +86,7 @@ class PromptFormatter:
             _validate_messages(prompts)
             messages = prompts
         elif isinstance(prompts, tuple):
-            messages = _MultiModalPrompt.load(prompts)
+            messages = [{"role": "user", "content": _MultiModalPrompt.load(prompts)}]
         else:
             raise ValueError("The return value of the prompt_func must be a list of dictionaries.")
 

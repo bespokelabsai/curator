@@ -276,6 +276,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 async for line in file:
                     if self._semaphore:
                         await self._semaphore.acquire()
+
                     generic_request = GenericRequest.model_validate_json(line)
 
                     if generic_request.original_row_idx in completed_request_ids:
