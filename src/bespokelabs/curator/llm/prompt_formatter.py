@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 from pydantic import BaseModel, ValidationError
 
 from bespokelabs.curator.types.generic_request import GenericRequest
+from bespokelabs.curator.types.prompt import _MultiModalPrompt
 
 T = TypeVar("T")
 _DictOrBaseModel = Union[Dict[str, Any], BaseModel]
@@ -84,6 +85,8 @@ class PromptFormatter:
         elif isinstance(prompts, list):
             _validate_messages(prompts)
             messages = prompts
+        elif isinstance(prompts, tuple):
+            messages = _MultiModalPrompt.load(prompts)
         else:
             raise ValueError("The return value of the prompt_func must be a list of dictionaries.")
 

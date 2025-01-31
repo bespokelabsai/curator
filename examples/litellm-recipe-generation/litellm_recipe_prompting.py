@@ -53,8 +53,9 @@ def main():
     #############################################
 
     recipe_generator = RecipeGenerator(
-        model_name="deepinfra/meta-llama/Llama-2-70b-chat-hf",
-        backend="litellm",
+        model_name="deepseek-ai/DeepSeek-R1",
+        backend="openai",
+        backend_params={"base_url": "https://api.kluster.ai/v1"}
     )
 
     # Generate recipes for all cuisines
