@@ -1,7 +1,8 @@
 # Description: Pydantic models for multimodal prompts.
+import base64
 import typing as t
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, root_validator
 
 
 class BaseType(BaseModel):
@@ -14,8 +15,25 @@ class Image(BaseType):
     """A class to represent an image for multimodal prompts."""
 
     url: str = Field("", description="The URL of the image.")
-    content: str = Field("", description="Base64-encoded image content.")
+    content: bytes = Field(b"", description="Image content bytes.")
     type: t.ClassVar[str] = "image"
+
+    def serialize(self) -> str:
+        """Convert image content to base64."""
+        if self.url:
+            return self.url
+        assert self.content, "Image content is not provided."
+        return base64.b64encode(self.content).decode("utf-8")
+
+    @root_validator(pre=True)
+    def check_url_or_content(self, values):
+        """Ensure that only one of url or content is provided."""
+        url = values.get("url")
+        content = values.get("content")
+
+        if bool(url) == bool(content):
+            raise ValueError("Only one of 'url' or 'content' must be provided.")
+        return values
 
     def __post_init__(self):
         """Post init."""
