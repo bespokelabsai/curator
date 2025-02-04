@@ -53,6 +53,10 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         return "openai"
 
     @property
+    def _multimodal_prompt_supported(self) -> bool:
+        return True
+
+    @property
     def max_requests_per_batch(self) -> int:
         """The maximum number of requests that can be processed in a batch."""
         return 50_000

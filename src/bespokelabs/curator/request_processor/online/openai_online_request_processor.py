@@ -172,6 +172,10 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         return False
 
+    @property
+    def _multimodal_prompt_supported(self) -> bool:
+        return True
+
     def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
         """Create an OpenAI-specific request from a generic request.
 

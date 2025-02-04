@@ -179,6 +179,10 @@ class BaseRequestProcessor(ABC):
             incomplete_files = list(range(expected_num_files))
             return incomplete_files
 
+    @property
+    def _multimodal_prompt_supported(self) -> bool:
+        return False
+
     def create_request_files(self, dataset: Optional["Dataset"]) -> list[str]:
         """Creates request files if they don't exist or uses existing ones.
 
@@ -224,6 +228,9 @@ class BaseRequestProcessor(ABC):
         if dataset is None:
             with open(request_file, "w") as f:
                 generic_request = self.prompt_formatter.create_generic_request(dict(), 0)  # noqa: C408
+                if generic_request.multimodal_prompt is True:
+                    assert self._multimodal_prompt_supported, "Requested processor does not support multimodal prompts."
+
                 generic_request.generation_params = self.config.generation_params
                 f.write(json.dumps(generic_request.model_dump(), default=str) + "\n")
 
