@@ -9,7 +9,7 @@ from bespokelabs.curator.types.prompt import _MultiModalPrompt
 
 logger = logger = logging.getLogger(__name__)
 
-_OPENAI_ALLOWED_IMAGE_SIZE = 20  # MB
+_OPENAI_ALLOWED_IMAGE_SIZE_MB = 20  # MB
 
 
 class OpenAIRequestMixin:
@@ -73,7 +73,8 @@ class OpenAIRequestMixin:
             elif image.content:
                 base64_image = image.serialize()
                 mb = get_base64_size(base64_image)
-                assert mb <= _OPENAI_ALLOWED_IMAGE_SIZE, f"Image size exceeds the maximum allowed size of {_OPENAI_ALLOWED_IMAGE_SIZE} MB."
+                if mb > _OPENAI_ALLOWED_IMAGE_SIZE_MB:
+                    raise ValueError(f"Image size is {mb} MB, which is greater than the " f"allowed size of {_OPENAI_ALLOWED_IMAGE_SIZE_MB} MB in OpenAI.")
 
                 # TODO: add detail option in Image types.
                 content.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}", "detail": "low"}})

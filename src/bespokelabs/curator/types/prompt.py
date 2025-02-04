@@ -4,7 +4,7 @@ import typing as t
 from io import BytesIO
 
 from PIL import Image as PIL_Image
-from pydantic import BaseModel, ConfigDict, Field, field_serializer, root_validator
+from pydantic import BaseModel, ConfigDict, Field, field_serializer, model_validator
 
 
 class BaseType(BaseModel):
@@ -51,20 +51,12 @@ class Image(BaseType):
             return _pil_to_base64(content)
         return content
 
-    @root_validator(pre=True)
-    def check_url_or_content(cls, values):  # noqa: N805
+    @model_validator(mode="before")
+    def check_url_or_content(self):  # noqa: N805
         """Ensure that only one of url or content is provided."""
-        url = values.get("url")
-        content = values.get("content")
-
-        if bool(url) == bool(content):
+        if bool(self.get("url")) == bool(self.get("content")):
             raise ValueError("Only one of 'url' or 'content' must be provided.")
-        return values
-
-    def __post_init__(self):
-        """Post init."""
-        # assert url or content is provided
-        assert self.url or self.content, "Either 'url' or 'content' must be provided."
+        return self
 
 
 class File(BaseType):

@@ -1,4 +1,4 @@
-"""Generate synthetic recipes from ingrients image and cuisine using curator."""
+"""Generate synthetic recipes from ingredients image."""
 
 from datasets import Dataset
 
@@ -6,11 +6,11 @@ from bespokelabs import curator
 
 
 class RecipeGenerator(curator.LLM):
-    """A recipe generator that generates recipes for different cuisines."""
+    """A recipe generator that generates recipes for different ingredient images."""
 
     def prompt(self, input: dict) -> str:
-        """Generate a prompt using the template and cuisine."""
-        prompt = f"Create me a recipe for {input['cuisine']} cuisine and ingrients from the image."
+        """Generate a prompt using the ingredients."""
+        prompt = f"Create me a {input['spice_level']} recipe from the ingredients image."
         return prompt, curator.types.Image(url=input["image_url"])
 
     def parse(self, input: dict, response: str) -> dict:
@@ -21,16 +21,16 @@ class RecipeGenerator(curator.LLM):
 
 
 def main():
-    """Generate synthetic recipes for different cuisines."""
-    # List of cuisines to generate recipes for
-    cuisines = [
-        {"cuisine": cuisine[0], "image_url": cuisine[1]}
-        for cuisine in [
-            ("Indian", "https://cdn.tasteatlas.com//images/ingredients/fcee541cd2354ed8b68b50d1aa1acad8.jpeg"),
-            ("Thai", "https://cdn.tasteatlas.com//images/dishes/da5fd425608f48b09555f5257a8d3a86.jpg"),
+    """Generate synthetic recipes for different spice level and ingredients image."""
+    # List of ingredients to generate recipes for
+    ingredients = [
+        {"spice_level": ingredient[0], "image_url": ingredient[1]}
+        for ingredient in [
+            ("very spicy", "https://cdn.tasteatlas.com//images/ingredients/fcee541cd2354ed8b68b50d1aa1acad8.jpeg"),
+            ("not so spicy", "https://cdn.tasteatlas.com//images/dishes/da5fd425608f48b09555f5257a8d3a86.jpg"),
         ]
     ]
-    cuisines = Dataset.from_list(cuisines)
+    ingredients = Dataset.from_list(ingredients)
 
     # Create prompter using LiteLLM backend
     #############################################
@@ -49,8 +49,8 @@ def main():
         backend="openai",
     )
 
-    # Generate recipes for all cuisines
-    recipes = recipe_generator(cuisines)
+    # Generate recipes for all ingredients
+    recipes = recipe_generator(ingredients)
 
     # Print results
     print(recipes.to_pandas())
