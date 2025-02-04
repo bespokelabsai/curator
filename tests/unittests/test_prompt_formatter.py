@@ -80,5 +80,6 @@ def test_prompt_formatter_invalid_prompt_func():
         PromptFormatter(model_name="test", prompt_func=lambda x, y: "test").create_generic_request({}, 0)
 
     # Test invalid prompt function return type
-    with pytest.raises(ValueError, match="must be a list of dictionaries"):
+    match = "The return value of the `prompt` method <class 'dict'> did not match the expected format"
+    with pytest.raises(ValueError, match=match):
         PromptFormatter(model_name="test", prompt_func=lambda x: {"invalid": "format"}).create_generic_request({}, 0)
