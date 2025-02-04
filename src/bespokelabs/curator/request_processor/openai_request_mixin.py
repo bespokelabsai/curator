@@ -1,13 +1,15 @@
-import base64
 import logging
 from typing import Any
 
 import pydantic
 
+from bespokelabs.curator.file_utilities import get_base64_size
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.prompt import _MultiModalPrompt
 
 logger = logger = logging.getLogger(__name__)
+
+_OPENAI_ALLOWED_IMAGE_SIZE = 20  # MB
 
 
 class OpenAIRequestMixin:
@@ -69,6 +71,10 @@ class OpenAIRequestMixin:
             if image.url:
                 content.append({"type": "image_url", "image_url": {"url": image.url}})
             elif image.content:
-                image_base64 = base64.b64encode(image.content).decode("utf-8")
-                content.append({"type": "image_url", "image_url": {"url": image_base64}})
+                base64_image = image.serialize()
+                mb = get_base64_size(base64_image)
+                assert mb <= _OPENAI_ALLOWED_IMAGE_SIZE, f"Image size exceeds the maximum allowed size of {_OPENAI_ALLOWED_IMAGE_SIZE} MB."
+
+                # TODO: add detail option in Image types.
+                content.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}", "detail": "low"}})
         return content

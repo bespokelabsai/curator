@@ -30,6 +30,16 @@ class BasicLLM(curator.LLM):
         return {"recipe": response}
 
 
+class MultiModalLLM(curator.LLM):
+    def prompt(self, input: dict):
+        if isinstance(input["image"], str):
+            return input["text"], curator.types.Image(url=input["image"])
+        return input["text"], curator.types.Image(content=input["image"])
+
+    def parse(self, input: dict, response) -> dict:
+        return {"description": response}
+
+
 class Poems(BaseModel):
     poems_list: t.List[str] = Field(description="A list of poems.")
 
@@ -171,6 +181,21 @@ def create_llm(batch=False, batch_check_interval=1):
 
     prompter = BasicLLM(
         model_name="gpt-3.5-turbo",
+        backend="openai",
+        backend_params=backend_params,
+        batch=batch,
+    )
+    return prompter
+
+
+def create_multimodal_llm(batch=False, batch_check_interval=1):
+    if batch:
+        backend_params = {"batch_check_interval": batch_check_interval}
+    else:
+        backend_params = {}
+
+    prompter = MultiModalLLM(
+        model_name="gpt-4o-mini",
         backend="openai",
         backend_params=backend_params,
         batch=batch,

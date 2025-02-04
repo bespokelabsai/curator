@@ -217,6 +217,7 @@ class OnlineStatusTracker:
         )
 
         # Update the progress display
+
         self._progress.update(
             self._task_id,
             completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
