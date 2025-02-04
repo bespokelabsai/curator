@@ -77,5 +77,14 @@ class OpenAIRequestMixin:
                     raise ValueError(f"Image size is {mb} MB, which is greater than the " f"allowed size of {_OPENAI_ALLOWED_IMAGE_SIZE_MB} MB in OpenAI.")
 
                 # TODO: add detail option in Image types.
-                content.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}", "detail": "low"}})
+                content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{base64_image}",
+                            "detail": "low",
+                        },
+                    }
+                )
+
         return content
