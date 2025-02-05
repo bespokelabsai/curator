@@ -59,7 +59,7 @@ class PromptFormatter:
     response_format: Optional[Type[BaseModel]] = None
     generation_params: dict = field(default_factory=dict)
 
-    def create_generic_request(self, row: _DictOrBaseModel, idx: int, generation_params_per_row: bool) -> GenericRequest:
+    def create_generic_request(self, row: _DictOrBaseModel, idx: int, generation_params_per_row: bool = False) -> GenericRequest:
         """Format the request object based off of `LLM` attributes.
 
         Args:
@@ -97,7 +97,7 @@ class PromptFormatter:
         if isinstance(row, BaseModel):
             row = row.model_dump()
 
-        row_generation_params = self.generation_params.copy()
+        row_generation_params = self.generation_params.deepcopy()
         # Specify generation_params given in the row if applicable
         if generation_params_per_row:
             try:
@@ -106,6 +106,8 @@ class PromptFormatter:
                 # See https://github.com/bespokelabsai/curator/issues/325 for more detail
                 loaded_params = json.loads(row["generation_params"])
                 # Update only the keys that exist in loaded_params
+                if self.generation_params and loaded_params:
+                    logger.warning(f"Found two generation_params. Collided keys will follow values in row-level config: {loaded_params}")
                 row_generation_params.update(loaded_params)
             except json.JSONDecodeError:
                 logger.warning(f"Failed to parse generation params as JSON: {row['generation_params']}. Using default generation params.")
