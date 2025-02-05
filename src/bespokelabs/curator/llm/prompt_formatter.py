@@ -59,13 +59,13 @@ class PromptFormatter:
     response_format: Optional[Type[BaseModel]] = None
     generation_params: dict = field(default_factory=dict)
 
-    def create_generic_request(self, row: _DictOrBaseModel, idx: int) -> GenericRequest:
+    def create_generic_request(self, row: _DictOrBaseModel, idx: int, generation_params_per_row: bool) -> GenericRequest:
         """Format the request object based off of `LLM` attributes.
 
         Args:
             row: Input data to format into a prompt
             idx: Index of the row in the dataset
-
+            generation_params_per_row: Whether the dataset has a generation_params column
         Returns:
             GenericRequest object containing the formatted request
 
@@ -97,16 +97,18 @@ class PromptFormatter:
         if isinstance(row, BaseModel):
             row = row.model_dump()
 
+        row_generation_params = self.generation_params.copy()
         # Specify generation_params given in the row if applicable
-        try:
-            if "generation_params" in row and isinstance(row["generation_params"], str):
+        if generation_params_per_row:
+            try:
                 # Convert generation_params back to dict
                 # Previously it was passed into the Dataset as a string to avoid automatic dictionary expansion
                 # See https://github.com/bespokelabsai/curator/issues/325 for more detail
-                row_generation_params = json.loads(row["generation_params"])
-        except json.JSONDecodeError:
-            logger.warning(f"Failed to parse generation params as JSON: {row['generation_params']}. Using default generation params.")
-            row_generation_params = self.generation_params
+                loaded_params = json.loads(row["generation_params"])
+                # Update only the keys that exist in loaded_params
+                row_generation_params.update(loaded_params)
+            except json.JSONDecodeError:
+                logger.warning(f"Failed to parse generation params as JSON: {row['generation_params']}. Using default generation params.")
 
         return GenericRequest(
             model=self.model_name,

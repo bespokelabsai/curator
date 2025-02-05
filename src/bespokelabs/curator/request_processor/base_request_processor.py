@@ -284,16 +284,14 @@ class BaseRequestProcessor(ABC):
         else:
             end_idx = len(dataset)
 
+        # Check if we need to vary generation_params per row
+        generation_params_per_row = "generation_params" in dataset.column_names
+
         async with aiofiles.open(request_file, "w") as f:
             for idx, dataset_row in enumerate(dataset):
                 dataset_row_idx = idx + start_idx
                 # Get the generic request from the map function
-                request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx)
-                print(f"Generation params from row: {request.generation_params}")
-                # If generation_params is not specified in the row, use the generation_params from the config
-                if request.generation_params is None:
-                    request.generation_params = self.config.generation_params
-                print(f"Generation params from config: {request.generation_params}")
+                request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, generation_params_per_row)
                 await f.write(json.dumps(request.model_dump(), default=str) + "\n")
 
         num_requests = end_idx - start_idx
