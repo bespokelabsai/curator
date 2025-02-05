@@ -97,14 +97,25 @@ class PromptFormatter:
         if isinstance(row, BaseModel):
             row = row.model_dump()
 
+        # Specify generation_params given in the row if applicable
+        try:
+            if "generation_params" in row and isinstance(row["generation_params"], str):
+                # Convert generation_params back to dict
+                # Previously it was passed into the Dataset as a string to avoid automatic dictionary expansion
+                # See https://github.com/bespokelabsai/curator/issues/325 for more detail
+                row_generation_params = json.loads(row["generation_params"])
+        except json.JSONDecodeError:
+            logger.warning(f"Failed to parse generation params as JSON: {row['generation_params']}. Using default generation params.")
+            row_generation_params = self.generation_params
+
         return GenericRequest(
             model=self.model_name,
             messages=messages,
             original_row=row,
             original_row_idx=idx,
             response_format=(self.response_format.model_json_schema() if self.response_format else None),
-            generation_params=self.generation_params,
-            is_multimodal_prompt=multimodal_prompt,
+            multimodal_prompt=multimodal_prompt,
+            generation_params=row_generation_params,
         )
 
     def response_to_response_format(self, response_message: str | dict) -> Optional[dict | str]:
