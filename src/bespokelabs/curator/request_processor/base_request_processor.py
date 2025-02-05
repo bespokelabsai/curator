@@ -286,7 +286,8 @@ class BaseRequestProcessor(ABC):
 
         # Check if we need to vary generation_params per row
         generation_params_per_row = "generation_params" in dataset.column_names
-
+        if self.prompt_formatter.generation_params and generation_params_per_row:
+            logger.warning("Found both default and row-level generation_params. Collided keys will follow values in row-level config.")
         async with aiofiles.open(request_file, "w") as f:
             for idx, dataset_row in enumerate(dataset):
                 dataset_row_idx = idx + start_idx
