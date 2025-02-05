@@ -1,5 +1,6 @@
 """Module for formatting prompts and handling responses for LLM interactions."""
 
+import copy
 import inspect
 import json
 import logging
@@ -97,7 +98,7 @@ class PromptFormatter:
         if isinstance(row, BaseModel):
             row = row.model_dump()
 
-        row_generation_params = self.generation_params.deepcopy()
+        row_generation_params = copy.deepcopy(self.generation_params)
         # Specify generation_params given in the row if applicable
         if generation_params_per_row:
             try:
