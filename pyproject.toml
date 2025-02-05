@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bespokelabs-curator"
-version = "0.1.18.post1"
+version = "0.1.18"
 description = "Bespoke Labs Curator"
 authors = ["Bespoke Labs <company@bespokelabs.ai>"]
 readme = "README.md"
@@ -29,7 +29,7 @@ tqdm = "^4.67.0"
 matplotlib = "^3.9.2"
 nest-asyncio = "^1.6.0"
 rich = "^13.7.0"
-litellm = ">=1.60.4"
+litellm = "1.55.4"
 tiktoken = ">=0.7.0"
 aiofiles = ">=22.0,<24.0"
 anthropic = "^0.42.0"
