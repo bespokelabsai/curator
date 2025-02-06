@@ -84,7 +84,7 @@ class PromptFormatter:
         if isinstance(prompts, str):
             messages = [{"role": "user", "content": prompts}]
         elif isinstance(prompts, list):
-            multimodal_prompt = None
+            multimodal_prompt = False
             _validate_messages(prompts)
             messages = prompts
         elif isinstance(prompts, tuple):
