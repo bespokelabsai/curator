@@ -182,6 +182,10 @@ and other examples in the [examples](examples) directory.
 See the [docs](https://docs.bespokelabs.ai/) for more details as well as
 for troubleshooting information.
 
+### Anonymized Telemetry
+
+We collect minimal, anonymized usage telemetry to help prioritize new features and improvements that benefit the Curator community. You can opt out by setting the `TELEMETRY_ENABLED` environment variable to `False`. 
+
 ## Bespoke Curator Viewer
 
 ![Viewer in action](docs/curator-viewer.gif)
