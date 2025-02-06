@@ -115,7 +115,12 @@ class BatchStatusTracker(BaseModel):
     def stop_tracker(self):
         """Stop the tracker and display final statistics."""
         if hasattr(self, '_live'):
+            # Refresh one last time to show final state
+            self._progress.refresh()
+            # Stop the live display
             self._live.stop()
+            # Print the final progress state
+            self._console.print(self._progress)
             self.display_final_stats()
 
         # update anonymized telemetry

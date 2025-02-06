@@ -255,7 +255,12 @@ class OnlineStatusTracker:
     def stop_tracker(self):
         """Stop the tracker."""
         if hasattr(self, '_live'):
+            # Refresh one last time to show final state
+            self._progress.refresh()
+            # Stop the live display
             self._live.stop()
+            # Print the final progress state
+            self._console.print(self._progress)
         
         table = Table(title="Final Curator Statistics", box=box.ROUNDED)
         table.add_column("Section/Metric", style="cyan")
