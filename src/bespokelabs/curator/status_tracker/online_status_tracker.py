@@ -141,6 +141,7 @@ class OnlineStatusTracker:
             rate_limit_text="[bold white]Rate Limits:[/bold white] [dim]--[/dim]",
             price_text="[bold white]Model Pricing:[/bold white] [dim]--[/dim]",
         )
+
         if self.model in model_cost:
             self.input_cost_per_million = model_cost[self.model]["input_cost_per_token"] * 1_000_000
             self.output_cost_per_million = model_cost[self.model]["output_cost_per_token"] * 1_000_000
