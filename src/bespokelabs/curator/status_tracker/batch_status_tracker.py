@@ -9,6 +9,11 @@ from rich import box
 from rich.console import Console
 from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn
 from rich.table import Table
+from rich.logging import RichHandler
+from rich.live import Live
+from rich.panel import Panel
+from rich.layout import Layout
+from rich.console import Group
 
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
@@ -52,7 +57,17 @@ class BatchStatusTracker(BaseModel):
 
     def start_tracker(self, console: Optional[Console] = None):
         """Start the progress tracker with rich console output."""
-        self._console = Console() if console is None else console
+        self._console = Console(stderr=True) if console is None else console
+        
+        # Set up rich logging handler
+        logging.basicConfig(
+            level=logging.WARNING,
+            format="%(message)s",
+            datefmt="[%Y-%m-%d %X]",
+            handlers=[RichHandler(console=self._console)]
+        )
+        
+        # Create progress display
         self._progress = Progress(
             TextColumn(
                 "[cyan]{task.description}[/cyan]\n"
@@ -85,12 +100,22 @@ class BatchStatusTracker(BaseModel):
             cost_text="[bold white]Cost:[/bold white] [dim]--[/dim]",
             price_text="[bold white]Model Pricing:[/bold white] [dim]--[/dim]",
         )
-        self._progress.start()
+        
+        # Create Live display that will show both logs and progress
+        self._live = Live(
+            Group(
+                Panel(self._progress),
+            ),
+            console=self._console,
+            refresh_per_second=4,
+            transient=True  # This ensures logs stay above the progress bar
+        )
+        self._live.start()
 
     def stop_tracker(self):
         """Stop the tracker and display final statistics."""
-        if self._progress:
-            self._progress.stop()
+        if hasattr(self, '_live'):
+            self._live.stop()
             self.display_final_stats()
 
         # update anonymized telemetry
@@ -100,6 +125,11 @@ class BatchStatusTracker(BaseModel):
                 metadata=self.model_dump(),
             )
         )
+
+    def __del__(self):
+        """Ensure live display is stopped on deletion."""
+        if hasattr(self, '_live'):
+            self._live.stop()
 
     def update_display(self):
         """Update statistics with token usage and cost information."""
