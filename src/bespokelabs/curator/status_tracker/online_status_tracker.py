@@ -9,9 +9,12 @@ import tqdm
 from litellm import model_cost
 from pydantic import BaseModel
 from rich import box
-from rich.console import Console
+from rich.console import Console, Group
 from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.table import Table
+from rich.live import Live
+from rich.panel import Panel
+from rich.logging import RichHandler
 
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_response import TokenUsage
@@ -95,8 +98,17 @@ class OnlineStatusTracker:
 
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
-        self._console = Console() if console is None else console
-
+        self._console = Console(stderr=True) if console is None else console
+        
+        # Set up rich logging handler
+        logging.basicConfig(
+            level=logging.WARNING,
+            format="%(message)s",
+            datefmt="[%Y-%m-%d %X]",
+            handlers=[RichHandler(console=self._console)]
+        )
+        
+        # Create progress display
         self._progress = Progress(
             TextColumn(
                 "[cyan]{task.description}[/cyan]\n"
@@ -116,6 +128,8 @@ class OnlineStatusTracker:
             TimeRemainingColumn(),
             console=self._console,
         )
+        
+        # Add task
         self._task_id = self._progress.add_task(
             description=f"[cyan]Generating data using {self.model} with {self.token_limit_strategy.value} input and output token Strategy.",
             total=self.total_requests,
@@ -136,7 +150,16 @@ class OnlineStatusTracker:
             self.input_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["input_cost_per_token"] * 1_000_000
             self.output_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["output_cost_per_token"] * 1_000_000
 
-        self._progress.start()
+        # Create Live display that will show both logs and progress
+        self._live = Live(
+            Group(
+                Panel(self._progress),
+            ),
+            console=self._console,
+            refresh_per_second=4,
+            transient=True  # This ensures logs stay above the progress bar
+        )
+        self._live.start()
 
     def update_stats(self, token_usage: TokenUsage, cost: float):
         """Update statistics in the tracker with token usage and cost."""
@@ -217,8 +240,7 @@ class OnlineStatusTracker:
             f"[white]Output:[/white] [red]{output_cost_str}[/red]"
         )
 
-        # Update the progress display
-
+        # Update progress through the live display
         self._progress.update(
             self._task_id,
             completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
@@ -232,7 +254,9 @@ class OnlineStatusTracker:
 
     def stop_tracker(self):
         """Stop the tracker."""
-        self._progress.stop()
+        if hasattr(self, '_live'):
+            self._live.stop()
+        
         table = Table(title="Final Curator Statistics", box=box.ROUNDED)
         table.add_column("Section/Metric", style="cyan")
         table.add_column("Value", style="yellow")
@@ -408,6 +432,6 @@ class OnlineStatusTracker:
             self.available_token_capacity += free
 
     def __del__(self):
-        """Ensure progress is stopped on deletion."""
-        if hasattr(self, "_progress"):
-            self._progress.stop()
+        """Ensure live display is stopped on deletion."""
+        if hasattr(self, '_live'):
+            self._live.stop()
