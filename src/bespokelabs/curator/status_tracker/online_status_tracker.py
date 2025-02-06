@@ -10,11 +10,11 @@ from litellm import model_cost
 from pydantic import BaseModel
 from rich import box
 from rich.console import Console, Group
+from rich.live import Live
+from rich.logging import RichHandler
+from rich.panel import Panel
 from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.table import Table
-from rich.live import Live
-from rich.panel import Panel
-from rich.logging import RichHandler
 
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_response import TokenUsage
@@ -99,15 +99,10 @@ class OnlineStatusTracker:
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
         self._console = Console(stderr=True) if console is None else console
-        
+
         # Set up rich logging handler
-        logging.basicConfig(
-            level=logging.WARNING,
-            format="%(message)s",
-            datefmt="[%Y-%m-%d %X]",
-            handlers=[RichHandler(console=self._console)]
-        )
-        
+        logging.basicConfig(level=logging.WARNING, format="%(message)s", datefmt="[%Y-%m-%d %X]", handlers=[RichHandler(console=self._console)])
+
         # Create progress display
         self._progress = Progress(
             TextColumn(
@@ -128,7 +123,7 @@ class OnlineStatusTracker:
             TimeRemainingColumn(),
             console=self._console,
         )
-        
+
         # Add task
         self._task_id = self._progress.add_task(
             description=f"[cyan]Generating data using {self.model} with {self.token_limit_strategy.value} input and output token Strategy.",
@@ -158,7 +153,7 @@ class OnlineStatusTracker:
             ),
             console=self._console,
             refresh_per_second=4,
-            transient=True  # This ensures logs stay above the progress bar
+            transient=True,  # This ensures logs stay above the progress bar
         )
         self._live.start()
 
@@ -255,14 +250,14 @@ class OnlineStatusTracker:
 
     def stop_tracker(self):
         """Stop the tracker."""
-        if hasattr(self, '_live'):
+        if hasattr(self, "_live"):
             # Refresh one last time to show final state
             self._progress.refresh()
             # Stop the live display
             self._live.stop()
             # Print the final progress state
             self._console.print(self._progress)
-        
+
         table = Table(title="Final Curator Statistics", box=box.ROUNDED)
         table.add_column("Section/Metric", style="cyan")
         table.add_column("Value", style="yellow")
@@ -439,5 +434,5 @@ class OnlineStatusTracker:
 
     def __del__(self):
         """Ensure live display is stopped on deletion."""
-        if hasattr(self, '_live'):
+        if hasattr(self, "_live"):
             self._live.stop()
