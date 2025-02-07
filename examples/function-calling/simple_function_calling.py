@@ -79,7 +79,7 @@ dataset = Dataset.from_dict(
         "user_request": ["What's the current temperature in New York?", "What time is it in Tokyo?"],
         # WARNING: The generation_params in Dataset ust be a string otherwise the Dataset operation automatically expand dictionary keys
         # See https://github.com/bespokelabsai/curator/issues/325 for more detail
-        # The generation_params from the row will override the default generation_params
+        # The generation_params from the row will override the default generation_params during inference
         "generation_params": [json.dumps({"tools": [function_docs[0]]}), json.dumps({"tools": [function_docs[1]]})],
     }
 )
