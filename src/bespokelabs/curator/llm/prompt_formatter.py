@@ -84,7 +84,6 @@ class PromptFormatter:
         if isinstance(prompts, str):
             messages = [{"role": "user", "content": prompts}]
         elif isinstance(prompts, list):
-            multimodal_prompt = False
             _validate_messages(prompts)
             messages = prompts
         elif isinstance(prompts, tuple):
@@ -133,17 +132,24 @@ class PromptFormatter:
 
         try:
             # First try to parse the response message as JSON
-            if isinstance(response_message, str):
+            def _load_response_message(response_message: str | dict) -> dict:
                 try:
                     response_dict = json.loads(response_message)
                 except json.JSONDecodeError as e:
                     logger.warning(f"Failed to parse response message as JSON: {response_message}. The model likely returned an invalid JSON format.")
                     raise e
+                return response_dict
+
+            if isinstance(response_message, str):
+                response_dict = _load_response_message(response_message)
+                response_message = self.response_format(**response_dict)
+            elif isinstance(response_message, list):
+                response_dicts = list(map(_load_response_message, response_message))
+                response_message = list(map(lambda r: self.response_format(**r), response_dicts))  # noqa: C417
             else:
                 response_dict = response_message
+                response_message = self.response_format(**response_dict)
 
-            # Then construct the Pydantic model from the parsed dict
-            response_message = self.response_format(**response_dict)
             return response_message
 
         except ValidationError as e:
