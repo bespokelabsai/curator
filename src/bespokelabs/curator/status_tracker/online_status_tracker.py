@@ -11,11 +11,11 @@ from pydantic import BaseModel
 from rich import box
 from rich.console import Console, Group
 from rich.live import Live
-from rich.logging import RichHandler
 from rich.panel import Panel
 from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.table import Table
 
+from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_response import TokenUsage
 
@@ -98,10 +98,7 @@ class OnlineStatusTracker:
 
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
-        self._console = Console(stderr=True) if console is None else console
-
-        # Set up rich logging handler
-        logging.basicConfig(level=logging.WARNING, format="%(message)s", datefmt="[%Y-%m-%d %X]", handlers=[RichHandler(console=self._console)])
+        self._console = _CONSOLE if console is None else console
 
         # Create progress display
         self._progress = Progress(
