@@ -242,7 +242,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                 response_message = dict(response)
             else:
                 response_message = response["choices"][0]["message"]["content"]
-            finish_reason = response["choices"][0].get("finish_reason", "unkown")
+            finish_reason = response["choices"][0].get("finish_reason", "unknown")
             usage = response["usage"]
             token_usage = TokenUsage(
                 prompt_tokens=usage["prompt_tokens"],
