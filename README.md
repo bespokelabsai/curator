@@ -194,6 +194,7 @@ llm = curator.LLM(
 )
 ```
 [Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-litellm-for-diverse-providers)
+
 ### Ollama
 ```python
 llm = curator.LLM(
@@ -217,6 +218,7 @@ llm = curator.LLM(
 ```
 [Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#id-3-initialize-and-use-the-generator)
 ### DeepSeek
+DeepSeek offers an OpenAI-compatible API that you can use with the `openai` backend.
 > [!IMPORTANT]
 > The DeepSeek API is experiencing intermittent issues and will return empty responses during times of high traffic. We recommend
 calling the DeepSeek API through the `openai` backend, with a high max retries so that we can retry failed requests upon empty
@@ -238,13 +240,13 @@ llm = curator.LLM(
 ```
 
 ### kluster.ai
-[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
 ```python
 llm = curator.LLM(
     model_name="deepseek-ai/DeepSeek-R1", 
     backend="klusterai",
 )
 ```
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
 ## 📦 Batch Mode
 Several providers offer about 50% discount on token usage when using batch mode. Curator makes it easy to use batch mode with a wide range of providers.
 
