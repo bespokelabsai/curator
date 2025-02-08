@@ -106,7 +106,7 @@ class PromptFormatter:
                 # Previously it was passed into the Dataset as a string to avoid automatic dictionary expansion
                 # See https://github.com/bespokelabsai/curator/issues/325 for more detail
                 loaded_params = json.loads(row["generation_params"])
-                # Update only the keys that exist in loaded_params
+                # Update only the keys that exist in row-level generation_params
                 row_generation_params.update(loaded_params)
             except json.JSONDecodeError:
                 logger.warning(f"Failed to parse generation params as JSON: {row['generation_params']}. Using default generation params.")
@@ -117,7 +117,7 @@ class PromptFormatter:
             original_row=row,
             original_row_idx=idx,
             response_format=(self.response_format.model_json_schema() if self.response_format else None),
-            multimodal_prompt=multimodal_prompt,
+            is_multimodal_prompt=multimodal_prompt,
             generation_params=row_generation_params,
         )
 
