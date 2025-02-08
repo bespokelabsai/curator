@@ -106,12 +106,12 @@ topics = Dataset.from_dict({'topic': ['Dreams of a Robot']})
 poems = poet(topics)
 print(poems.to_pandas())
 ```
-
+Output:
 ```
-    title	    		            poem
+    title       	    		    poem
 0   Dreams of a Robot: Awakening    In circuits deep, where silence hums, \nA dre..
 1   Life of an AI Agent - Poem 1    In circuits woven, thoughts ignite,\nI dwell i...
-
+```
 
 In the `Poet` class:
 * `response_format` is the structured output class we defined above.
@@ -139,7 +139,7 @@ topic_generator = TopicGenerator(model_name="gpt-4o-mini")
 topics = topic_generator("Mathematics")
 poems = poet(topics)
 ```
-
+Output:
 ```
  	title	    		      poem
 0	The Language of Algebra	  In symbols and signs, truths intertwine,..
