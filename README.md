@@ -108,7 +108,7 @@ print(poems.to_pandas())
 ```
 Output:
 ```
-    title       	    		poem
+    title                           poem
 0   Dreams of a Robot: Awakening    In circuits deep, where silence hums, \nA dre..
 1   Life of an AI Agent - Poem 1    In circuits woven, thoughts ignite,\nI dwell i...
 ```
@@ -141,7 +141,7 @@ poems = poet(topics)
 ```
 Output:
 ```
- 	title	    		  poem
+ 	title                     poem
 0	The Language of Algebra	  In symbols and signs, truths intertwine,..
 1	The Geometry of Space	  In the world around us, shapes do collide,..
 2	The Language of Logic	  In circuits and wires where silence speaks,..
