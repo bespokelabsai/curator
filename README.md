@@ -162,8 +162,27 @@ We collect minimal, anonymized usage telemetry to help prioritize new features a
 ## 📖 Providers
 Curator supports a wide range of providers, including OpenAI, Anthropic, and many more. 
 
-### LiteLLM (Gemini, together.ai, etc.)
-Here is an example of using Gemini with litellm backend ([docs reference]()):
+### OpenAI backend
+```python
+llm = curator.LLM(
+    model_name="gpt-4o-mini",
+)
+```
+For other models that support OpenAI-compatible APIs, you can use the `openai` backend:
+```python
+llm = curator.LLM(
+    model_name="gpt-4o-mini",
+    backend="openai",
+    backend_params={
+        "base_url": "https://your-openai-compatible-api-url",
+        "api_key": <YOUR_OPENAI_COMPATIBLE_SERVICE_API_KEY>,
+    },
+)
+```
+
+
+### LiteLLM (Anthropic, Gemini, together.ai, etc.)
+Here is an example of using Gemini with litellm backend:
 ```python
 llm = curator.LLM(
     model_name="gemini/gemini-1.5-flash",
@@ -174,18 +193,17 @@ llm = curator.LLM(
     },
 )
 ```
-
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-litellm-for-diverse-providers)
 ### Ollama
-Using Ollama backend ([docs reference](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-ollama-with-curator#id-2.-configure-the-ollama-backend)):
 ```python
 llm = curator.LLM(
     model_name="ollama/llama3.1:8b",  # Ollama model identifier
-    backend_params={"base_url": "http://localhost:11434"},  # Ollama instance
+    backend_params={"base_url": "http://localhost:11434"},
 )
 ```
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-ollama-with-curator#id-2.-configure-the-ollama-backend)
 
 ### vLLM
-Using vLLM backend ([docs reference](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#id-3-initialize-and-use-the-generator)):
 
 ```python
 llm = curator.LLM( 
@@ -197,6 +215,7 @@ llm = curator.LLM(
     }
 )
 ```
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#id-3-initialize-and-use-the-generator)
 ### DeepSeek
 > [!IMPORTANT]
 > The DeepSeek API is experiencing intermittent issues and will return empty responses during times of high traffic. We recommend
@@ -215,6 +234,15 @@ llm = curator.LLM(
         "max_retries": 50,
     },
     backend="openai",
+)
+```
+
+### kluster.ai
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
+```python
+llm = curator.LLM(
+    model_name="deepseek-ai/DeepSeek-R1", 
+    backend="klusterai",
 )
 ```
 ## 📦 Batch Mode
