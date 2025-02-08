@@ -30,46 +30,16 @@
 [ English | <a href="README_zh.md">中文</a> ]
 </div>
 
-## NOTE: Using Curator with the DeepSeek API 
-The DeepSeek API is experiencing intermittent issues and will return empty responses during times of high traffic. We recommend
-calling the DeepSeek API through the `openai` backend, with a high max retries so that we can retry failed requests upon empty
-response and a reasonable max requests and tokens per minute so we don't retry too aggressively and overwhelm the API.
-
-```python
-llm = curator.LLM(
-    model_name="deepseek-reasoner",
-    generation_params={"temp": 0.0},
-    backend_params={
-        "max_requests_per_minute": 100,
-        "max_tokens_per_minute": 10_000_000,
-        "base_url": "https://api.deepseek.com/",
-        "api_key": <YOUR_DEEPSEEK_API_KEY>,
-        "max_retries": 50,
-    },
-    backend="openai",
-)
-```
-
 ## 🎉 What's New 
 #### [2025.01.30] Batch Processing Support
 
-- [Batch Mode](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half: 
+- [Batch Mode](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half 🔥🔥🔥: 
   We’re launching Curator batch mode with support for OpenAI, Anthropic, and other compatible APIs. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). Please [fill out this form](https://docs.google.com/forms/d/e/1FAIpQLSeBeBKA_19ljeUCkpwkUuUL5YXUUPKUExpjmBaSfmF2XAhwVA/viewform?usp=dialog) to claim your credit.
-```python
-from bespokelabs import curator
 
-llm = curator.LLM(
-    model_name="deepseek-ai/DeepSeek-R1",
-    backend="klusterai",
-    batch=True,
-    backend_params={"max_retries": 1, "completion_window": "1h"},
-)
-```
 
 ## Overview
 
-
-Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structure, Curator will prepare high-quality data quickly and robustly.
+Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structured data, Curator will prepare high-quality data quickly and robustly.
 
 * Rich Python based library for generating and curating synthetic data.
 * Interactive viewer to monitor data while it is being generated.
@@ -81,13 +51,13 @@ Bespoke Curator makes it easy to create synthetic data pipelines. Whether you ar
 
 Check out our full documentation for [getting started](https://docs.bespokelabs.ai/bespoke-curator/getting-started), [tutorials](https://docs.bespokelabs.ai/bespoke-curator/tutorials), [guides](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides) and detailed [reference](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation).
 
-## Installation
+## 🛠️ Installation
 
 ```bash
 pip install bespokelabs-curator
 ```
 
-## Quickstart
+## 🚀 Quickstart
 
 ### Using `curator.LLM`
 
@@ -103,15 +73,6 @@ print(poem.to_pandas())
 > So now if you run the same prompt again, you will get the same response, pretty much instantly.
 > You can delete the cache at `~/.cache/curator` or disable it with `export CURATOR_DISABLE_CACHE=true`.
 
-### Calling other models
-You can also call other [LiteLLM](https://docs.litellm.ai/docs/) supported models by
-changing the `model_name` argument.
-
-```python
-llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
-```
-
-In addition to a wide range of API providers, local web servers (hosted by [vLLM](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#online-mode-server) or [Ollama](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-ollama-with-curator)) are supported via LiteLLM. For completely offline inference directly through vLLM, see the [documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#offline-mode-local).
 
 > [!IMPORTANT]
 > Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
@@ -186,6 +147,7 @@ print(poem.to_pandas())
 2  Beauty of Bespoke Labs's Curator library  In the heart of Curation’s realm,  \nWhere art...
 3  Beauty of Bespoke Labs's Curator library  Step within the library’s embrace,  \nA sanctu...
 ```
+
 In the `Poet` class:
 * `response_format` is the structured output class we defined above.
 * `prompt` takes the input (`input`) and returns the prompt for the LLM.
@@ -202,6 +164,80 @@ for troubleshooting information.
 ### Anonymized Telemetry
 
 We collect minimal, anonymized usage telemetry to help prioritize new features and improvements that benefit the Curator community. You can opt out by setting the `TELEMETRY_ENABLED` environment variable to `False`. 
+
+## 📖 Providers
+Curator supports a wide range of providers, including OpenAI, Anthropic, and many more. 
+
+### LiteLLM (Gemini, together.ai, etc.)
+Here is an example of using Gemini with litellm backend ([docs reference]()):
+```python
+llm = curator.LLM(
+    model_name="gemini/gemini-1.5-flash",  # LiteLLM model identifier
+    backend="litellm",                      # Specify LiteLLM backend
+    backend_params={
+        "max_requests_per_minute": 2_000,   # Rate limit for requests
+        "max_tokens_per_minute": 4_000_000  # Token usage limit
+    },
+)
+```
+
+### Ollama
+Using Ollama backend ([docs reference](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-ollama-with-curator#id-2.-configure-the-ollama-backend)):
+```python
+llm = curator.LLM(
+    model_name="ollama/llama3.1:8b",  # Ollama model identifier
+    backend_params={"base_url": "http://localhost:11434"},  # Ollama instance
+)
+```
+
+### vLLM
+Using vLLM backend ([docs reference](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#id-3-initialize-and-use-the-generator)):
+
+```python
+llm = curator.LLM( 
+    model_name="Qwen/Qwen2.5-3B-Instruct", 
+    backend="vllm", 
+    backend_params={ 
+        "tensor_parallel_size": 1, # Adjust based on GPU count 
+        "gpu_memory_utilization": 0.7 
+    }
+)
+```
+### DeepSeek
+> [!IMPORTANT]
+> The DeepSeek API is experiencing intermittent issues and will return empty responses during times of high traffic. We recommend
+calling the DeepSeek API through the `openai` backend, with a high max retries so that we can retry failed requests upon empty
+response and a reasonable max requests and tokens per minute so we don't retry too aggressively and overwhelm the API.
+
+```python
+llm = curator.LLM(
+    model_name="deepseek-reasoner",
+    generation_params={"temp": 0.0},
+    backend_params={
+        "max_requests_per_minute": 100,
+        "max_tokens_per_minute": 10_000_000,
+        "base_url": "https://api.deepseek.com/",
+        "api_key": <YOUR_DEEPSEEK_API_KEY>,
+        "max_retries": 50,
+    },
+    backend="openai",
+)
+```
+## Batch Mode
+```python
+from bespokelabs import curator
+
+llm = curator.LLM(
+    model_name="deepseek-ai/DeepSeek-R1",
+    backend="klusterai",
+    batch=True,
+    backend_params={"max_retries": 1, "completion_window": "1h"},
+)
+```
+See documentation
+* [OpenAI batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-openai-for-batch-inference)
+* [Anthropic batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-anthropic-for-batch-inference)
+* [kluster.ai batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
 
 ## Bespoke Curator Viewer
 
