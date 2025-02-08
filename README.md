@@ -67,7 +67,6 @@ llm = curator.LLM(model_name="gpt-4o-mini")
 poem = llm("Write a poem about the importance of data in AI.")
 print(poem.to_pandas())
 ```
-
 > [!NOTE]
 > Retries and caching are enabled by default to help you rapidly iterate your data pipelines.
 > So now if you run the same prompt again, you will get the same response, pretty much instantly.
@@ -77,37 +76,15 @@ print(poem.to_pandas())
 > [!IMPORTANT]
 > Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
 
+You can also send a list of prompts to the LLM, or a HuggingFace Dataset object (see below for more details).
+
 > [!TIP]
 > If you are generating large datasets, you may want to use [batch mode](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode) to save costs. Currently batch APIs from [OpenAI](https://platform.openai.com/docs/guides/batch) and [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) are supported. With curator this is as simple as setting `batch=True` in the `LLM` class.
 
-### Using structured outputs
+### Using structured outputs and custom prompting and parsing logic
 
 Let's use structured outputs to generate multiple poems in a single LLM call. We can define a class to encapsulate a list of poems,
 and then pass it to the `LLM` class.
-
-```python
-from typing import List
-from pydantic import BaseModel, Field
-from bespokelabs import curator
-
-class Poem(BaseModel):
-    poem: str = Field(description="A poem.")
-
-
-class Poems(BaseModel):
-    poems_list: List[Poem] = Field(description="A list of poems.")
-
-
-llm = curator.LLM(model_name="gpt-4o-mini", response_format=Poems)
-poems = llm(["Write two poems about the importance of data in AI.", 
-              "Write three haikus about the importance of data in AI."])
-print(poems.to_pandas())
-```
-
-Note how each `Poems` object occupies a single row in the dataset. 
-
-
-For more advanced use cases, you might need to define more custom parsing and prompting logic. For example, you might want to preserve the mapping between each topic and the poem being generated from it. In this case, you can define a `Poet` object that inherits from `LLM`, and define your own prompting and parsing logic:
 
 ```python
 from typing import Dict, List
@@ -172,11 +149,11 @@ Curator supports a wide range of providers, including OpenAI, Anthropic, and man
 Here is an example of using Gemini with litellm backend ([docs reference]()):
 ```python
 llm = curator.LLM(
-    model_name="gemini/gemini-1.5-flash",  # LiteLLM model identifier
-    backend="litellm",                      # Specify LiteLLM backend
+    model_name="gemini/gemini-1.5-flash",
+    backend="litellm",
     backend_params={
-        "max_requests_per_minute": 2_000,   # Rate limit for requests
-        "max_tokens_per_minute": 4_000_000  # Token usage limit
+        "max_requests_per_minute": 2_000,
+        "max_tokens_per_minute": 4_000_000
     },
 )
 ```
@@ -223,18 +200,15 @@ llm = curator.LLM(
     backend="openai",
 )
 ```
-## Batch Mode
-```python
-from bespokelabs import curator
+## 📦 Batch Mode
+Several providers offer about 50% discount on token usage when using batch mode. Curator makes it easy to use batch mode with a wide range of providers.
 
-llm = curator.LLM(
-    model_name="deepseek-ai/DeepSeek-R1",
-    backend="klusterai",
-    batch=True,
-    backend_params={"max_retries": 1, "completion_window": "1h"},
-)
+Example with OpenAI ([docs reference](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-openai-for-batch-inference)):
+```python
+llm = curator.LLM(model_name="gpt-4o-mini", batch=True)
 ```
-See documentation
+
+See documentation:
 * [OpenAI batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-openai-for-batch-inference)
 * [Anthropic batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-anthropic-for-batch-inference)
 * [kluster.ai batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
