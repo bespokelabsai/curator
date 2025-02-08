@@ -77,30 +77,15 @@ print(poem.to_pandas())
 
 You can also send a list of prompts to the LLM, or a HuggingFace Dataset object (see below for more details).
 
-> [!TIP]
-> If you are generating large datasets, you may want to use [batch mode](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode) to save costs. Currently batch APIs from [OpenAI](https://platform.openai.com/docs/guides/batch) and [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) are supported. With curator this is as simple as setting `batch=True` in the `LLM` class.
-
 ### Using structured outputs and custom prompting and parsing logic
 
-We can use structured outputs
+Here's an example of using structured outputs and custom prompting and parsing logic.
 
 ```python
-from typing import Dict, List
-from datasets import Dataset
+from typing import Dict
 from pydantic import BaseModel, Field
 from bespokelabs import curator
-
-class Topics(BaseModel):
-    topics_list: List[str] = Field(description="A list of topics.")
-
-class TopicGenerator(curator.LLM):
-  response_format = Topics
-
-  def prompt(self, subject):
-    return f"Return 3 topics related to {subject}"
-
-  def parse(self, input: str, response: Topics):
-    return [{"topic": t} for t in response.topics_list]
+from datasets import Dataset
 
 class Poem(BaseModel):
     title: str = Field(description="The title of the poem.")
@@ -115,28 +100,18 @@ class Poet(curator.LLM):
     def parse(self, input: Dict, response: Poem) -> Dict:
         return [{"title": response.title, "poem": response.poem}]
 
-topic_generator = TopicGenerator(model_name="gpt-4o-mini")
 poet = Poet(model_name="gpt-4o-mini")
+topics = Dataset.from_dict({'topic': ['Dreams of a Robot']})
 
-topics = topic_generator("Mathematics")
 poems = poet(topics)
-
 print(poems.to_pandas())
 ```
 
 ```
-    title	    		      poem
-0	The Language of Algebra	  In symbols and signs, truths intertwine,..
-1	The Geometry of Space	  In the world around us, shapes do collide,..
-2	The Language of Logic	  In circuits and wires where silence speaks,..
-```
+    title	    		            poem
+0   Dreams of a Robot: Awakening    In circuits deep, where silence hums, \nA dre..
+1   Life of an AI Agent - Poem 1    In circuits woven, thoughts ignite,\nI dwell i...
 
-You can also create a `Dataset` object from a HuggingFace Dataset object.
-
-```python
-topics = Dataset.from_dict({'topic': ['Dreams of a Robot']})
-poems = poet(topics)
-```
 
 In the `Poet` class:
 * `response_format` is the structured output class we defined above.
@@ -145,11 +120,40 @@ In the `Poet` class:
 
 Note that `topics` can be created with another `LLM` class as well,
 and we can scale this up to create tens of thousands of diverse poems.
-You can see a more detailed example in the [examples/poem-generation/poem.py](examples/poem-generation/poem.py) file,
-and other examples in the [examples](examples) directory.
+
+```python
+
+class Topics(BaseModel):
+    topics_list: List[str] = Field(description="A list of topics.")
+
+class TopicGenerator(curator.LLM):
+  response_format = Topics
+
+  def prompt(self, subject):
+    return f"Return 3 topics related to {subject}"
+
+  def parse(self, input: str, response: Topics):
+    return [{"topic": t} for t in response.topics_list]
+
+topic_generator = TopicGenerator(model_name="gpt-4o-mini")
+topics = topic_generator("Mathematics")
+poems = poet(topics)
+```
+
+```
+ 	title	    		      poem
+0	The Language of Algebra	  In symbols and signs, truths intertwine,..
+1	The Geometry of Space	  In the world around us, shapes do collide,..
+2	The Language of Logic	  In circuits and wires where silence speaks,..
+```
+
+You can see more examples in the [examples](examples) directory.
 
 See the [docs](https://docs.bespokelabs.ai/) for more details as well as
 for troubleshooting information.
+
+> [!TIP]
+> If you are generating large datasets, you may want to use [batch mode](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode) to save costs. Currently batch APIs from [OpenAI](https://platform.openai.com/docs/guides/batch) and [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) are supported. With curator this is as simple as setting `batch=True` in the `LLM` class.
 
 ### Anonymized Telemetry
 
