@@ -258,6 +258,7 @@ llm = curator.LLM(model_name="gpt-4o-mini", batch=True)
 See documentation:
 * [OpenAI batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-openai-for-batch-inference)
 * [Anthropic batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-anthropic-for-batch-inference)
+* [Gemini batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-gemini-for-batch-inference)
 * [kluster.ai batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
 
 ## Bespoke Curator Viewer
