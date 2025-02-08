@@ -32,8 +32,8 @@
 
 ## 🎉 What's New 
 * **[2025.01.30]** [Batch Processing Support for OpenAI, Anthropic, and other compatible APIs](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half 🔥🔥🔥. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). Please [fill out this form](https://docs.google.com/forms/d/e/1FAIpQLSeBeBKA_19ljeUCkpwkUuUL5YXUUPKUExpjmBaSfmF2XAhwVA/viewform?usp=dialog) to claim your credit.
-* **[2025.01.27]** We used Bespoke-Curator was used to create [OpenThoughts-117k](https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k), a high-quality reasoning dataset (trending on HuggingFace).
-* **[2025.01.22]** Curator was used to create [Bespoke-Stratos-17k](https://huggingface.co/datasets/bespokelabs/Bespoke-Stratos-17k), a high-quality reasoning dataset (trending on HuggingFace).
+* **[2025.01.27]** We used Bespoke Curator to create [OpenThoughts-117k](https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k), a high-quality reasoning dataset (trending on HuggingFace).
+* **[2025.01.22]** We used Bespoke Curator to create [Bespoke-Stratos-17k](https://huggingface.co/datasets/bespokelabs/Bespoke-Stratos-17k), a high-quality reasoning dataset (trending on HuggingFace).
 * **[2025.01.15]** Curator launched 🎉
 
 ## Overview
@@ -82,8 +82,7 @@ You can also send a list of prompts to the LLM, or a HuggingFace Dataset object 
 
 ### Using structured outputs and custom prompting and parsing logic
 
-Let's use structured outputs to generate multiple poems in a single LLM call. We can define a class to encapsulate a list of poems,
-and then pass it to the `LLM` class.
+We can use structured outputs
 
 ```python
 from typing import Dict, List
@@ -91,37 +90,52 @@ from datasets import Dataset
 from pydantic import BaseModel, Field
 from bespokelabs import curator
 
+class Topics(BaseModel):
+    topics_list: List[str] = Field(description="A list of topics.")
+
+class TopicGenerator(curator.LLM):
+  response_format = Topics
+
+  def prompt(self, subject):
+    return f"Return 3 topics related to {subject}"
+
+  def parse(self, input: str, response: Topics):
+    return [{"topic": t} for t in response.topics_list]
 
 class Poem(BaseModel):
-    poem: str = Field(description="A poem.")
-
-
-class Poems(BaseModel):
-    poems: List[Poem] = Field(description="A list of poems.")
-
+    title: str = Field(description="The title of the poem.")
+    poem: str = Field(description="The content of the poem.")
 
 class Poet(curator.LLM):
-    response_format = Poems
+    response_format = Poem
 
     def prompt(self, input: Dict) -> str:
         return f"Write two poems about {input['topic']}."
 
-    def parse(self, input: Dict, response: Poems) -> Dict:
-        return [{"topic": input["topic"], "poem": p.poem} for p in response.poems]
+    def parse(self, input: Dict, response: Poem) -> Dict:
+        return [{"title": response.title, "poem": response.poem}]
 
-
+topic_generator = TopicGenerator(model_name="gpt-4o-mini")
 poet = Poet(model_name="gpt-4o-mini")
 
-topics = Dataset.from_dict({"topic": ["Urban loneliness in a bustling city", "Beauty of Bespoke Labs's Curator library"]})
-poem = poet(topics)
-print(poem.to_pandas())
+topics = topic_generator("Mathematics")
+poems = poet(topics)
+
+print(poems.to_pandas())
 ```
+
 ```
-                                      topic                                               poem
-0       Urban loneliness in a bustling city  In the city’s heart, where the lights never di...
-1       Urban loneliness in a bustling city  Steps echo loudly, pavement slick with rain,\n...
-2  Beauty of Bespoke Labs's Curator library  In the heart of Curation’s realm,  \nWhere art...
-3  Beauty of Bespoke Labs's Curator library  Step within the library’s embrace,  \nA sanctu...
+    title	    		      poem
+0	The Language of Algebra	  In symbols and signs, truths intertwine,..
+1	The Geometry of Space	  In the world around us, shapes do collide,..
+2	The Language of Logic	  In circuits and wires where silence speaks,..
+```
+
+You can also create a `Dataset` object from a HuggingFace Dataset object.
+
+```python
+topics = Dataset.from_dict({'topic': ['Dreams of a Robot']})
+poems = poet(topics)
 ```
 
 In the `Poet` class:
