@@ -11,6 +11,7 @@ from datasets import Dataset
 from pydantic import BaseModel
 from xxhash import xxh64
 
+from bespokelabs.curator.constants import _CURATOR_DEFAULT_CACHE_DIR
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
@@ -19,7 +20,6 @@ from bespokelabs.curator.request_processor.config import BackendParamsType
 if TYPE_CHECKING:
     from datasets import Dataset
 
-_CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
 _DictOrBaseModel = Dict[str, Any] | BaseModel
 logger = logging.getLogger(__name__)
@@ -240,6 +240,12 @@ class LLM:
 
 
 def _get_function_hash(func) -> str:
+    # setting recursion limit to avoid random recursion limit error
+    # todo: understand why this is happening and fix it
+    import sys
+
+    sys.setrecursionlimit(10000)
+
     """Get a hash of a function's source code."""
     if func is None:
         return xxh64("").hexdigest()

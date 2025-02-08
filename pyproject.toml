@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bespokelabs-curator"
-version = "0.1.17.post1"
+version = "0.1.18.post4"
 description = "Bespoke Labs Curator"
 authors = ["Bespoke Labs <company@bespokelabs.ai>"]
 readme = "README.md"
@@ -35,9 +35,13 @@ aiofiles = ">=22.0,<24.0"
 anthropic = "^0.42.0"
 vertexai= "1.71.1"
 vllm = { version = "^0.6.3", optional = true }
+aiodocker = { version = "^0.24.0", optional = true }
+ray = { version = "^2.41.0", optional = true }
+posthog = "^3.11.0"
 
 [tool.poetry.extras]
 vllm = ["vllm"]
+code_execution = ["ray", "aiodocker"]
 
 [tool.poetry.group.dev.dependencies]
 twine = "^5.0.0"
@@ -94,5 +98,6 @@ asyncio_default_fixture_loop_scope = "function"
 [tool.coverage.run]
 omit = [
     "src/bespokelabs/curator/install_ui.py",
-    "src/bespokelabs/curator/status_tracker/offline_status_tracker.py"
-    ]
+    "src/bespokelabs/curator/status_tracker/offline_status_tracker.py",
+    "src/bespokelabs/curator/code_executor/*",
+]

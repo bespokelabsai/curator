@@ -11,6 +11,7 @@ Attributes:
         None indicates non-structured (str) output is expected.
     original_row: The source data being processed. The original row as a dictionary.
     original_row_idx: The index of the original row in the dataset.
+    multimodal_prompt: Flag indicating if the prompt contains multimodal content.
 """
 
 
@@ -23,3 +24,4 @@ class GenericRequest(BaseModel):
     original_row: Dict[str, Any]
     original_row_idx: int
     generation_params: Dict[str, Any] = Field(default_factory=dict)
+    is_multimodal_prompt: bool | None = False

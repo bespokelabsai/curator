@@ -181,7 +181,7 @@ class VLLMOfflineRequestProcessor(BaseOfflineRequestProcessor):
             guided_decoding_params = GuidedDecodingParams(json=response_format)
         else:
             if response_format is not None:
-                logger.warning(f"Model {self.model} does not support structured output via guided decoding, " f"response_format: {response_format}")
+                logger.warning(f"Model {self.model} does not support structured output via guided decoding, response_format: {response_format}")
 
         sampling_params = {
             "guided_decoding": guided_decoding_params,

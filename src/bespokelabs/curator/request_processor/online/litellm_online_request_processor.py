@@ -8,6 +8,7 @@ import instructor
 import litellm
 from pydantic import BaseModel
 
+from bespokelabs.curator.file_utilities import get_base64_size
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
@@ -22,6 +23,7 @@ litellm.suppress_debug_info = True
 _OTPM_LIMIT = defaultdict(lambda: "output_tokens")
 _OTPM_LIMIT["anthropic"] = "max_tokens"
 _CONCURRENT_ONLY_RATELIMIT_PROVIDERS = {"deepinfra"}
+_FILE_UPLOAD_LIMIT_PROVIDERS = {"openai": 20}  # MB
 
 
 class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
@@ -44,8 +46,6 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the LiteLLMOnlineRequestProcessor."""
-        self.default_max_concurrent_requests = 200
-
         super().__init__(config)
         if self.config.base_url is not None:
             litellm.api_base = self.config.base_url
@@ -73,6 +73,11 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         return self.config.model.split("/")[0]
 
     @property
+    def compatible_provider(self) -> str:
+        """Compatible provider property."""
+        return self._provider
+
+    @property
     def max_concurrent_requests(self) -> int | float:
         """Gets the maximum concurrent requests rate limit.
 
@@ -81,7 +86,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         """
         max_concurrent_requests = super().max_concurrent_requests
         if max_concurrent_requests is None and self._concurrency_only_rate_limited:
-            logging.info("Current provider implements concurrency only rate limit, " f"Using default concurrency of {self.default_max_concurrent_requests}")
+            logging.info(f"Current provider implements concurrency only rate limit, Using default concurrency of {self.default_max_concurrent_requests}")
             return self.default_max_concurrent_requests
         return max_concurrent_requests
 
@@ -114,6 +119,19 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     def backend(self):
         """Backend property."""
         return "litellm"
+
+    def file_upload_limit_check(self, base64_image: str) -> None:
+        """Check if the image size is within the allowed limit."""
+        provider = self.config.model.split("/")[0]
+        if provider in _FILE_UPLOAD_LIMIT_PROVIDERS:
+            mb = get_base64_size(base64_image)
+            limit = _FILE_UPLOAD_LIMIT_PROVIDERS[provider]
+            if mb > limit:
+                raise ValueError(f"Uploaded object size is {mb} MB,", f"which is greater than the allowed size of {limit} MB.")
+
+    @property
+    def _multimodal_prompt_supported(self) -> bool:
+        return litellm.supports_vision(self.config.model)
 
     def check_structured_output_support(self):
         """Verify if the model supports structured output via instructor.
@@ -174,6 +192,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             return 0
 
     def _get_max_tokens(self):
+        if self.config.generation_params.get("max_tokens"):
+            return self.config.generation_params["max_tokens"]
         return litellm.get_max_tokens(model=self.config.model)
 
     def estimate_total_tokens(self, messages: list) -> _TokenCount:
@@ -320,9 +340,10 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
                     timeout=self.config.request_timeout,
                 )
                 response_message = response.model_dump() if hasattr(response, "model_dump") else response
-                response_message = response.model_dump() if hasattr(response, "model_dump") else response
             else:
                 completion_obj = await litellm.acompletion(**request.api_specific_request, timeout=self.config.request_timeout)
+                if completion_obj is None:
+                    raise Exception("Response is empty")
                 if self.config.return_completions_object:
                     response_message = dict(completion_obj)
                 else:

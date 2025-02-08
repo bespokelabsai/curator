@@ -18,12 +18,14 @@ import aiofiles
 import aiohttp
 
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
+from bespokelabs.curator.request_processor import _DEFAULT_COST_MAP
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, _TokenCount
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
+from bespokelabs.curator.types.prompt import _MultiModalPrompt
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -67,11 +69,14 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the BaseOnlineRequestProcessor."""
         super().__init__(config)
+
+        defaults = _DEFAULT_COST_MAP["online"]["default"]["ratelimit"]
         self.token_limit_strategy = TokenLimitStrategy.default
         self.manual_max_requests_per_minute = config.max_requests_per_minute
         self.manual_max_tokens_per_minute = config.max_tokens_per_minute
-        self.default_max_requests_per_minute = 10
-        self.default_max_tokens_per_minute = 100_000
+        self.default_max_requests_per_minute = defaults["max_requests_per_minute"]
+        self.default_max_concurrent_requests = defaults["max_concurrent_requests"]
+        self.default_max_tokens_per_minute = defaults["max_tokens_per_minute"][self.token_limit_strategy.value]
         self.header_based_max_requests_per_minute = None
         self.header_based_max_tokens_per_minute = None
 
@@ -89,6 +94,75 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     def backend(self) -> str:
         """Backend property."""
         return "base"
+
+    @property
+    def compatible_provider(self) -> str:
+        """Compatible provider property."""
+        return "base"
+
+    def validate_config(self):
+        """Validate online request processor configuration.
+
+        Ensures that configuration parameters are set correctly.
+
+        Raises:
+            ValueError: If configuration parameters are invalid
+        """
+        pass
+
+    def _unpack_multimodal(self, request: GenericRequest) -> GenericRequest:
+        messages = request.messages
+        if request.is_multimodal_prompt is True and self._multimodal_prompt_supported is False:
+            raise TypeError(f"Multimodal prompts are not supported by this model {self.config.model}.")
+
+        if request.is_multimodal_prompt is False:
+            return request
+
+        unpacked_messages = []
+        for message in messages:
+            # Load message content as multimodal prompt
+            content = _MultiModalPrompt.model_validate(message["content"])
+            content = self._handle_multi_modal_prompt(content)
+            message["content"] = content
+            unpacked_messages.append(message)
+
+        request.messages = unpacked_messages
+        return request
+
+    @abstractmethod
+    def file_upload_limit_check(self, base64_image: str) -> None:
+        """Check if the image size is within the allowed limit."""
+        pass
+
+    def _handle_multi_modal_prompt(self, message):
+        def _openai_mutlimodal_format(data, mime_type="image/png"):
+            if data.url and not data.is_local:
+                return {"type": "image_url", "image_url": {"url": data.url}}
+            else:
+                base64_content = data.serialize()
+                self.file_upload_limit_check(base64_content)
+
+                content = {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:{mime_type};base64,{base64_content}",
+                    },
+                }
+                if mime_type == "image/png":
+                    content["image_url"].update({"detail": data.detail})
+                return content
+
+        content = []
+        texts = message.texts
+
+        for text in texts:
+            content.append({"type": "text", "text": text})
+        for image in message.images:
+            content.append(_openai_mutlimodal_format(image))
+        for file in message.files:
+            content.append(_openai_mutlimodal_format(file, mime_type=file.mime_type))
+
+        return content
 
     @property
     def max_concurrent_requests(self) -> int | None:
@@ -242,6 +316,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             token_limit_strategy=self.token_limit_strategy,
             max_requests_per_minute=self.max_requests_per_minute,
             max_tokens_per_minute=self.max_tokens_per_minute,
+            compatible_provider=self.compatible_provider,
         )
 
         completed_request_ids = self.validate_existing_response_file(response_file)
@@ -262,10 +337,14 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 async for line in file:
                     if self._semaphore:
                         await self._semaphore.acquire()
+
                     generic_request = GenericRequest.model_validate_json(line)
 
                     if generic_request.original_row_idx in completed_request_ids:
                         continue
+
+                    # Unpack multimodal prompts
+                    generic_request = self._unpack_multimodal(generic_request)
 
                     request = APIRequest(
                         task_id=status_tracker.num_tasks_started,

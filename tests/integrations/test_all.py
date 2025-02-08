@@ -1,4 +1,5 @@
 import datetime
+import gc
 import hashlib
 import importlib
 import logging
@@ -57,6 +58,7 @@ def test_basic_without_dataset(temp_working_dir):
         "litellm": "6d0d46117661a8c0e725eb83c9299c3cbad38bbfe236715f99d69432423e5787",
     }
 
+    # Test string prompt
     with vcr_config.use_cassette("basic_completion_without_dataset.yaml"):
         # Capture the output to verify status tracker
         output = StringIO()
@@ -69,6 +71,22 @@ def test_basic_without_dataset(temp_working_dir):
         assert "Generating data using gpt-4o-mini" in captured, captured
         assert "3" in captured, captured  # Verify total requests processed
         assert "Final Curator Statistics" in captured, captured
+        # Verify response content
+        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+        assert _hash_string(recipes) == hash_book[backend]
+
+
+@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+def test_basic_without_dataset_raw_prompt(temp_working_dir):
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    hash_book = {
+        "openai": "d52319f1976f937ff24f9d53e9c773f37f587dc2fa0d4a4da355e41e5c1eb500",
+        "litellm": "6d0d46117661a8c0e725eb83c9299c3cbad38bbfe236715f99d69432423e5787",
+    }
+
+    # Test raw prompt i.e list of dictionaries
+    with vcr_config.use_cassette("basic_completion_without_dataset.yaml"):
+        dataset = helper.create_basic(temp_working_dir, mock_dataset=None, backend=backend, model="gpt-4o-mini", raw_prompt=True)
         # Verify response content
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
@@ -184,6 +202,8 @@ def test_resume(caplog, temp_working_dir, mock_dataset):
         with pytest.raises(TimeoutError):
             with Timeout(5):
                 helper.create_basic(temp_working_dir, mock_dataset, llm_params={"max_requests_per_minute": 1})
+        # Explicity garbage collect the rich live object.
+        gc.collect()
 
         logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
         with caplog.at_level(logging.INFO, logger=logger):

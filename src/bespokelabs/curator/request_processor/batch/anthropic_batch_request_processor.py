@@ -285,7 +285,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             try:
                 batch = await self.client.messages.batches.retrieve(batch.id)
             except NotFoundError:
-                logger.warning(f"batch object {batch.id} not found. " f"Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
+                logger.warning(f"batch object {batch.id} not found. Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
                 return None
 
             request_file = self.tracker.submitted_batches[batch.id].request_file

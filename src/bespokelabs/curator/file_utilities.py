@@ -20,3 +20,11 @@ def count_lines(filename):
     f = open(filename, "rb")
     f_gen = _file_gen(f.raw.read)
     return sum(buf.count(b"\n") for buf in f_gen)
+
+
+def get_base64_size(b64_string):
+    """Size of a base64 string in MB."""
+    padding = b64_string.count("=")
+    size_bytes = (len(b64_string) * 3) // 4 - padding
+    size_mb = size_bytes / (1024 * 1024)
+    return size_mb

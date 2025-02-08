@@ -31,28 +31,14 @@
 </div>
 
 ## 🎉 What's New 
-
-#### [2025.01.30] Batch Processing Support
-
-- [Batch Mode](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half: 
-  We’re launching Curator batch mode with support for OpenAI, Anthropic, and other compatible APIs. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). Please [fill out this form](https://docs.google.com/forms/d/e/1FAIpQLSeBeBKA_19ljeUCkpwkUuUL5YXUUPKUExpjmBaSfmF2XAhwVA/viewform?usp=dialog) to claim your credit.
-```python
-from bespokelabs import curator
-
-llm = curator.LLM(
-    model_name="deepseek-ai/DeepSeek-R1",
-    backend="klusterai",
-    batch=True,
-    backend_params={"max_retries": 1, "completion_window": "1h"},
-)
-```
-
-
+* **[2025.01.30]** [Batch Processing Support for OpenAI, Anthropic, and other compatible APIs](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half 🔥🔥🔥. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). Please [fill out this form](https://docs.google.com/forms/d/e/1FAIpQLSeBeBKA_19ljeUCkpwkUuUL5YXUUPKUExpjmBaSfmF2XAhwVA/viewform?usp=dialog) to claim your credit.
+* **[2025.01.27]** We used Bespoke Curator to create [OpenThoughts-117k](https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k), a high-quality reasoning dataset (trending on HuggingFace).
+* **[2025.01.22]** We used Bespoke Curator to create [Bespoke-Stratos-17k](https://huggingface.co/datasets/bespokelabs/Bespoke-Stratos-17k), a high-quality reasoning dataset (trending on HuggingFace).
+* **[2025.01.15]** Curator launched 🎉
 
 ## Overview
 
-
-Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structure, Curator will prepare high-quality data quickly and robustly.
+Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structured data, Curator will prepare high-quality data quickly and robustly.
 
 * Rich Python based library for generating and curating synthetic data.
 * Interactive viewer to monitor data while it is being generated.
@@ -64,13 +50,13 @@ Bespoke Curator makes it easy to create synthetic data pipelines. Whether you ar
 
 Check out our full documentation for [getting started](https://docs.bespokelabs.ai/bespoke-curator/getting-started), [tutorials](https://docs.bespokelabs.ai/bespoke-curator/tutorials), [guides](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides) and detailed [reference](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation).
 
-## Installation
+## 🛠️ Installation
 
 ```bash
 pip install bespokelabs-curator
 ```
 
-## Quickstart
+## 🚀 Quickstart
 
 ### Using `curator.LLM`
 
@@ -80,95 +66,53 @@ llm = curator.LLM(model_name="gpt-4o-mini")
 poem = llm("Write a poem about the importance of data in AI.")
 print(poem.to_pandas())
 ```
-
 > [!NOTE]
 > Retries and caching are enabled by default to help you rapidly iterate your data pipelines.
 > So now if you run the same prompt again, you will get the same response, pretty much instantly.
 > You can delete the cache at `~/.cache/curator` or disable it with `export CURATOR_DISABLE_CACHE=true`.
 
-### Calling other models
-You can also call other [LiteLLM](https://docs.litellm.ai/docs/) supported models by
-changing the `model_name` argument.
-
-```python
-llm = curator.LLM(model_name="claude-3-5-sonnet-20240620")
-```
-
-In addition to a wide range of API providers, local web servers (hosted by [vLLM](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#online-mode-server) or [Ollama](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-ollama-with-curator)) are supported via LiteLLM. For completely offline inference directly through vLLM, see the [documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#offline-mode-local).
 
 > [!IMPORTANT]
 > Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
 
-> [!TIP]
-> If you are generating large datasets, you may want to use [batch mode](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode) to save costs. Currently batch APIs from [OpenAI](https://platform.openai.com/docs/guides/batch) and [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) are supported. With curator this is as simple as setting `batch=True` in the `LLM` class.
+You can also send a list of prompts to the LLM, or a HuggingFace Dataset object (see below for more details).
 
-### Using structured outputs
+### Using structured outputs and custom prompting and parsing logic
 
-Let's use structured outputs to generate multiple poems in a single LLM call. We can define a class to encapsulate a list of poems,
-and then pass it to the `LLM` class.
+Here's an example of using structured outputs and custom prompting and parsing logic.
 
 ```python
-from typing import List
+from typing import Dict
 from pydantic import BaseModel, Field
 from bespokelabs import curator
-
-class Poem(BaseModel):
-    poem: str = Field(description="A poem.")
-
-
-class Poems(BaseModel):
-    poems_list: List[Poem] = Field(description="A list of poems.")
-
-
-llm = curator.LLM(model_name="gpt-4o-mini", response_format=Poems)
-poems = llm(["Write two poems about the importance of data in AI.", 
-              "Write three haikus about the importance of data in AI."])
-print(poems.to_pandas())
-```
-
-Note how each `Poems` object occupies a single row in the dataset. 
-
-
-For more advanced use cases, you might need to define more custom parsing and prompting logic. For example, you might want to preserve the mapping between each topic and the poem being generated from it. In this case, you can define a `Poet` object that inherits from `LLM`, and define your own prompting and parsing logic:
-
-```python
-from typing import Dict, List
 from datasets import Dataset
-from pydantic import BaseModel, Field
-from bespokelabs import curator
-
 
 class Poem(BaseModel):
-    poem: str = Field(description="A poem.")
-
-
-class Poems(BaseModel):
-    poems: List[Poem] = Field(description="A list of poems.")
-
+    title: str = Field(description="The title of the poem.")
+    poem: str = Field(description="The content of the poem.")
 
 class Poet(curator.LLM):
-    response_format = Poems
+    response_format = Poem
 
     def prompt(self, input: Dict) -> str:
         return f"Write two poems about {input['topic']}."
 
-    def parse(self, input: Dict, response: Poems) -> Dict:
-        return [{"topic": input["topic"], "poem": p.poem} for p in response.poems]
-
+    def parse(self, input: Dict, response: Poem) -> Dict:
+        return [{"title": response.title, "poem": response.poem}]
 
 poet = Poet(model_name="gpt-4o-mini")
+topics = Dataset.from_dict({'topic': ['Dreams of a Robot']})
 
-topics = Dataset.from_dict({"topic": ["Urban loneliness in a bustling city", "Beauty of Bespoke Labs's Curator library"]})
-poem = poet(topics)
-print(poem.to_pandas())
+poems = poet(topics)
+print(poems.to_pandas())
 ```
+Output:
 ```
-                                      topic                                               poem
-0       Urban loneliness in a bustling city  In the city’s heart, where the lights never di...
-1       Urban loneliness in a bustling city  Steps echo loudly, pavement slick with rain,\n...
-2  Beauty of Bespoke Labs's Curator library  In the heart of Curation’s realm,  \nWhere art...
-3  Beauty of Bespoke Labs's Curator library  Step within the library’s embrace,  \nA sanctu...
+    title                           poem
+0   Dreams of a Robot: Awakening    In circuits deep, where silence hums, \nA dre..
+1   Life of an AI Agent - Poem 1    In circuits woven, thoughts ignite,\nI dwell i...
 ```
+
 In the `Poet` class:
 * `response_format` is the structured output class we defined above.
 * `prompt` takes the input (`input`) and returns the prompt for the LLM.
@@ -176,11 +120,146 @@ In the `Poet` class:
 
 Note that `topics` can be created with another `LLM` class as well,
 and we can scale this up to create tens of thousands of diverse poems.
-You can see a more detailed example in the [examples/poem-generation/poem.py](examples/poem-generation/poem.py) file,
-and other examples in the [examples](examples) directory.
+
+```python
+
+class Topics(BaseModel):
+    topics_list: List[str] = Field(description="A list of topics.")
+
+class TopicGenerator(curator.LLM):
+  response_format = Topics
+
+  def prompt(self, subject):
+    return f"Return 3 topics related to {subject}"
+
+  def parse(self, input: str, response: Topics):
+    return [{"topic": t} for t in response.topics_list]
+
+topic_generator = TopicGenerator(model_name="gpt-4o-mini")
+topics = topic_generator("Mathematics")
+poems = poet(topics)
+```
+Output:
+```
+ 	title                     poem
+0	The Language of Algebra	  In symbols and signs, truths intertwine,..
+1	The Geometry of Space	  In the world around us, shapes do collide,..
+2	The Language of Logic	  In circuits and wires where silence speaks,..
+```
+
+You can see more examples in the [examples](examples) directory.
 
 See the [docs](https://docs.bespokelabs.ai/) for more details as well as
 for troubleshooting information.
+
+> [!TIP]
+> If you are generating large datasets, you may want to use [batch mode](https://docs.bespokelabs.ai/bespoke-curator/tutorials/save-usdusdusd-with-batch-mode) to save costs. Currently batch APIs from [OpenAI](https://platform.openai.com/docs/guides/batch) and [Anthropic](https://docs.anthropic.com/en/docs/build-with-claude/message-batches) are supported. With curator this is as simple as setting `batch=True` in the `LLM` class.
+
+### Anonymized Telemetry
+
+We collect minimal, anonymized usage telemetry to help prioritize new features and improvements that benefit the Curator community. You can opt out by setting the `TELEMETRY_ENABLED` environment variable to `False`. 
+
+## 📖 Providers
+Curator supports a wide range of providers, including OpenAI, Anthropic, and many more. 
+
+### OpenAI backend
+```python
+llm = curator.LLM(
+    model_name="gpt-4o-mini",
+)
+```
+For other models that support OpenAI-compatible APIs, you can use the `openai` backend:
+```python
+llm = curator.LLM(
+    model_name="gpt-4o-mini",
+    backend="openai",
+    backend_params={
+        "base_url": "https://your-openai-compatible-api-url",
+        "api_key": <YOUR_OPENAI_COMPATIBLE_SERVICE_API_KEY>,
+    },
+)
+```
+
+
+### LiteLLM (Anthropic, Gemini, together.ai, etc.)
+Here is an example of using Gemini with litellm backend:
+```python
+llm = curator.LLM(
+    model_name="gemini/gemini-1.5-flash",
+    backend="litellm",
+    backend_params={
+        "max_requests_per_minute": 2_000,
+        "max_tokens_per_minute": 4_000_000
+    },
+)
+```
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-litellm-for-diverse-providers)
+
+### Ollama
+```python
+llm = curator.LLM(
+    model_name="ollama/llama3.1:8b",  # Ollama model identifier
+    backend_params={"base_url": "http://localhost:11434"},
+)
+```
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-ollama-with-curator#id-2.-configure-the-ollama-backend)
+
+### vLLM
+
+```python
+llm = curator.LLM( 
+    model_name="Qwen/Qwen2.5-3B-Instruct", 
+    backend="vllm", 
+    backend_params={ 
+        "tensor_parallel_size": 1, # Adjust based on GPU count 
+        "gpu_memory_utilization": 0.7 
+    }
+)
+```
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-vllm-with-curator#id-3-initialize-and-use-the-generator)
+### DeepSeek
+DeepSeek offers an OpenAI-compatible API that you can use with the `openai` backend.
+> [!IMPORTANT]
+> The DeepSeek API is experiencing intermittent issues and will return empty responses during times of high traffic. We recommend
+calling the DeepSeek API through the `openai` backend, with a high max retries so that we can retry failed requests upon empty
+response and a reasonable max requests and tokens per minute so we don't retry too aggressively and overwhelm the API.
+
+```python
+llm = curator.LLM(
+    model_name="deepseek-reasoner",
+    generation_params={"temp": 0.0},
+    backend_params={
+        "max_requests_per_minute": 100,
+        "max_tokens_per_minute": 10_000_000,
+        "base_url": "https://api.deepseek.com/",
+        "api_key": <YOUR_DEEPSEEK_API_KEY>,
+        "max_retries": 50,
+    },
+    backend="openai",
+)
+```
+
+### kluster.ai
+```python
+llm = curator.LLM(
+    model_name="deepseek-ai/DeepSeek-R1", 
+    backend="klusterai",
+)
+```
+[Documentation](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
+## 📦 Batch Mode
+Several providers offer about 50% discount on token usage when using batch mode. Curator makes it easy to use batch mode with a wide range of providers.
+
+Example with OpenAI ([docs reference](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-openai-for-batch-inference)):
+```python
+llm = curator.LLM(model_name="gpt-4o-mini", batch=True)
+```
+
+See documentation:
+* [OpenAI batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-openai-for-batch-inference)
+* [Anthropic batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-anthropic-for-batch-inference)
+* [Gemini batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-gemini-for-batch-inference)
+* [kluster.ai batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
 
 ## Bespoke Curator Viewer
 
@@ -240,9 +319,10 @@ If you find Curator useful, please consider citing us!
 
 ```
 @software{Curator: A Tool for Synthetic Data Creation,
-  author = {Marten, Ryan and Vu, Trung and Cheng-Jie Ji, Charlie and Sharma, Kartik and Dimakis, Alex and Sathiamoorthy, Mahesh},
+  author = {Marten, Ryan* and Vu, Trung* and Cheng-Jie Ji, Charlie and Sharma, Kartik and Pimpalgaonkar, Shreyas and Dimakis, Alex and Sathiamoorthy, Maheswaran},
   month = jan,
   title = {{Curator}},
-  year = {2025}
+  year = {2025},
+  howpublished = {\url{https://github.com/bespokelabsai/curator}}
 }
 ```

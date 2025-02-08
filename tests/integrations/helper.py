@@ -23,11 +23,34 @@ class QAs(BaseModel):
 
 
 class BasicLLM(curator.LLM):
+    def __init__(self, *args, **kwargs):
+        self.raw_prompt = kwargs.pop("raw_prompt", False)
+        super().__init__(*args, **kwargs)
+
     def prompt(self, input: dict) -> str:
+        if self.raw_prompt:
+            return [{"role": "user", "content": input["text"]}]
         return input["dish"]
 
     def parse(self, input: dict, response) -> dict:
         return {"recipe": response}
+
+
+class MultiModalLLM(curator.LLM):
+    def __init__(self, *args, **kwargs):
+        self.input_type = kwargs.pop("input_type", "image")
+        super().__init__(*args, **kwargs)
+
+    def prompt(self, input: dict):
+        if self.input_type == "image":
+            if isinstance(input["image"], str):
+                return input["text"], curator.types.Image(url=input["image"])
+            return input["text"], curator.types.Image(content=input["image"])
+        else:
+            return input["text"], curator.types.File(url=input["pdf"])
+
+    def parse(self, input: dict, response) -> dict:
+        return {"description": response}
 
 
 class Poems(BaseModel):
@@ -37,8 +60,15 @@ class Poems(BaseModel):
 class Poet(curator.LLM):
     response_format = Poems
 
+    def __init__(self, *args, **kwargs):
+        self.raw_prompt = kwargs.pop("raw_prompt", False)
+        super().__init__(*args, **kwargs)
+
     def prompt(self, input: dict) -> str:
-        return "Write two simple poems."
+        prompt = "Write two simple poems."
+        if self.raw_prompt:
+            return [{"role": "user", "content": prompt}]
+        return prompt
 
     def parse(self, input: dict, response: Poems) -> dict:
         return [{"poem": p} for p in response.poems_list]
@@ -130,6 +160,7 @@ def create_basic(
     model=None,
     return_prompter=False,
     batch_check_interval=1,
+    raw_prompt=False,
 ):
     llm_params = llm_params or {}
     if batch:
@@ -141,6 +172,7 @@ def create_basic(
             backend=backend,
             batch=batch,
             backend_params=llm_params,
+            raw_prompt=raw_prompt,
         )
     else:
         prompter = BasicLLM(
@@ -148,6 +180,7 @@ def create_basic(
             backend=backend,
             batch=batch,
             backend_params=llm_params,
+            raw_prompt=raw_prompt,
         )
     prompter._request_processor._tracker_console = tracker_console
     if mocking:
@@ -174,5 +207,20 @@ def create_llm(batch=False, batch_check_interval=1):
         backend="openai",
         backend_params=backend_params,
         batch=batch,
+    )
+    return prompter
+
+
+def create_multimodal_llm(batch=False, batch_check_interval=1, model="gpt-4o-mini", backend="openai", input_type="image"):
+    if batch:
+        backend_params = {"batch_check_interval": batch_check_interval}
+    else:
+        backend_params = {}
+    prompter = MultiModalLLM(
+        model_name=model,
+        backend=backend,
+        backend_params=backend_params,
+        batch=batch,
+        input_type=input_type,
     )
     return prompter

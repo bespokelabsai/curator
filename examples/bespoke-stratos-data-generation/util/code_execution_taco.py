@@ -21,7 +21,7 @@ def run_test_with_timeout(problem, generation):
         result = taco_run_test(problem, test=generation, debug=False)
         return bool(result and np.all(result))
     except Exception as e:
-        print(f"Error in run_test: {e}")
+        print(f"Exception in run_test_with_timeout: {e}")
         return False
 
 
@@ -79,7 +79,7 @@ def process_single_row(row: dict) -> dict:
         return {**row, "correctness": False, "reason": f"Processing error: {str(e)}"}
 
 
-def process_dataset_parallel(df: Dataset, num_cpus: int = None, batch_size: int = 1024) -> Dataset:
+def process_dataset_parallel(df: Dataset, num_cpus: int = None, batch_size: int = 2048) -> Dataset:
     """Process the dataset in parallel using multiple CPUs.
 
     Args:

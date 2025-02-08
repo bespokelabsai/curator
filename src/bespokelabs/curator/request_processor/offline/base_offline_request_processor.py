@@ -74,6 +74,16 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         """Backend property."""
         return "base"
 
+    def validate_config(self):
+        """Validate offline request processor configuration.
+
+        Ensures that configuration parameters are set correctly.
+
+        Raises:
+            ValueError: If configuration parameters are invalid
+        """
+        pass
+
     def load_offline_model(self):
         """Load the offline model into memory.
 

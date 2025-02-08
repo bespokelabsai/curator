@@ -1,5 +1,6 @@
 """Module for formatting prompts and handling responses for LLM interactions."""
 
+import copy
 import inspect
 import json
 import logging
@@ -9,6 +10,7 @@ from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 from pydantic import BaseModel, ValidationError
 
 from bespokelabs.curator.types.generic_request import GenericRequest
+from bespokelabs.curator.types.prompt import _MultiModalPrompt
 
 T = TypeVar("T")
 _DictOrBaseModel = Union[Dict[str, Any], BaseModel]
@@ -31,13 +33,13 @@ def _validate_messages(messages: list[dict]) -> None:
 
     for msg in messages:
         if not isinstance(msg, dict):
-            raise ValueError("In the return value (a list) of the prompt_func, each " "message must be a dictionary")
+            raise ValueError("In the return value (a list) of the prompt_func, each message must be a dictionary")
 
         if "role" not in msg or "content" not in msg:
-            raise ValueError("In the return value (a list) of the prompt_func, each " "message must contain 'role' and 'content' keys")
+            raise ValueError("In the return value (a list) of the prompt_func, each message must contain 'role' and 'content' keys")
 
         if msg["role"] not in valid_roles:
-            raise ValueError(f"In the return value (a list) of the prompt_func, " f"each message role must be one of: {', '.join(sorted(valid_roles))}")
+            raise ValueError(f"In the return value (a list) of the prompt_func, each message role must be one of: {', '.join(sorted(valid_roles))}")
 
 
 @dataclass
@@ -58,13 +60,13 @@ class PromptFormatter:
     response_format: Optional[Type[BaseModel]] = None
     generation_params: dict = field(default_factory=dict)
 
-    def create_generic_request(self, row: _DictOrBaseModel, idx: int) -> GenericRequest:
+    def create_generic_request(self, row: _DictOrBaseModel, idx: int, generation_params_per_row: bool = False) -> GenericRequest:
         """Format the request object based off of `LLM` attributes.
 
         Args:
             row: Input data to format into a prompt
             idx: Index of the row in the dataset
-
+            generation_params_per_row: Whether the dataset has a generation_params column
         Returns:
             GenericRequest object containing the formatted request
 
@@ -79,17 +81,35 @@ class PromptFormatter:
         else:
             raise ValueError(f"Prompting function {self.prompt_func} must have 0 or 1 arguments.")
 
+        multimodal_prompt = False
         if isinstance(prompts, str):
             messages = [{"role": "user", "content": prompts}]
         elif isinstance(prompts, list):
+            multimodal_prompt = False
             _validate_messages(prompts)
             messages = prompts
+        elif isinstance(prompts, tuple):
+            multimodal_prompt = True
+            messages = [{"role": "user", "content": _MultiModalPrompt.load(prompts)}]
         else:
-            raise ValueError("The return value of the prompt_func must be a list of dictionaries.")
+            raise ValueError(f"The return value of the `prompt` method {type(prompts)} did not match the expected format.")
 
         # Convert BaseModel to dict for serialization
         if isinstance(row, BaseModel):
             row = row.model_dump()
+
+        row_generation_params = copy.deepcopy(self.generation_params)
+        # Specify generation_params given in the row if applicable
+        if generation_params_per_row:
+            try:
+                # Convert generation_params back to dict
+                # Previously it was passed into the Dataset as a string to avoid automatic dictionary expansion
+                # See https://github.com/bespokelabsai/curator/issues/325 for more detail
+                loaded_params = json.loads(row["generation_params"])
+                # Update only the keys that exist in row-level generation_params
+                row_generation_params.update(loaded_params)
+            except json.JSONDecodeError:
+                logger.warning(f"Failed to parse generation params as JSON: {row['generation_params']}. Using default generation params.")
 
         return GenericRequest(
             model=self.model_name,
@@ -97,7 +117,8 @@ class PromptFormatter:
             original_row=row,
             original_row_idx=idx,
             response_format=(self.response_format.model_json_schema() if self.response_format else None),
-            generation_params=self.generation_params,
+            is_multimodal_prompt=multimodal_prompt,
+            generation_params=row_generation_params,
         )
 
     def response_to_response_format(self, response_message: str | dict) -> Optional[dict | str]:
@@ -130,7 +151,7 @@ class PromptFormatter:
                 try:
                     response_dict = json.loads(response_message)
                 except json.JSONDecodeError as e:
-                    logger.warning(f"Failed to parse response message as JSON: {response_message}. " f"The model likely returned an invalid JSON format.")
+                    logger.warning(f"Failed to parse response message as JSON: {response_message}. The model likely returned an invalid JSON format.")
                     raise e
             else:
                 response_dict = response_message

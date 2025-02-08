@@ -62,6 +62,17 @@ class BaseRequestProcessor(ABC):
         return "base"
 
     @abstractmethod
+    def validate_config(self):
+        """Validate request processor configuration.
+
+        Ensures that configuration parameters are set correctly.
+
+        Raises:
+            ValueError: If configuration parameters are invalid
+        """
+        pass
+
+    @abstractmethod
     def requests_to_responses(self, generic_request_files: list[str]) -> None:
         """Process request files and generate responses.
 
@@ -109,6 +120,7 @@ class BaseRequestProcessor(ABC):
             return output_dataset
         logger.info(f"Running {self.__class__.__name__} completions with model: {self.config.model}")
 
+        self.validate_config()
         self.prompt_formatter = prompt_formatter
         if self.prompt_formatter.response_format:
             if not self.check_structured_output_support():
@@ -116,7 +128,6 @@ class BaseRequestProcessor(ABC):
         generic_request_files = self.create_request_files(dataset)
 
         self.requests_to_responses(generic_request_files)
-
         return self.create_dataset_files(parse_func_hash)
 
     def _verify_existing_request_files(self, dataset: Optional["Dataset"]) -> List[int]:
@@ -168,6 +179,10 @@ class BaseRequestProcessor(ABC):
             incomplete_files = list(range(expected_num_files))
             return incomplete_files
 
+    @property
+    def _multimodal_prompt_supported(self) -> bool:
+        return False
+
     def create_request_files(self, dataset: Optional["Dataset"]) -> list[str]:
         """Creates request files if they don't exist or uses existing ones.
 
@@ -213,6 +228,9 @@ class BaseRequestProcessor(ABC):
         if dataset is None:
             with open(request_file, "w") as f:
                 generic_request = self.prompt_formatter.create_generic_request(dict(), 0)  # noqa: C408
+                if generic_request.is_multimodal_prompt is True:
+                    assert self._multimodal_prompt_supported, "Requested processor does not support multimodal prompts."
+
                 generic_request.generation_params = self.config.generation_params
                 f.write(json.dumps(generic_request.model_dump(), default=str) + "\n")
 
@@ -266,12 +284,15 @@ class BaseRequestProcessor(ABC):
         else:
             end_idx = len(dataset)
 
+        # Check if we need to vary generation_params per row
+        generation_params_per_row = "generation_params" in dataset.column_names
+        if self.prompt_formatter.generation_params and generation_params_per_row:
+            logger.warning("Found both default and row-level generation_params. Collided keys will follow values in row-level config.")
         async with aiofiles.open(request_file, "w") as f:
             for idx, dataset_row in enumerate(dataset):
                 dataset_row_idx = idx + start_idx
                 # Get the generic request from the map function
-                request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx)
-                request.generation_params = self.config.generation_params
+                request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, generation_params_per_row)
                 await f.write(json.dumps(request.model_dump(), default=str) + "\n")
 
         num_requests = end_idx - start_idx
@@ -454,7 +475,7 @@ class BaseRequestProcessor(ABC):
                 sample=json.dumps(dataset[0], indent=4),
             )
         )
-        card.push_to_hub(repo_id, **kwargs)
+        card.push_to_hub(repo_id)
 
     def validate_existing_response_file(self, response_file: str) -> set[int]:
         """Parse an existing response file to identify completed requests and removes failed requests.

@@ -10,6 +10,8 @@ import requests
 import tiktoken
 
 from bespokelabs.curator.cost import cost_processor_factory
+from bespokelabs.curator.file_utilities import get_base64_size
+from bespokelabs.curator.request_processor import openai_request_mixin
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
 from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
@@ -21,6 +23,9 @@ T = TypeVar("T")
 logger = logger = logging.getLogger(__name__)
 
 _DEFAULT_OPENAI_URL: str = "https://api.openai.com/v1/chat/completions"
+
+_OPENAI_MULTIMODAL_SUPPORTED_MODELS = {"gpt-4o", "gpt-4o-mini", "gpt-4o-vision"}
+_OPENAI_ALLOWED_IMAGE_SIZE_MB = 20
 
 
 class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixin):
@@ -126,7 +131,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             num_tokens += 4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
             for key, value in message.items():
                 try:
-                    num_tokens += len(self.token_encoding.encode(str(value), disallowed_special=()))
+                    num_tokens += openai_request_mixin.calculate_input_tokens(value, self.token_encoding)
                 except TypeError:
                     logger.warning(f"Failed to encode value {value} with tiktoken. Assuming 1 token per 4 chars.")
                     num_tokens += len(str(value)) // 4
@@ -172,6 +177,16 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         return False
 
+    def file_upload_limit_check(self, base64_image: str) -> None:
+        """Check if the image size is within the allowed limit."""
+        mb = get_base64_size(base64_image)
+        if mb > _OPENAI_ALLOWED_IMAGE_SIZE_MB:
+            raise ValueError(f"Image size is {mb} MB, which is greater than the allowed size of {_OPENAI_ALLOWED_IMAGE_SIZE_MB} MB.")
+
+    @property
+    def _multimodal_prompt_supported(self) -> bool:
+        return any(self.config.model.startswith(k) for k in _OPENAI_MULTIMODAL_SUPPORTED_MODELS)
+
     def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
         """Create an OpenAI-specific request from a generic request.
 
@@ -198,7 +213,6 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         request_header = {"Authorization": f"Bearer {self.api_key}"}
         if "/deployments" in self.url:  # Azure deployment
             request_header = {"api-key": f"{self.api_key}"}
-
         async with session.post(
             self.url,
             headers=request_header,
@@ -207,10 +221,13 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         ) as response_obj:
             response = await response_obj.json()
 
-            if "error" in response:
+            if response is None:
+                raise Exception("Response is empty")
+            elif "error" in response:
                 status_tracker.num_api_errors += 1
                 error = response["error"]
-                if "rate limit" in error.get("message", "").lower():
+                error_message = error if isinstance(error, str) else error.get("message", "")
+                if "rate limit" in error_message.lower():
                     status_tracker.time_of_last_rate_limit_error = time.time()
                     status_tracker.num_rate_limit_errors += 1
                     status_tracker.num_api_errors -= 1
@@ -225,7 +242,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                 response_message = dict(response)
             else:
                 response_message = response["choices"][0]["message"]["content"]
-            finish_reason = response["choices"][0].get("finish_reason", "unkown")
+            finish_reason = response["choices"][0].get("finish_reason", "unknown")
             usage = response["usage"]
             token_usage = TokenUsage(
                 prompt_tokens=usage["prompt_tokens"],
