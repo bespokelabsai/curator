@@ -35,7 +35,7 @@ llm = Reasoner(
             "order": ["Fireworks", "Kluster"],  # https://openrouter.ai/deepseek/deepseek-r1/providers
             "allow_fallbacks": False,  # Strictly require providers given, which have the highest output tokens
             "sort": "throughput",  # Use the highest throughput provider
-            "require_parameters": True,  # Require include_reasoning and max_tokens
+            "require_parameters": True,  # Require include_reasoning
         },
     },
     backend_params={
