@@ -33,7 +33,7 @@ llm = Reasoner(
         "max_tokens": 40000,  # Matching DeepSeek's official API that has 32k CoT and 8k max answer tokens
         "provider": {  # https://openrouter.ai/docs/provider-routing
             "order": ["Fireworks", "Kluster"],  # https://openrouter.ai/deepseek/deepseek-r1/providers
-            "allow_fallbacks": False,  # Strictly require providers given
+            "allow_fallbacks": False,  # Strictly require providers given, which have the highest output tokens
             "sort": "throughput",  # Use the highest throughput provider
             "require_parameters": True,  # Require include_reasoning and max_tokens
         },
