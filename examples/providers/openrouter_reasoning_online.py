@@ -6,7 +6,7 @@ from bespokelabs import curator
 
 
 class Reasoner(curator.LLM):
-    """Curator class for processing Numina dataset."""
+    """Curator class for reasoning."""
 
     return_completions_object = True
 
