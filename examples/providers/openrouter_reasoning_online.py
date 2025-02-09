@@ -52,4 +52,4 @@ dataset = Dataset.from_dict({"problem": ["Find the sum of all integer bases $b >
 
 response = llm(dataset)
 print("REASONING: ", response["deepseek_reasoning"])
-print("SOLUTION: ", response["deepseek_solution"])
+print("\n\nSOLUTION: ", response["deepseek_solution"])
