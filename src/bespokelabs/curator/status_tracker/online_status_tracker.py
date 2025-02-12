@@ -21,6 +21,11 @@ from bespokelabs.curator.types.generic_response import TokenUsage
 
 logger = logging.getLogger(__name__)
 
+_TOKEN_LIMIT_STRATEGY_DESCRIPTION = {
+    "combined": "combined input/output",
+    "seperate": "separate input/output",
+}
+
 
 class TokenLimitStrategy(str, Enum):
     """Token limit Strategy enum."""
@@ -31,7 +36,7 @@ class TokenLimitStrategy(str, Enum):
 
     def __str__(self):
         """String representation of the token limit strategy."""
-        return self.value
+        return _TOKEN_LIMIT_STRATEGY_DESCRIPTION[self.value]
 
 
 class _TokenCount(BaseModel):
@@ -100,38 +105,38 @@ class OnlineStatusTracker:
         """Start the tracker."""
         self._console = _CONSOLE if console is None else console
 
-        # Create progress display
+        # Create progress bar display
         self._progress = Progress(
-            TextColumn(
-                "[cyan]{task.description}[/cyan]\n"
-                "{task.fields[requests_text]}\n"
-                "{task.fields[tokens_text]}\n"
-                "{task.fields[cost_text]}\n"
-                "{task.fields[rate_limit_text]}\n"
-                "{task.fields[price_text]}",
-                justify="left",
-            ),
-            TextColumn("\n\n\n\n\n\n"),  # Spacer
+            # TextColumn("[cyan]{task.description}[/cyan]"),
             BarColumn(),
             TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-            TextColumn("[bold white]•[/bold white]"),
+            TextColumn("[bold white]•[/bold white] Time Elapsed"),
             TimeElapsedColumn(),
-            TextColumn("[bold white]•[/bold white]"),
+            TextColumn("[bold white]•[/bold white] Time Remaining"),
             TimeRemainingColumn(),
             console=self._console,
         )
 
-        # Add task
+        # Create stats display with just text columns
+        self._stats = Progress(
+            TextColumn("{task.description}"),
+            console=self._console,
+        )
+
+        # Add tasks
         self._task_id = self._progress.add_task(
-            description=f"[cyan]Generating data using {self.model} with {self.token_limit_strategy.value} input and output token Strategy.",
+            description="",
             total=self.total_requests,
             completed=self.num_tasks_already_completed,
-            requests_text="[bold white]Requests:[/bold white] [dim]--[/dim]",
-            tokens_text="[bold white]Tokens:[/bold white] [dim]--[/dim]",
-            cost_text="[bold white]Cost:[/bold white] [dim]--[/dim]",
-            model_name_text="[bold white]Model:[/bold white] [dim]--[/dim]",
-            rate_limit_text="[bold white]Rate Limits:[/bold white] [dim]--[/dim]",
-            price_text="[bold white]Model Pricing:[/bold white] [dim]--[/dim]",
+        )
+
+        self._stats_task_id = self._stats.add_task(
+            total=None,
+            description=(
+                f"Preparing to generate [blue]{self.total_requests}[/blue] responses "
+                f"using [blue]{self.model}[/blue] with [blue]{self.token_limit_strategy}[/blue] "
+                "token limiting strategy"
+            ),
         )
 
         if self.model in model_cost:
@@ -143,14 +148,19 @@ class OnlineStatusTracker:
             self.input_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["input_cost_per_token"] * 1_000_000
             self.output_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["output_cost_per_token"] * 1_000_000
 
-        # Create Live display that will show both logs and progress
+        # Create Live display with both progress and stats in one panel
         self._live = Live(
-            Group(
-                Panel(self._progress),
+            Panel(
+                Group(
+                    self._progress,
+                    self._stats,
+                ),
+                title="",
+                box=box.ROUNDED,
             ),
             console=self._console,
             refresh_per_second=4,
-            transient=True,  # This ensures logs stay above the progress bar
+            transient=True,
         )
         self._live.start()
 
@@ -163,20 +173,25 @@ class OnlineStatusTracker:
         if cost:
             self.total_cost += cost
 
+        # Update main progress bar
+        self._progress.update(
+            self._task_id,
+            completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
+        )
+
+        # Calculate stats
+        elapsed_minutes = (time.time() - self.start_time) / 60
+        current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
+        input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+        output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
         avg_prompt = self.total_prompt_tokens / max(1, self.num_tasks_succeeded)
         avg_completion = self.total_completion_tokens / max(1, self.num_tasks_succeeded)
         avg_cost = self.total_cost / max(1, self.num_tasks_succeeded)
         projected_cost = avg_cost * self.total_requests
 
-        # Calculate current rpm
-        elapsed_minutes = (time.time() - self.start_time) / 60
-        current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
-
-        # Format the text for each line with properly closed tags
-
-        requests_text = (
-            "[bold white]Requests:[/bold white] "
-            f"[white]•[/white] "
+        # Format stats text
+        stats_text = (
+            f"[bold white]Requests:[/bold white] "
             f"[white]Total:[/white] [blue]{self.total_requests}[/blue] "
             f"[white]•[/white] "
             f"[white]Cached:[/white] [green]{self.num_tasks_already_completed}✓[/green] "
@@ -187,73 +202,55 @@ class OnlineStatusTracker:
             f"[white]•[/white] "
             f"[white]In Progress:[/white] [yellow]{self.num_tasks_in_progress}⋯[/yellow] "
             f"[white]•[/white] "
-            f"[white]RPM:[/white] [blue]{current_rpm:.1f}[/blue]"
-        )
-
-        input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
-        output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
-
-        tokens_text = (
-            "[bold white]Tokens:[/bold white] "
+            f"[white]RPM:[/white] [blue]{current_rpm:.1f}[/blue]\n"
+            f"[bold white]Tokens:[/bold white] "
             f"[white]Avg Input:[/white] [blue]{avg_prompt:.0f}[/blue] "
             f"[white]•[/white] "
             f"[white]Input TPM:[/white] [blue]{input_tpm:.0f}[/blue] "
             f"[white]•[/white] "
             f"[white]Avg Output:[/white] [blue]{avg_completion:.0f}[/blue] "
             f"[white]•[/white] "
-            f"[white]Output TPM:[/white] [blue]{output_tpm:.0f}[/blue]"
-        )
-
-        cost_text = (
-            "[bold white]Cost:[/bold white] "
+            f"[white]Output TPM:[/white] [blue]{output_tpm:.0f}[/blue]\n"
+            f"[bold white]Cost:[/bold white] "
             f"[white]Current:[/white] [magenta]${self.total_cost:.3f}[/magenta] "
             f"[white]•[/white] "
             f"[white]Projected:[/white] [magenta]${projected_cost:.3f}[/magenta] "
             f"[white]•[/white] "
-            f"[white]Rate:[/white] [magenta]${self.total_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]"
-        )
-
-        model_name_text = f"[bold white]Model:[/bold white] [blue]{self.model}[/blue]"
-
-        rate_limit_text = (
-            "[bold white]Rate Limits:[/bold white] "
+            f"[white]Rate:[/white] [magenta]${self.total_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]\n"
+            f"[bold white]Rate Limits:[/bold white] "
             f"[white]RPM:[/white] [blue]{self.max_requests_per_minute}[/blue] "
             f"[white]•[/white] "
-            f"[white]TPM:[/white] [blue]{self.max_tokens_per_minute}[/blue]"
-        )
-
-        input_cost_str = f"${self.input_cost_per_million:.3f}" if isinstance(self.input_cost_per_million, float) else "N/A"
-        output_cost_str = f"${self.output_cost_per_million:.3f}" if isinstance(self.output_cost_per_million, float) else "N/A"
-
-        price_text = (
-            "[bold white]Model Pricing:[/bold white] "
-            f"[white]Per 1M tokens:[/white] "
-            f"[white]Input:[/white] [red]{input_cost_str}[/red] "
+            f"[white]TPM:[/white] [blue]{self.max_tokens_per_minute}[/blue] "
             f"[white]•[/white] "
-            f"[white]Output:[/white] [red]{output_cost_str}[/red]"
+            f"[white]TPM Strategy:[/white] [blue]{self.token_limit_strategy} token limit[/blue]\n"
+            f"[bold white]Model:[/bold white] "
+            f"[white]Name:[/white] [blue]{self.model}[/blue]\n"
+            f"[bold white]Model Pricing:[/bold white] "
+            f"[white]Per 1M tokens:[/white] "
+            f"[white]Input:[/white] [red]${self.input_cost_per_million:.3f}[/red] "
+            f"[white]•[/white] "
+            f"[white]Output:[/white] [red]${self.output_cost_per_million:.3f}[/red]"
         )
 
-        # Update progress through the live display
-        self._progress.update(
-            self._task_id,
-            completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
-            requests_text=requests_text,
-            tokens_text=tokens_text,
-            cost_text=cost_text,
-            model_name_text=model_name_text,
-            rate_limit_text=rate_limit_text,
-            price_text=price_text,
+        # Update stats display
+        self._stats.update(
+            self._stats_task_id,
+            description=stats_text,
         )
+
+    # End of Selection
 
     def stop_tracker(self):
         """Stop the tracker."""
         if hasattr(self, "_live"):
             # Refresh one last time to show final state
             self._progress.refresh()
+            self._stats.refresh()
             # Stop the live display
             self._live.stop()
             # Print the final progress state
             self._console.print(self._progress)
+            self._console.print(self._stats)
 
         table = Table(title="Final Curator Statistics", box=box.ROUNDED)
         table.add_column("Section/Metric", style="cyan")
