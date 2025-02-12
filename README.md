@@ -319,7 +319,7 @@ If you find Curator useful, please consider citing us!
 
 ```
 @software{Curator: A Tool for Synthetic Data Creation,
-  author = {Marten, Ryan* and Vu, Trung* and Cheng-Jie Ji, Charlie and Sharma, Kartik and Pimpalgaonkar, Shreyas and Dimakis, Alex and Sathiamoorthy, Maheswaran},
+  author = {Marten, Ryan* and Vu, Trung* and Ji, Charlie Cheng-Jie and Sharma, Kartik and Pimpalgaonkar, Shreyas and Dimakis, Alex and Sathiamoorthy, Maheswaran},
   month = jan,
   title = {{Curator}},
   year = {2025},
