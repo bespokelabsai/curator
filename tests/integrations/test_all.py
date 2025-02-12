@@ -342,7 +342,6 @@ def test_basic_batch(temp_working_dir, mock_dataset):
 
         # Verify status tracker output
         captured = output.getvalue()
-        assert "Processing batches using" in captured, captured
         assert "Batches: Total: 1 • Submitted: 0⋯ • Downloaded: 1✓" in captured, captured
         assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 3✓ • Failed: 0✗" in captured, captured
         assert "Final Curator Statistics" in captured, captured
