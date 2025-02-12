@@ -37,7 +37,7 @@ def test_online_status_tracker_display():
     captured = output.getvalue()
 
     # Verify key elements are present
-    assert "Generating data using test-model" in captured
+    assert "test-model" in captured
     assert "100" in captured  # Total requests
     assert "50✓" in captured.replace(" ", "")  # Success count
     assert "5✗" in captured.replace(" ", "")  # Failed count

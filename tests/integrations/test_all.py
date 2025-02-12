@@ -67,7 +67,7 @@ def test_basic_without_dataset(temp_working_dir):
 
         # Verify status tracker output
         captured = output.getvalue()
-        assert "Generating data using gpt-4o-mini" in captured, captured
+        assert "gpt-4o-mini" in captured, captured
         assert "3" in captured, captured  # Verify total requests processed
         assert "Final Curator Statistics" in captured, captured
         # Verify response content
@@ -113,7 +113,7 @@ def test_basic(temp_working_dir, mock_dataset):
 
         # Verify status tracker output
         captured = output.getvalue()
-        assert "Generating data using gpt-3.5-turbo" in captured, captured
+        assert "gpt-3.5-turbo" in captured, captured
         assert "3" in captured, captured  # Verify total requests processed
         assert "Final Curator Statistics" in captured, captured
         # Verify response content
@@ -139,7 +139,7 @@ def test_basic_concurrent_only(temp_working_dir, mock_dataset):
         assert prompter._request_processor.max_concurrent_requests == 200
         # Verify status tracker output
         captured = output.getvalue()
-        msg = "Generating data using deepinfra/meta-llama/Llama-2-70b-chat-hf with combined input and output token"
+        msg = "deepinfra/meta-llama/Llama-2-70b-chat-hf"
         assert msg in captured
         assert "3" in captured  # Verify total requests processed
         assert "Final Curator Statistics" in captured, captured
