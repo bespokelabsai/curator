@@ -88,7 +88,6 @@ class OnlineStatusTracker:
 
     start_time: float = field(default_factory=time.time, init=False)
 
-    # Add model name field
     model: str = ""
     token_limit_strategy: TokenLimitStrategy = TokenLimitStrategy.default
 
