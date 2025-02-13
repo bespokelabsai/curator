@@ -473,6 +473,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             blocked_capacity: Blocked token capacity
         """
         try:
+            # TODO: Do something before the request is sent. If the request isn't successful, we should revert (???).
             generic_response = await self.call_single_request(
                 request=request,
                 session=session,

@@ -163,15 +163,22 @@ class OnlineStatusTracker:
         )
         self._live.start()
 
-    def update_stats(self, token_usage: TokenUsage, cost: float):
-        """Update statistics in the tracker with token usage and cost."""
+    def update_token_usage(self, token_usage: TokenUsage):
+        """Update token usage statistics."""
         if token_usage:
             self.total_prompt_tokens += token_usage.prompt_tokens
             self.total_completion_tokens += token_usage.completion_tokens
             self.total_tokens += token_usage.total_tokens
+        self._update_display()
+
+    def update_cost(self, cost: float):
+        """Update cost statistics."""
         if cost:
             self.total_cost += cost
+        self._update_display()
 
+    def _update_display(self):
+        """Update the progress and stats display."""
         # Update main progress bar
         self._progress.update(
             self._task_id,
@@ -237,7 +244,11 @@ class OnlineStatusTracker:
             description=stats_text,
         )
 
-    # End of Selection
+    def update_stats(self, token_usage: TokenUsage, cost: float):
+        """Update statistics in the tracker with token usage and cost."""
+        self.update_token_usage(token_usage)
+        self.update_cost(cost)
+        # Display is already updated by the individual update methods
 
     def stop_tracker(self):
         """Stop the tracker."""

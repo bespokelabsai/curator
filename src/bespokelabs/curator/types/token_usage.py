@@ -10,6 +10,6 @@ class TokenUsage(BaseModel):
         total_tokens: Total number of tokens used
     """
 
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
