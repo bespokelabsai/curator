@@ -11,6 +11,7 @@ from datasets import Dataset
 from pydantic import BaseModel
 from xxhash import xxh64
 
+from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import _CURATOR_DEFAULT_CACHE_DIR
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
@@ -196,6 +197,7 @@ class LLM:
 
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
         metadata_db = MetadataDB(metadata_db_path)
+        self._request_processor.viewer_client = Client()
 
         # Get the source code of the prompt function
         prompt_func_source = _get_function_source(self.prompt_formatter.prompt_func)
@@ -214,6 +216,8 @@ class LLM:
             "run_hash": fingerprint,
             "batch_mode": self.batch_mode,
         }
+        session_id = self._request_processor.viewer_client.create_session(metadata_dict)
+        metadata_dict["session_id"] = session_id
         metadata_db.store_metadata(metadata_dict)
 
         run_cache_dir = os.path.join(curator_cache_dir, fingerprint)

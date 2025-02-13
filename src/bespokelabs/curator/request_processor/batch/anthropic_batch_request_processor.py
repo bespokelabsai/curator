@@ -137,9 +137,9 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             ValueError: If the batch status is unknown.
         """
         if batch.processing_status in ["cancelling", "in_progress"]:
-            status = GenericBatchStatus.SUBMITTED
+            status = GenericBatchStatus.SUBMITTED.value
         elif batch.processing_status in ["ended"]:
-            status = GenericBatchStatus.FINISHED
+            status = GenericBatchStatus.FINISHED.value
         else:
             raise ValueError(f"Unknown batch status: {batch.processing_status}")
 

@@ -8,6 +8,10 @@ from bespokelabs.curator.request_processor import _DEFAULT_COST_MAP
 litellm.suppress_debug_info = True
 logger = logging.getLogger(__name__)
 
+RATE_LIMIT_HEADER = {
+    "api.together.xyz": {"request-key": {"key": "x-ratelimit-limit", "type": "rps"}, "token-key": {"key": "x-ratelimit-limit-tokens", "type": "tps"}}
+}
+
 
 class _LitellmCostProcessor:
     def __init__(self, config, batch=False) -> None:

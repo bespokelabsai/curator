@@ -52,6 +52,7 @@ class BaseRequestProcessor(ABC):
         desired_limit = min(10_000_000, hard)
         logger.debug(f"Adjusting file descriptor limit from {soft} to {desired_limit} (hard limit: {hard})")
         resource.setrlimit(resource.RLIMIT_NOFILE, (desired_limit, hard))
+        self._viewer_client = None
         self.config = config
         self._cost_processor = cost_processor_factory(config=self.config, backend=self.backend)
 
@@ -80,6 +81,16 @@ class BaseRequestProcessor(ABC):
             generic_request_files: List of paths to request files to process
         """
         pass
+
+    @property
+    def viewer_client(self):
+        """Return the viewer client for the request processor."""
+        return self._viewer_client
+
+    @viewer_client.setter
+    def viewer_client(self, client):
+        """Set the viewer client for the request processor."""
+        self._viewer_client = client
 
     def check_structured_output_support(self) -> bool:
         """Check if the model supports structured output.
@@ -325,6 +336,37 @@ class BaseRequestProcessor(ABC):
                     "Deleted file and attempting to regenerate dataset from cached LLM responses."
                 )
 
+    def _process_response(self, data: GenericResponse) -> List | None:
+        try:
+            data.response_message = self.prompt_formatter.response_to_response_format(data.response_message)
+        except (json.JSONDecodeError, ValidationError):
+            logger.warning("Skipping response due to error parsing response message into response format")
+            return
+
+        # parse_func can return a single row or a list of rows
+        responses = None
+        if self.prompt_formatter.parse_func:
+            try:
+                responses = self.prompt_formatter.parse_func(
+                    data.generic_request.original_row,
+                    data.response_message,
+                )
+            except Exception as e:
+                logger.warning(f"Skipping response due to error in `parse_func` :: {e}")
+                return
+
+            if not isinstance(responses, list):
+                responses = [responses]
+        else:
+            # Convert response to dict before adding to dataset
+            response_value = data.response_message
+            if hasattr(response_value, "model_dump"):
+                response_value = response_value.model_dump()
+            elif hasattr(response_value, "__dict__"):
+                response_value = response_value.__dict__
+            responses = [{"response": response_value}]
+        return responses
+
     def create_dataset_files(
         self,
         parse_func_hash: str,
@@ -369,35 +411,10 @@ class BaseRequestProcessor(ABC):
                             if len(error_sample) < 10:
                                 error_sample.append(str(response.response_errors))
                             continue
-
-                        try:
-                            response.response_message = self.prompt_formatter.response_to_response_format(response.response_message)
-                        except (json.JSONDecodeError, ValidationError):
-                            logger.warning("Skipping response due to error parsing response message into response format")
-                            failed_responses_count += 1
-                            continue
-
-                        # parse_func can return a single row or a list of rows
-                        if self.prompt_formatter.parse_func:
-                            try:
-                                dataset_rows = self.prompt_formatter.parse_func(
-                                    response.generic_request.original_row,
-                                    response.response_message,
-                                )
-                            except Exception as e:
-                                logger.error(f"Exception raised in your `parse_func`. {error_help}")
-                                os.remove(dataset_file)
-                                raise e
-                            if not isinstance(dataset_rows, list):
-                                dataset_rows = [dataset_rows]
+                        if response.parsed_response_message is None:
+                            dataset_rows = self._process_response(response)
                         else:
-                            # Convert response to dict before adding to dataset
-                            response_value = response.response_message
-                            if hasattr(response_value, "model_dump"):
-                                response_value = response_value.model_dump()
-                            elif hasattr(response_value, "__dict__"):
-                                response_value = response_value.__dict__
-                            dataset_rows = [{"response": response_value}]
+                            dataset_rows = response.parsed_response_message
 
                         for row in dataset_rows:
                             if isinstance(row, BaseModel):

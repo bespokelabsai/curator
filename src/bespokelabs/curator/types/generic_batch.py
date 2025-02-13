@@ -31,8 +31,12 @@ class GenericBatch(BaseModel):
     id: str  # Unique identifier for this batch
     created_at: datetime.datetime  # When the batch was created
     finished_at: Optional[datetime.datetime]  # When processing completed, if finished
-    status: GenericBatchStatus  # Current status of the batch
+    status: str  # Current status of the batch
     api_key_suffix: str  # Last few characters of the API key used
     request_counts: GenericBatchRequestCounts  # Statistics about the requests
     raw_status: str  # Raw status string from the API
     raw_batch: dict  # Complete raw batch data from the API
+
+    model_config = {
+        "json_encoders": {datetime.datetime: lambda dt: dt.isoformat()},
+    }

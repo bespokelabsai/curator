@@ -558,7 +558,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                     "succeeded/failed/total"
                 )
 
-                if batch.status == GenericBatchStatus.FINISHED:
+                if batch.status == GenericBatchStatus.FINISHED.value:
                     logger.debug(f"Batch {batch.id} finished with status: {batch.raw_status}")
                     self.tracker.mark_as_finished(batch)
                     await self.update_batch_objects_file()

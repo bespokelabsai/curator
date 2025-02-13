@@ -123,9 +123,9 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             ValueError: If the batch status is unknown.
         """
         if batch.status in _PROGRESS_STATE:
-            status = GenericBatchStatus.SUBMITTED
+            status = GenericBatchStatus.SUBMITTED.value
         elif batch.status in _FINISHED_STATE:
-            status = GenericBatchStatus.FINISHED
+            status = GenericBatchStatus.FINISHED.value
         else:
             raise ValueError(f"Unknown batch status: {batch.status}")
 

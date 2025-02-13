@@ -8,6 +8,7 @@ import asyncio
 import datetime
 import json
 import logging
+import os
 import time
 import typing as t
 from abc import ABC, abstractmethod
@@ -295,6 +296,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         if remaining_seconds_to_pause > 0:
             logger.warn(f"Pausing for {int(remaining_seconds_to_pause)} seconds")
             await asyncio.sleep(remaining_seconds_to_pause)
+            status_tracker.last_update_time = time.time()
 
     def free_capacity(self, tracker, tokens):
         """Free blocked capacity."""
@@ -411,6 +413,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     while not status_tracker.has_capacity(token_estimate):
                         await asyncio.sleep(0.1)
 
+                    # Wait for rate limits cool down if needed
+                    await self.cool_down_if_rate_limit_error(status_tracker)
+
                     # Consume capacity before making request
                     status_tracker.consume_capacity(token_estimate)
 
@@ -432,6 +437,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     done, pending_retries = await asyncio.wait(pending_retries, timeout=0.1)
 
         status_tracker.stop_tracker()
+        await self.viewer_client.session_completed()
 
         # Log final status
         logger.info(f"Processing complete. Results saved to {response_file}")
@@ -516,7 +522,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     created_at=request.created_at,
                     finished_at=datetime.datetime.now(),
                 )
-                await self.append_generic_response(generic_response, response_file)
+                await self.append_generic_response(status_tracker, generic_response, response_file)
                 status_tracker.num_tasks_in_progress -= 1
                 status_tracker.num_tasks_failed += 1
             return
@@ -527,7 +533,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 self._semaphore.release()
 
         # Save response in the base class
-        await self.append_generic_response(generic_response, response_file)
+        await self.append_generic_response(status_tracker, generic_response, response_file)
 
         status_tracker.num_tasks_in_progress -= 1
         status_tracker.num_tasks_succeeded += 1
@@ -560,14 +566,24 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """
         pass
 
-    async def append_generic_response(self, data: GenericResponse, filename: str) -> None:
+    async def append_generic_response(self, status_tracker: OnlineStatusTracker, data: GenericResponse, filename: str) -> None:
         """Append a response to a jsonl file with async file operations.
 
         Args:
+            status_tracker: Tracker containing request status
             data: Response data to append
             filename: File to append to
         """
-        json_string = json.dumps(data.model_dump(), default=str)
+        responses = self._process_response(data)
+        if not responses:
+            return
+        data.parsed_response_message = responses
+        data_dump = data.model_dump()
+        json_string = json.dumps(data_dump, default=str)
         async with aiofiles.open(filename, "a") as f:
             await f.write(json_string + "\n")
         logger.debug(f"Successfully appended response to {filename}")
+        filename = os.path.basename(filename).split(".")[0]
+        idx = status_tracker.num_parsed_responses
+        status_tracker.num_parsed_responses = idx + len(responses)
+        await self.viewer_client.stream_response(json_string, idx)

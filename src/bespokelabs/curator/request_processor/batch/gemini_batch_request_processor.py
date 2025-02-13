@@ -185,9 +185,9 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             ValueError: If the batch status is unknown.
         """
         if batch.state.name in _PROGRESS:
-            status = GenericBatchStatus.SUBMITTED
+            status = GenericBatchStatus.SUBMITTED.value
         elif batch.state.name in _FINISHED:
-            status = GenericBatchStatus.FINISHED
+            status = GenericBatchStatus.FINISHED.value
         else:
             raise ValueError(f"Unknown batch status: {batch.state.name}")
         return GenericBatch(
