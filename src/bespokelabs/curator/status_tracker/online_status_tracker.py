@@ -107,8 +107,7 @@ class OnlineStatusTracker:
 
         # Create progress bar display
         self._progress = Progress(
-            # TextColumn("[cyan]{task.description}[/cyan]"),
-            BarColumn(),
+            BarColumn(bar_width=None),
             TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
             TextColumn("[bold white]•[/bold white] Time Elapsed"),
             TimeElapsedColumn(),

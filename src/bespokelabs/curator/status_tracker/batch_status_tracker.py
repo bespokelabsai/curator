@@ -59,8 +59,7 @@ class BatchStatusTracker(BaseModel):
 
         # Create progress bar display
         self._progress = Progress(
-            # TextColumn("[cyan]{task.description}[/cyan]"),  # Moved to stats display
-            BarColumn(),
+            BarColumn(bar_width=None),
             TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
             TextColumn("[bold white]•[/bold white] Time Elapsed"),
             TimeElapsedColumn(),
@@ -402,6 +401,7 @@ class BatchStatusTracker(BaseModel):
         ]
         return "\n".join(status_lines)
 
+    # TODO: Add update cost as well for batch request processor
     def update_token_and_cost(self, token_usage: TokenUsage, cost: float):
         """Update statistics with token usage and cost information."""
         if token_usage:
