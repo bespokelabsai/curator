@@ -12,19 +12,11 @@
 <br/>
 
 <p align="center">
-  <a href="https://docs.bespokelabs.ai/bespoke-curator/getting-started">
-    <img alt="Static Badge" src="https://img.shields.io/badge/Docs-docs.bespokelabs.ai-blue?style=flat&link=https%3A%2F%2Fdocs.bespokelabs.ai">
-  </a>
-  <a href="https://bespokelabs.ai/">
-    <img alt="Site" src="https://img.shields.io/badge/Site-bespokelabs.ai-blue?link=https%3A%2F%2Fbespokelabs.ai"/>
-  </a>
-  <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/bespokelabs-curator">
-  <a href="https://twitter.com/bespokelabsai">
-    <img src="https://img.shields.io/twitter/follow/bespokelabsai" alt="Follow on X" />
-  </a>
-  <a href="https://discord.gg/KqpXvpzVBS">
-    <img alt="Discord" src="https://img.shields.io/discord/1230990265867698186">
-  </a>
+  <a href="https://docs.bespokelabs.ai/bespoke-curator/getting-started"><img alt="Static Badge" src="https://img.shields.io/badge/Docs-docs.bespokelabs.ai-blue?style=for-the-badge&link=https%3A%2F%2Fdocs.bespokelabs.ai"></a>
+  <a href="https://bespokelabs.ai/"><img alt="Site" src="https://img.shields.io/badge/Site-bespokelabs.ai-blue?style=for-the-badge&link=https%3A%2F%2Fbespokelabs.ai"/></a>
+  <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/bespokelabs-curator?style=for-the-badge">
+  <a href="https://twitter.com/bespokelabsai"><img src="https://img.shields.io/twitter/follow/bespokelabsai?style=for-the-badge&logo=X&label=@bespokelabs" alt="Follow on X" /></a>
+  <a href="https://discord.gg/KqpXvpzVBS"><img alt="Discord" src="https://img.shields.io/discord/1230990265867698186?style=for-the-badge"></a>
 </p>
 <div align="center">
 [ English | <a href="README_zh.md">中文</a> ]
