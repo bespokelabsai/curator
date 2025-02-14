@@ -21,6 +21,10 @@ class _CodeExecutionBackendFactory:
             from bespokelabs.curator.code_executor.code_execution_backend.ray_backend import RayCodeExecutionBackend
 
             _code_executor = RayCodeExecutionBackend(CodeExecutionBackendConfig(**backend_params))
+        elif backend == "e2b":
+            from bespokelabs.curator.code_executor.code_execution_backend.e2b_backend import E2BCodeExecutionBackend
+
+            _code_executor = E2BCodeExecutionBackend(CodeExecutionBackendConfig(**backend_params))
         else:
             raise ValueError(f"Unsupported backend: {backend}")
 

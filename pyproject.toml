@@ -37,11 +37,13 @@ vertexai= "1.71.1"
 vllm = { version = "^0.6.3", optional = true }
 aiodocker = { version = "^0.24.0", optional = true }
 ray = { version = "^2.41.0", optional = true }
+e2b-code-interpreter = { version = "^1.0.3", optional = true }
+
 posthog = "^3.11.0"
 
 [tool.poetry.extras]
 vllm = ["vllm"]
-code_execution = ["ray", "aiodocker"]
+code_execution = ["ray", "aiodocker", "e2b-code-interpreter"]
 
 [tool.poetry.group.dev.dependencies]
 twine = "^5.0.0"
