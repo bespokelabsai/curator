@@ -23,7 +23,7 @@ from bespokelabs.curator.request_processor import _DEFAULT_COST_MAP
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, _TokenCount
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, TokenUsage, _TokenCount
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.prompt import _MultiModalPrompt
@@ -450,6 +450,38 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         if status_tracker.max_tokens_per_minute is not None:
             status_tracker.free_capacity(used_capacity, blocked_capacity)
 
+    def _update_input_stats(self, status_tracker: OnlineStatusTracker, request: APIRequest) -> _TokenCount:
+        """Update input token statistics and cost before making the API call.
+
+        Args:
+            status_tracker: Tracker containing request status
+            request: The request being processed
+
+        Returns:
+            _TokenCount: The input token count that was tracked
+        """
+        # Calculate input tokens
+        input_tokens = self.estimate_total_tokens(request.generic_request.messages)
+
+        # Calculate input cost using litellm
+        input_cost = self._cost_processor.cost_per_token(
+            completion_response=request.api_specific_request,
+            prompt_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
+            completion_tokens=0,
+        )
+
+        # Update tracker stats with just the input tokens
+        status_tracker.update_token_usage(
+            TokenUsage(
+                prompt_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
+                completion_tokens=0,
+                total_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
+            )
+        )
+        status_tracker.update_cost(input_cost)
+
+        return input_tokens
+
     async def handle_single_request_with_retries(
         self,
         request: APIRequest,
@@ -473,7 +505,10 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             blocked_capacity: Blocked token capacity
         """
         try:
-            # TODO: Do something before the request is sent. If the request isn't successful, we should revert (???).
+            # Update input statistics before API call
+            input_tokens = self._update_input_stats(status_tracker, request)
+
+            # Make API call
             generic_response = await self.call_single_request(
                 request=request,
                 session=session,
@@ -488,16 +523,47 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 )
                 raise ValueError(f"finish_reason was {generic_response.finish_reason}")
 
-            status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+            # Update only completion tokens and cost
+            status_tracker.update_token_usage(
+                TokenUsage(
+                    prompt_tokens=0,  # Don't count input tokens again
+                    completion_tokens=generic_response.token_usage.completion_tokens,
+                    total_tokens=generic_response.token_usage.completion_tokens,  # Only count new tokens
+                )
+            )
+            # Calculate and update completion cost only
+            completion_cost = self._cost_processor.cost_per_token(
+                completion_response=request.api_specific_request,
+                prompt_tokens=0,
+                completion_tokens=generic_response.token_usage.completion_tokens,
+            )
+            status_tracker.update_cost(completion_cost)
 
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
 
-            # Free the extra capacity blocked before request with actual consumed capacity.
+            # Free the extra capacity blocked before request with actual consumed capacity
             used_capacity = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
             self._free_capacity(status_tracker, used_capacity=used_capacity, blocked_capacity=blocked_capacity)
 
         except Exception as e:
+            # Calculate input cost for reversal
+            input_cost = self._cost_processor.cost_per_token(
+                completion_response=request.api_specific_request,
+                prompt_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
+                completion_tokens=0,
+            )
+
+            # Revert the input stats on failure
+            status_tracker.update_token_usage(
+                TokenUsage(
+                    prompt_tokens=-(input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens),
+                    completion_tokens=0,
+                    total_tokens=-(input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens),
+                )
+            )
+            status_tracker.update_cost(-input_cost)
+
             status_tracker.num_other_errors += 1
             request.result.append(e)
 
