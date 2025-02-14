@@ -62,6 +62,7 @@ class PosthogClient:
         """Set up the PostHog client with configuration settings."""
         posthog.project_api_key = self.config.api_key
         posthog.debug = self.config.debug
+        posthog.disable_geoip = False
 
         if self.config.host:
             posthog.host = self.config.host
