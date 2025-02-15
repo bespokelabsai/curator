@@ -47,6 +47,26 @@ class _LitellmCostProcessor:
             cost_to_complete *= 0.5
         return cost_to_complete
 
+    def input_token_cost(self, model: str, input_tokens: int) -> float:
+        """Calculate cost for input tokens only.
+
+        Args:
+            model: The model name to calculate costs for
+            input_tokens: Number of input tokens
+
+        Returns:
+            float: Cost in USD for the input tokens
+        """
+        if model not in litellm.model_cost:
+            return 0.0
+
+        input_cost, _ = litellm.cost_per_token(model=model, prompt_tokens=input_tokens, completion_tokens=0)
+
+        if self.batch:
+            input_cost *= 0.5
+
+        return input_cost
+
 
 def _get_litellm_cost_map(model, completion_window="*", provider="default"):
     cost = external_model_cost(model, completion_window=completion_window, provider=provider)
