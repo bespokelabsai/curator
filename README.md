@@ -31,7 +31,7 @@
 </div>
 
 ## 🎉 What's New 
-* **[2025.01.30]** [Batch Processing Support for OpenAI, Anthropic, and other compatible APIs](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half 🔥🔥🔥. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). Please [fill out this form](https://docs.google.com/forms/d/e/1FAIpQLSeBeBKA_19ljeUCkpwkUuUL5YXUUPKUExpjmBaSfmF2XAhwVA/viewform?usp=dialog) to claim your credit.
+* **[2025.01.30]** [Batch Processing Support for OpenAI, Anthropic, and other compatible APIs](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half 🔥🔥🔥. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). EDIT: Promotion has come to end.
 * **[2025.01.27]** We used Bespoke Curator to create [OpenThoughts-114k](https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k), a high-quality reasoning dataset (trending on HuggingFace).
 * **[2025.01.22]** We used Bespoke Curator to create [Bespoke-Stratos-17k](https://huggingface.co/datasets/bespokelabs/Bespoke-Stratos-17k), a high-quality reasoning dataset (trending on HuggingFace).
 * **[2025.01.15]** Curator launched 🎉
