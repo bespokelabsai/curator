@@ -47,7 +47,7 @@ class _LitellmCostProcessor:
             cost_to_complete *= 0.5
         return cost_to_complete
 
-    def input_token_cost(self, model: str, input_tokens: int) -> float:
+    def input_cost(self, model: str, input_tokens: int) -> float:
         """Calculate cost for input tokens only.
 
         Args:
