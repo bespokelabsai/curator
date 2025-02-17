@@ -51,6 +51,8 @@ class BatchStatusTracker(BaseModel):
     model: str = Field(default="")
     input_cost_per_million: Optional[float] = Field(default=None)
     output_cost_per_million: Optional[float] = Field(default=None)
+    input_cost_str: Optional[str] = Field(default=None)
+    output_cost_str: Optional[str] = Field(default=None)
 
     # Track start time
     start_time: float = Field(default_factory=time.time)
@@ -94,6 +96,9 @@ class BatchStatusTracker(BaseModel):
             total=None,
             description=f"Preparing to process [blue]{self.n_total_requests}[/blue] requests using [blue]{self.model}[/blue]",
         )
+
+        self.input_cost_str = f"[red]${self.input_cost_per_million:.3f}[/red]" if self.input_cost_per_million is not None else "[dim]N/A[/dim]"
+        self.output_cost_str = f"[red]${self.output_cost_per_million:.3f}[/red]" if self.output_cost_per_million is not None else "[dim]N/A[/dim]"
 
         # Create Live display with both progress and stats in one panel
         self._live = Live(
@@ -179,9 +184,9 @@ class BatchStatusTracker(BaseModel):
             f"[white]Name:[/white] [blue]{self.model}[/blue]\n"
             f"[bold white]Model Pricing:[/bold white] "
             f"[white]Per 1M tokens:[/white] "
-            f"[white]Input:[/white] [red]${self.input_cost_per_million:.3f}[/red] "
+            f"[white]Input:[/white] {self.input_cost_str} "
             f"[white]•[/white] "
-            f"[white]Output:[/white] [red]${self.output_cost_per_million:.3f}[/red]"
+            f"[white]Output:[/white] {self.output_cost_str}"
         )
 
         # Update stats display
@@ -224,16 +229,12 @@ class BatchStatusTracker(BaseModel):
 
         # Cost Statistics
         table.add_row("Costs", "", style="bold magenta")
-        table.add_row("Total Cost", f"[red]${self.total_cost:.4f}[/red]")
+        table.add_row("Total Cost", f"[red]${self.total_cost:.3f}[/red]")
         if self.n_finished_or_downloaded_succeeded_requests > 0:
-            table.add_row("Average Cost per Request", f"[red]${self.total_cost / self.n_finished_or_downloaded_succeeded_requests:.4f}[/red]")
+            table.add_row("Average Cost per Request", f"[red]${self.total_cost / self.n_finished_or_downloaded_succeeded_requests:.3f}[/red]")
 
-        # Handle None values for cost per million tokens
-        input_cost_str = f"[red]${self.input_cost_per_million:.4f}[/red]" if self.input_cost_per_million else "[dim]N/A[/dim]"
-        output_cost_str = f"[red]${self.output_cost_per_million:.4f}[/red]" if self.output_cost_per_million else "[dim]N/A[/dim]"
-
-        table.add_row("Input Cost per 1M Tokens", input_cost_str)
-        table.add_row("Output Cost per 1M Tokens", output_cost_str)
+        table.add_row("Input Cost per 1M Tokens", self.input_cost_str)
+        table.add_row("Output Cost per 1M Tokens", self.output_cost_str)
 
         # Performance Statistics
         table.add_row("Performance", "", style="bold magenta")
