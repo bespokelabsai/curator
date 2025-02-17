@@ -421,7 +421,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     # Consume capacity before making request
                     status_tracker.consume_capacity(token_estimate)
 
-                    # TODO: update input token counts and costs
                     task = asyncio.create_task(
                         self.handle_single_request_with_retries(
                             request=retry_request,
