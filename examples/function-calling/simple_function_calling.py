@@ -106,7 +106,9 @@ llm_2 = FunctionCallGenerator(
     backend_params={"max_retries": 1, "require_all_responses": False},
 )
 
-function_calls = llm_2(dataset_2)
 # Since the row-level generation_params does not have max_completion_tokens, the request processor will use the default generation_params
 # So an error will be reported as the model will not have enough tokens to return the message
-print(function_calls.to_pandas())
+# Uncomment the following line to see the error
+
+# function_calls = llm_2(dataset_2)
+# print(function_calls.to_pandas())
