@@ -46,7 +46,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
     def __init__(self, config: OnlineRequestProcessorConfig, compatible_provider: str = None):
         """Initialize the OpenAIOnlineRequestProcessor."""
         super().__init__(config)
-        self._cost_processor = cost_processor_factory(config=config, backend=compatible_provider or self.backend)
+        self._compatible_provider = compatible_provider or self.backend
+        self._cost_processor = cost_processor_factory(config=config, backend=self._compatible_provider)
 
         if self.config.base_url is None:
             if "OPENAI_BASE_URL" in os.environ:
@@ -72,6 +73,11 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
     def backend(self):
         """Backend property."""
         return "openai"
+
+    @property
+    def compatible_provider(self) -> str:
+        """Compatible provider property."""
+        return self._compatible_provider
 
     def get_header_based_rate_limits(self) -> tuple[int, int]:
         """Get rate limits from OpenAI API headers.
