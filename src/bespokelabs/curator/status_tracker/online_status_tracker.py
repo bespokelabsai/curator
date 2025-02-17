@@ -150,15 +150,6 @@ class OnlineStatusTracker:
             ),
         )
 
-        self._stats_task_id = self._stats.add_task(
-            total=None,
-            description=(
-                f"Preparing to generate [blue]{self.total_requests}[/blue] responses "
-                f"using [blue]{self.model}[/blue] with [blue]{self.token_limit_strategy}[/blue] "
-                "token limiting strategy"
-            ),
-        )
-
         if self.model in model_cost:
             self.input_cost_per_million = model_cost[self.model]["input_cost_per_token"] * 1_000_000
             self.output_cost_per_million = model_cost[self.model]["output_cost_per_token"] * 1_000_000
