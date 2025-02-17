@@ -461,21 +461,20 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             _TokenCount: The input token count that was tracked
         """
         # Calculate input tokens
-        input_tokens = self.estimate_total_tokens(request.generic_request.messages)
+        input_tokens = self.estimate_total_tokens(request.generic_request.messages).input
 
         # Calculate input cost using litellm
-        input_cost = self._cost_processor.cost_per_token(
-            completion_response=request.api_specific_request,
-            prompt_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
-            completion_tokens=0,
+        input_cost = self._cost_processor.input_cost(
+            model=self.config.model,
+            input_tokens=input_tokens,
         )
 
         # Update tracker stats with just the input tokens
         status_tracker.update_token_usage(
             TokenUsage(
-                prompt_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
+                prompt_tokens=input_tokens,
                 completion_tokens=0,
-                total_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
+                total_tokens=input_tokens,
             )
         )
         status_tracker.update_cost(input_cost)
@@ -531,13 +530,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     total_tokens=generic_response.token_usage.completion_tokens,  # Only count new tokens
                 )
             )
-            # Calculate and update completion cost only
-            completion_cost = self._cost_processor.cost_per_token(
-                completion_response=request.api_specific_request,
-                prompt_tokens=0,
-                completion_tokens=generic_response.token_usage.completion_tokens,
-            )
-            status_tracker.update_cost(completion_cost)
+            status_tracker.update_cost(generic_response.response_cost)
 
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
@@ -548,10 +541,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         except Exception as e:
             # Calculate input cost for reversal
-            input_cost = self._cost_processor.cost_per_token(
-                completion_response=request.api_specific_request,
-                prompt_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
-                completion_tokens=0,
+            input_cost = self._cost_processor.input_cost(
+                model=self.config.model,
+                input_tokens=input_tokens.input if isinstance(input_tokens, _TokenCount) else input_tokens,
             )
 
             # Revert the input stats on failure
