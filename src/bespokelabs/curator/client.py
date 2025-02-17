@@ -69,6 +69,13 @@ class Client:
             if response.status_code != 200:
                 logger.debug(f"Failed to update session status: {response.status_code}, {response.text}")
 
+    async def session_inprogress(self):
+        """Updates the session status to inprogress."""
+        self._state = _SessionStatus.INPROGRESS
+        if not self._hosted and not self.session:
+            return
+        await self._update_state()
+
     async def session_completed(self):
         """Updates the session status to completed."""
         self._state = _SessionStatus.COMPLETED
@@ -80,9 +87,6 @@ class Client:
         """Streams the response data to the server."""
         if not self._hosted and not self.session:
             return
-        if self._state == _SessionStatus.STARTED:
-            self._state = _SessionStatus.INPROGRESS
-            await self._update_state()
 
         response_data = json.dumps({"response_data": response_data})
         async with httpx.AsyncClient() as client:

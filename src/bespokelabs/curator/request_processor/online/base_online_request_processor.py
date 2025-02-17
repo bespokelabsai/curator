@@ -332,6 +332,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         # Use higher connector limit for better throughput
         tcp_limit = self.max_concurrent_requests if status_tracker.max_requests_per_minute is None else status_tracker.max_requests_per_minute
+        # Update session status to inprogress
+        await self._viewer_client.session_inprogress()
         connector = aiohttp.TCPConnector(limit=10 * tcp_limit)
         async with aiohttp.ClientSession(connector=connector) as session:
             async with aiofiles.open(generic_request_filepath) as file:

@@ -39,3 +39,7 @@ class GenericResponse(BaseModel):
     token_usage: Optional[TokenUsage] = None
     response_cost: Optional[float] = None
     finish_reason: Optional[str] = None
+
+    model_config = {
+        "json_encoders": {datetime.datetime: lambda dt: dt.isoformat()},
+    }

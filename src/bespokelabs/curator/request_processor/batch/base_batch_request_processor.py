@@ -255,11 +255,12 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         pass
 
     @abstractmethod
-    def parse_api_specific_request_counts(self, request_counts: object) -> GenericBatchRequestCounts:
+    def parse_api_specific_request_counts(self, request_counts: object, request_file: Optional[str] = None) -> GenericBatchRequestCounts:
         """Convert API-specific request counts to generic format.
 
         Args:
             request_counts: API-specific request count object.
+            request_file: Path to associated request file.
 
         Returns:
             GenericBatchRequestCounts: Standardized request count object.
@@ -470,7 +471,12 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 request_idx = int(raw_response["custom_id"])
                 generic_request = generic_request_map[request_idx]
                 generic_response = self.parse_api_specific_response(raw_response, generic_request, batch)
-                json.dump(generic_response.model_dump(), f, default=str)
+                processed_responses = self._process_response(generic_response)
+                generic_response.parsed_response_message = processed_responses
+
+                # Write response to file
+                response_dump = generic_response.model_dump(mode="json")
+                json.dump(response_dump, f, default=str)
                 f.write("\n")
 
                 # Update token and cost totals
@@ -481,8 +487,14 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 if generic_response.response_cost:
                     total_cost += generic_response.response_cost
 
+                # Stream responses to viewer client
+                idx = self.tracker.num_parsed_responses
+                self.tracker.num_parsed_responses = idx + len(responses)
+                run_in_event_loop(self.viewer_client.stream_response(json.dumps(response_dump), idx))
+
         # Update tracker with token usage and cost stats
         self.tracker.update_token_and_cost(total_token_usage, total_cost)
+        run_in_event_loop(self.viewer_client.session_completed())
         return response_file
 
     async def submit_batches_from_request_files(
@@ -505,6 +517,9 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             - Updates batch objects file
         """
         tasks = []
+
+        # Update session status to inprogress
+        await self._viewer_client.session_inprogress()
 
         # check existing response files for resuming
         for batch in self.tracker.downloaded_batches.values():

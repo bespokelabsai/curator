@@ -55,6 +55,9 @@ class BatchStatusTracker(BaseModel):
     # Track start time
     start_time: float = Field(default_factory=time.time)
 
+    # Number of parsed responses i.e output from `parse` method.
+    num_parsed_responses: int = Field(default=0)
+
     def start_tracker(self, console: Optional[Console] = None):
         """Start the progress tracker with rich console output."""
         self._console = _CONSOLE if console is None else console
@@ -340,7 +343,7 @@ class BatchStatusTracker(BaseModel):
             n_requests: The number of requests in the batch
         """
         assert n_requests > 0
-        batch.status = GenericBatchStatus.SUBMITTED
+        batch.status = GenericBatchStatus.SUBMITTED.value
         if batch.request_file in self.unsubmitted_request_files:
             self.unsubmitted_request_files.remove(batch.request_file)
         else:
@@ -356,7 +359,7 @@ class BatchStatusTracker(BaseModel):
             batch: The batch to mark as finished
         """
         assert batch.id in self.submitted_batches
-        batch.status = GenericBatchStatus.FINISHED
+        batch.status = GenericBatchStatus.FINISHED.value
         self.submitted_batches.pop(batch.id)
         self.finished_batches[batch.id] = batch
         logger.debug(f"Marked batch {batch.id} as finished")
@@ -369,7 +372,7 @@ class BatchStatusTracker(BaseModel):
             batch: The batch to mark as downloaded
         """
         assert batch.id in self.finished_batches
-        batch.status = GenericBatchStatus.DOWNLOADED
+        batch.status = GenericBatchStatus.DOWNLOADED.value
         self.finished_batches.pop(batch.id)
         self.downloaded_batches[batch.id] = batch
         logger.debug(f"Marked batch {batch.id} as downloaded")

@@ -52,10 +52,7 @@ def main():
     #       (Up to 1,000 requests per day)
     #############################################
 
-    recipe_generator = RecipeGenerator(
-        model_name="deepinfra/meta-llama/Llama-2-70b-chat-hf",
-        backend="litellm",
-    )
+    recipe_generator = RecipeGenerator(model_name="gemini-1.5-flash-002", backend="gemini", batch=True)
 
     # Generate recipes for all cuisines
     recipes = recipe_generator(cuisines)

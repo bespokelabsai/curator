@@ -377,6 +377,7 @@ def test_basic_offline(temp_working_dir, mock_dataset):
             self.prompt = None  # From replay output
             self.encoder_prompt = None
             self.metrics = None
+            self.parsed_response = None
 
         @property
         def outputs(self):

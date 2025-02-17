@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OfflineRequestProcessorConfig
+from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 
@@ -182,8 +183,15 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         # Save responses
         with open(save_filepath, "a") as f:
             for response in responses:
-                json_string = json.dumps(response.model_dump(), default=str)
+                processed_response = self._process_response(response)
+                response.parsed_response_message = processed_response
+                json_string = json.dumps(response.model_dump(mode="json"), default=str)
                 f.write(json_string + "\n")
+
+                # Stream responses to viewer client
+                idx = status_tracker.num_parsed_responses
+                status_tracker.num_parsed_responses = idx + len(responses)
+                run_in_event_loop(self.viewer_client.stream_response(json_string, idx))
 
         # Log final status
         logger.info(f"Processing complete. Results saved to {save_filepath}")

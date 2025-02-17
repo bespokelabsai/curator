@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import typing as t
 import warnings
 
 from openai import AsyncOpenAI, NotFoundError
@@ -77,7 +78,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         """The maximum number of concurrent batch operations."""
         return 100
 
-    def parse_api_specific_request_counts(self, request_counts: BatchRequestCounts) -> GenericBatchRequestCounts:
+    def parse_api_specific_request_counts(self, request_counts: BatchRequestCounts, request_file: t.Optional[str] = None) -> GenericBatchRequestCounts:
         """Convert OpenAI-specific request counts to generic format.
 
         Handles the following OpenAI request count statuses:
@@ -87,6 +88,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
 
         Args:
             request_counts: OpenAI's BatchRequestCounts object.
+            request_file: Optional path to the request file.
 
         Returns:
             GenericBatchRequestCounts: Standardized request count format.
