@@ -52,7 +52,11 @@ def main():
     #       (Up to 1,000 requests per day)
     #############################################
 
-    recipe_generator = RecipeGenerator(model_name="gemini-1.5-flash-002", backend="gemini", batch=True)
+    recipe_generator = RecipeGenerator(
+        model_name="gemini/gemini-1.5-flash",
+        backend="litellm",  # Optional
+        backend_params={"max_requests_per_minute": 2_000, "max_tokens_per_minute": 4_000_000},
+    )
 
     # Generate recipes for all cuisines
     recipes = recipe_generator(cuisines)
