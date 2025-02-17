@@ -16,6 +16,7 @@
 [![Github](https://img.shields.io/badge/Curator-000000?style=for-the-badge&logo=github&logoColor=000&logoColor=white)](https://github.com/bespokelabsai/curator/) [![Twitter](https://img.shields.io/badge/@BespokeLabsai-white?style=for-the-badge&logo=X&logoColor=white&color=000)](https://x.com/bespokelabsai) [![Hugging Face](https://img.shields.io/badge/BespokeLabs-fcd022?style=for-the-badge&logo=huggingface&logoColor=000&labelColor)](https://huggingface.co/bespokelabs) [![Discord](https://img.shields.io/badge/TokenTown-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/KqpXvpzVBS) 
 <br>
 [![Docs](https://img.shields.io/badge/Docs-docs.bespokelabs.ai-blue?style=for-the-badge&link=https%3A%2F%2Fdocs.bespokelabs.ai)](https://docs.bespokelabs.ai/bespoke-curator/getting-started) [![Website](https://img.shields.io/badge/Site-bespokelabs.ai-blue?style=for-the-badge&link=https%3A%2F%2Fbespokelabs.ai)](https://bespokelabs.ai/) [![PyPI](https://img.shields.io/pypi/v/bespokelabs-curator?style=for-the-badge)](https://pypi.org/project/bespokelabs-curator/)
+</div>
 
 <div align="center">
 [ English | <a href="README_zh.md">中文</a> ]
