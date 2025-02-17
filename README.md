@@ -38,7 +38,7 @@ Bespoke Curator makes it easy to create synthetic data pipelines. Whether you ar
 * Built-in performance optimizations for asynchronous operations, caching, and fault recovery at every scale.
 * Support for a wide range of inference options via LiteLLM, vLLM, and popular batch APIs.
 
-![CLI in action](docs/curator-cli.gif)
+![CLI in action](https://github.com/bespokelabsai/curator/blob/main/docs/curator-cli.gif)
 
 Check out our full documentation for [getting started](https://docs.bespokelabs.ai/bespoke-curator/getting-started), [tutorials](https://docs.bespokelabs.ai/bespoke-curator/tutorials), [guides](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides) and detailed [reference](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation).
 
@@ -255,7 +255,7 @@ See documentation:
 
 ## Bespoke Curator Viewer
 
-![Viewer in action](docs/curator-viewer.gif)
+![Viewer in action](https://github.com/bespokelabsai/curator/blob/main/docs/curator-viewer.gif)
 
 To run the bespoke dataset viewer:
 
