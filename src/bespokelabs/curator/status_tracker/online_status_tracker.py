@@ -26,6 +26,11 @@ _TOKEN_LIMIT_STRATEGY_DESCRIPTION = {
     "seperate": "separate input/output",
 }
 
+_TOKEN_LIMIT_STRATEGY_DESCRIPTION = {
+    "combined": "combined input/output",
+    "seperate": "separate input/output",
+}
+
 
 class TokenLimitStrategy(str, Enum):
     """Token limit Strategy enum."""
@@ -123,10 +128,26 @@ class OnlineStatusTracker:
         )
 
         # Add tasks
+        # Create stats display with just text columns
+        self._stats = Progress(
+            TextColumn("{task.description}"),
+            console=self._console,
+        )
+
+        # Add tasks
         self._task_id = self._progress.add_task(
             description="",
             total=self.total_requests,
             completed=self.num_tasks_already_completed,
+        )
+
+        self._stats_task_id = self._stats.add_task(
+            total=None,
+            description=(
+                f"Preparing to generate [blue]{self.total_requests}[/blue] responses "
+                f"using [blue]{self.model}[/blue] with [blue]{self.token_limit_strategy}[/blue] "
+                "token limiting strategy"
+            ),
         )
 
         self._stats_task_id = self._stats.add_task(
