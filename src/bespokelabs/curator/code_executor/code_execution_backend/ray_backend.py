@@ -4,12 +4,11 @@ import asyncio
 import logging
 import os
 import subprocess
-import tempfile
 
 import ray
 
 from bespokelabs.curator.code_executor.code_execution_backend.base_backend import BaseCodeExecutionBackend
-from bespokelabs.curator.code_executor.types import CodeAPIRequest, CodeExecutionOutput, CodeExecutionRequestParams
+from bespokelabs.curator.code_executor.types import CodeAPIRequest, CodeExecutionOutput, CodeExecutionRequest
 
 
 @ray.remote
@@ -30,13 +29,12 @@ class CodeExecutorActor:
                 except Exception:
                     pass
 
-    async def execute_standard_input_request(self, code: str, code_input: str, execution_params: CodeExecutionRequestParams) -> CodeExecutionOutput:
-        """Execute code with standard input.
+    @classmethod
+    def execute_standard_input_request(cls, request: CodeExecutionRequest) -> CodeExecutionOutput:
+        """Execute code with function calls and test cases.
 
         Args:
-            code: Source code
-            code_input: Input to the code
-            execution_params: Execution parameters
+            request: CodeExecutionRequest
 
         Returns:
             CodeExecutionOutput: Execution results
@@ -44,33 +42,43 @@ class CodeExecutorActor:
         temp_program_path = None
         output = None
         try:
-            # Create temporary file
-            with tempfile.NamedTemporaryFile(delete=False, mode="w", encoding="utf-8") as temp_file:
-                temp_file.write(code)
-                temp_program_path = temp_file.name
-                self.temp_files.append(temp_program_path)
-
+            temp_program_path = BaseCodeExecutionBackend._create_temp_file(request.code, request.execution_directory)
             try:
-                result = subprocess.run(["python", temp_program_path], input=code_input, text=True, capture_output=True, timeout=execution_params.timeout)
+                # Get directory containing the program file
+                program_dir = os.path.dirname(temp_program_path)
+
+                # Run program from its directory
+                result = subprocess.run(
+                    ["python", "program.py"],
+                    input=request.code_input,
+                    text=True,
+                    capture_output=True,
+                    timeout=request.execution_params.timeout,
+                    cwd=request.execution_directory,
+                )
+
                 output = CodeExecutionOutput(
                     message="success",
                     stdout=result.stdout,
                     stderr=result.stderr,
+                    files=BaseCodeExecutionBackend._get_created_files(program_dir),
                 )
 
             except subprocess.TimeoutExpired:
-                output = CodeExecutionOutput(message="timeout", error=f"Execution timed out after {execution_params.timeout}s")
+                output = CodeExecutionOutput(
+                    message="timeout",
+                    error=f"Execution timed out after {request.execution_params.timeout}s",
+                )
 
             except Exception as e:
-                output = CodeExecutionOutput(message="error", error=str(e))
+                output = CodeExecutionOutput(
+                    message="error",
+                    error=str(e),
+                )
 
         finally:
-            if temp_program_path and temp_program_path in self.temp_files:
-                try:
-                    os.unlink(temp_program_path)
-                    self.temp_files.remove(temp_program_path)
-                except Exception:
-                    pass
+            if temp_program_path:
+                os.unlink(temp_program_path)
 
         return output
 
@@ -95,18 +103,12 @@ class RayCodeExecutionBackend(BaseCodeExecutionBackend):
 
     async def execute_request(self, request: CodeAPIRequest) -> CodeExecutionOutput:
         """Execute a single request using Ray actors."""
-        code = request.execution_request.code
-        code_input = request.execution_request.code_input
-        execution_params = request.execution_request.execution_params
-
         # Execute request in the remote executor
-        result = await asyncio.get_event_loop().run_in_executor(
-            None, ray.get, self.executor.execute_standard_input_request.remote(code, code_input, execution_params)
-        )
+        result = await asyncio.get_event_loop().run_in_executor(None, ray.get, self.executor.execute_standard_input_request.remote(request.execution_request))
 
         return result
 
-    def shutdown(self):
+    async def shutdown(self):
         """Cleanup resources when shutting down the backend."""
         if ray.is_initialized():
             ray.shutdown()
