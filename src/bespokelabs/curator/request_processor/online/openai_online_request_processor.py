@@ -258,11 +258,14 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
             if response_obj.status != 200:
                 raise Exception(f"API request failed with status {response_obj.status}: {response}")
-
             if self.config.return_completions_object:
                 response_message = dict(response)
+            elif self.config.generation_params.get("n", 1) > 1:
+                response_message = [choice["message"]["content"] for choice in response["choices"]]
             else:
                 response_message = response["choices"][0]["message"]["content"]
+
+            # TODO: check if this is the correct way to get finish_reason with `n` > 1
             finish_reason = response["choices"][0].get("finish_reason", "unknown")
             usage = response["usage"]
             token_usage = TokenUsage(
