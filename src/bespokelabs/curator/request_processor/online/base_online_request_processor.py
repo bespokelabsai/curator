@@ -12,7 +12,7 @@ import os
 import time
 import typing as t
 from abc import ABC, abstractmethod
-from collections import deque
+from collections import Counter, deque
 from dataclasses import dataclass, field
 
 import aiofiles
@@ -510,13 +510,16 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 )
                 retry_queue.put_nowait(request)
             else:
+                error_counts = Counter(str(err) for err in request.result)
+                formatted_errors = [f"{count}x {error}" for error, count in error_counts.items()]
                 logger.error(
                     f"Request {request.task_id} failed permanently after exhausting all {self.config.max_retries} retry attempts. "
-                    f"Errors: {[str(e) for e in request.result]}"
+                    f"Errors: {formatted_errors}"
                 )
+
                 generic_response = GenericResponse(
                     response_message=None,
-                    response_errors=[str(e) for e in request.result],
+                    response_errors=formatted_errors,
                     raw_request=request.api_specific_request,
                     raw_response=None,
                     generic_request=request.generic_request,
