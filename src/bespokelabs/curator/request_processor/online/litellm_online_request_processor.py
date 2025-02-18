@@ -220,7 +220,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         )
         # Try the method of caculating cost
         try:
-            litellm.completion_cost(completion_response=completion.model_dump())
+            completion_response = completion.model_dump()
+            litellm.completion_cost(completion_response=completion_response, model=completion_response["model"])
         except Exception as e:
             # We should ideally not catch a catch-all exception here. But litellm is not throwing any specific error.
             logger.warning(f"LiteLLM does not support cost estimation for model: {e}")

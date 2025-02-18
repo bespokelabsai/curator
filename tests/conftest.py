@@ -6,6 +6,7 @@ import pytest
 import vcr
 from datasets import Dataset
 
+os.environ["TELEMETRY_ENABLED"] = "false"
 mode = os.environ.get("VCR_MODE", None)
 _KEY_MAP = {
     "openai": "OPENAI_API_KEY",

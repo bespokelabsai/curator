@@ -38,11 +38,11 @@ class _LitellmCostProcessor:
         if "completion_response" in kwargs:
             model = kwargs["completion_response"]["model"]
         else:
-            model = kwargs.get("model", None)
+            model = kwargs.pop("model", None)
 
         cost_to_complete = 0.0
         if model in litellm.model_cost:
-            cost_to_complete = litellm.completion_cost(**kwargs)
+            cost_to_complete = litellm.completion_cost(model=model, **kwargs)
         if self.batch:
             cost_to_complete *= 0.5
         return cost_to_complete
