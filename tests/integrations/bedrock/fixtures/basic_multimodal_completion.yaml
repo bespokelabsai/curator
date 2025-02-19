@@ -1,0 +1,88 @@
+interactions:
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-haiku-20240307-v1:0/invoke
+      body:
+        anthropic_version: bedrock-2023-05-31
+        messages:
+          - role: user
+            content:
+              - type: text
+                text: Describe what you see in this image
+              - type: image
+                source:
+                  type: base64
+                  media_type: image/jpeg
+                  data: /9j/4AAQSkZJRgABAQEASABIAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQtJyEkLzgvLy4vODQ6PTo0ODBIRkpMRUc3Tk5PUVVRVEJVWldiYmJd/2wBDARVFxceGh4eHR0dHSJAPkgiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiL/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=
+        max_tokens: 4096
+        temperature: 0.7
+        top_p: 0.95
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        completion: "The image appears to be a small, blurry gray rectangle. The quality is very low and it's difficult to make out any clear details or specific content within the image. It looks like it might be a heavily compressed or low-resolution JPEG file."
+        stop_reason: stop
+      headers:
+        Content-Type: application/json
+
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-haiku-20240307-v1:0/invoke
+      body:
+        anthropic_version: bedrock-2023-05-31
+        messages:
+          - role: user
+            content:
+              - type: text
+                text: Describe what you see in this image
+              - type: image
+                source:
+                  type: url
+                  url: https://example.com/test.jpg
+        max_tokens: 4096
+        temperature: 0.7
+        top_p: 0.95
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        completion: "I see a test image from example.com. It appears to be a placeholder image with a gray background and some text indicating it's a test image."
+        stop_reason: stop
+      headers:
+        Content-Type: application/json
+
+  # Test error with invalid image
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-haiku-20240307-v1:0/invoke
+      body:
+        anthropic_version: bedrock-2023-05-31
+        messages:
+          - role: user
+            content:
+              - type: text
+                text: Describe what you see in this image
+              - type: image
+                source:
+                  type: base64
+                  media_type: image/jpeg
+                  data: invalid_base64
+        max_tokens: 4096
+        temperature: 0.7
+        top_p: 0.95
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 400
+      body:
+        error:
+          code: ValidationException
+          message: Invalid image data
+      headers:
+        Content-Type: application/json

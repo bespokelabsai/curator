@@ -23,10 +23,10 @@ def _hash_string(input_string):
     return hashlib.sha256(input_string.encode("utf-8")).hexdigest()
 
 
-_ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm"}]
+_ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm", "bedrock"}]
 _ONLINE_CONCURRENT_ONLY_BACKENDS = [{"integration": backend} for backend in {"litellm/deepinfra"}]
-_FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"anthropic", "openai"}]
-_BATCH_BACKENDS = [{"integration": backend} for backend in {"anthropic", "openai"}]
+_FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"anthropic", "openai", "bedrock"}]
+_BATCH_BACKENDS = [{"integration": backend} for backend in {"anthropic", "openai", "bedrock"}]
 
 
 class TimeoutError(Exception):
@@ -55,7 +55,66 @@ def test_basic_without_dataset(temp_working_dir):
     hash_book = {
         "openai": "d52319f1976f937ff24f9d53e9c773f37f587dc2fa0d4a4da355e41e5c1eb500",
         "litellm": "6d0d46117661a8c0e725eb83c9299c3cbad38bbfe236715f99d69432423e5787",
+        "bedrock": "f38e7406448e95160ebe4d9b6148920ef37b019f23a4e2c57094fdd4bafb09be",  # Using Claude response hash
     }
+
+    # Use appropriate cassette based on model provider
+    cassette_name = "basic_completion.yaml"
+    if backend == "bedrock":
+        model = "anthropic.claude-3-haiku-20240307-v1:0"
+        cassette_name = "basic_completion.yaml"
+    else:
+        model = "gpt-3.5-turbo"
+
+    with vcr_config.use_cassette(cassette_name):
+        # Capture the output to verify status tracker
+        output = StringIO()
+        console = Console(file=output, width=300)
+
+        dataset = helper.create_basic(temp_working_dir, mock_dataset=None, backend=backend, tracker_console=console, model=model)
+
+        # Verify status tracker output
+        captured = output.getvalue()
+        assert model in captured, captured
+        assert "3" in captured, captured  # Verify total requests processed
+        assert "Final Curator Statistics" in captured, captured
+        # Verify response content
+        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+        assert _hash_string(recipes) == hash_book[backend]
+
+
+@pytest.mark.parametrize("temp_working_dir", ([{"integration": "bedrock"}]), indirect=True)
+def test_bedrock_models(temp_working_dir, mock_dataset):
+    """Test different Bedrock model providers."""
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    hash_book = {
+        "openai": "54456b7dcce5826036a52f242e589b02c945ef0891af6e8b786020ba2737fc09",
+        "litellm": "7bf42717b5e516eca1f92ca69680c1278c8a9a0e351365d1aa808f92e1b59086",
+        "bedrock": "54456b7dcce5826036a52f242e589b02c945ef0891af6e8b786020ba2737fc09",  # Same as OpenAI since responses are similar
+    }
+
+    # Test Meta Llama model
+    with vcr_config.use_cassette("meta_completion.yaml"):
+        output = StringIO()
+        console = Console(file=output, width=300)
+        dataset = helper.create_basic(temp_working_dir, mock_dataset, backend=backend, tracker_console=console, model="meta.llama3-1-70b-instruct-v1:0")
+        assert len(dataset) == 3
+
+    # Test Amazon Nova model
+    with vcr_config.use_cassette("nova_completion.yaml"):
+        output = StringIO()
+        console = Console(file=output, width=300)
+        dataset = helper.create_basic(temp_working_dir, mock_dataset, backend=backend, tracker_console=console, model="us.amazon.nova-pro-v1:0")
+        assert len(dataset) == 3
+
+    # Test Claude multimodal
+    with vcr_config.use_cassette("basic_multimodal_completion.yaml"):
+        output = StringIO()
+        console = Console(file=output, width=300)
+        dataset = helper.create_basic(
+            temp_working_dir, mock_dataset, backend=backend, tracker_console=console, model="anthropic.claude-3-haiku-20240307-v1:0", multimodal=True
+        )
+        assert len(dataset) == 3
 
     # Test string prompt
     with vcr_config.use_cassette("basic_completion_without_dataset.yaml"):
@@ -86,36 +145,6 @@ def test_basic_without_dataset_raw_prompt(temp_working_dir):
     # Test raw prompt i.e list of dictionaries
     with vcr_config.use_cassette("basic_completion_without_dataset.yaml"):
         dataset = helper.create_basic(temp_working_dir, mock_dataset=None, backend=backend, model="gpt-4o-mini", raw_prompt=True)
-        # Verify response content
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
-
-
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_basic(temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {
-        "openai": "54456b7dcce5826036a52f242e589b02c945ef0891af6e8b786020ba2737fc09",
-        "litellm": "7bf42717b5e516eca1f92ca69680c1278c8a9a0e351365d1aa808f92e1b59086",
-    }
-
-    with vcr_config.use_cassette("basic_completion.yaml"):
-        # Capture the output to verify status tracker
-        output = StringIO()
-        console = Console(file=output, width=300)
-
-        dataset = helper.create_basic(
-            temp_working_dir,
-            mock_dataset,
-            backend=backend,
-            tracker_console=console,
-        )
-
-        # Verify status tracker output
-        captured = output.getvalue()
-        assert "gpt-3.5-turbo" in captured, captured
-        assert "3" in captured, captured  # Verify total requests processed
-        assert "Final Curator Statistics" in captured, captured
         # Verify response content
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
@@ -331,6 +360,7 @@ def test_basic_batch(temp_working_dir, mock_dataset):
     hash_book = {
         "openai": "47127d9dcb428c18e5103dffcb0406ba2f9acab2f1ea974606962caf747b0ad5",
         "anthropic": "f38e7406448e95160ebe4d9b6148920ef37b019f23a4e2c57094fdd4bafb09be",
+        "bedrock": "f38e7406448e95160ebe4d9b6148920ef37b019f23a4e2c57094fdd4bafb09be",  # Same as Anthropic since using Claude
     }
     with vcr_config.use_cassette("basic_batch_completion.yaml"):
         output = StringIO()

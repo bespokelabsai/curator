@@ -1,0 +1,113 @@
+interactions:
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-haiku-20240307-v1:0/invoke
+      body:
+        anthropic_version: bedrock-2023-05-31
+        messages:
+          - role: user
+            content: Write a recipe for pasta carbonara
+        max_tokens: 4096
+        temperature: 0.7
+        top_p: 0.95
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        completion: "Here is a recipe for pasta carbonara:\n\n1. Cook spaghetti according to package directions\n2. In a bowl, whisk together eggs, grated pecorino and black pepper\n3. Crisp up diced guanciale or pancetta\n4. Toss hot pasta with egg mixture and cured pork\n5. Add pasta water as needed for silky sauce\n\nServe immediately with extra cheese and pepper."
+        stop_reason: stop
+      headers:
+        Content-Type: application/json
+
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-haiku-20240307-v1:0/invoke
+      body:
+        anthropic_version: bedrock-2023-05-31
+        messages:
+          - role: user
+            content: Write a recipe for chicken tikka masala
+        max_tokens: 4096
+        temperature: 0.7
+        top_p: 0.95
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        completion: "Here's a recipe for chicken tikka masala:\n\n1. Marinate chicken in yogurt and spices\n2. Grill or broil chicken until charred\n3. Make sauce with tomatoes, cream, and spices\n4. Combine chicken and sauce\n5. Simmer until thickened\n\nServe with naan bread and rice."
+        stop_reason: stop
+      headers:
+        Content-Type: application/json
+
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-haiku-20240307-v1:0/invoke
+      body:
+        anthropic_version: bedrock-2023-05-31
+        messages:
+          - role: user
+            content: Write a recipe for chocolate chip cookies
+        max_tokens: 4096
+        temperature: 0.7
+        top_p: 0.95
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        completion: "Here's a recipe for chocolate chip cookies:\n\n1. Cream butter and sugars\n2. Add eggs and vanilla\n3. Mix in flour, baking soda, and salt\n4. Fold in chocolate chips\n5. Bake at 375°F for 10-12 minutes\n\nLet cool slightly before enjoying!"
+        stop_reason: stop
+      headers:
+        Content-Type: application/json
+
+  # Test rate limit error
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-haiku-20240307-v1:0/invoke
+      body:
+        anthropic_version: bedrock-2023-05-31
+        messages:
+          - role: user
+            content: Write another recipe
+        max_tokens: 4096
+        temperature: 0.7
+        top_p: 0.95
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 429
+      body:
+        error:
+          code: ThrottlingException
+          message: Rate limit exceeded
+      headers:
+        Content-Type: application/json
+
+  # Test successful retry after rate limit
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/anthropic.claude-3-haiku-20240307-v1:0/invoke
+      body:
+        anthropic_version: bedrock-2023-05-31
+        messages:
+          - role: user
+            content: Write another recipe
+        max_tokens: 4096
+        temperature: 0.7
+        top_p: 0.95
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        completion: "Here's a recipe for banana bread:\n\n1. Mash ripe bananas\n2. Mix with melted butter, sugar, and eggs\n3. Fold in flour, baking soda, and salt\n4. Pour into greased loaf pan\n5. Bake at 350°F for 60 minutes\n\nLet cool before slicing."
+        stop_reason: stop
+      headers:
+        Content-Type: application/json

@@ -1,0 +1,120 @@
+interactions:
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.amazon.nova-pro-v1:0/invoke
+      body:
+        messages:
+          - role: user
+            content: Write a recipe for pasta carbonara
+        textGenerationConfig:
+          maxTokenCount: 4096
+          temperature: 0.7
+          topP: 0.95
+          stopSequences: []
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        outputText: "Here is a recipe for pasta carbonara:\n\n1. Cook spaghetti according to package directions\n2. In a bowl, whisk together eggs, grated pecorino and black pepper\n3. Crisp up diced guanciale or pancetta\n4. Toss hot pasta with egg mixture and cured pork\n5. Add pasta water as needed for silky sauce\n\nServe immediately with extra cheese and pepper."
+        stop_reason: stop
+      headers:
+        Content-Type: application/json
+
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.amazon.nova-pro-v1:0/invoke
+      body:
+        messages:
+          - role: user
+            content: Write a recipe for chicken tikka masala
+        textGenerationConfig:
+          maxTokenCount: 4096
+          temperature: 0.7
+          topP: 0.95
+          stopSequences: []
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        outputText: "Here's a recipe for chicken tikka masala:\n\n1. Marinate chicken in yogurt and spices\n2. Grill or broil chicken until charred\n3. Make sauce with tomatoes, cream, and spices\n4. Combine chicken and sauce\n5. Simmer until thickened\n\nServe with naan bread and rice."
+        stop_reason: stop
+      headers:
+        Content-Type: application/json
+
+  # Test with system prompt
+  - request:
+      method: POST
+      uri: https://bedrock-runtime.us-east-1.amazonaws.com/model/us.amazon.nova-pro-v1:0/invoke
+      body:
+        messages:
+          - role: user
+            content: Write a recipe for chocolate chip cookies
+        systemPrompt: You are a helpful cooking assistant.
+        textGenerationConfig:
+          maxTokenCount: 4096
+          temperature: 0.7
+          topP: 0.95
+          stopSequences: []
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        outputText: "Here's a recipe for chocolate chip cookies:\n\n1. Cream butter and sugars\n2. Add eggs and vanilla\n3. Mix in flour, baking soda, and salt\n4. Fold in chocolate chips\n5. Bake at 375°F for 10-12 minutes\n\nLet cool slightly before enjoying!"
+        stop_reason: stop
+      headers:
+        Content-Type: application/json
+
+  # Test batch processing
+  - request:
+      method: POST
+      uri: https://bedrock.us-east-1.amazonaws.com/model/us.amazon.nova-pro-v1:0/batch
+      body:
+        inputConfig:
+          s3Uri: s3://test-bucket/input/test-job.jsonl
+          dataInputConfig:
+            contentType: application/json
+            inputFormat: jsonlines
+        outputConfig:
+          s3Uri: s3://test-bucket/output/test-job/
+          dataOutputConfig:
+            contentType: application/json
+        modelId: us.amazon.nova-pro-v1:0
+        roleArn: test-role
+      headers:
+        Content-Type: application/json
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        jobId: test-job-123
+        status: IN_PROGRESS
+        creationTime: '2024-02-18T12:00:00Z'
+      headers:
+        Content-Type: application/json
+
+  - request:
+      method: GET
+      uri: https://bedrock.us-east-1.amazonaws.com/model/us.amazon.nova-pro-v1:0/batch/test-job-123
+      headers:
+        Accept: application/json
+    response:
+      status: 200
+      body:
+        jobId: test-job-123
+        status: COMPLETED
+        creationTime: '2024-02-18T12:00:00Z'
+        completionTime: '2024-02-18T12:05:00Z'
+        outputLocation: s3://test-bucket/output/test-job-123/
+        requestCounts:
+          total: 3
+          succeeded: 3
+          failed: 0
+          retried: 0
+      headers:
+        Content-Type: application/json
