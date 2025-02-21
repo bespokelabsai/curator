@@ -327,8 +327,9 @@ class OnlineStatusTracker:
         self._console.print(table)
 
         # make a copy of the tracker and remove viewer_client for JSON serialization
+        self.viewer_client = None
         metadata = asdict(self)
-        metadata.pop("viewer_client", None)
+        metadata.pop("viewer_client")
         telemetry_client.capture(
             TelemetryEvent(
                 event_type="OnlineRequest",
