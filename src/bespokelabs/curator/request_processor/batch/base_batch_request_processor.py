@@ -4,6 +4,7 @@ import os
 from abc import abstractmethod
 from typing import Optional
 
+import aiofiles
 from litellm import model_cost
 
 from bespokelabs.curator.log import logger
@@ -429,7 +430,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         return api_specific_requests
 
-    def generic_response_file_from_responses(self, responses: list[dict], batch: GenericBatch) -> str | None:
+    async def generic_response_file_from_responses(self, responses: list[dict], batch: GenericBatch) -> str | None:
         """Process API responses and create generic response file.
 
         Converts API-specific responses to GenericResponse objects and writes them
@@ -468,8 +469,11 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         total_cost = 0.0
 
         # appending allows for the resubmitted resumed batch
-        with open(response_file, "a") as f:
-            for raw_response in responses:
+        import tqdm
+
+        stream_response_tasks = []
+        async with aiofiles.open(response_file, "a") as f:
+            for raw_response in tqdm.tqdm(responses):
                 request_idx = int(raw_response["custom_id"])
                 generic_request = generic_request_map[request_idx]
                 generic_response = self.parse_api_specific_response(raw_response, generic_request, batch)
@@ -478,8 +482,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
                 # Write response to file
                 response_dump = generic_response.model_dump(mode="json")
-                json.dump(response_dump, f, default=str)
-                f.write("\n")
+                r = json.dumps(response_dump, default=str)
+                await f.write(r + "\n")
 
                 # Update token and cost totals
                 if generic_response.token_usage:
@@ -491,12 +495,14 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
                 # Stream responses to viewer client
                 idx = self.tracker.num_parsed_responses
-                self.tracker.num_parsed_responses = idx + len(responses)
-                run_in_event_loop(self.viewer_client.stream_response(json.dumps(response_dump), idx))
+                self.tracker.num_parsed_responses = idx + len(processed_responses)
+                stream_response_tasks.append(self.viewer_client.stream_response(json.dumps(response_dump), idx))
+
+        await asyncio.gather(*stream_response_tasks)
 
         # Update tracker with token usage and cost stats
         self.tracker.update_token_and_cost(total_token_usage, total_cost)
-        run_in_event_loop(self.viewer_client.session_completed())
+        await self.viewer_client.session_completed()
         return response_file
 
     async def submit_batches_from_request_files(
@@ -623,6 +629,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 await asyncio.sleep(self.config.batch_check_interval)
 
         response_files = filter(None, all_response_files)
+        await self.viewer_client.close()
         if self.tracker.n_downloaded_batches == 0 or not response_files:
             raise RuntimeError(f"None of the submitted batches completed successfully. Please check the logs above and {self.web_dashboard} for errors.")
 
@@ -634,7 +641,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             return None
 
         # Write responses to file and update stats
-        response_file = self.generic_response_file_from_responses(file_content, batch)
+        response_file = await self.generic_response_file_from_responses(file_content, batch)
 
         logger.debug(f"Batch {batch.id} written to {response_file}")
 
