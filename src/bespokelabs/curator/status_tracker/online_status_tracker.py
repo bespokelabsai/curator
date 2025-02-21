@@ -26,11 +26,6 @@ _TOKEN_LIMIT_STRATEGY_DESCRIPTION = {
     "seperate": "separate input/output",
 }
 
-_TOKEN_LIMIT_STRATEGY_DESCRIPTION = {
-    "combined": "combined input/output",
-    "seperate": "separate input/output",
-}
-
 
 class TokenLimitStrategy(str, Enum):
     """Token limit Strategy enum."""
