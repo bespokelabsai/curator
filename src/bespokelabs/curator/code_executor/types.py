@@ -28,6 +28,7 @@ class CodeExecutionRequest(BaseModel):
     execution_params: Optional[CodeExecutionRequestParams] = None
     original_row: Optional[Dict[str, Any]] = None
     original_row_idx: Optional[int] = None
+    execution_directory: Optional[str] = None
 
 
 class CodeAPIRequest(BaseModel):
@@ -48,6 +49,7 @@ class CodeExecutionOutput(BaseModel):
     error: Optional[str] = None
     stdout: Optional[str] = None
     stderr: Optional[str] = None
+    files: Optional[bytes] = None
 
 
 class CodeExecutionResponse(BaseModel):
@@ -66,3 +68,4 @@ class CodeExecutionBackendConfig(BaseModel):
     max_retries: int = 3
     seconds_to_pause_on_rate_limit: int = 10
     base_url: Optional[str] = None
+    docker_image: Optional[str] = None

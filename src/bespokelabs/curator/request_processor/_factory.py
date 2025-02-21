@@ -1,9 +1,9 @@
-import logging
 import os
 import typing as t
 
 from pydantic import BaseModel
 
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.config import (
     BackendParamsType,
     BatchRequestProcessorConfig,
@@ -11,8 +11,6 @@ from bespokelabs.curator.request_processor.config import (
     OnlineRequestProcessorConfig,
     _validate_backend_params,
 )
-
-logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from pydantic import BaseModel

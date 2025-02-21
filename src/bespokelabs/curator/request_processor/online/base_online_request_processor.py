@@ -7,18 +7,18 @@ handling rate limiting, retries, and concurrent processing.
 import asyncio
 import datetime
 import json
-import logging
 import os
 import time
 import typing as t
 from abc import ABC, abstractmethod
-from collections import deque
+from collections import Counter, deque
 from dataclasses import dataclass, field
 
 import aiofiles
 import aiohttp
 
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor import _DEFAULT_COST_MAP
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
@@ -27,9 +27,6 @@ from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatu
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.prompt import _MultiModalPrompt
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 _MAX_OUTPUT_MVA_WINDOW = 50
 
@@ -319,6 +316,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             max_requests_per_minute=self.max_requests_per_minute,
             max_tokens_per_minute=self.max_tokens_per_minute,
             compatible_provider=self.compatible_provider,
+            viewer_client=self._viewer_client,
         )
 
         completed_request_ids = self.validate_existing_response_file(response_file)
@@ -569,13 +567,16 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 )
                 retry_queue.put_nowait(request)
             else:
+                error_counts = Counter(str(err) for err in request.result)
+                formatted_errors = [f"{error}(x{count})" for error, count in error_counts.items()]
                 logger.error(
                     f"Request {request.task_id} failed permanently after exhausting all {self.config.max_retries} retry attempts. "
-                    f"Errors: {[str(e) for e in request.result]}"
+                    f"Errors: {formatted_errors}"
                 )
+
                 generic_response = GenericResponse(
                     response_message=None,
-                    response_errors=[str(e) for e in request.result],
+                    response_errors=formatted_errors,
                     raw_request=request.api_specific_request,
                     raw_response=None,
                     generic_request=request.generic_request,

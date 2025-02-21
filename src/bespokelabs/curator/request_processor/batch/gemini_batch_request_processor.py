@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import typing as t
 from functools import lru_cache
@@ -10,15 +9,13 @@ from pydantic import BaseModel
 from vertexai.batch_prediction import BatchPredictionJob
 
 from bespokelabs.curator import constants
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import TokenUsage
-
-logger = logging.getLogger(__name__)
-
 
 """
 Gemini latest rate limits:

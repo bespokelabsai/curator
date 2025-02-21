@@ -1,6 +1,5 @@
 import asyncio
 import json
-import logging
 import typing as t
 import warnings
 
@@ -10,6 +9,7 @@ from openai.types.batch_request_counts import BatchRequestCounts
 from openai.types.file_object import FileObject
 
 from bespokelabs.curator.cost import cost_processor_factory
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
@@ -17,8 +17,6 @@ from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRe
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import TokenUsage
-
-logger = logging.getLogger(__name__)
 
 _PROGRESS_STATE = {"validating", "finalizing", "cancelling", "in_progress", "pre_schedule"}
 _FINISHED_STATE = {"completed", "failed", "expired", "cancelled"}

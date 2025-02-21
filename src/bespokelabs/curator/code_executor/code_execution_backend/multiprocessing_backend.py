@@ -1,16 +1,13 @@
 """Multiprocessing Code Execution Backend."""
 
 import asyncio
-import logging
 import os
 import subprocess
-import tempfile
 from concurrent.futures import ProcessPoolExecutor
 
 from bespokelabs.curator.code_executor.code_execution_backend.base_backend import BaseCodeExecutionBackend
-from bespokelabs.curator.code_executor.types import CodeAPIRequest, CodeExecutionOutput, CodeExecutionRequestParams
-
-logger = logging.getLogger(__name__)
+from bespokelabs.curator.code_executor.types import CodeAPIRequest, CodeExecutionOutput, CodeExecutionRequest
+from bespokelabs.curator.log import logger
 
 
 class MultiprocessingCodeExecutionBackend(BaseCodeExecutionBackend):
@@ -30,33 +27,15 @@ class MultiprocessingCodeExecutionBackend(BaseCodeExecutionBackend):
         return await loop.run_in_executor(
             self.process_pool,
             self.execute_standard_input_request,
-            request.execution_request.code,
-            request.execution_request.code_input,
-            request.execution_request.execution_params,
+            request.execution_request,
         )
 
     @classmethod
-    def _create_temp_file(cls, content: str) -> str:
-        """Create a temporary file with the given content.
-
-        Args:
-            content: Content to write to temp file
-
-        Returns:
-            Path to the created temp file
-        """
-        with tempfile.NamedTemporaryFile(delete=False, mode="w", encoding="utf-8") as temp_file:
-            temp_file.write(content)
-            return temp_file.name
-
-    @classmethod
-    def execute_standard_input_request(cls, code: str, code_input: str, execution_params: CodeExecutionRequestParams) -> CodeExecutionOutput:
+    def execute_standard_input_request(cls, request: CodeExecutionRequest) -> CodeExecutionOutput:
         """Execute code with function calls and test cases.
 
         Args:
-            code: Source code
-            code_input: Input to the code
-            execution_params: Execution parameters
+            request: CodeExecutionRequest
 
         Returns:
             CodeExecutionOutput: Execution results
@@ -64,19 +43,32 @@ class MultiprocessingCodeExecutionBackend(BaseCodeExecutionBackend):
         temp_program_path = None
         output = None
         try:
-            temp_program_path = cls._create_temp_file(code)
+            temp_program_path = cls._create_temp_file(request.code, request.execution_directory)
             try:
-                result = subprocess.run(["python", temp_program_path], input=code_input, text=True, capture_output=True, timeout=execution_params.timeout)
+                # Get directory containing the program file
+                program_dir = os.path.dirname(temp_program_path)
+
+                # Run program from its directory
+                result = subprocess.run(
+                    ["python", "program.py"],
+                    input=request.code_input,
+                    text=True,
+                    capture_output=True,
+                    timeout=request.execution_params.timeout,
+                    cwd=request.execution_directory,
+                )
+
                 output = CodeExecutionOutput(
                     message="success",
                     stdout=result.stdout,
                     stderr=result.stderr,
+                    files=cls._get_created_files(program_dir),
                 )
 
             except subprocess.TimeoutExpired:
                 output = CodeExecutionOutput(
                     message="timeout",
-                    error=f"Execution timed out after {execution_params.timeout}s",
+                    error=f"Execution timed out after {request.execution_params.timeout}s",
                 )
 
             except Exception as e:
@@ -84,6 +76,7 @@ class MultiprocessingCodeExecutionBackend(BaseCodeExecutionBackend):
                     message="error",
                     error=str(e),
                 )
+
         finally:
             if temp_program_path:
                 os.unlink(temp_program_path)

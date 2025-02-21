@@ -1,8 +1,8 @@
 <p align="center">
   <a href="https://bespokelabs.ai/" target="_blank">
     <picture>
-      <source media="(prefers-color-scheme: light)" width="100px" srcset="docs/Bespoke-Labs-Logomark-Red-crop.png">
-      <img alt="Bespoke Labs Logo" width="100px" src="docs/Bespoke-Labs-Logomark-Red-crop.png">
+      <source media="(prefers-color-scheme: light)" width="100px" srcset="https://github.com/bespokelabsai/curator/blob/main/docs/Bespoke-Labs-Logomark-Red-crop.png">
+      <img alt="Bespoke Labs Logo" width="100px" src="https://github.com/bespokelabsai/curator/blob/main/docs/Bespoke-Labs-Logomark-Red-crop.png">
     </picture>
   </a>
 </p>
@@ -11,27 +11,19 @@
 <h3 align="center" style="font-size: 20px; margin-bottom: 4px">Data Curation for Post-Training & Structured Data Extraction</h3>
 <br/>
 
-<p align="center">
-  <a href="https://docs.bespokelabs.ai/bespoke-curator/getting-started">
-    <img alt="Static Badge" src="https://img.shields.io/badge/Docs-docs.bespokelabs.ai-blue?style=flat&link=https%3A%2F%2Fdocs.bespokelabs.ai">
-  </a>
-  <a href="https://bespokelabs.ai/">
-    <img alt="Site" src="https://img.shields.io/badge/Site-bespokelabs.ai-blue?link=https%3A%2F%2Fbespokelabs.ai"/>
-  </a>
-  <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/bespokelabs-curator">
-  <a href="https://twitter.com/bespokelabsai">
-    <img src="https://img.shields.io/twitter/follow/bespokelabsai" alt="Follow on X" />
-  </a>
-  <a href="https://discord.gg/KqpXvpzVBS">
-    <img alt="Discord" src="https://img.shields.io/discord/1230990265867698186">
-  </a>
-</p>
+<div align="center">
+
+[![Github](https://img.shields.io/badge/Curator-000000?style=for-the-badge&logo=github&logoColor=000&logoColor=white)](https://github.com/bespokelabsai/curator/) [![Twitter](https://img.shields.io/badge/@BespokeLabsai-white?style=for-the-badge&logo=X&logoColor=white&color=000)](https://x.com/bespokelabsai) [![Hugging Face](https://img.shields.io/badge/BespokeLabs-fcd022?style=for-the-badge&logo=huggingface&logoColor=000&labelColor)](https://huggingface.co/bespokelabs) [![Discord](https://img.shields.io/badge/TokenTown-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/KqpXvpzVBS) 
+<br>
+[![Docs](https://img.shields.io/badge/Docs-docs.bespokelabs.ai-blue?style=for-the-badge&link=https%3A%2F%2Fdocs.bespokelabs.ai&labelColor=000)](https://docs.bespokelabs.ai/bespoke-curator/getting-started) [![Website](https://img.shields.io/badge/Site-bespokelabs.ai-blue?style=for-the-badge&link=https%3A%2F%2Fbespokelabs.ai&labelColor=000)](https://bespokelabs.ai/) [![PyPI](https://img.shields.io/pypi/v/bespokelabs-curator?style=for-the-badge&labelColor=000)](https://pypi.org/project/bespokelabs-curator/)
+</div>
+
 <div align="center">
 [ English | <a href="README_zh.md">中文</a> ]
 </div>
 
 ## 🎉 What's New 
-* **[2025.01.30]** [Batch Processing Support for OpenAI, Anthropic, and other compatible APIs](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half 🔥🔥🔥. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). Please [fill out this form](https://docs.google.com/forms/d/e/1FAIpQLSeBeBKA_19ljeUCkpwkUuUL5YXUUPKUExpjmBaSfmF2XAhwVA/viewform?usp=dialog) to claim your credit.
+* **[2025.01.30]** [Batch Processing Support for OpenAI, Anthropic, and other compatible APIs](https://www.bespokelabs.ai/blog/batch-processing-with-curator): Cut Token Costs in Half 🔥🔥🔥. Through our partnership with kluster.ai, new users using Curator can access open-source models like DeepSeek-R1 and receive a **$25 credit** (limits apply). EDIT: Promotion has come to an end.
 * **[2025.01.27]** We used Bespoke Curator to create [OpenThoughts-114k](https://huggingface.co/datasets/open-thoughts/OpenThoughts-114k), a high-quality reasoning dataset (trending on HuggingFace).
 * **[2025.01.22]** We used Bespoke Curator to create [Bespoke-Stratos-17k](https://huggingface.co/datasets/bespokelabs/Bespoke-Stratos-17k), a high-quality reasoning dataset (trending on HuggingFace).
 * **[2025.01.15]** Curator launched 🎉
@@ -46,7 +38,7 @@ Bespoke Curator makes it easy to create synthetic data pipelines. Whether you ar
 * Built-in performance optimizations for asynchronous operations, caching, and fault recovery at every scale.
 * Support for a wide range of inference options via LiteLLM, vLLM, and popular batch APIs.
 
-![CLI in action](docs/curator-cli.gif)
+![CLI in action](https://github.com/bespokelabsai/curator/blob/main/docs/curator-cli.gif)
 
 Check out our full documentation for [getting started](https://docs.bespokelabs.ai/bespoke-curator/getting-started), [tutorials](https://docs.bespokelabs.ai/bespoke-curator/tutorials), [guides](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides) and detailed [reference](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation).
 
@@ -263,7 +255,7 @@ See documentation:
 
 ## Bespoke Curator Viewer
 
-![Viewer in action](docs/curator-viewer.gif)
+![Viewer in action](https://github.com/bespokelabsai/curator/blob/main/docs/curator-viewer.gif)
 
 To run the bespoke dataset viewer:
 

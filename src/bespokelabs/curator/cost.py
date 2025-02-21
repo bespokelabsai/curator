@@ -1,4 +1,3 @@
-import logging
 from collections import defaultdict
 
 import litellm
@@ -6,7 +5,6 @@ import litellm
 from bespokelabs.curator.request_processor import _DEFAULT_COST_MAP
 
 litellm.suppress_debug_info = True
-logger = logging.getLogger(__name__)
 
 RATE_LIMIT_HEADER = {
     "api.together.xyz": {"request-key": {"key": "x-ratelimit-limit", "type": "rps"}, "token-key": {"key": "x-ratelimit-limit-tokens", "type": "tps"}}
@@ -38,11 +36,11 @@ class _LitellmCostProcessor:
         if "completion_response" in kwargs:
             model = kwargs["completion_response"]["model"]
         else:
-            model = kwargs.get("model", None)
+            model = kwargs.pop("model", None)
 
         cost_to_complete = 0.0
         if model in litellm.model_cost:
-            cost_to_complete = litellm.completion_cost(**kwargs)
+            cost_to_complete = litellm.completion_cost(model=model, **kwargs)
         if self.batch:
             cost_to_complete *= 0.5
         return cost_to_complete

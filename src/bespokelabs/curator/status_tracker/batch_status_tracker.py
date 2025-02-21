@@ -1,7 +1,6 @@
 """Module for tracking the status of batches during curation."""
 
 import json
-import logging
 import time
 from typing import Optional
 
@@ -14,11 +13,12 @@ from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn, Ti
 from rich.table import Table
 
 from bespokelabs.curator import _CONSOLE
+from bespokelabs.curator.client import Client
+from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
 from bespokelabs.curator.types.generic_response import TokenUsage
-
-logger = logging.getLogger(__name__)
 
 
 class BatchStatusTracker(BaseModel):
@@ -31,9 +31,11 @@ class BatchStatusTracker(BaseModel):
 
     model_config = {
         "arbitrary_types_allowed": True,  # Allow non-serializable types
-        "exclude": {"console", "progress", "task_id"},  # Exclude from serialization
         "json_encoders": {set: list},
     }
+
+    # Fields that should be excluded during serialization
+    _excluded_fields = {"console", "progress", "task_id", "viewer_client", "_console", "_progress", "_stats", "_live", "_task_id", "_stats_task_id"}
 
     n_total_requests: int = Field(default=0)
     unsubmitted_request_files: set[str] = Field(default_factory=set)
@@ -59,6 +61,9 @@ class BatchStatusTracker(BaseModel):
 
     # Number of parsed responses i.e output from `parse` method.
     num_parsed_responses: int = Field(default=0)
+
+    # Add client field
+    viewer_client: Optional[Client] = Field(default=None)
 
     def start_tracker(self, console: Optional[Console] = None):
         """Start the progress tracker with rich console output."""
@@ -189,6 +194,22 @@ class BatchStatusTracker(BaseModel):
             f"[white]Output:[/white] {self.output_cost_str}"
         )
 
+        # Add curator viewer link if client is available and hosted
+        if self.viewer_client and self.viewer_client.hosted and self.viewer_client.curator_viewer_url:
+            viewer_text = (
+                f"[bold white]Curator Viewer:[/bold white] "
+                f"[blue][link={self.viewer_client.curator_viewer_url}]:sparkles: Open Curator Viewer[/link] :sparkles:[/blue]\n"
+                f"[dim]{self.viewer_client.curator_viewer_url}[/dim]"
+            )
+        else:
+            viewer_text = (
+                "[bold white]Curator Viewer:[/bold white] "
+                "[yellow]Disabled[/yellow]\n"
+                f"Set [yellow]HOSTED_CURATOR_VIEWER=[cyan]1[/cyan][/yellow] to view your data live at [blue]{PUBLIC_CURATOR_VIEWER_HOME_URL}[/blue]"
+            )
+
+        stats_text = viewer_text + "\n" + stats_text
+
         # Update stats display
         self._stats.update(
             self._stats_task_id,
@@ -197,7 +218,10 @@ class BatchStatusTracker(BaseModel):
 
     def display_final_stats(self):
         """Display final statistics."""
-        table = Table(title="Final Curator Statistics", box=box.ROUNDED)
+        table = Table(
+            title="Final Curator Statistics",
+            box=box.ROUNDED,
+        )
         table.add_column("Section/Metric", style="cyan")
         table.add_column("Value", style="yellow")
 
@@ -417,3 +441,8 @@ class BatchStatusTracker(BaseModel):
         if cost:
             self.total_cost += cost
         self.update_display()
+
+    def model_dump_json(self, **kwargs) -> str:
+        """Override model_dump_json to exclude non-serializable fields."""
+        kwargs.pop("exclude", None)  # Remove any existing exclude to avoid duplicate argument
+        return super().model_dump_json(exclude=self._excluded_fields, **kwargs)

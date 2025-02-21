@@ -1,9 +1,6 @@
-import logging
 from typing import Any
 
 from bespokelabs.curator.types.generic_request import GenericRequest
-
-logger = logger = logging.getLogger(__name__)
 
 # TODO: Add logic for high res detailed images
 _OPENAI_TOKENS_PER_IMAGE = {"low": 85}

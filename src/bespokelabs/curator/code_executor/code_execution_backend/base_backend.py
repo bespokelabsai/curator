@@ -2,10 +2,11 @@
 
 import asyncio
 import glob
+import io
 import json
-import logging
 import os
 import resource
+import tarfile
 import time
 from abc import abstractmethod
 from typing import TYPE_CHECKING, List, Optional
@@ -18,12 +19,12 @@ from bespokelabs.curator.code_executor.code_formatter import CodeFormatter
 from bespokelabs.curator.code_executor.tracker import CodeExecutionStatusTracker
 from bespokelabs.curator.code_executor.types import CodeAPIRequest, CodeExecutionOutput, CodeExecutionRequest, CodeExecutionResponse
 from bespokelabs.curator.file_utilities import count_lines
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
 if TYPE_CHECKING:
     from datasets import Dataset
 
-logger = logging.getLogger(__name__)
 
 CACHE_MSG = "If you want to regenerate the dataset, disable or delete the cache."
 
@@ -180,7 +181,7 @@ class BaseCodeExecutionBackend:
                             request=retry_request,
                             retry_queue=queue_of_requests_to_retry,
                             response_file=response_file,
-                            # status_tracker=status_tracker,
+                            status_tracker=status_tracker,
                         )
                     )
                     pending_retries.add(task)
@@ -415,7 +416,8 @@ class BaseCodeExecutionBackend:
             for idx, dataset_row in enumerate(dataset):
                 dataset_row_idx = idx + start_idx
                 # Get the generic request from the map function
-                request = self.code_formatter.create_code_execution_request(dataset_row, dataset_row_idx)
+                execution_directory = os.path.join(self.working_dir, "code_execution", str(dataset_row_idx))
+                request = self.code_formatter.create_code_execution_request(dataset_row, dataset_row_idx, execution_directory)
                 await f.write(json.dumps(request.model_dump(), default=str) + "\n")
 
         num_requests = end_idx - start_idx
@@ -656,3 +658,47 @@ class BaseCodeExecutionBackend:
         async with aiofiles.open(filename, "a") as f:
             await f.write(json_string + "\n")
         logger.debug(f"Successfully appended response to {filename}")
+
+    @classmethod
+    def _create_temp_file(cls, content: str, execution_directory: str) -> str:
+        """Create a temporary file with the given content.
+
+        Args:
+            content: Content to write to temp file
+            execution_directory: Directory to create the temp file in
+
+        Returns:
+            Path to the created temp file
+        """
+        # create execution directory if it doesn't exist
+        os.makedirs(execution_directory, exist_ok=True)
+
+        temp_file_path = os.path.join(execution_directory, "program.py")
+        with open(temp_file_path, "w", encoding="utf-8") as temp_file:
+            temp_file.write(content)
+        return temp_file_path
+
+    @classmethod
+    def _get_created_files(cls, program_dir: str) -> bytes:
+        """Get any files created during code execution.
+
+        Args:
+            program_dir: Directory containing the executed program and created files
+
+        Returns:
+            Bytes containing a zip archive of any created files
+        """
+        # Create a BytesIO object to store the zip data
+        tar_buffer = io.BytesIO()
+
+        # Create a zip archive containing all files in program_dir
+        with tarfile.open(fileobj=tar_buffer, mode="w:gz") as tar:
+            # Add all files in program_dir to the archive
+            for filename in os.listdir(program_dir):
+                file_path = os.path.join(program_dir, filename)
+                if os.path.isfile(file_path):
+                    tar.add(file_path, arcname=filename)
+
+        # Get the bytes from the buffer
+        tar_buffer.seek(0)
+        return tar_buffer.getvalue()

@@ -3,18 +3,17 @@
 import copy
 import inspect
 import json
-import logging
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel, ValidationError
 
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.prompt import _MultiModalPrompt
 
 T = TypeVar("T")
 _DictOrBaseModel = Union[Dict[str, Any], BaseModel]
-logger = logging.getLogger(__name__)
 
 
 def _validate_messages(messages: list[dict]) -> None:

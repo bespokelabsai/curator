@@ -1,12 +1,12 @@
 import asyncio
 import json
-import logging
 import os
 from abc import abstractmethod
 from typing import Optional
 
 from litellm import model_cost
 
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
@@ -15,8 +15,6 @@ from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRe
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import TokenUsage
-
-logger = logging.getLogger(__name__)
 
 
 class BaseBatchRequestProcessor(BaseRequestProcessor):
@@ -296,9 +294,13 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         if os.path.exists(self.batch_objects_file):
             with open(self.batch_objects_file, "r") as f:
                 self.tracker = BatchStatusTracker.model_validate_json(f.read())
+                self.tracker.viewer_client = self._viewer_client
             logger.info(f"Loaded existing tracker from {self.batch_objects_file}")
         else:
-            self.tracker = BatchStatusTracker(unsubmitted_request_files=set(request_files))
+            self.tracker = BatchStatusTracker(
+                unsubmitted_request_files=set(request_files),
+                viewer_client=self._viewer_client,
+            )
 
         self.tracker.model = self.prompt_formatter.model_name
         self.tracker.n_total_requests = self.total_requests

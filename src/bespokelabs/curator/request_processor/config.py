@@ -1,9 +1,8 @@
-import logging
 import typing as t
 
 from pydantic import BaseModel, Field, ValidationError
 
-logger = logging.getLogger(__name__)
+from bespokelabs.curator.log import logger
 
 
 class RequestProcessorConfig(BaseModel):

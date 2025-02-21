@@ -1,39 +1,41 @@
 """Docker Code Execution Backend."""
 
 import io
-import logging
 import os
 import tarfile
 import tempfile
 
-import aiodocker
-from aiodocker.exceptions import DockerError
+import docker
+from docker.errors import DockerException
 
 from bespokelabs.curator.code_executor.code_execution_backend.base_backend import BaseCodeExecutionBackend
 from bespokelabs.curator.code_executor.types import CodeAPIRequest, CodeExecutionOutput, CodeExecutionRequestParams, CodeExecutionResponse
-
-logger = logging.getLogger(__name__)
+from bespokelabs.curator.log import logger
 
 
 class DockerCodeExecutionBackend(BaseCodeExecutionBackend):
     """Docker-based code execution backend."""
 
+    PYTHON_IMAGE = "python:3.11-slim"
+    WORKSPACE_DIR = "/workspace"
+
     def __init__(self, config):
         """Initialize the backend."""
         super().__init__(config)
         self.config = config
-        self.client = None  # Will be initialized in execute_request
+        self.PYTHON_IMAGE = config.docker_image if config.docker_image else self.PYTHON_IMAGE
+        self.client = docker.from_env()
         logger.debug("Initialized Docker backend")
 
-    async def _ensure_client(self):
-        """Ensure aiodocker client is initialized."""
-        if self.client is None:
-            self.client = aiodocker.Docker()
-            # Pull image asynchronously
-            try:
-                await self.client.images.pull("python:3.9-slim")
-            except DockerError as e:
-                raise RuntimeError(f"Failed to pull Docker image: {e}") from e
+    def _ensure_image(self):
+        """Ensure required Docker image is pulled."""
+        try:
+            self.client.images.get(self.PYTHON_IMAGE)
+        except docker.errors.ImageNotFound:
+            logger.info(f"Pulling {self.PYTHON_IMAGE} image...")
+            self.client.images.pull(self.PYTHON_IMAGE)
+        except DockerException as e:
+            raise RuntimeError(f"Error ensuring Docker image: {str(e)}") from e
 
     async def execute_request(self, request: CodeAPIRequest) -> CodeExecutionResponse:
         """Execute a single request in a Docker container."""
@@ -43,136 +45,140 @@ class DockerCodeExecutionBackend(BaseCodeExecutionBackend):
 
     @classmethod
     def _create_temp_file(cls, content: str) -> str:
-        """Create a temporary file with the given content.
-
-        Args:
-            content: Content to write to temp file
-
-        Returns:
-            Path to the created temp file
-        """
+        """Create a temporary file with the given content."""
         with tempfile.NamedTemporaryFile(delete=False, mode="w", encoding="utf-8") as temp_file:
             temp_file.write(content)
             return temp_file.name
 
-    @staticmethod
-    async def get_file_content(container, file_path="/tmp/stdout.txt"):
-        """Get the content of a file from a Docker container."""
-        # Get the tar archive stream and metadata
-        stream, stat = await container.get_archive(file_path)
+    def _create_tar_archive(self, data: bytes, filename: str) -> io.BytesIO:
+        """Create a tar archive containing a single file."""
+        tarstream = io.BytesIO()
+        with tarfile.TarFile(fileobj=tarstream, mode="w") as tar:
+            tarinfo = tarfile.TarInfo(name=filename)
+            tarinfo.size = len(data)
+            tar.addfile(tarinfo, io.BytesIO(data))
+        tarstream.seek(0)
+        return tarstream
 
-        # Read all bytes from the stream.
-        # Note: Depending on your Docker SDK version, stream might be an async iterator.
-        file_bytes = b""
-        async for chunk in stream:
-            file_bytes += chunk
+    def _get_container_file(self, container, file_path: str) -> str:
+        """Get content of a file from a Docker container."""
+        try:
+            bits, _ = container.get_archive(file_path)
+            bio = io.BytesIO()
+            for chunk in bits:
+                bio.write(chunk)
+            bio.seek(0)
 
-        # Create a file-like object from the bytes
-        file_like_object = io.BytesIO(file_bytes)
+            with tarfile.open(fileobj=bio) as tar:
+                member = tar.next()
+                f = tar.extractfile(member)
+                if f:
+                    return f.read().decode("utf-8")
+                return ""
 
-        # Open the tar archive
-        with tarfile.open(fileobj=file_like_object) as tar:
-            # The tar archive contains files with relative paths.
-            # List the members to see what the file is named.
-            # It may be just "stdout.txt" or include a folder name.
-            for member in tar.getmembers():
-                if member.name.endswith("stdout.txt"):
-                    extracted_file = tar.extractfile(member)
-                    if extracted_file is None:
-                        raise ValueError("Failed to extract the file from the archive")
-                    # Read and decode the content
-                    content = extracted_file.read().decode("utf-8")
-                    return content
-        # If the file wasn't found in the archive, raise an error
-        raise FileNotFoundError(f"{file_path} not found in the container archive")
+        except docker.errors.NotFound:
+            return ""
+
+    def _setup_volume_with_files(self, volume, code_file: str, input_file: str):
+        """Set up a volume with code and input files."""
+        setup_container = self.client.containers.create(
+            self.PYTHON_IMAGE, command=["sleep", "5"], volumes={volume.name: {"bind": self.WORKSPACE_DIR, "mode": "rw"}}
+        )
+
+        try:
+            setup_container.start()
+            for src, dest in [(code_file, "program.py"), (input_file, "input.txt")]:
+                with open(src, "rb") as f:
+                    data = f.read()
+                    tarstream = self._create_tar_archive(data, dest)
+                    setup_container.put_archive(self.WORKSPACE_DIR, tarstream)
+        finally:
+            setup_container.stop()
+            setup_container.remove()
+
+    def _get_created_files(self, container: docker.models.containers.Container, directory: str) -> bytes:
+        """Get any files created during code execution."""
+        # Get all files in the directory as a tar archive
+        bits, _ = container.get_archive(directory)
+        bio = io.BytesIO()
+        for chunk in bits:
+            bio.write(chunk)
+        bio.seek(0)
+        return bio.getvalue()
+
+    def _create_execution_container(self, volume_name: str) -> docker.models.containers.Container:
+        """Create the main execution container."""
+        # TODO: Add a name to the container and volume so that they are unique for a each row
+        return self.client.containers.create(
+            self.PYTHON_IMAGE,
+            command=[  # noqa: E501
+                f"python {self.WORKSPACE_DIR}/program.py < {self.WORKSPACE_DIR}/input.txt > {self.WORKSPACE_DIR}/output.txt 2> {self.WORKSPACE_DIR}/error.txt"
+            ],
+            volumes={volume_name: {"bind": self.WORKSPACE_DIR, "mode": "rw"}},
+            working_dir=self.WORKSPACE_DIR,
+            entrypoint=["/bin/sh", "-c"],
+        )
+
+    def _handle_execution_result(self, container, status_code: int) -> CodeExecutionOutput:
+        """Handle the execution result and create appropriate output."""
+        if status_code == 0:
+            return CodeExecutionOutput(
+                message="success",
+                stdout=self._get_container_file(container, f"{self.WORKSPACE_DIR}/output.txt"),
+                stderr=self._get_container_file(container, f"{self.WORKSPACE_DIR}/error.txt"),
+                files=self._get_created_files(container, self.WORKSPACE_DIR),
+            )
+        return CodeExecutionOutput(
+            message="error",
+            error=f"Program exited with status code {status_code}",
+            stdout=self._get_container_file(container, f"{self.WORKSPACE_DIR}/output.txt"),
+            stderr=self._get_container_file(container, f"{self.WORKSPACE_DIR}/error.txt"),
+            files=self._get_created_files(container, self.WORKSPACE_DIR),
+        )
 
     async def execute_standard_input_request(self, code: str, code_input: str, execution_params: CodeExecutionRequestParams) -> CodeExecutionResponse:
-        """Execute code in Docker container.
+        """Execute code in Docker container."""
+        self._ensure_image()
 
-        Args:
-            code: Source code
-            code_input: Input to the code
-            execution_params: Execution parameters
+        code_file = self._create_temp_file(code)
+        input_file = self._create_temp_file(code_input)
+        container = None
+        volume = None
 
-        Returns:
-            CodeExecutionResponse: Execution results
-        """
-        await self._ensure_client()
-        temp_program_path = None
-        output = None
         try:
-            temp_program_path = self._create_temp_file(code)
+            volume = self.client.volumes.create()
+            self._setup_volume_with_files(volume, code_file, input_file)
 
-            try:
-                config = {
-                    "Cmd": ["/bin/sh", "-c", "python /code/program.py"],
-                    "Image": "python:3.9-slim",
-                    "Volumes": {"/code": {}},
-                    "OpenStdin": True,
-                    "Tty": True,
-                    "StopTimeout": 1,
-                }
+            container = self._create_execution_container(volume.name)
+            container.start()
+            result = container.wait(timeout=execution_params.timeout)
+            output = self._handle_execution_result(container, result["StatusCode"])
 
-                container = await self.client.containers.create(config=config)
-                await container.put_archive("/code", self._make_tarfile(temp_program_path))
-
-                await container.put_archive("/code/input.txt", code_input.encode())
-
-                try:
-                    await container.start()
-                    exec_config = {
-                        "Cmd": [
-                            "sh",
-                            "-c",
-                            f"timeout {execution_params.timeout} python /code/program.py < /code/input.txt 2>/tmp/stderr.txt 1>/tmp/stdout.txt",
-                        ],
-                        "AttachStdout": True,
-                        "AttachStderr": True,
-                    }
-
-                    exec_obj = await container.exec.create(exec_config)
-                    output = await exec_obj.start()
-
-                    stdout_file = await self.get_file_content(container, "/tmp/stdout.txt")
-                    stderr_file = await self.get_file_content(container, "/tmp/stderr.txt")
-
-                    output = CodeExecutionOutput(message="success", stdout=stdout_file, stderr=stderr_file)
-
-                except DockerError as e:
-                    if "timeout" in str(e).lower():
-                        output = CodeExecutionOutput(message="error", error=f"Execution timed out after {execution_params.timeout_seconds} seconds")
-                    else:
-                        output = CodeExecutionOutput(message="error", error=str(e))
-
-                finally:
-                    try:
-                        await container.stop()
-                        await container.delete()
-                    except Exception:
-                        pass
-
-            except DockerError as e:
-                output = CodeExecutionOutput(message="error", error=f"Docker error: {str(e)}")
+        except Exception as e:
+            output = CodeExecutionOutput(message="error", error=str(e))
 
         finally:
-            if temp_program_path and os.path.exists(temp_program_path):
-                os.unlink(temp_program_path)
+            # Cleanup
+            if container:
+                try:
+                    container.stop()
+                    container.remove()
+                except Exception as e:
+                    logger.error(f"Error during container cleanup: {e}")
+
+            if volume:
+                try:
+                    volume.remove()
+                except Exception as e:
+                    logger.error(f"Error during volume cleanup: {e}")
+
+            for f in [code_file, input_file]:
+                if os.path.exists(f):
+                    os.unlink(f)
 
         return output
 
     async def shutdown(self):
-        """Cleanup Docker resources."""
-        if self.client:
-            await self.client.close()
-            logger.debug("Shutting down Docker backend")
-
-    def _make_tarfile(self, source_path):
-        """Create a tar archive containing the source file."""
-        import io
-        import tarfile
-
-        tar_stream = io.BytesIO()
-        with tarfile.open(fileobj=tar_stream, mode="w") as tar:
-            tar.add(source_path, arcname="program.py")
-        tar_stream.seek(0)
-        return tar_stream
+        """Cleanup resources."""
+        self.client.close()
+        logger.debug("Shutting down Docker backend")

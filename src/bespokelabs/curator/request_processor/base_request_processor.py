@@ -4,7 +4,6 @@ import asyncio
 import functools
 import glob
 import json
-import logging
 import os
 import resource
 from abc import ABC, abstractmethod
@@ -19,6 +18,7 @@ from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.file_utilities import count_lines
 from bespokelabs.curator.hf_card_template import HUGGINGFACE_CARD_TEMPLATE
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig, RequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.generic_response import GenericResponse
@@ -26,7 +26,6 @@ from bespokelabs.curator.types.generic_response import GenericResponse
 if TYPE_CHECKING:
     from datasets import Dataset
 
-logger = logging.getLogger(__name__)
 
 CACHE_MSG = "If you want to regenerate the dataset, disable or delete the cache."
 

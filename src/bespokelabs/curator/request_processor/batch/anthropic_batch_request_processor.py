@@ -1,4 +1,3 @@
-import logging
 import typing as t
 
 import instructor
@@ -7,14 +6,13 @@ from anthropic import AsyncAnthropic
 from anthropic.types.messages import MessageBatch, MessageBatchRequestCounts
 from anthropic.types.shared.not_found_error import NotFoundError
 
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import TokenUsage
-
-logger = logging.getLogger(__name__)
 
 
 class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
