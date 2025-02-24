@@ -50,9 +50,7 @@ class LLM:
         """
         return input["prompt"]
 
-    def parse(
-        self, input: _DictOrBaseModel, response: _DictOrBaseModel
-    ) -> _DictOrBaseModel:
+    def parse(self, input: _DictOrBaseModel, response: _DictOrBaseModel) -> _DictOrBaseModel:
         """Parse the response from the LLM and combine it with the input.
 
         Args:
@@ -151,19 +149,13 @@ class LLM:
                     str(dataset_hash),
                     str(prompt_func_hash),
                     str(self.prompt_formatter.model_name),
-                    str(
-                        self.prompt_formatter.response_format.model_json_schema()
-                        if self.prompt_formatter.response_format
-                        else "text"
-                    ),
+                    str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
                     str(self.batch_mode),
                 ]
             )
 
             if self.prompt_formatter.generation_params:
-                generation_params_str = str(
-                    sorted(self.prompt_formatter.generation_params.items())
-                )
+                generation_params_str = str(sorted(self.prompt_formatter.generation_params.items()))
                 fingerprint_str += f"_{generation_params_str}"
 
             fingerprint = xxh64(fingerprint_str.encode("utf-8")).hexdigest()
@@ -199,9 +191,7 @@ class LLM:
         else:
             curator_cache_dir = working_dir
 
-        dataset_hash = (
-            dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
-        )
+        dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
 
         disable_cache = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
         fingerprint = self._hash_fingerprint(dataset_hash, disable_cache)
@@ -223,11 +213,7 @@ class LLM:
             "prompt_func": prompt_func_source,
             "parse_func": parse_func_source,
             "model_name": self.prompt_formatter.model_name,
-            "response_format": (
-                str(self.prompt_formatter.response_format.model_json_schema())
-                if self.prompt_formatter.response_format
-                else "text"
-            ),
+            "response_format": (str(self.prompt_formatter.response_format.model_json_schema()) if self.prompt_formatter.response_format else "text"),
             "run_hash": fingerprint,
             "batch_mode": self.batch_mode,
         }
@@ -318,9 +304,7 @@ def _remove_none_values(d: dict) -> dict:
 
 def _is_message_list(list: list) -> bool:
     """Check if a list is a list of messages."""
-    return all(
-        isinstance(item, dict) and "role" in item and "content" in item for item in list
-    )
+    return all(isinstance(item, dict) and "role" in item and "content" in item for item in list)
 
 
 def _convert_to_dataset(iterable: Iterable) -> "Dataset":
