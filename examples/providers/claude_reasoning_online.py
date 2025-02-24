@@ -70,39 +70,45 @@ class Reasoner(curator.LLM):
 """
 The response doesn't include the thinking trajectory.  # noqa: W291
 
-{
-    'id': 'chatcmpl-b1a65801-9d63-4a02-b942-1a18b9b189fd',
-    'created': 1740430818,
-    'model': 'claude-3-7-sonnet-20250219',
-    'object': 'chat.completion',
-    'system_fingerprint': None,
-    'choices': [{
-        'finish_reason': 'stop',
-        'index': 0,
-        'message': {
-            'content': "# Proving Constraints on a Non-Negative Trigonometric Function\n\n...",  # Long content truncated for readability
-            'role': 'assistant',
-            'tool_calls': None,
-            'function_call': None,
-            'provider_specific_fields': {'citations': []},
-            'citations': []
-        }
-    }],
-    'usage': {
-        'completion_tokens': 13386,
-        'prompt_tokens': 179,
-        'total_tokens': 13565,
-        'completion_tokens_details': None,
-        'prompt_tokens_details': {
-            'audio_tokens': None,
-            'cached_tokens': 0,
-            'text_tokens': None,
-            'image_tokens': None
-        },
-        'cache_creation_input_tokens': 0,
-        'cache_read_input_tokens': 0
-    }
-}
+{'id': 'chatcmpl-b1a65801-9d63-4a02-b942-1a18b9b189fd',
+'created': 1740430818,
+'model': 'claude-3-7-sonnet-20250219',
+'object': 'chat.completion', 
+'system_fingerprint': None, 
+'choices': [Choices(finish_reason='stop', index=0,
+            message=Message(content="# Proving Constraints on a Non-Negative Trigonometric Function\n\nI need to show that if $f(x) =
+1 - a \\cdot \\cos(x) - b \\cdot \\sin(x) - A \\cdot \\cos(2x) - B \\cdot \\sin(2x) \\geq 0$ for all real $x$, then $a^2
++ b^2 \\leq 2$ and $A^2 + B^2 \\leq 1$.\n\n## Step 1: Reformulate using amplitude-phase form\n\nI'll rewrite the
+trigonometric terms using amplitude-phase form:\n- $a\\cos(x) + b\\sin(x) = \\sqrt{a^2+b^2}\\cos(x-\\phi_1)$ where
+$\\phi_1 = \\arctan(b/a)$\n- $A\\cos(2x) + B\\sin(2x) = \\sqrt{A^2+B^2}\\cos(2x-\\phi_2)$ where $\\phi_2 =
+\\arctan(B/A)$\n\nThis gives:\n$$f(x) = 1 - \\sqrt{a^2+b^2}\\cos(x-\\phi_1) - \\sqrt{A^2+B^2}\\cos(2x-\\phi_2)$$\n\n##
+Step 2: Find necessary conditions by examining specific cases\n\nFor any $a, b, A, B$, there exists a value of $x$ that
+minimizes $f(x)$. I'll first examine a special case where this minimum is particularly easy to analyze.\n\n### Special
+case analysis\n\nLet me choose $a, b, A, B$ such that $\\phi_2 = 2\\phi_1$. With this choice, at $x = \\phi_1$:\n-
+$\\cos(x-\\phi_1) = \\cos(0) = 1$\n- $\\cos(2x-\\phi_2) = \\cos(2\\phi_1-\\phi_2) = \\cos(0) = 1$\n\nSo $f(\\phi_1) = 1 -
+\\sqrt{a^2+b^2} - \\sqrt{A^2+B^2}$\n\nSince $f(x) \\geq 0$ for all $x$, we must have:\n$$1 - \\sqrt{a^2+b^2} -
+\\sqrt{A^2+B^2} \\geq 0$$\n$$\\sqrt{a^2+b^2} + \\sqrt{A^2+B^2} \\leq 1$$\n\n## Step 3: Derive the constraints\n\n### For
+the first constraint ($a^2+b^2 \\leq 2$)\n\nIf $A = B = 0$, the condition becomes $\\sqrt{a^2+b^2} \\leq 1$, which is
+weaker than the required $a^2+b^2 \\leq 2$.\n\nLet's apply the AM-GM inequality to the original
+condition:\n$$\\sqrt{a^2+b^2} + \\sqrt{A^2+B^2} \\leq 1$$\n$$\\Rightarrow 2\\sqrt{\\sqrt{a^2+b^2}\\cdot\\sqrt{A^2+B^2}}
+\\leq 1$$\n$$\\Rightarrow 4(a^2+b^2)(A^2+B^2) \\leq 1$$\n\nHowever, the second constraint tells us that $A^2+B^2 \\leq
+1$, so:\n$$a^2+b^2 \\leq \\frac{1}{4(A^2+B^2)} \\geq \\frac{1}{4} \\cdot 1 = \\frac{1}{4}$$\n\nFrom the general
+constraint above, we can also derive:\n- When $\\sqrt{A^2+B^2} = \\frac{1}{2}$, we have $\\sqrt{a^2+b^2} \\leq
+\\frac{1}{2}$, giving $a^2+b^2 \\leq \\frac{1}{4}$\n- When $\\sqrt{A^2+B^2} = 0$, we have $\\sqrt{a^2+b^2} \\leq 1$,
+giving $a^2+b^2 \\leq 1$\n\nTo derive $a^2+b^2 \\leq 2$, I need to examine the constraint more carefully.\n\nFor any
+$\\alpha \\in [0,1]$, we can choose $A^2+B^2 = \\alpha^2$, which gives $\\sqrt{a^2+b^2} \\leq 1-\\alpha$, thus $a^2+b^2
+\\leq (1-\\alpha)^2$. The maximum value of $(1-\\alpha)^2 + \\alpha^2$ occurs when $\\alpha = \\frac{1}{2}$, giving the
+bound $a^2+b^2 \\leq 2$.\n\n### For the second constraint ($A^2+B^2 \\leq 1$)\n\nBy symmetry of the roles of the
+coefficients in the original function, and considering the frequency difference, we can show that $A^2+B^2 \\leq
+1$.\n\nTo verify this rigorously, we can use the double-angle formulas:\n- $\\cos(2x) = 2\\cos^2(x) - 1$\n- $\\sin(2x) =
+2\\sin(x)\\cos(x)$\n\nSubstituting these and analyzing the resulting quadratic form in $\\cos(x)$ and $\\sin(x)$ confirms
+that $A^2+B^2 \\leq 1$.\n\nTherefore, we've proven that if $f(x) \\geq 0$ for all real $x$, then $a^2 + b^2 \\leq 2$ and
+$A^2 + B^2 \\leq 1$.", 
+        role='assistant', tool_calls=None, function_call=None, provider_specific_fields={'citations': []},
+citations=[]))], 'usage': Usage(completion_tokens=13386, prompt_tokens=179, total_tokens=13565,
+completion_tokens_details=None, prompt_tokens_details=PromptTokensDetailsWrapper(audio_tokens=None, cached_tokens=0,
+text_tokens=None, image_tokens=None), cache_creation_input_tokens=0, cache_read_input_tokens=0)}
+
 """
 
 llm = Reasoner(
