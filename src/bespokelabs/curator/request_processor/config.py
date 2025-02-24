@@ -50,14 +50,10 @@ class RequestProcessorConfig(BaseModel):
         import litellm
 
         self.supported_params = litellm.get_supported_openai_params(model=self.model)
-        logger.debug(
-            f"Automatically detected supported params using litellm for {self.model}: {self.supported_params}"
-        )
+        logger.debug(f"Automatically detected supported params using litellm for {self.model}: {self.supported_params}")
 
         for key in self.generation_params.keys():
-            raise ValueError(
-                f"Generation parameter '{key}' is not supported for model '{self.model}'"
-            )
+            raise ValueError(f"Generation parameter '{key}' is not supported for model '{self.model}'")
 
 
 class BatchRequestProcessorConfig(RequestProcessorConfig):
@@ -101,9 +97,7 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
     max_input_tokens_per_minute: int | None = Field(default=None, gt=0)
     max_output_tokens_per_minute: int | None = Field(default=None, gt=0)
     seconds_to_pause_on_rate_limit: int = Field(default=10, gt=0)
-    invalid_finish_reasons: list = Field(
-        default_factory=lambda: ["content_filter", "length"]
-    )
+    invalid_finish_reasons: list = Field(default_factory=lambda: ["content_filter", "length"])
 
 
 class OfflineRequestProcessorConfig(RequestProcessorConfig):
@@ -178,9 +172,7 @@ class OfflineBackendParams(BaseBackendParams, total=False):
     batch_size: t.Optional[int]
 
 
-BackendParamsType = t.Union[
-    OnlineBackendParams, BatchBackendParams, OfflineBackendParams
-]
+BackendParamsType = t.Union[OnlineBackendParams, BatchBackendParams, OfflineBackendParams]
 
 
 def _validate_backend_params(params: BackendParamsType):
@@ -196,6 +188,4 @@ def _validate_backend_params(params: BackendParamsType):
             continue
         else:
             return validator(**params)
-    raise ValueError(
-        f"Backend params are not valid, please refer {validators} for more info on backend params."
-    )
+    raise ValueError(f"Backend params are not valid, please refer {validators} for more info on backend params.")
