@@ -37,6 +37,7 @@ class MetadataDB:
         """
         expected_columns = [
             "run_hash",
+            "session_id",
             "dataset_hash",
             "prompt_func",
             "model_name",
@@ -79,6 +80,7 @@ class MetadataDB:
                 """
                 CREATE TABLE IF NOT EXISTS runs (
                     run_hash TEXT PRIMARY KEY,
+                    session_id TEXT,
                     dataset_hash TEXT,
                     prompt_func TEXT,
                     model_name TEXT,
@@ -113,12 +115,13 @@ class MetadataDB:
                 cursor.execute(
                     """
                     INSERT INTO runs (
-                        run_hash, dataset_hash, prompt_func, model_name,
+                        run_hash, session_id, dataset_hash, prompt_func, model_name,
                         response_format, batch_mode, created_time, last_edited_time
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         metadata["run_hash"],
+                        metadata["session_id"],
                         metadata["dataset_hash"],
                         metadata["prompt_func"],
                         metadata["model_name"],
@@ -129,3 +132,19 @@ class MetadataDB:
                     ),
                 )
             conn.commit()
+
+    def get_existing_session_id(self, run_hash: str):
+        """Get existing session id from previous run."""
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT session_id FROM runs WHERE run_hash = ?",
+                    (run_hash,),
+                )
+                fetch = cursor.fetchone()
+                if fetch:
+                    return fetch[0]
+
+        except Exception:
+            return None
