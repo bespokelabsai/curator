@@ -526,7 +526,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         # check existing response files for resuming
         for batch in self.tracker.downloaded_batches.values():
             response_file = batch.request_file.replace("requests_", "responses_")
-            completed_request_ids = self.validate_existing_response_file(response_file)
+            completed_request_ids, completed_parsed_responses = self.validate_existing_response_file(response_file)
+            self.tracker.num_parsed_responses += completed_parsed_responses
             n_total_batch_requests = self.read_metadata_file(batch.request_file).get("num_jobs")
             if len(completed_request_ids) < n_total_batch_requests:
                 tasks.append(self.submit_batch_from_request_file(batch.request_file, completed_request_ids))
