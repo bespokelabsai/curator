@@ -32,7 +32,7 @@ class Reasoner(curator.LLM):
 
 llm = Reasoner(
     model_name="claude-3-7-sonnet-20250219",
-    generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
+    generation_params={"max_tokens": 20000, "thinking": {"type": "enabled", "budget_tokens": 18000}},
     backend="anthropic",
     backend_params={  # https://docs.anthropic.com/en/api/rate-limits#rate-limits Tier 4
         "max_input_tokens_per_minute": 200_000,
@@ -51,4 +51,4 @@ ds = load_dataset("simplescaling/s1K", split="train")
 ds = ds.map(unroll_trajectory, num_proc=os.cpu_count())
 ds = ds.remove_columns(["thinking_trajectories", "cot", "attempt"])
 ds = llm(ds)
-ds.push_to_hub("simplescaling/s1K-claude-3-7-sonnet", private=True)
+ds.push_to_hub("simplescaling/s1K-claude-3-7-sonnet")
