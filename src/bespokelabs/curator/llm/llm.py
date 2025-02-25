@@ -93,7 +93,9 @@ class LLM:
             Other backend params:
                 - Online:
                     - max_requests_per_minute: Maximum number of requests per minute for rate limiting
-                    - max_tokens_per_minute: Maximum number of tokens per minute for rate limiting
+                    - max_tokens_per_minute: Maximum number of tokens per minute for rate limiting (combined input and output)
+                    - max_input_tokens_per_minute: Maximum number of input tokens per minute for rate limiting
+                    - max_output_tokens_per_minute: Maximum number of output tokens per minute for rate limiting
                     - seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited
 
                 - Batch:
@@ -225,7 +227,9 @@ class LLM:
         metadata_db.store_metadata(metadata_dict)
 
         if batch_cancel:
-            from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
+            from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import (
+                OpenAIBatchRequestProcessor,
+            )
 
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
                 raise ValueError("batch_cancel can only be used with batch mode")

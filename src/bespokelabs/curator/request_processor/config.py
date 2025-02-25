@@ -146,6 +146,8 @@ class OnlineBackendParams(BaseBackendParams, total=False):
 
     max_requests_per_minute: t.Optional[int]
     max_tokens_per_minute: t.Optional[int]
+    max_input_tokens_per_minute: t.Optional[int]
+    max_output_tokens_per_minute: t.Optional[int]
     seconds_to_pause_on_rate_limit: t.Optional[int]
 
 
@@ -174,7 +176,11 @@ BackendParamsType = t.Union[OnlineBackendParams, BatchBackendParams, OfflineBack
 
 
 def _validate_backend_params(params: BackendParamsType):
-    validators = (BatchRequestProcessorConfig, OnlineRequestProcessorConfig, OfflineRequestProcessorConfig)
+    validators = (
+        BatchRequestProcessorConfig,
+        OnlineRequestProcessorConfig,
+        OfflineRequestProcessorConfig,
+    )
     for validator in validators:
         try:
             validator.validate(params)
