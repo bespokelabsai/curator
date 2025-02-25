@@ -90,6 +90,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*" = ["D"]  # ignore tests for now
 "**/prompt_templates.py" = ["E501"]  # ignore line-too-long for prompt template files
+"**/claude_reasoning_online.py" = ["E501", "W291"]  # ignore line-too-long and trailing whitespace for API examples
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
