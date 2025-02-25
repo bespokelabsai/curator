@@ -12,6 +12,7 @@ def test_valid_schema(tmp_path):
     db.store_metadata(
         {
             "run_hash": "test",
+            "session_id": "mysession",
             "dataset_hash": "hash",
             "prompt_func": "def prompt_func(): pass",
             "model_name": "test-model",
@@ -35,6 +36,7 @@ def test_invalid_schema(tmp_path):
         db.store_metadata(
             {
                 "run_hash": "test2",
+                "session_id": "mysession2",
                 "dataset_hash": "hash2",
                 "prompt_func": "def prompt_func(): pass",
                 "model_name": "test-model-2",
