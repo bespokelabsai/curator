@@ -150,7 +150,8 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         status_tracker = OfflineStatusTracker()
 
         # Track completed requests for resume functionality
-        completed_request_ids = self.validate_existing_response_file(save_filepath)
+        completed_request_ids, completed_parsed_responses = self.validate_existing_response_file(save_filepath)
+        status_tracker.num_parsed_responses = completed_parsed_responses
 
         if not hasattr(self, "model_class"):
             self.load_offline_model()  # Load the offline model if it hasn't been loaded yet

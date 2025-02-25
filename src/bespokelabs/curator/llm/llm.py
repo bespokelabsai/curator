@@ -220,7 +220,8 @@ class LLM:
         os.makedirs(run_cache_dir, exist_ok=True)
         add_file_handler(run_cache_dir)
 
-        session_id = self._request_processor.viewer_client.create_session(metadata_dict)
+        session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
+        session_id = self._request_processor.viewer_client.create_session(session_id, metadata_dict)
         metadata_dict["session_id"] = session_id
         metadata_db.store_metadata(metadata_dict)
 

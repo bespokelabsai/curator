@@ -42,7 +42,8 @@ def push_to_viewer(dataset: Dataset | str, hf_params: t.Optional[t.Dict] = None,
         "status": _SessionStatus.STARTED,
     }
 
-    session_id = client.create_session(metadata)
+    session_id = None
+    session_id = client.create_session(session_id, metadata)
     if not client.session:
         raise Exception("Failed to create session.")
 

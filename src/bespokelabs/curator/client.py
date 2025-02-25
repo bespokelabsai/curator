@@ -44,11 +44,14 @@ class Client:
         """Get the curator viewer URL."""
         return f"{PUBLIC_CURATOR_VIEWER_DATASET_URL}/{self.session}" if self.session else None
 
-    def create_session(self, metadata: t.Dict) -> str | None:
+    def create_session(self, session_id: str | None, metadata: t.Dict) -> str | None:
         """Sends a POST request to the server to create a session."""
         if not self.hosted:
             return str(uuid.uuid4().hex)
 
+        if session_id:
+            self._session = session_id
+            return session_id
         if self.session:
             return self.session
         metadata.update({"status": _SessionStatus.STARTED})

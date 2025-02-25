@@ -313,10 +313,14 @@ def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
 
         logger = "bespokelabs.curator.status_tracker.batch_status_tracker"
 
+        patcher = patch("bespokelabs.curator.db.MetadataDB.validate_schema")
+
+        mock = patcher.start()
+        mock.return_value = None
         with caplog.at_level(logging.INFO, logger=logger):
             helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
             assert RESUBMIT_MSG in caplog.text
-
+        patcher.stop()
         with open(tracker_batch_file_path, "r") as f:
             tracker = BatchStatusTracker.model_validate_json(f.read())
         assert len(tracker.submitted_batches) == 0
