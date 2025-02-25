@@ -19,7 +19,10 @@ curl https://api.anthropic.com/v1/messages \
         "budget_tokens": 14000
     },
     "messages": [
-        {"role": "user", "content": "Let $N$ denote the number of ordered triples of positive integers $(a,b,c)$ such that $a,b,c \\leq 3^6$ and $a^3 + b^3 + c^3$ is a multiple of $3^7$. Find the remainder when $N$ is divided by 1000."}  # noqa: E501
+        {
+            "role": "user", 
+            "content": "Let $N$ denote the number of ordered triples of positive integers $(a,b,c)$ such that $a,b,c \\leq 3^6$ and $a^3 + b^3 + c^3$ is a multiple of $3^7$. Find the remainder when $N$ is divided by 1000."
+        }
     ]
 }'
 
@@ -73,8 +76,8 @@ The response doesn't include the thinking trajectory.  # noqa: W291
 {'id': 'chatcmpl-b1a65801-9d63-4a02-b942-1a18b9b189fd',
 'created': 1740430818,
 'model': 'claude-3-7-sonnet-20250219',
-'object': 'chat.completion', 
-'system_fingerprint': None, 
+'object': 'chat.completion',
+'system_fingerprint': None,
 'choices': [Choices(finish_reason='stop', index=0,
             message=Message(content="# Proving Constraints on a Non-Negative Trigonometric Function\n\nI need to show that if $f(x) =
 1 - a \\cdot \\cos(x) - b \\cdot \\sin(x) - A \\cdot \\cos(2x) - B \\cdot \\sin(2x) \\geq 0$ for all real $x$, then $a^2
@@ -103,17 +106,17 @@ coefficients in the original function, and considering the frequency difference,
 1$.\n\nTo verify this rigorously, we can use the double-angle formulas:\n- $\\cos(2x) = 2\\cos^2(x) - 1$\n- $\\sin(2x) =
 2\\sin(x)\\cos(x)$\n\nSubstituting these and analyzing the resulting quadratic form in $\\cos(x)$ and $\\sin(x)$ confirms
 that $A^2+B^2 \\leq 1$.\n\nTherefore, we've proven that if $f(x) \\geq 0$ for all real $x$, then $a^2 + b^2 \\leq 2$ and
-$A^2 + B^2 \\leq 1$.", 
+$A^2 + B^2 \\leq 1$.",
         role='assistant', tool_calls=None, function_call=None, provider_specific_fields={'citations': []},
 citations=[]))], 'usage': Usage(completion_tokens=13386, prompt_tokens=179, total_tokens=13565,
 completion_tokens_details=None, prompt_tokens_details=PromptTokensDetailsWrapper(audio_tokens=None, cached_tokens=0,
 text_tokens=None, image_tokens=None), cache_creation_input_tokens=0, cache_read_input_tokens=0)}
-
 """
 
 llm = Reasoner(
     model_name="anthropic/claude-3-7-sonnet-20250219",
     generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
+    backend="anthropic",
     backend_params={  # https://docs.anthropic.com/en/api/rate-limits#rate-limits
         "max_input_tokens_per_minute": 200_000,
         "max_output_tokens_per_minute": 80_000,
