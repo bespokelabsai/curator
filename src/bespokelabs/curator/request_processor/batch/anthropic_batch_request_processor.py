@@ -259,9 +259,8 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             raise ValueError(f"Unknown result type: {result_type}")
 
         # Get stop reason
-        finish_reason = raw_response.get("stop_reason", "unknown")
+        finish_reason = response_body.get("stop_reason", "unknown")
         finish_reason = map_finish_reason(finish_reason)
-
         return GenericResponse(
             response_message=response_message,
             response_errors=response_errors,
@@ -311,7 +310,6 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             except NotFoundError:
                 logger.warning(f"batch object {batch.id} not found. Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
                 return None
-            breakpoint()
             request_file = self.tracker.submitted_batches[batch.id].request_file
             return self.parse_api_specific_batch_object(batch, request_file=request_file)
 
