@@ -1,4 +1,7 @@
-"""Multiprocessing Code Execution Backend."""
+"""E2B Code Execution Backend.
+
+See https://e2b.dev/ for more information.
+"""
 
 import logging
 
