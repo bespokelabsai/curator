@@ -49,7 +49,6 @@ def unroll_trajectory(example):  # noqa: D103
     return example
 
 
-# TODO: some of the attempts are empty.... need to debug this
 ds = load_dataset("simplescaling/s1K", split="train")
 ds = ds.map(unroll_trajectory, num_proc=os.cpu_count())
 ds = ds.remove_columns(["thinking_trajectories", "cot", "attempt"])
