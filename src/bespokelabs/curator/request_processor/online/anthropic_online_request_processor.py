@@ -4,6 +4,7 @@ import time
 from typing import TypeVar
 
 import aiohttp
+import litellm
 import tiktoken
 from anthropic import Anthropic
 
@@ -120,19 +121,20 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         rpm = headers.get("anthropic-ratelimit-requests-limit", 4000)
         input_tpm = headers.get("anthropic-ratelimit-output-tokens-limit", 80000)
         output_tpm = headers.get("anthropic-ratelimit-input-tokens-limit", 400000)
-        return rpm, _TokenCount(input=input_tpm, output=output_tpm)
+        return int(rpm), _TokenCount(input=int(input_tpm), output=int(output_tpm))
 
     def estimate_output_tokens(self) -> int:
         """Estimate number of tokens in the response.
 
         Returns:
             int: Estimated number of output tokens
-
-        Note:
-            Uses a conservative estimate based on common Claude models.
         """
-        # Conservative estimate for Claude models
-        return 4000
+        return self._output_tokens_moving_average() or self._get_max_tokens() // 4
+
+    def _get_max_tokens(self):
+        if self.config.generation_params.get("max_tokens"):
+            return self.config.generation_params["max_tokens"]
+        return litellm.get_max_tokens(model=self.config.model)
 
     def estimate_total_tokens(self, messages: list) -> _TokenCount:
         """Estimate total tokens for a request using Anthropic's token counting rules.
