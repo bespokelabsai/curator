@@ -469,11 +469,10 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         total_cost = 0.0
 
         # appending allows for the resubmitted resumed batch
-        import tqdm
 
         stream_response_tasks = []
         async with aiofiles.open(response_file, "a") as f:
-            for raw_response in tqdm.tqdm(responses):
+            for raw_response in responses:
                 request_idx = int(raw_response["custom_id"])
                 generic_request = generic_request_map[request_idx]
                 generic_response = self.parse_api_specific_response(raw_response, generic_request, batch)
