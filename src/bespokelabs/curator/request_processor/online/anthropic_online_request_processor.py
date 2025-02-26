@@ -5,6 +5,7 @@ from typing import TypeVar
 
 import aiohttp
 import tiktoken
+from anthropic import Anthropic
 
 from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
@@ -18,7 +19,7 @@ T = TypeVar("T")
 _DEFAULT_ANTHROPIC_URL: str = "https://api.anthropic.com/v1/messages"
 
 _ANTHROPIC_MULTIMODAL_SUPPORTED_MODELS = {"claude-3", "claude-3-sonnet", "claude-3-haiku", "claude-3-opus"}
-_ANTHROPIC_ALLOWED_IMAGE_SIZE_MB = 20
+_ANTHROPIC_ALLOWED_IMAGE_SIZE_MB = 20  # MB
 
 
 class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
@@ -81,6 +82,23 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         """Compatible provider property."""
         return self._compatible_provider
 
+    def test_call(self):
+        """Test call to get rate limits."""
+        url = "/".join(self.url.split("/")[:-2])
+        client = Anthropic(base_url=url)
+        response = client.messages.with_raw_response.create(
+            max_tokens=1024,
+            messages=[
+                {
+                    "role": "user",
+                    "content": "Hello, Claude",
+                }
+            ],
+            model="claude-3-5-sonnet-latest",
+        )
+
+        return response.headers
+
     def get_header_based_rate_limits(self) -> tuple[int, _TokenCount]:
         """Get rate limits from Anthropic API headers.
 
@@ -98,10 +116,10 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         # Based on Anthropic's documented default rate limits
         # These defaults are true for tier 4 Claude 3.7
         # More information: https://docs.anthropic.com/en/api/rate-limits#rate-limits
-        rpm = 200
-        input_tpm = 200000  # 200K input TPM
-        output_tpm = 80000  # 80K output TPM
-
+        headers = self.test_call()
+        rpm = headers.get("anthropic-ratelimit-requests-limit", 4000)
+        input_tpm = headers.get("anthropic-ratelimit-output-tokens-limit", 80000)
+        output_tpm = headers.get("anthropic-ratelimit-input-tokens-limit", 400000)
         return rpm, _TokenCount(input=input_tpm, output=output_tpm)
 
     def estimate_output_tokens(self) -> int:
