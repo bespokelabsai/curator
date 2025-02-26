@@ -21,7 +21,7 @@ class Reasoner(curator.LLM):
 
         for content_block in content:
             if content_block["type"] == "thinking":
-                thinking = content_block["thinking"]
+                thinking = content_block["text"]
             elif content_block["type"] == "text":
                 text = content_block["text"]
             elif content_block["type"] == "redacted_thinking":
@@ -54,5 +54,7 @@ ds = ds.map(unroll_trajectory, num_proc=os.cpu_count())
 ds = ds.remove_columns(["thinking_trajectories", "cot", "attempt"])
 ds = llm(ds)
 test = ds.filter(lambda x: x["claude_attempt"] == "")
-print(test)
+assert len(test) == 0
+test2 = ds.filter(lambda x: x["claude_thinking_trajectory"] == "")
+assert len(test2) == 0
 ds.push_to_hub("mlfoundations-dev/s1K-claude-3-7-sonnet-16k")
