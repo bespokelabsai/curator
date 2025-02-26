@@ -7,6 +7,7 @@ import aiohttp
 import litellm
 import tiktoken
 from anthropic import Anthropic
+from litellm.litellm_core_utils.core_helpers import map_finish_reason
 
 from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
@@ -291,6 +292,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
             # Get stop reason
             finish_reason = response.get("stop_reason", "unknown")
+            finish_reason = map_finish_reason(finish_reason)
 
             # Calculate cost
             cost = self.completion_cost(response)
