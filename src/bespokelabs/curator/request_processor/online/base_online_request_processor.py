@@ -473,6 +473,12 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             blocked_capacity: Blocked token capacity
         """
         try:
+            # Estimate tokens before making request
+            token_estimate = self.estimate_total_tokens(request.generic_request.messages)
+
+            # Add new estimate to projection (success=None indicates new estimate)
+            status_tracker.update_cost_projection(token_estimate, success=None)
+
             generic_response = await self.call_single_request(
                 request=request,
                 session=session,
@@ -485,9 +491,17 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     " Raw response {generic_response.raw_response} "
                     "for request {generic_response.raw_request}"
                 )
+                # Update cost projection with actual usage but mark as failed
+                actual_tokens = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
+                status_tracker.update_cost_projection(actual_tokens, success=False, finish_reason=generic_response.finish_reason)
                 raise ValueError(f"finish_reason was {generic_response.finish_reason}")
 
+            # Update stats with actual usage
             status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+
+            # Update cost projection with actual usage (success=True will remove estimate)
+            actual_tokens = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
+            status_tracker.update_cost_projection(actual_tokens, success=True)
 
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
