@@ -207,15 +207,15 @@ files = [
 
 [[package]]
 name = "anthropic"
-version = "0.42.0"
+version = "0.47.2"
 description = "The official Python library for the anthropic API"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 markers = "python_version <= \"3.11\" or python_version >= \"3.12\""
 files = [
-    {file = "anthropic-0.42.0-py3-none-any.whl", hash = "sha256:46775f65b723c078a2ac9e9de44a46db5c6a4fabeacfd165e5ea78e6817f4eff"},
-    {file = "anthropic-0.42.0.tar.gz", hash = "sha256:bf8b0ed8c8cb2c2118038f29c58099d2f99f7847296cafdaa853910bfff4edf4"},
+    {file = "anthropic-0.47.2-py3-none-any.whl", hash = "sha256:61b712a56308fce69f04d92ba0230ab2bc187b5bce17811d400843a8976bb67f"},
+    {file = "anthropic-0.47.2.tar.gz", hash = "sha256:452f4ca0c56ffab8b6ce9928bf8470650f88106a7001b250895eb65c54cfa44c"},
 ]
 
 [package.dependencies]
@@ -6733,4 +6733,4 @@ vllm = ["vllm"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "3776980507ad52a5a344f65a06b2162d1564192d27a4a53135722e5e3f3e07e7"
+content-hash = "32a6d3ee36ba4689e3114a4a6b21c9ff673c01ad6a328d5bb1bfe3f11c099c7f"
