@@ -227,9 +227,7 @@ class LLM:
         metadata_db.store_metadata(metadata_dict)
 
         if batch_cancel:
-            from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import (
-                OpenAIBatchRequestProcessor,
-            )
+            from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
 
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
                 raise ValueError("batch_cancel can only be used with batch mode")
