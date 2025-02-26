@@ -94,6 +94,11 @@ class OnlineStatusTracker:
     # Add client field and exclude from serialization
     viewer_client: Optional[Client] = field(default=None, repr=False, compare=False)
 
+    # New fields for cost tracking
+    current_cost: float = 0.0
+    projected_remaining_cost: float = 0.0
+    estimated_costs: list[float] = field(default_factory=list)
+
     def __post_init__(self):
         """Post init."""
         if self.token_limit_strategy == TokenLimitStrategy.combined:
@@ -185,6 +190,10 @@ class OnlineStatusTracker:
             completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
         )
 
+        # Update costs
+        if cost:
+            self.current_cost += cost
+
         # Calculate stats
         elapsed_minutes = (time.time() - self.start_time) / 60
         current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
@@ -192,8 +201,9 @@ class OnlineStatusTracker:
         output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
         avg_prompt = self.total_prompt_tokens / max(1, self.num_tasks_succeeded)
         avg_completion = self.total_completion_tokens / max(1, self.num_tasks_succeeded)
-        avg_cost = self.total_cost / max(1, self.num_tasks_succeeded)
-        projected_cost = avg_cost * self.total_requests
+
+        # Calculate projected total
+        projected_total = self.current_cost + self.projected_remaining_cost
 
         # Format stats text
         stats_text = (
@@ -218,11 +228,13 @@ class OnlineStatusTracker:
             f"[white]•[/white] "
             f"[white]Output TPM:[/white] [blue]{output_tpm:.0f}[/blue]\n"
             f"[bold white]Cost:[/bold white] "
-            f"[white]Current:[/white] [magenta]${self.total_cost:.3f}[/magenta] "
+            f"[white]Current:[/white] [magenta]${self.current_cost:.3f}[/magenta] "
             f"[white]•[/white] "
-            f"[white]Projected:[/white] [magenta]${projected_cost:.3f}[/magenta] "
+            f"[white]Projected Remaining:[/white] [magenta]${self.projected_remaining_cost:.3f}[/magenta] "
             f"[white]•[/white] "
-            f"[white]Rate:[/white] [magenta]${self.total_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]\n"
+            f"[white]Projected Total:[/white] [magenta]${projected_total:.3f}[/magenta] "
+            f"[white]•[/white] "
+            f"[white]Rate:[/white] [magenta]${self.current_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]\n"
             f"[bold white]Rate Limits:[/bold white] "
             f"[white]RPM:[/white] [blue]{self.max_requests_per_minute}[/blue] "
             f"[white]•[/white] "
@@ -454,3 +466,58 @@ class OnlineStatusTracker:
         """Ensure live display is stopped on deletion."""
         if hasattr(self, "_live"):
             self._live.stop()
+
+    def estimate_request_cost(self, input_tokens: int, output_tokens: int) -> float:
+        """Estimate cost for a request based on token counts."""
+        input_cost = (input_tokens * (self.input_cost_per_million or 0)) / 1_000_000
+        output_cost = (output_tokens * (self.output_cost_per_million or 0)) / 1_000_000
+        return input_cost + output_cost
+
+    def update_cost_projection(self, token_count: _TokenCount, success: bool = True, finish_reason: str | None = None):
+        """Update cost projections based on token estimates or actual usage."""
+        # Calculate estimated cost
+        estimated_cost = self.estimate_request_cost(token_count.input or 0, token_count.output or 0)
+
+        if success is None:
+            # This is a new estimate before API call
+            self.estimated_costs.append(estimated_cost)
+        else:
+            # Remove the last estimate since we're getting actual results
+            if self.estimated_costs:
+                self.estimated_costs.pop()
+
+            # For failed requests, adjust the cost based on finish reason
+            if not success and finish_reason:
+                if finish_reason in ["length", "content_filter"]:
+                    # Only charge for input tokens
+                    estimated_cost = self.estimate_request_cost(token_count.input or 0, 0)
+                # Add other finish reason handling as needed
+
+        # Calculate remaining cost using current estimates and remaining requests
+        remaining_requests = self.total_requests - (self.num_tasks_succeeded + self.num_tasks_failed)
+
+        # Calculate weighted average cost using actual costs and in-flight estimates
+        if self.estimated_costs:
+            in_flight_cost = sum(self.estimated_costs)
+            in_flight_avg = in_flight_cost / len(self.estimated_costs)
+
+            if self.num_tasks_succeeded > 0:
+                # Calculate weighted average between actual and in-flight costs
+                avg_actual_cost = self.current_cost / self.num_tasks_succeeded
+                total_weight = self.num_tasks_succeeded + len(self.estimated_costs)
+                weighted_avg_cost = ((avg_actual_cost * self.num_tasks_succeeded) + (in_flight_avg * len(self.estimated_costs))) / total_weight
+
+                # Calculate remaining cost using weighted average
+                remaining_cost = weighted_avg_cost * (remaining_requests - len(self.estimated_costs))
+                self.projected_remaining_cost = in_flight_cost + remaining_cost
+            else:
+                # If no successful requests, use average of in-flight estimates
+                self.projected_remaining_cost = in_flight_avg * remaining_requests
+        else:
+            # No in-flight requests, use actual average if available
+            if self.num_tasks_succeeded > 0:
+                avg_actual_cost = self.current_cost / self.num_tasks_succeeded
+                self.projected_remaining_cost = avg_actual_cost * remaining_requests
+            else:
+                # Fallback to the current estimate
+                self.projected_remaining_cost = estimated_cost * remaining_requests
