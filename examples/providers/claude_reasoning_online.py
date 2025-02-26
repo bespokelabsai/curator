@@ -24,6 +24,8 @@ class Reasoner(curator.LLM):
                 thinking = content_block["thinking"]
             elif content_block["type"] == "text":
                 text = content_block["text"]
+            elif content_block["type"] == "redacted_thinking":
+                print("Redacted thinking block! (notifying you for fun)")
 
         input["claude_thinking_trajectory"] = thinking
         input["claude_attempt"] = text
@@ -32,7 +34,7 @@ class Reasoner(curator.LLM):
 
 llm = Reasoner(
     model_name="claude-3-7-sonnet-20250219",
-    generation_params={"max_tokens": 20000, "thinking": {"type": "enabled", "budget_tokens": 18000}},
+    generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
     backend="anthropic",
     backend_params={  # https://docs.anthropic.com/en/api/rate-limits#rate-limits Tier 4
         "max_input_tokens_per_minute": 200_000,
@@ -47,8 +49,9 @@ def unroll_trajectory(example):  # noqa: D103
     return example
 
 
+# TODO: some of the attempts are empty.... need to debug this
 ds = load_dataset("simplescaling/s1K", split="train")
 ds = ds.map(unroll_trajectory, num_proc=os.cpu_count())
 ds = ds.remove_columns(["thinking_trajectories", "cot", "attempt"])
 ds = llm(ds)
-ds.push_to_hub("simplescaling/s1K-claude-3-7-sonnet")
+ds.push_to_hub("mlfoundations-dev/s1K-claude-3-7-sonnet-16k")
