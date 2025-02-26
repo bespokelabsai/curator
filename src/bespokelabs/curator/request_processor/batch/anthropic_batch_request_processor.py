@@ -7,6 +7,7 @@ from anthropic.types.messages import MessageBatch, MessageBatchRequestCounts
 from anthropic.types.shared.not_found_error import NotFoundError
 
 from bespokelabs.curator.log import logger
+from bespokelabs.curator.misc import safe_model_dump
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
@@ -218,7 +219,17 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             if self.config.return_completions_object:
                 response_message_raw = response_body
             else:
-                response_message_raw = response_body["content"][0]["text"]
+                content_blocks = response_body.get("content", [])
+                if content_blocks:
+                    for block in content_blocks:
+                        if block.get("type") == "text":
+                            response_message_raw = block.get("text", "")
+                            break
+                    else:
+                        response_message_raw = str(content_blocks)
+                else:
+                    response_message_raw = ""
+
             usage = response_body.get("usage", {})
 
             token_usage = TokenUsage(
@@ -227,7 +238,12 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                 total_tokens=usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
             )
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
-            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw)
+
+            all_text_response = ""
+            for msg in response_body["content"]:
+                all_text_response += msg["text"] or ""
+
+            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response)
 
         elif result_type == "errored":
             error = raw_response["result"]["error"]
@@ -310,7 +326,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             responses = []
             results_stream = await self.client.messages.batches.results(batch.id)
             async for result in results_stream:
-                responses.append(result.model_dump())
+                responses.append(safe_model_dump(result))
             return responses
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:
