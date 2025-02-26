@@ -5,6 +5,7 @@ import litellm
 from anthropic import AsyncAnthropic
 from anthropic.types.messages import MessageBatch, MessageBatchRequestCounts
 from anthropic.types.shared.not_found_error import NotFoundError
+from litellm.litellm_core_utils.core_helpers import map_finish_reason
 
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.misc import safe_model_dump
@@ -257,6 +258,10 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         else:
             raise ValueError(f"Unknown result type: {result_type}")
 
+        # Get stop reason
+        finish_reason = raw_response.get("stop_reason", "unknown")
+        finish_reason = map_finish_reason(finish_reason)
+
         return GenericResponse(
             response_message=response_message,
             response_errors=response_errors,
@@ -267,6 +272,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             finished_at=batch.finished_at,
             token_usage=token_usage,
             response_cost=cost,
+            finish_reason=finish_reason,
         )
 
     async def submit_batch(self, requests: list[dict], metadata: dict) -> GenericBatch:
