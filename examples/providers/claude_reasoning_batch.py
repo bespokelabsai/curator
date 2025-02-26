@@ -18,16 +18,16 @@ class Reasoner(curator.LLM):
         content = response["content"]
         thinking = ""
         text = ""
-
         for content_block in content:
             if content_block["type"] == "thinking":
-                thinking = content_block["text"]
+                thinking = content_block["thinking"]
             elif content_block["type"] == "text":
                 text = content_block["text"]
             elif content_block["type"] == "redacted_thinking":
                 print("Redacted thinking block! (notifying you for fun)")
 
         if text == "" or thinking == "":
+            breakpoint()
             raise ValueError("No text or thinking found in the response")
 
         input["claude_thinking_trajectory"] = thinking

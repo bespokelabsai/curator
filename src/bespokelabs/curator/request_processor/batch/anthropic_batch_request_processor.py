@@ -241,8 +241,10 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
 
             all_text_response = ""
             for msg in response_body["content"]:
-                all_text_response += msg["text"] or ""
+                all_text_response += msg.get("text", "")
+                all_text_response += msg.get("thinking", "")
 
+            # TODO we should directly use the token counts returned by anthropic in the response...
             cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response)
 
         elif result_type == "errored":
@@ -303,7 +305,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             except NotFoundError:
                 logger.warning(f"batch object {batch.id} not found. Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
                 return None
-
+            breakpoint()
             request_file = self.tracker.submitted_batches[batch.id].request_file
             return self.parse_api_specific_batch_object(batch, request_file=request_file)
 
