@@ -60,7 +60,7 @@ class _RequestProcessorFactory:
             logger.info(f"Requesting text output from {model_name}, using OpenAI backend")
             return "openai"
 
-        if batch and "claude" in model_name:
+        if "claude" in model_name:
             logger.info(f"Requesting output from {model_name}, using Anthropic backend")
             return "anthropic"
 
