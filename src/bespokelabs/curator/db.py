@@ -45,7 +45,7 @@ class MetadataDB:
             "batch_mode",
             "created_time",
             "last_edited_time",
-            "hosted_viewer",
+            "is_hosted_viewer_synced",
         ]
         current_info = self._get_current_schema()
         current_columns = [col[1] for col in current_info]  # col[1] = column name
@@ -89,7 +89,7 @@ class MetadataDB:
                     batch_mode BOOLEAN,
                     created_time TEXT,
                     last_edited_time TEXT,
-                    hosted_viewer BOOLEAN
+                    is_hosted_viewer_synced BOOLEAN
                 )
                 """
             )
@@ -118,7 +118,7 @@ class MetadataDB:
                     """
                     INSERT INTO runs (
                         run_hash, session_id, dataset_hash, prompt_func, model_name,
-                        response_format, batch_mode, created_time, hosted_viewer, last_edited_time
+                        response_format, batch_mode, created_time, is_hosted_viewer_synced, last_edited_time
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
@@ -130,7 +130,7 @@ class MetadataDB:
                         metadata["response_format"],
                         metadata["batch_mode"],
                         metadata["timestamp"],
-                        metadata["hosted_viewer"],
+                        metadata["is_hosted_viewer_synced"],
                         "-",
                     ),
                 )
@@ -155,16 +155,16 @@ class MetadataDB:
         except Exception:
             return None
 
-    def check_existing_hosted_viewer(self, run_hash: str) -> bool:
+    def check_existing_hosted_sync(self, run_hash: str) -> bool:
         """Check if the run is already hosted on the viewer."""
-        return bool(self._get_metadata(run_hash, "hosted_viewer"))
+        return bool(self._get_metadata(run_hash, "is_hosted_viewer_synced"))
 
-    def update_hosted_viewer_flag(self, run_hash: str, hosted: bool):
+    def update_sync_viewer_flag(self, run_hash: str, hosted: bool):
         """Update the hosted_viewer boolean for a run."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "UPDATE runs SET hosted_viewer = ? WHERE run_hash = ?",
+                "UPDATE runs SET is_hosted_viewer_synced = ? WHERE run_hash = ?",
                 (hosted, run_hash),
             )
             conn.commit()
