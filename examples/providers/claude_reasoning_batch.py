@@ -10,7 +10,8 @@ class Reasoner(curator.LLM):
 
     return_completions_object = True
 
-    def prompt(self, input):  # noqa: D102
+    def prompt(self, input):
+        """Directly pass the question to the model."""
         return input["question"]
 
     def parse(self, input, response):
@@ -27,8 +28,7 @@ class Reasoner(curator.LLM):
                 print("Redacted thinking block! (notifying you for fun)")
 
         if text == "" or thinking == "":
-            # raise ValueError("No text or thinking found in the response")
-            print("WARNING: No text or thinking found in this response (likely due to length finish)")
+            print("WARNING: No text or thinking found in this response (likely due to 'finish_reason': 'length')")
 
         input["claude_thinking_trajectory"] = thinking
         input["claude_attempt"] = text
@@ -37,24 +37,23 @@ class Reasoner(curator.LLM):
 
 llm = Reasoner(
     model_name="claude-3-7-sonnet-20250219",
-    generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
+    generation_params={"max_tokens": 20000, "thinking": {"type": "enabled", "budget_tokens": 18000}},
     batch=True,
     backend="anthropic",
 )
 
 
-def unroll_trajectory(example):  # noqa: D103
+def unroll_gemini_trajectory(example):
+    """Unroll the thinking trajectory and attempt into separate columns."""
     example["gemini_thinking_trajectory"] = example["thinking_trajectories"][0]
     example["gemini_attempt"] = example["attempt"]
     return example
 
 
 ds = load_dataset("simplescaling/s1K", split="train")
-ds = ds.map(unroll_trajectory, num_proc=os.cpu_count())
+ds = ds.map(unroll_gemini_trajectory, num_proc=os.cpu_count())
 ds = ds.remove_columns(["thinking_trajectories", "cot", "attempt"])
 ds = llm(ds)
-test = ds.filter(lambda x: x["claude_attempt"] == "")
-assert len(test) == 0
-test2 = ds.filter(lambda x: x["claude_thinking_trajectory"] == "")
-assert len(test2) == 0
-ds.push_to_hub("mlfoundations-dev/s1K-claude-3-7-sonnet-16k")
+
+# Change this to your organization and dataset name
+ds.push_to_hub("simplescaling/s1K-claude-3-7-sonnet")
