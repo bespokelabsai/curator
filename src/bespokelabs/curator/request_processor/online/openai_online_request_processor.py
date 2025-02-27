@@ -237,7 +237,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             request_header = {"api-key": f"{self.api_key}"}
         # Set a longer timeout for the session to handle potential delays
         # session_timeout = aiohttp.ClientTimeout(total=self.config.request_timeout + 60)
-        timeout = 60 * 20  # Maximum time to wait for a response in seconds (20 minutes)
+        timeout = 60 * 60  # Maximum time to wait for a response in seconds (60 minutes)
         # session_timeout = aiohttp.ClientTimeout(total=self.config.request_timeout + 60)
         session_timeout = aiohttp.ClientTimeout(timeout)
         session._timeout = session_timeout  # Update session timeout
@@ -273,7 +273,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                                     raise Exception(f"Connection closed with incomplete JSON: {response_text[:100]}...")
                             else:
                                 # Connection closed with no data
-                                raise Exception("DeepSeek connection closed without sending any data")
+                                raise Exception(f"DeepSeek connection closed without sending any data after {int(time.time() - start_time)}s")
 
                         chunk_text = chunk.decode("utf-8")
                         logger.debug(f"Received chunk from DeepSeek: '{chunk_text[:50]}...' ({len(chunk_text)} chars)")
