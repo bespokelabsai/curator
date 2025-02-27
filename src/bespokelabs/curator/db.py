@@ -45,6 +45,7 @@ class MetadataDB:
             "batch_mode",
             "created_time",
             "last_edited_time",
+            "hosted_viewer",
         ]
         current_info = self._get_current_schema()
         current_columns = [col[1] for col in current_info]  # col[1] = column name
@@ -87,7 +88,8 @@ class MetadataDB:
                     response_format TEXT,
                     batch_mode BOOLEAN,
                     created_time TEXT,
-                    last_edited_time TEXT
+                    last_edited_time TEXT,
+                    hosted_viewer BOOLEAN
                 )
                 """
             )
@@ -116,8 +118,8 @@ class MetadataDB:
                     """
                     INSERT INTO runs (
                         run_hash, session_id, dataset_hash, prompt_func, model_name,
-                        response_format, batch_mode, created_time, last_edited_time
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        response_format, batch_mode, created_time, hosted_viewer, last_edited_time
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         metadata["run_hash"],
@@ -128,6 +130,7 @@ class MetadataDB:
                         metadata["response_format"],
                         metadata["batch_mode"],
                         metadata["timestamp"],
+                        metadata["hosted_viewer"],
                         "-",
                     ),
                 )
@@ -135,11 +138,14 @@ class MetadataDB:
 
     def get_existing_session_id(self, run_hash: str):
         """Get existing session id from previous run."""
+        return self._get_metadata(run_hash, "session_id")
+
+    def _get_metadata(self, run_hash: str, column: str):
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute(
-                    "SELECT session_id FROM runs WHERE run_hash = ?",
+                    f"SELECT {column} FROM runs WHERE run_hash = ?",
                     (run_hash,),
                 )
                 fetch = cursor.fetchone()
@@ -148,3 +154,17 @@ class MetadataDB:
 
         except Exception:
             return None
+
+    def check_existing_hosted_viewer(self, run_hash: str) -> bool:
+        """Check if the run is already hosted on the viewer."""
+        return bool(self._get_metadata(run_hash, "hosted_viewer"))
+
+    def update_hosted_viewer_flag(self, run_hash: str, hosted: bool):
+        """Update the hosted_viewer boolean for a run."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE runs SET hosted_viewer = ? WHERE run_hash = ?",
+                (hosted, run_hash),
+            )
+            conn.commit()
