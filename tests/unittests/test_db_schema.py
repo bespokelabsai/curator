@@ -19,6 +19,7 @@ def test_valid_schema(tmp_path):
             "response_format": "{}",
             "batch_mode": False,
             "timestamp": "2023-01-01T00:00:00Z",
+            "is_hosted_viewer_synced": False,
         }
     )
     # If no exception is raised, the test passes
