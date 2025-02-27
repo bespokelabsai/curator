@@ -214,7 +214,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         token_usage = None
         cost = None
         response_message = None
-        response_body = {}
+        finish_reason = "unknown"
 
         if result_type == "succeeded":
             response_body = raw_response["result"]["message"]
@@ -232,9 +232,10 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                 else:
                     response_message_raw = ""
 
-            usage = response_body.get(
-                "usage",
-            )
+            # Get stop reason
+            finish_reason = response_body.get("stop_reason", "unknown")
+
+            usage = response_body.get("usage", {})
 
             token_usage = TokenUsage(
                 prompt_tokens=usage.get("input_tokens", 0),
@@ -245,8 +246,8 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
 
             all_text_response = ""
             for msg in response_body["content"]:
-                all_text_response += msg.get("text") or ""
-                all_text_response += msg.get("thinking") or ""
+                all_text_response += msg.get("text", "")
+                all_text_response += msg.get("thinking", "")
 
             # TODO we should directly use the token counts returned by anthropic in the response...
             cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response)
@@ -261,8 +262,6 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         else:
             raise ValueError(f"Unknown result type: {result_type}")
 
-        # Get stop reason
-        finish_reason = response_body.get("stop_reason", "unknown")
         finish_reason = map_finish_reason(finish_reason)
         return GenericResponse(
             response_message=response_message,
