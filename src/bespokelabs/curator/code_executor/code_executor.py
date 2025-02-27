@@ -42,7 +42,7 @@ class CodeExecutor:
 
     def code_input(self, row: dict):
         """Extract input from a dataset row."""
-        pass
+        return ""
 
     def code_output(self, row: dict, execution_output: Any):
         """Extract output from a dataset row."""
@@ -112,7 +112,8 @@ class CodeExecutor:
             Dataset: Processed dataset with execution results
         """
         # Convert input to Dataset format
-        dataset = _convert_to_dataset(dataset)
+        if dataset:
+            dataset = _convert_to_dataset(dataset)
 
         # Set up cache directory
         if working_dir is None:

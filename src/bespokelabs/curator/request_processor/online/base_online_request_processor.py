@@ -319,11 +319,12 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             viewer_client=self._viewer_client,
         )
 
-        completed_request_ids = self.validate_existing_response_file(response_file)
         # Resume if a response file exists
+        completed_request_ids, completed_parsed_responses = self.validate_existing_response_file(response_file)
 
         # Count total requests
         status_tracker.num_tasks_already_completed = len(completed_request_ids)
+        status_tracker.num_parsed_responses = completed_parsed_responses
         status_tracker.total_requests = self.total_requests
         status_tracker.model = self.prompt_formatter.model_name
         status_tracker.start_tracker(self._tracker_console)

@@ -37,6 +37,7 @@ class MetadataDB:
         """
         expected_columns = [
             "run_hash",
+            "session_id",
             "dataset_hash",
             "prompt_func",
             "model_name",
@@ -44,6 +45,7 @@ class MetadataDB:
             "batch_mode",
             "created_time",
             "last_edited_time",
+            "is_hosted_viewer_synced",
         ]
         current_info = self._get_current_schema()
         current_columns = [col[1] for col in current_info]  # col[1] = column name
@@ -79,13 +81,15 @@ class MetadataDB:
                 """
                 CREATE TABLE IF NOT EXISTS runs (
                     run_hash TEXT PRIMARY KEY,
+                    session_id TEXT,
                     dataset_hash TEXT,
                     prompt_func TEXT,
                     model_name TEXT,
                     response_format TEXT,
                     batch_mode BOOLEAN,
                     created_time TEXT,
-                    last_edited_time TEXT
+                    last_edited_time TEXT,
+                    is_hosted_viewer_synced BOOLEAN
                 )
                 """
             )
@@ -113,19 +117,54 @@ class MetadataDB:
                 cursor.execute(
                     """
                     INSERT INTO runs (
-                        run_hash, dataset_hash, prompt_func, model_name,
-                        response_format, batch_mode, created_time, last_edited_time
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        run_hash, session_id, dataset_hash, prompt_func, model_name,
+                        response_format, batch_mode, created_time, is_hosted_viewer_synced, last_edited_time
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         metadata["run_hash"],
+                        metadata["session_id"],
                         metadata["dataset_hash"],
                         metadata["prompt_func"],
                         metadata["model_name"],
                         metadata["response_format"],
                         metadata["batch_mode"],
                         metadata["timestamp"],
+                        metadata["is_hosted_viewer_synced"],
                         "-",
                     ),
                 )
+            conn.commit()
+
+    def get_existing_session_id(self, run_hash: str):
+        """Get existing session id from previous run."""
+        return self._get_metadata(run_hash, "session_id")
+
+    def _get_metadata(self, run_hash: str, column: str):
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    f"SELECT {column} FROM runs WHERE run_hash = ?",
+                    (run_hash,),
+                )
+                fetch = cursor.fetchone()
+                if fetch:
+                    return fetch[0]
+
+        except Exception:
+            return None
+
+    def check_existing_hosted_sync(self, run_hash: str) -> bool:
+        """Check if the run is already hosted on the viewer."""
+        return bool(self._get_metadata(run_hash, "is_hosted_viewer_synced"))
+
+    def update_sync_viewer_flag(self, run_hash: str, hosted: bool):
+        """Update the hosted_viewer boolean for a run."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE runs SET is_hosted_viewer_synced = ? WHERE run_hash = ?",
+                (hosted, run_hash),
+            )
             conn.commit()

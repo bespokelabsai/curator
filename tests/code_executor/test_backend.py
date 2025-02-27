@@ -1,3 +1,4 @@
+import ast
 import asyncio
 import io
 import json
@@ -105,8 +106,8 @@ async def test_get_created_files(temp_dir):
     tar_bytes = BaseCodeExecutionBackend._get_created_files(temp_dir)
 
     # Read back the tar contents
-    tar_buffer = io.BytesIO(tar_bytes)
-    with tarfile.open(fileobj=tar_buffer, mode="r:gz") as tar:
+    tar_buffer = io.BytesIO(ast.literal_eval(tar_bytes))
+    with tarfile.open(fileobj=tar_buffer, mode="r") as tar:
         files = tar.getnames()
         # Convert paths to use forward slashes for consistency
         files = [f.replace("\\", "/") for f in files]
