@@ -49,13 +49,13 @@ class CodeExecutionOutput(BaseModel):
     error: Optional[str] = None
     stdout: Optional[str] = None
     stderr: Optional[str] = None
-    files: Optional[bytes] = None
+    files: Optional[str] = None
 
 
 class CodeExecutionResponse(BaseModel):
     """Response from the code execution backend."""
 
-    exec_output: CodeExecutionOutput
+    exec_output: Optional[CodeExecutionOutput] = None
     code_api_request: Optional[CodeAPIRequest] = None
     created_at: datetime.datetime = field(default_factory=datetime.datetime.now)
     finished_at: datetime.datetime = field(default_factory=datetime.datetime.now)

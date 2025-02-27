@@ -1,3 +1,10 @@
+"""This example demonstrates how to use Curator's code execution functionality with Ray backend for executing code on large datasets.
+
+It shows how to verify code solutions against expected outputs.
+
+In this example, we verify Deepseek R1's code solutions against expected outputs on the TACO dataset.
+"""
+
 import json
 import re
 

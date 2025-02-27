@@ -215,6 +215,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         cost = None
         response_message = None
         finish_reason = "unknown"
+
         if result_type == "succeeded":
             response_body = raw_response["result"]["message"]
             if self.config.return_completions_object:

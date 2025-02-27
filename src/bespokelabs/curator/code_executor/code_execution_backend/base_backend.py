@@ -692,7 +692,7 @@ class BaseCodeExecutionBackend:
         tar_buffer = io.BytesIO()
 
         # Create a zip archive containing all files in program_dir
-        with tarfile.open(fileobj=tar_buffer, mode="w:gz") as tar:
+        with tarfile.open(fileobj=tar_buffer, mode="w") as tar:
             # Add all files in program_dir to the archive
             for filename in os.listdir(program_dir):
                 file_path = os.path.join(program_dir, filename)
@@ -701,4 +701,4 @@ class BaseCodeExecutionBackend:
 
         # Get the bytes from the buffer
         tar_buffer.seek(0)
-        return tar_buffer.getvalue()
+        return str(tar_buffer.getvalue())
