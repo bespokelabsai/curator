@@ -20,6 +20,7 @@ class RequestProcessorConfig(BaseModel):
         api_key: Optional API key for authentication
         in_mtok_cost: Optional cost per million input tokens
         out_mtok_cost: Optional cost per million output tokens
+        invalid_finish_reasons: List of api finish reasons which are considered failed.
     """
 
     model: str
@@ -32,6 +33,7 @@ class RequestProcessorConfig(BaseModel):
     api_key: str | None = None
     in_mtok_cost: int | None = None
     out_mtok_cost: int | None = None
+    invalid_finish_reasons: list = Field(default_factory=lambda: ["content_filter", "length"])
 
     class Config:
         """BaseModel Setup class."""
@@ -88,7 +90,6 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
         max_output_tokens_per_minute: Maximum number of output tokens allowed per minute
         max_concurrent_requests: Maximum number of concurrent requests
         seconds_to_pause_on_rate_limit: Duration to pause when rate limit is hit
-        invalid_finish_reasons: List of api finish reasons which are considered failed.
     """
 
     max_requests_per_minute: int | None = Field(default=None, gt=0)
@@ -97,7 +98,6 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
     max_input_tokens_per_minute: int | None = Field(default=None, gt=0)
     max_output_tokens_per_minute: int | None = Field(default=None, gt=0)
     seconds_to_pause_on_rate_limit: int = Field(default=10, gt=0)
-    invalid_finish_reasons: list = Field(default_factory=lambda: ["content_filter", "length"])
 
 
 class OfflineRequestProcessorConfig(RequestProcessorConfig):
