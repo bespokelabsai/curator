@@ -262,7 +262,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                         chunk = await asyncio.wait_for(response_obj.content.read(1024), timeout=read_timeout)
 
                         if not chunk:  # Empty chunk means EOF (connection closed)
-                            logger.info("DeepSeek connection closed (EOF reached)")
+                            # logger.info("DeepSeek connection closed (EOF reached)")
                             # If we have content, try to parse it one last time
                             if response_text.strip():
                                 try:
@@ -293,6 +293,9 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                         # logger.info(f"No data received from DeepSeek for {read_timeout}s. Continuing to wait...")
                         pass
                         # Continue the loop - we'll check our overall timeout at the top
+                    
+                    except json.JSONDecodeError:
+                        raise Exception(f"Connection closed after some incomplete data: {response_text[:50]}... (first 50 chars / {len(response_text)}) ")
 
                 # If we exited the loop without a response, check if we timed out or have data to parse
                 if "response" not in locals():
