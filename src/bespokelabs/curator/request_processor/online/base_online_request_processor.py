@@ -473,7 +473,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """
         try:
             # Estimate tokens before making request
-            token_estimate = self.estimate_total_tokens(request.generic_request.messages)
+            token_estimate = blocked_capacity or self.estimate_total_tokens(request.generic_request.messages)
 
             # Add new estimate to projection (success=None indicates new estimate)
             status_tracker.update_cost_projection(token_estimate, success=None)
