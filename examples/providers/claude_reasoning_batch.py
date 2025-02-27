@@ -27,8 +27,8 @@ class Reasoner(curator.LLM):
                 print("Redacted thinking block! (notifying you for fun)")
 
         if text == "" or thinking == "":
-            breakpoint()
-            raise ValueError("No text or thinking found in the response")
+            # raise ValueError("No text or thinking found in the response")
+            print("WARNING: No text or thinking found in this response (likely due to length finish)")
 
         input["claude_thinking_trajectory"] = thinking
         input["claude_attempt"] = text
