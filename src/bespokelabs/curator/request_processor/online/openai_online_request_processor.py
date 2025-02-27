@@ -248,70 +248,70 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             timeout=self.config.request_timeout,
         ) as response_obj:
             # Special handling for DeepSeek API which may return empty responses during high traffic
-            if "deepseek.com" in self.url:
-                max_wait_time = timeout
-                start_time = time.time()
-                response_text = ""
+            # if "deepseek.com" in self.url:
+            #     max_wait_time = timeout
+            #     start_time = time.time()
+            #     response_text = ""
 
-                # Set a read timeout that's shorter than our max wait time
-                read_timeout = 30  # 30 seconds
+            #     # Set a read timeout that's shorter than our max wait time
+            #     read_timeout = 30  # 30 seconds
 
-                while time.time() - start_time < max_wait_time:
-                    try:
-                        # Read with a timeout to ensure we can check our overall timeout
-                        chunk = await asyncio.wait_for(response_obj.content.read(1024), timeout=read_timeout)
+            #     while time.time() - start_time < max_wait_time:
+            #         try:
+            #             # Read with a timeout to ensure we can check our overall timeout
+            #             chunk = await asyncio.wait_for(response_obj.content.read(1024), timeout=read_timeout)
 
-                        if not chunk:  # Empty chunk means EOF (connection closed)
-                            # logger.info("DeepSeek connection closed (EOF reached)")
-                            # If we have content, try to parse it one last time
-                            if response_text.strip():
-                                try:
-                                    response = json.loads(response_text)
-                                    break  # Successfully parsed the response
-                                except json.JSONDecodeError:
-                                    # We have incomplete data and the connection is closed
-                                    raise Exception(f"Connection closed with incomplete JSON: {response_text[:100]}...")
-                            else:
-                                # Connection closed with no data
-                                raise Exception(f"DeepSeek connection closed without sending any data after {int(time.time() - start_time)}s")
+            #             if not chunk:  # Empty chunk means EOF (connection closed)
+            #                 # logger.info("DeepSeek connection closed (EOF reached)")
+            #                 # If we have content, try to parse it one last time
+            #                 if response_text.strip():
+            #                     try:
+            #                         response = json.loads(response_text)
+            #                         break  # Successfully parsed the response
+            #                     except json.JSONDecodeError:
+            #                         # We have incomplete data and the connection is closed
+            #                         raise Exception(f"Connection closed with incomplete JSON: {response_text[:100]}...")
+            #                 else:
+            #                     # Connection closed with no data
+            #                     raise Exception(f"DeepSeek connection closed without sending any data after {int(time.time() - start_time)}s")
 
-                        chunk_text = chunk.decode("utf-8")
-                        logger.debug(f"Received chunk from DeepSeek: '{chunk_text[:50]}...' ({len(chunk_text)} chars)")
-                        response_text += chunk_text
+            #             chunk_text = chunk.decode("utf-8")
+            #             logger.debug(f"Received chunk from DeepSeek: '{chunk_text[:50]}...' ({len(chunk_text)} chars)")
+            #             response_text += chunk_text
 
-                        # If we got some actual content, try to parse it
-                        if response_text.strip():
-                            try:
-                                response = json.loads(response_text)
-                                break  # Successfully parsed the response
-                            except json.JSONDecodeError:
-                                # Not a complete JSON yet, continue reading
-                                pass
+            #             # If we got some actual content, try to parse it
+            #             if response_text.strip():
+            #                 try:
+            #                     response = json.loads(response_text)
+            #                     break  # Successfully parsed the response
+            #                 except json.JSONDecodeError:
+            #                     # Not a complete JSON yet, continue reading
+            #                     pass
 
-                    except asyncio.TimeoutError:
-                        # Read timeout - this is expected during periods of empty responses
-                        # logger.info(f"No data received from DeepSeek for {read_timeout}s. Continuing to wait...")
-                        pass
-                        # Continue the loop - we'll check our overall timeout at the top
+            #         except asyncio.TimeoutError:
+            #             # Read timeout - this is expected during periods of empty responses
+            #             # logger.info(f"No data received from DeepSeek for {read_timeout}s. Continuing to wait...")
+            #             pass
+            #             # Continue the loop - we'll check our overall timeout at the top
                     
-                    except json.JSONDecodeError:
-                        raise Exception(f"Connection closed after some incomplete data: {response_text[:50]}... (first 50 chars / {len(response_text)}) ")
+            #         except json.JSONDecodeError:
+            #             raise Exception(f"Connection closed after some incomplete data: {response_text[:50]}... (first 50 chars / {len(response_text)}) ")
 
-                # If we exited the loop without a response, check if we timed out or have data to parse
-                if "response" not in locals():
-                    if time.time() - start_time >= max_wait_time:
-                        raise Exception(f"Timeout waiting for complete response from DeepSeek API after {max_wait_time/60:.1f} minutes")
+            #     # If we exited the loop without a response, check if we timed out or have data to parse
+            #     if "response" not in locals():
+            #         if time.time() - start_time >= max_wait_time:
+            #             raise Exception(f"Timeout waiting for complete response from DeepSeek API after {max_wait_time/60:.1f} minutes")
 
-                    if not response_text.strip():
-                        raise Exception("Received empty response from DeepSeek API after waiting")
+            #         if not response_text.strip():
+            #             raise Exception("Received empty response from DeepSeek API after waiting")
 
-                    try:
-                        response = json.loads(response_text)
-                    except json.JSONDecodeError:
-                        raise Exception(f"Failed to parse response as JSON: {response_text[:100]}...")
-            else:
+            #         try:
+            #             response = json.loads(response_text)
+            #         except json.JSONDecodeError:
+            #             raise Exception(f"Failed to parse response as JSON: {response_text[:100]}...")
+            # else:
                 # Standard handling for other APIs
-                response = await response_obj.json()
+            response = await response_obj.json()
 
             if response is None:
                 raise Exception("Response is empty")
