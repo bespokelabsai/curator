@@ -242,8 +242,8 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
 
             all_text_response = ""
             for msg in response_body["content"]:
-                all_text_response += msg.get("text", "")
-                all_text_response += msg.get("thinking", "")
+                all_text_response += msg.get("text") or ""
+                all_text_response += msg.get("thinking") or ""
 
             # TODO we should directly use the token counts returned by anthropic in the response...
             cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response)
