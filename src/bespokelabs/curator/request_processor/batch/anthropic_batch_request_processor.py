@@ -214,6 +214,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         token_usage = None
         cost = None
         response_message = None
+        response_body = {}
 
         if result_type == "succeeded":
             response_body = raw_response["result"]["message"]
@@ -231,7 +232,9 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                 else:
                     response_message_raw = ""
 
-            usage = response_body.get("usage", {})
+            usage = response_body.get(
+                "usage",
+            )
 
             token_usage = TokenUsage(
                 prompt_tokens=usage.get("input_tokens", 0),
