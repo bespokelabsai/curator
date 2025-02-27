@@ -214,7 +214,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         token_usage = None
         cost = None
         response_message = None
-
+        finish_reason = "unknown"
         if result_type == "succeeded":
             response_body = raw_response["result"]["message"]
             if self.config.return_completions_object:
@@ -230,6 +230,9 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                         response_message_raw = str(content_blocks)
                 else:
                     response_message_raw = ""
+
+            # Get stop reason
+            finish_reason = response_body.get("stop_reason", "unknown")
 
             usage = response_body.get("usage", {})
 
@@ -258,8 +261,6 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         else:
             raise ValueError(f"Unknown result type: {result_type}")
 
-        # Get stop reason
-        finish_reason = response_body.get("stop_reason", "unknown")
         finish_reason = map_finish_reason(finish_reason)
         return GenericResponse(
             response_message=response_message,
