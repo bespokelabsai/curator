@@ -408,8 +408,6 @@ class OnlineStatusTracker:
             return True
 
         token_estimate = token_estimate.total
-        print(f"token_estimate: {token_estimate}")
-        print(f"available_token_capacity: {self.available_token_capacity}")
         has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
         return has_capacity
 
@@ -466,7 +464,7 @@ class OnlineStatusTracker:
         output_cost = (output_tokens * (self.output_cost_per_million or 0)) / 1_000_000
         return input_cost + output_cost
 
-    def update_cost_projection(self, token_count: _TokenUsage, pre_request: bool = False):
+    def update_cost_projection(self, token_count: _TokenUsage | None, pre_request: bool = False):
         """Update cost projections based on token estimates or actual usage.
 
         If pre_request is True, this is a new estimate before API call.
@@ -476,7 +474,10 @@ class OnlineStatusTracker:
             - Update moving average using the latest actual cost.
         """
         # Calculate estimated cost
-        estimated_cost = self.estimate_request_cost(token_count.input or 0, token_count.output or 0)
+        if token_count is None:
+            estimated_cost = 0
+        else:
+            estimated_cost = self.estimate_request_cost(token_count.input, token_count.output)
 
         if pre_request:
             # This is a new estimate before API call

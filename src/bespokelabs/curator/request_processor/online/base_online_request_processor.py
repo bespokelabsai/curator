@@ -485,8 +485,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 session=session,
                 status_tracker=status_tracker,
             )
-            # Update cost projection with actual usage
-            used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
 
             if generic_response.finish_reason in self.config.invalid_finish_reasons:
                 logger.debug(
@@ -496,8 +494,15 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 )
                 # Update cost projection with actual usage but mark as failed
                 status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
-                status_tracker.update_cost_projection(used_tokens)
+                if generic_response.token_usage is not None:
+                    used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
+                    status_tracker.update_cost_projection(used_tokens)
+                else:
+                    status_tracker.update_cost_projection(None)
                 raise ValueError(f"finish_reason was {generic_response.finish_reason}")
+
+            # Update cost projection with actual usage
+            used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
 
             # Update stats with actual usage
             status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
