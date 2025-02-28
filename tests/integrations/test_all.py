@@ -96,8 +96,8 @@ def test_basic_without_dataset_raw_prompt(temp_working_dir):
 def test_basic(temp_working_dir, mock_dataset):
     temp_working_dir, backend, vcr_config = temp_working_dir
     hash_book = {
-        "openai": "54456b7dcce5826036a52f242e589b02c945ef0891af6e8b786020ba2737fc09",
-        "litellm": "7bf42717b5e516eca1f92ca69680c1278c8a9a0e351365d1aa808f92e1b59086",
+        "openai": "278b2dc5bdf4d2dc1aa18ddb61e37885a9b4aec209bae3bbb81691391ec58692",
+        "litellm": "860cbb30c8d65203c54c69fb4e65323d570d784bff98d9dbca27e69316b8fdba",
     }
 
     with vcr_config.use_cassette("basic_completion.yaml"):
@@ -118,7 +118,9 @@ def test_basic(temp_working_dir, mock_dataset):
         assert "3" in captured, captured  # Verify total requests processed
         assert "Final Curator Statistics" in captured, captured
         # Verify response content
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+        recipes = [recipe[0] for recipe in dataset.to_pandas().values.tolist()]
+        recipes.sort()
+        recipes = "".join(recipes)
         assert _hash_string(recipes) == hash_book[backend]
 
 
