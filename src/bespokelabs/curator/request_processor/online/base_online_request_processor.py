@@ -218,7 +218,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             return self.default_max_tokens_per_minute
 
     @abstractmethod
-    def estimate_total_tokens(self, messages: list) -> int:
+    def estimate_total_tokens(self, messages: list) -> _TokenCount:
         """Estimate total tokens for a request.
 
         Args:
@@ -473,16 +473,18 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """
         try:
             # Estimate tokens before making request
-            token_estimate = blocked_capacity or self.estimate_total_tokens(request.generic_request.messages)
+            token_estimate: _TokenCount = blocked_capacity or self.estimate_total_tokens(request.generic_request.messages)
 
-            # Add new estimate to projection (success=None indicates new estimate)
-            status_tracker.update_cost_projection(token_estimate, success=None)
+            # Add new estimate to projection (pre_request=True indicates new estimate)
+            status_tracker.update_cost_projection(token_estimate, pre_request=True)
 
             generic_response = await self.call_single_request(
                 request=request,
                 session=session,
                 status_tracker=status_tracker,
             )
+            # Update cost projection with actual usage
+            used_tokens: _TokenCount = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
 
             if generic_response.finish_reason in self.config.invalid_finish_reasons:
                 logger.debug(
@@ -491,23 +493,19 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     "for request {generic_response.raw_request}"
                 )
                 # Update cost projection with actual usage but mark as failed
-                actual_tokens = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
-                status_tracker.update_cost_projection(actual_tokens, success=False, finish_reason=generic_response.finish_reason)
+                status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+                status_tracker.update_cost_projection(used_tokens)
                 raise ValueError(f"finish_reason was {generic_response.finish_reason}")
 
             # Update stats with actual usage
             status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
-
-            # Update cost projection with actual usage (success=True will remove estimate)
-            actual_tokens = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
-            status_tracker.update_cost_projection(actual_tokens, success=True)
+            status_tracker.update_cost_projection(used_tokens)
 
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
 
             # Free the extra capacity blocked before request with actual consumed capacity.
-            used_capacity = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
-            self._free_capacity(status_tracker, used_capacity=used_capacity, blocked_capacity=blocked_capacity)
+            self._free_capacity(status_tracker, used_tokens, blocked_capacity)
 
         except Exception as e:
             status_tracker.num_other_errors += 1
