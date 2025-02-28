@@ -6,7 +6,6 @@ from typing import Optional
 
 import tqdm
 from litellm import model_cost
-from pydantic import BaseModel
 from rich import box
 from rich.console import Console, Group
 from rich.live import Live
@@ -19,7 +18,7 @@ from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
-from bespokelabs.curator.types.generic_response import TokenUsage
+from bespokelabs.curator.types.generic_response import _TokenUsage
 
 _TOKEN_LIMIT_STRATEGY_DESCRIPTION = {
     "combined": "combined input/output",
@@ -39,17 +38,6 @@ class TokenLimitStrategy(str, Enum):
         return _TOKEN_LIMIT_STRATEGY_DESCRIPTION[self.value]
 
 
-class _TokenCount(BaseModel):
-    input: int | float | None = 0
-    output: int | float | None = 0
-
-    @property
-    def total(self):
-        if self.input is None:
-            return None
-        return self.input + self.output
-
-
 @dataclass
 class OnlineStatusTracker:
     """Tracks the status of all requests."""
@@ -64,10 +52,10 @@ class OnlineStatusTracker:
     num_rate_limit_errors: int = 0
     num_parsed_responses: int = 0
     available_request_capacity: float = 1.0
-    available_token_capacity: float | _TokenCount = 0
+    available_token_capacity: float | _TokenUsage = 0
     last_update_time: float = field(default_factory=time.time)
     max_requests_per_minute: int = 0
-    max_tokens_per_minute: int | _TokenCount = 0
+    max_tokens_per_minute: int | _TokenUsage = 0
     max_concurrent_requests: int | None = None
     max_tokens_per_minute: int = 0
     pbar: tqdm = field(default=None)
@@ -106,10 +94,10 @@ class OnlineStatusTracker:
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             self.available_token_capacity = t.cast(float, self.available_token_capacity)
         else:
-            self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
-            self.available_token_capacity = _TokenCount()
+            self.available_token_capacity = t.cast(_TokenUsage, self.available_token_capacity)
+            self.available_token_capacity = _TokenUsage()
             if not self.max_tokens_per_minute:
-                self.max_tokens_per_minute = _TokenCount()
+                self.max_tokens_per_minute = _TokenUsage()
 
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
@@ -177,7 +165,7 @@ class OnlineStatusTracker:
         )
         self._live.start()
 
-    def update_stats(self, token_usage: TokenUsage, cost: float):
+    def update_stats(self, token_usage: _TokenUsage, cost: float):
         """Update statistics in the tracker with token usage and cost."""
         if token_usage:
             self.total_prompt_tokens += token_usage.prompt_tokens
@@ -384,8 +372,8 @@ class OnlineStatusTracker:
                     self.max_tokens_per_minute,
                 )
         else:
-            self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
-            self.max_tokens_per_minute = t.cast(_TokenCount, self.max_tokens_per_minute)
+            self.available_token_capacity = t.cast(_TokenUsage, self.available_token_capacity)
+            self.max_tokens_per_minute = t.cast(_TokenUsage, self.max_tokens_per_minute)
             if self.max_tokens_per_minute.input is not None:
                 self.available_token_capacity.input = min(
                     self.available_token_capacity.input + self.max_tokens_per_minute.input * seconds_since_update / 60.0,
@@ -398,7 +386,7 @@ class OnlineStatusTracker:
 
         self.last_update_time = current_time
 
-    def has_capacity(self, token_estimate: _TokenCount) -> bool:
+    def has_capacity(self, token_estimate: _TokenUsage) -> bool:
         """Check if there's enough capacity for a request."""
         self.update_capacity()
         if self.token_limit_strategy == TokenLimitStrategy.combined:
@@ -414,7 +402,7 @@ class OnlineStatusTracker:
             )
         return has_capacity
 
-    def _check_combined_capacity(self, token_estimate):
+    def _check_combined_capacity(self, token_estimate: _TokenUsage):
         self.available_token_capacity = t.cast(int, self.available_token_capacity)
         if self.max_requests_per_minute is None and self.max_tokens_per_minute is None:
             return True
@@ -423,8 +411,8 @@ class OnlineStatusTracker:
         has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
         return has_capacity
 
-    def _check_seperate_capacity(self, token_estimate: _TokenCount):
-        self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
+    def _check_seperate_capacity(self, token_estimate: _TokenUsage):
+        self.available_token_capacity = t.cast(_TokenUsage, self.available_token_capacity)
         if self.max_tokens_per_minute.total is None and self.max_requests_per_minute is None:
             return True
 
@@ -435,7 +423,7 @@ class OnlineStatusTracker:
         )
         return has_capacity
 
-    def consume_capacity(self, token_estimate: _TokenCount):
+    def consume_capacity(self, token_estimate: _TokenUsage):
         """Consume capacity for a request."""
         if self.max_requests_per_minute is not None:
             self.available_request_capacity -= 1
@@ -444,13 +432,13 @@ class OnlineStatusTracker:
                 self.available_token_capacity = t.cast(float, self.available_token_capacity)
                 self.available_token_capacity -= token_estimate.total
         else:
-            self.available_token_capacity = t.cast(_TokenCount, self.available_token_capacity)
+            self.available_token_capacity = t.cast(_TokenUsage, self.available_token_capacity)
 
             if self.max_tokens_per_minute is not None:
                 self.available_token_capacity.input -= token_estimate.input
                 self.available_token_capacity.output -= token_estimate.output
 
-    def free_capacity(self, used: _TokenCount, blocked: _TokenCount):
+    def free_capacity(self, used: _TokenUsage, blocked: _TokenUsage):
         """Free extra consumed capacity.
 
         Note: This can be a negative number
@@ -476,7 +464,7 @@ class OnlineStatusTracker:
         output_cost = (output_tokens * (self.output_cost_per_million or 0)) / 1_000_000
         return input_cost + output_cost
 
-    def update_cost_projection(self, token_count: _TokenCount, pre_request: bool = False):
+    def update_cost_projection(self, token_count: _TokenUsage, pre_request: bool = False):
         """Update cost projections based on token estimates or actual usage.
 
         If pre_request is True, this is a new estimate before API call.

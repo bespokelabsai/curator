@@ -12,9 +12,10 @@ from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, _TokenCount
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
 from bespokelabs.curator.types.generic_request import GenericRequest
-from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsage
+from bespokelabs.curator.types.generic_response import GenericResponse
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 litellm.suppress_debug_info = True
 
@@ -57,7 +58,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             self.manual_max_tokens_per_minute = config.max_tokens_per_minute
         elif config.max_input_tokens_per_minute and config.max_output_tokens_per_minute:
-            self.manual_max_tokens_per_minute = _TokenCount(input=config.max_input_tokens_per_minute, output=config.max_output_tokens_per_minute)
+            self.manual_max_tokens_per_minute = _TokenUsage(input=config.max_input_tokens_per_minute, output=config.max_output_tokens_per_minute)
         else:
             self.manual_max_tokens_per_minute = None
 
@@ -194,7 +195,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             return self.config.generation_params["max_tokens"]
         return litellm.get_max_tokens(model=self.config.model)
 
-    def estimate_total_tokens(self, messages: list) -> _TokenCount:
+    def estimate_total_tokens(self, messages: list) -> _TokenUsage:
         """Calculate the total token usage for a request.
 
         Uses LiteLLM's token_counter for accurate input token counting
@@ -204,11 +205,11 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             messages (list): List of message dictionaries
 
         Returns:
-            _TokenCount: Total estimated tokens (input and output)
+            _TokenUsage: Total estimated tokens (input and output)
         """
         input_tokens = litellm.token_counter(model=self.config.model, messages=messages)
         output_tokens = self.estimate_output_tokens()
-        return _TokenCount(input=input_tokens, output=output_tokens)
+        return _TokenUsage(input=input_tokens, output=output_tokens)
 
     def test_call(self):
         """Test call to get rate limits."""
@@ -229,11 +230,11 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         logger.info(f"Test call headers: {headers}")
         return headers
 
-    def get_header_based_rate_limits(self) -> tuple[int, _TokenCount | int]:
+    def get_header_based_rate_limits(self) -> tuple[int, _TokenUsage | int]:
         """Retrieve rate limits from the LLM provider via LiteLLM.
 
         Returns:
-            tuple[int, _TokenCount | int]: Contains 'max_requests_per_minute' and
+            tuple[int, _TokenUsage | int]: Contains 'max_requests_per_minute' and
                                            'max_tokens_per_minute' info.
 
         Note:
@@ -252,7 +253,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
             input_token_key = f"llm_provider-{provider}-ratelimit-input-tokens-remaining"
             input_tpm = int(headers.get(input_token_key, 0))
-            tpm = _TokenCount(input=input_tpm, output=output_tpm)
+            tpm = _TokenUsage(input=input_tpm, output=output_tpm)
 
         else:
             tpm = int(headers.get("x-ratelimit-limit-tokens", 0))
@@ -357,11 +358,11 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
         # Extract token usage
         usage = completion_obj.usage if hasattr(completion_obj, "usage") else {}
-        token_usage = TokenUsage(
-            prompt_tokens=usage.prompt_tokens,
-            completion_tokens=usage.completion_tokens,
-            total_tokens=usage.total_tokens,
+        token_usage = _TokenUsage(
+            input=usage.prompt_tokens,
+            output=usage.completion_tokens,
         )
+        token_usage.total = token_usage.total_tokens
 
         cost = self.completion_cost(completion_obj.model_dump())
 

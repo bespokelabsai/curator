@@ -1,15 +1,19 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class TokenUsage(BaseModel):
-    """Token usage information for an API request.
+class _TokenUsage(BaseModel):
+    input: int | None = Field(default=0, description="Number of input tokens")
+    output: int | None = Field(default=0, description="Number of output tokens")
+    _total: int | None = Field(default=None, exclude=True)
 
-    Attributes:
-        prompt_tokens: Number of tokens in the prompt
-        completion_tokens: Number of tokens in the completion
-        total_tokens: Total number of tokens used
-    """
+    @property
+    def total(self) -> int | None:
+        if self._total is not None:
+            return self._total
+        elif self.input is None or self.output is None:
+            return None
+        return self.input + self.output
 
-    prompt_tokens: int
-    completion_tokens: int
-    total_tokens: int
+    @total.setter
+    def total(self, value: int | None) -> None:
+        self._total = value

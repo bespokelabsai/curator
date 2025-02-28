@@ -15,7 +15,7 @@ from bespokelabs.curator.request_processor.config import BatchRequestProcessorCo
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-from bespokelabs.curator.types.token_usage import TokenUsage
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 """
 Gemini latest rate limits:
@@ -297,11 +297,12 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
                 response_message_raw = response_body["candidates"][0]["content"]["parts"][0]["text"]
             usage = response_body.get("usageMetadata", {})
 
-            token_usage = TokenUsage(
-                prompt_tokens=usage.get("promptTokenCount", 0),
-                completion_tokens=usage.get("candidatesTokenCount", 0),
-                total_tokens=usage.get("totalTokenCount", 0),
+            token_usage = _TokenUsage(
+                input=usage.get("promptTokenCount", 0),
+                output=usage.get("candidatesTokenCount", 0),
             )
+            token_usage.total = usage.get("totalTokenCount", 0)
+
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
 
             cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw)
