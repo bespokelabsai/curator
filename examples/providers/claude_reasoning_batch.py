@@ -27,9 +27,6 @@ class Reasoner(curator.LLM):
             elif content_block["type"] == "redacted_thinking":
                 print("Redacted thinking block! (notifying you for fun)")
 
-        if text == "" or thinking == "":
-            print("WARNING: No text or thinking found in this response (likely due to 'finish_reason': 'length')")
-
         input["claude_thinking_trajectory"] = thinking
         input["claude_attempt"] = text
         return input
@@ -53,7 +50,7 @@ def unroll_gemini_trajectory(example):
 ds = load_dataset("simplescaling/s1K", split="train")
 ds = ds.map(unroll_gemini_trajectory, num_proc=os.cpu_count())
 ds = ds.remove_columns(["thinking_trajectories", "cot", "attempt"])
-ds = llm(ds)
+ds = llm(ds.take(10))
 
 # Change this to your organization and dataset name
-ds.push_to_hub("simplescaling/s1K-claude-3-7-sonnet")
+ds.push_to_hub("bespokelabs/test-s1K-claude-3-7-sonnet")

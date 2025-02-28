@@ -27,9 +27,6 @@ class Reasoner(curator.LLM):
             elif content_block["type"] == "redacted_thinking":
                 print("Redacted thinking block! (notifying you for fun)")
 
-        if text == "" or thinking == "":
-            raise ValueError("No text or thinking found in the response")
-
         input["claude_thinking_trajectory"] = thinking
         input["claude_attempt"] = text
         return input
