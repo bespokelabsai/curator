@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Install 
+poetry install --extras "code_execution vllm" --with dev
+
 # Build Curator Viewer
 python build_pkg.py
 
