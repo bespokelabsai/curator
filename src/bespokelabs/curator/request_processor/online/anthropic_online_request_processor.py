@@ -12,9 +12,9 @@ from litellm.litellm_core_utils.core_helpers import map_finish_reason
 from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, _TokenCount
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
 from bespokelabs.curator.types.generic_request import GenericRequest
-from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsage
+from bespokelabs.curator.types.generic_response import GenericResponse, _TokenUsage
 
 T = TypeVar("T")
 
@@ -70,7 +70,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         For anthropic, we handle separate input and output token tracking.
         """
         if config.max_input_tokens_per_minute and config.max_output_tokens_per_minute:
-            self.manual_max_tokens_per_minute = _TokenCount(input=config.max_input_tokens_per_minute, output=config.max_output_tokens_per_minute)
+            self.manual_max_tokens_per_minute = _TokenUsage(input=config.max_input_tokens_per_minute, output=config.max_output_tokens_per_minute)
         else:
             self.manual_max_tokens_per_minute = None
 
@@ -101,11 +101,11 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
         return response.headers
 
-    def get_header_based_rate_limits(self) -> tuple[int, _TokenCount]:
+    def get_header_based_rate_limits(self) -> tuple[int, _TokenUsage]:
         """Get rate limits from Anthropic API headers.
 
         Returns:
-            tuple[int, _TokenCount]: Contains 'max_requests_per_minute' and 'max_tokens_per_minute'
+            tuple[int, _TokenUsage]: Contains 'max_requests_per_minute' and 'max_tokens_per_minute'
                 with separate input and output token limits
 
         Note:
@@ -122,7 +122,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         rpm = headers.get("anthropic-ratelimit-requests-limit", 4000)
         input_tpm = headers.get("anthropic-ratelimit-output-tokens-limit", 80000)
         output_tpm = headers.get("anthropic-ratelimit-input-tokens-limit", 400000)
-        return int(rpm), _TokenCount(input=int(input_tpm), output=int(output_tpm))
+        return int(rpm), _TokenUsage(input=int(input_tpm), output=int(output_tpm))
 
     def estimate_output_tokens(self) -> int:
         """Estimate number of tokens in the response.
@@ -137,14 +137,14 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
             return self.config.generation_params["max_tokens"]
         return litellm.get_max_tokens(model=self.config.model)
 
-    def estimate_total_tokens(self, messages: list) -> _TokenCount:
+    def estimate_total_tokens(self, messages: list) -> _TokenUsage:
         """Estimate total tokens for a request using Anthropic's token counting rules.
 
         Args:
             messages (list): List of message dictionaries with role and content
 
         Returns:
-            _TokenCount: Estimated input and output tokens including message formatting tokens
+            _TokenUsage: Estimated input and output tokens including message formatting tokens
         """
         num_tokens = 0
 
@@ -168,7 +168,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         num_tokens += 50  # Approximate overhead for message formatting
 
         output_tokens = self.estimate_output_tokens()
-        return _TokenCount(input=num_tokens, output=output_tokens)
+        return _TokenUsage(input=num_tokens, output=output_tokens)
 
     def file_upload_limit_check(self, base64_image: str) -> None:
         """Check if the image size is within the allowed limit."""
@@ -284,10 +284,9 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
             # Get usage information
             usage = response.get("usage", {})
-            token_usage = TokenUsage(
-                prompt_tokens=usage.get("input_tokens", 0),
-                completion_tokens=usage.get("output_tokens", 0),
-                total_tokens=usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
+            token_usage = _TokenUsage(
+                input=usage.get("input_tokens", 0),
+                output=usage.get("output_tokens", 0),
             )
 
             # Get stop reason
