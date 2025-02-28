@@ -486,7 +486,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 status_tracker=status_tracker,
             )
             # Update cost projection with actual usage
-            used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
+            used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
 
             if generic_response.finish_reason in self.config.invalid_finish_reasons:
                 logger.debug(
@@ -543,7 +543,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 status_tracker.num_tasks_failed += 1
             return
         else:
-            self._add_output_token_moving_window(generic_response.token_usage.completion_tokens)
+            self._add_output_token_moving_window(generic_response.token_usage.output)
         finally:
             if self._semaphore:
                 self._semaphore.release()

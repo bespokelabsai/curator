@@ -168,9 +168,9 @@ class OnlineStatusTracker:
     def update_stats(self, token_usage: _TokenUsage, cost: float):
         """Update statistics in the tracker with token usage and cost."""
         if token_usage:
-            self.total_prompt_tokens += token_usage.prompt_tokens
-            self.total_completion_tokens += token_usage.completion_tokens
-            self.total_tokens += token_usage.total_tokens
+            self.total_prompt_tokens += token_usage.input
+            self.total_completion_tokens += token_usage.output
+            self.total_tokens += token_usage.total
         if cost:
             self.total_cost += cost
 
@@ -408,6 +408,8 @@ class OnlineStatusTracker:
             return True
 
         token_estimate = token_estimate.total
+        print(f"token_estimate: {token_estimate}")
+        print(f"available_token_capacity: {self.available_token_capacity}")
         has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
         return has_capacity
 
