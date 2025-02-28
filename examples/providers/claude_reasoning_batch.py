@@ -37,6 +37,7 @@ llm = Reasoner(
     generation_params={"max_tokens": 20000, "thinking": {"type": "enabled", "budget_tokens": 18000}},
     batch=True,
     backend="anthropic",
+    backend_params={"require_all_responses": False},
 )
 
 

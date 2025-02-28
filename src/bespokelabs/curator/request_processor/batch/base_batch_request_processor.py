@@ -473,6 +473,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         stream_response_tasks = []
         invalid_finish_responses = []
+        failed_processed_responses = []
         async with aiofiles.open(response_file, "a") as f:
             for raw_response in responses:
                 request_idx = int(raw_response["custom_id"])
@@ -485,6 +486,9 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
                 processed_responses = self._process_response(generic_response)
                 generic_response.parsed_response_message = processed_responses
+                if processed_responses is None:
+                    failed_processed_responses.append(request_idx)
+                    continue
 
                 # Write response to file
                 response_dump = generic_response.model_dump(mode="json")
@@ -505,6 +509,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 stream_response_tasks.append(self.viewer_client.stream_response(json.dumps(response_dump), idx))
 
         await asyncio.gather(*stream_response_tasks)
+        if failed_processed_responses:
+            logger.warning(f"Batch {batch.id} has {len(failed_processed_responses)} failed responses due to parse function errors.")
 
         if invalid_finish_responses:
             logger.warning(f"Batch {batch.id} has {len(invalid_finish_responses)} invalid finish responses. Please check the logs above for details.")
