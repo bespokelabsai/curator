@@ -360,8 +360,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         token_usage = _TokenUsage(
             input=usage.prompt_tokens,
             output=usage.completion_tokens,
+            total=usage.total_tokens,
         )
-        token_usage.total = token_usage.total_tokens
 
         cost = self.completion_cost(completion_obj.model_dump())
 
