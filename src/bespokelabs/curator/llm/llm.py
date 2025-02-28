@@ -93,7 +93,9 @@ class LLM:
             Other backend params:
                 - Online:
                     - max_requests_per_minute: Maximum number of requests per minute for rate limiting
-                    - max_tokens_per_minute: Maximum number of tokens per minute for rate limiting
+                    - max_tokens_per_minute: Maximum number of tokens per minute for rate limiting (combined input and output)
+                    - max_input_tokens_per_minute: Maximum number of input tokens per minute for rate limiting
+                    - max_output_tokens_per_minute: Maximum number of output tokens per minute for rate limiting
                     - seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited
 
                 - Batch:
@@ -220,8 +222,15 @@ class LLM:
         os.makedirs(run_cache_dir, exist_ok=True)
         add_file_handler(run_cache_dir)
 
-        session_id = self._request_processor.viewer_client.create_session(metadata_dict)
+        existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
+        existing_viewer_sync = metadata_db.check_existing_hosted_sync(metadata_dict["run_hash"])
+        if not existing_viewer_sync and existing_session_id:
+            session_id = self._request_processor.viewer_client.create_session(metadata_dict)
+        else:
+            session_id = self._request_processor.viewer_client.create_session(metadata_dict, session_id=existing_session_id)
+
         metadata_dict["session_id"] = session_id
+        metadata_dict["is_hosted_viewer_synced"] = False
         metadata_db.store_metadata(metadata_dict)
 
         if batch_cancel:
@@ -242,6 +251,20 @@ class LLM:
                 prompt_formatter=self.prompt_formatter,
             )
 
+        if existing_session_id is not None and existing_viewer_sync is False:
+            msg = (
+                f"There was a previous run with the same run hash ({metadata_dict['run_hash']}) without the HOSTED_CURATOR_VIEWER flag enabled, "
+                "and HOSTED_CURATOR_VIEWER flag is enabled for this run. This means that the Curator Viewer is potentially inconsistent with local data."
+                "Pushing the full dataset to the Curator Viewer to ensure full consistency."
+            )
+            if self._request_processor.viewer_client.hosted:
+                logger.warning(msg)
+                from bespokelabs.curator.utils import push_to_viewer
+
+                push_to_viewer(dataset, session_id=session_id)
+
+        if self._request_processor.viewer_client.hosted:
+            metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
         return dataset
 
 

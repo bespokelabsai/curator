@@ -181,7 +181,7 @@ def test_batch_status_tracker_final_stats():
     # Get the captured output
     captured = output.getvalue()
     # Test serialization
-    assert isinstance(tracker.json(), str)
+    assert isinstance(tracker.model_dump_json(), str)
 
     # Verify the final statistics table
     assert "Final Curator Statistics" in captured, captured

@@ -6,6 +6,7 @@ import glob
 import json
 import os
 import resource
+import typing as t
 from abc import ABC, abstractmethod
 from math import ceil
 from typing import TYPE_CHECKING, List, Optional
@@ -492,7 +493,7 @@ class BaseRequestProcessor(ABC):
         )
         card.push_to_hub(repo_id)
 
-    def validate_existing_response_file(self, response_file: str) -> set[int]:
+    def validate_existing_response_file(self, response_file: str) -> t.Union[set[int], int]:
         """Parse an existing response file to identify completed requests and removes failed requests.
 
         Args:
@@ -500,9 +501,11 @@ class BaseRequestProcessor(ABC):
 
         Returns:
             set[int]: Set of completed request IDs that were already successfully processed
+            int: Number of completed parsed responses
         """
         completed_request_ids = set()
         failed_request_ids = set()
+        completed_parsed_responses = 0
 
         if os.path.exists(response_file):
             logger.info(f"Resuming progress by reading existing file: {response_file}")
@@ -519,6 +522,8 @@ class BaseRequestProcessor(ABC):
                         parsing_error_responses += 1
                         continue
                     row_id = response.generic_request.original_row_idx
+                    if response.parsed_response_message:
+                        completed_parsed_responses += len(response.parsed_response_message)
                     if response.response_errors:
                         logger.debug(f"Request {row_id} previously failed due to errors: {response.response_errors}, removing from output and will retry")
                         failed_request_ids.add(row_id)
@@ -535,7 +540,7 @@ class BaseRequestProcessor(ABC):
             )
             os.replace(temp_filepath, response_file)
 
-        return completed_request_ids
+        return completed_request_ids, completed_parsed_responses
 
     def read_metadata_file(self, request_file: str) -> int:
         """Read the number of jobs from the metadata file.

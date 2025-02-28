@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Install 
+make install
+
 # Build Curator Viewer
 python build_pkg.py
 

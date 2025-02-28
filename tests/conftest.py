@@ -61,6 +61,12 @@ def mock_dataset():
 
 
 @pytest.fixture
+def mock_reasoning_dataset():
+    dataset = Dataset.from_parquet("tests/integrations/common_fixtures/reasoning_dataset.parquet")
+    yield dataset
+
+
+@pytest.fixture
 def camel_gt_dataset():
     dataset = Dataset.from_parquet("tests/integrations/common_fixtures/camel_gt_dataset.parquet")
     yield dataset

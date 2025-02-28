@@ -216,6 +216,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         completion = litellm.completion(
             model=self.config.model,
             messages=[{"role": "user", "content": "hi"}],  # Some models (e.g. Claude) require an non-empty message to get rate limits.
+            **self.config.generation_params,
         )
         # Try the method of caculating cost
         try:

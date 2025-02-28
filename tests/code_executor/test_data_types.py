@@ -77,7 +77,7 @@ def test_code_execution_output():
     assert output.error == "test error"
     assert output.stdout == "test stdout"
     assert output.stderr == "test stderr"
-    assert output.files == b"test files"
+    assert output.files == "test files"
 
 
 def test_code_execution_response():

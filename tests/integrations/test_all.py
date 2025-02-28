@@ -23,6 +23,7 @@ def _hash_string(input_string):
     return hashlib.sha256(input_string.encode("utf-8")).hexdigest()
 
 
+_ONLINE_REASONING_BACKENDS = [{"integration": backend} for backend in {"anthropic"}]
 _ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm"}]
 _ONLINE_CONCURRENT_ONLY_BACKENDS = [{"integration": backend} for backend in {"litellm/deepinfra"}]
 _FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"anthropic", "openai"}]
@@ -95,8 +96,8 @@ def test_basic_without_dataset_raw_prompt(temp_working_dir):
 def test_basic(temp_working_dir, mock_dataset):
     temp_working_dir, backend, vcr_config = temp_working_dir
     hash_book = {
-        "openai": "54456b7dcce5826036a52f242e589b02c945ef0891af6e8b786020ba2737fc09",
-        "litellm": "7bf42717b5e516eca1f92ca69680c1278c8a9a0e351365d1aa808f92e1b59086",
+        "openai": "278b2dc5bdf4d2dc1aa18ddb61e37885a9b4aec209bae3bbb81691391ec58692",
+        "litellm": "860cbb30c8d65203c54c69fb4e65323d570d784bff98d9dbca27e69316b8fdba",
     }
 
     with vcr_config.use_cassette("basic_completion.yaml"):
@@ -116,6 +117,28 @@ def test_basic(temp_working_dir, mock_dataset):
         assert "gpt-3.5-turbo" in captured, captured
         assert "3" in captured, captured  # Verify total requests processed
         assert "Final Curator Statistics" in captured, captured
+        # Verify response content
+        recipes = [recipe[0] for recipe in dataset.to_pandas().values.tolist()]
+        recipes.sort()
+        recipes = "".join(recipes)
+        assert _hash_string(recipes) == hash_book[backend]
+
+
+@pytest.mark.parametrize("temp_working_dir", (_ONLINE_REASONING_BACKENDS), indirect=True)
+def test_basic_reasoning(temp_working_dir, mock_reasoning_dataset):
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    hash_book = {
+        "anthropic": "ada3f38dafdc03168bca2f354c88da64d21686a931ca31607fcf79c1d95b2813",
+    }
+
+    with vcr_config.use_cassette("basic_reasoning_completion.yaml"):
+        dataset = helper.create_basic(
+            temp_working_dir,
+            mock_reasoning_dataset.select(range(2)),
+            backend=backend,
+            generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
+            model="claude-3-7-sonnet-20250219",
+        )
         # Verify response content
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
@@ -295,6 +318,28 @@ def test_batch_resume(temp_working_dir, mock_dataset):
         assert len(tracker.downloaded_batches) == 1
 
 
+@pytest.mark.parametrize("temp_working_dir", (_ONLINE_REASONING_BACKENDS), indirect=True)
+def test_batch_reasoning(temp_working_dir, mock_reasoning_dataset):
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    hash_book = {
+        "anthropic": "ada3f38dafdc03168bca2f354c88da64d21686a931ca31607fcf79c1d95b2813",
+    }
+
+    with vcr_config.use_cassette("basic_batch_reasoning_completion.yaml"):
+        dataset = helper.create_basic(
+            temp_working_dir,
+            mock_reasoning_dataset.select(range(2)),
+            backend=backend,
+            generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
+            model="claude-3-7-sonnet-20250219",
+            batch=True,
+            batch_check_interval=1,
+        )
+        # Verify response content
+        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+        assert _hash_string(recipes) == hash_book[backend]
+
+
 @pytest.mark.parametrize("temp_working_dir", (_FAILED_BATCH_BACKENDS), indirect=True)
 def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
     temp_working_dir, backend, vcr_config = temp_working_dir
@@ -313,10 +358,14 @@ def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
 
         logger = "bespokelabs.curator.status_tracker.batch_status_tracker"
 
+        patcher = patch("bespokelabs.curator.db.MetadataDB.validate_schema")
+
+        mock = patcher.start()
+        mock.return_value = None
         with caplog.at_level(logging.INFO, logger=logger):
             helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
             assert RESUBMIT_MSG in caplog.text
-
+        patcher.stop()
         with open(tracker_batch_file_path, "r") as f:
             tracker = BatchStatusTracker.model_validate_json(f.read())
         assert len(tracker.submitted_batches) == 0

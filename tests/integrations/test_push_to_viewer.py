@@ -1,12 +1,11 @@
 import os
 
 import vcr
-from datasets import load_dataset
 
 from bespokelabs.curator.utils import push_to_viewer
 
 
-def test_smoke():
+def test_smoke(mock_dataset):
     vcr_path = "tests/integrations/common_fixtures"
     mode = os.environ.get("VCR_MODE")
     vcr_config = vcr.VCR(
@@ -18,6 +17,5 @@ def test_smoke():
         # HF url
         push_to_viewer("zed-industries/zeta", hf_params={"split": "train[:10]"})
 
-        dataset = load_dataset("zed-industries/zeta", split="train[:10]")
         # HF dataset
-        push_to_viewer(dataset)
+        push_to_viewer(mock_dataset)

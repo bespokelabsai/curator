@@ -14,11 +14,12 @@ from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 logger = logging.getLogger(__name__)
 
 
-def push_to_viewer(dataset: Dataset | str, hf_params: t.Optional[t.Dict] = None, max_concurrent_requests: int = 100):
+def push_to_viewer(dataset: Dataset | str, session_id: str | None = None, hf_params: t.Optional[t.Dict] = None, max_concurrent_requests: int = 100):
     """Push a dataset to the Curator Viewer.
 
     Args:
         dataset (Dataset | str): The dataset to push to the Curator Viewer.
+        session_id (str | None): Existing session id.
         hf_params: (dict): Huggingface parameters for load dataset.
         max_concurrent_requests (int): Max concurrent requests limit.
 
@@ -42,7 +43,11 @@ def push_to_viewer(dataset: Dataset | str, hf_params: t.Optional[t.Dict] = None,
         "status": _SessionStatus.STARTED,
     }
 
-    session_id = client.create_session(metadata)
+    if session_id is None:
+        session_id = client.create_session(metadata)
+    else:
+        client._session = session_id
+
     if not client.session:
         raise Exception("Failed to create session.")
 

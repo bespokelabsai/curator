@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import typing as t
@@ -8,6 +9,8 @@ import requests
 
 from bespokelabs.curator.constants import BASE_CLIENT_URL, PUBLIC_CURATOR_VIEWER_DATASET_URL
 from bespokelabs.curator.log import logger
+
+N_CONCURRENT_VIEWER_REQUESTS = 100
 
 
 class _SessionStatus:
@@ -28,6 +31,8 @@ class Client:
         self._state = None
         self._hosted = os.environ.get("HOSTED_CURATOR_VIEWER") in ["True", "true", "1", "t"]
         self._hosted = self._hosted or hosted
+        self.semaphore = asyncio.Semaphore(N_CONCURRENT_VIEWER_REQUESTS)
+        self._async_client = None
 
     @property
     def session(self):
@@ -44,11 +49,14 @@ class Client:
         """Get the curator viewer URL."""
         return f"{PUBLIC_CURATOR_VIEWER_DATASET_URL}/{self.session}" if self.session else None
 
-    def create_session(self, metadata: t.Dict) -> str | None:
+    def create_session(self, metadata: t.Dict, session_id: str | None = None) -> str | None:
         """Sends a POST request to the server to create a session."""
         if not self.hosted:
             return str(uuid.uuid4().hex)
 
+        if session_id:
+            self._session = session_id
+            return session_id
         if self.session:
             return self.session
         metadata.update({"status": _SessionStatus.STARTED})
@@ -66,8 +74,8 @@ class Client:
     async def _update_state(self):
         async with httpx.AsyncClient() as client:
             response = await client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json={"status": self._state})
-            if response.status_code != 200:
-                logger.debug(f"Failed to update session status: {response.status_code}, {response.text}")
+        if response.status_code != 200:
+            logger.debug(f"Failed to update session status: {response.status_code}, {response.text}")
 
     async def session_inprogress(self):
         """Updates the session status to inprogress."""
@@ -94,10 +102,17 @@ class Client:
         """Streams the response data to the server."""
         if not self._hosted and not self.session:
             return
+        if self._async_client is None:
+            self._async_client = httpx.AsyncClient()
 
         response_data = json.dumps({"response_data": response_data})
-        async with httpx.AsyncClient() as client:
-            response = await client.post(f"{BASE_CLIENT_URL}/sessions/{self.session}/responses/{idx}", data=response_data)
+        async with self.semaphore:
+            response = await self._async_client.post(f"{BASE_CLIENT_URL}/sessions/{self.session}/responses/{idx}", data=response_data)
 
         if response.status_code != 200:
             logger.debug(f"Failed to stream response to curator Viewer: {response.status_code}, {response.text}")
+
+    async def close(self):
+        """Close the client."""
+        if self._async_client:
+            await self._async_client.aclose()
