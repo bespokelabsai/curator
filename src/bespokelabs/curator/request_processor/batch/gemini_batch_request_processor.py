@@ -300,8 +300,8 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             token_usage = _TokenUsage(
                 input=usage.get("promptTokenCount", 0),
                 output=usage.get("candidatesTokenCount", 0),
+                total=usage.get("totalTokenCount", 0),
             )
-            token_usage.total = usage.get("totalTokenCount", 0)
 
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
 

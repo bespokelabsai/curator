@@ -198,8 +198,8 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             token_usage = _TokenUsage(
                 input=usage.get("prompt_tokens", 0),
                 output=usage.get("completion_tokens", 0),
+                total=usage.get("total_tokens", 0),
             )
-            token_usage.total = usage.get("total_tokens", 0)
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
             cost = self._cost_processor.cost(
                 model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw, completion_window=self.config.completion_window
