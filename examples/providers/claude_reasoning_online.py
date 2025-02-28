@@ -10,7 +10,8 @@ class Reasoner(curator.LLM):
 
     return_completions_object = True
 
-    def prompt(self, input):  # noqa: D102
+    def prompt(self, input):
+        """Directly pass the question to the model."""
         return input["question"]
 
     def parse(self, input, response):
@@ -44,16 +45,17 @@ llm = Reasoner(
 )
 
 
-def unroll_trajectory(example):  # noqa: D103
+def unroll_gemini_trajectory(example):
+    """Unroll the thinking trajectory and attempt into separate columns."""
     example["gemini_thinking_trajectory"] = example["thinking_trajectories"][0]
     example["gemini_attempt"] = example["attempt"]
     return example
 
 
 ds = load_dataset("simplescaling/s1K", split="train")
-ds = ds.map(unroll_trajectory, num_proc=os.cpu_count())
+ds = ds.map(unroll_gemini_trajectory, num_proc=os.cpu_count())
 ds = ds.remove_columns(["thinking_trajectories", "cot", "attempt"])
-ds = llm(ds)
-test = ds.filter(lambda x: x["claude_attempt"] == "")
-print(test)
-ds.push_to_hub("simplescaling/s1K-claude-3-7-sonnet")
+ds = llm(ds.take(10))
+
+# Change this to your organization and dataset name
+ds.push_to_hub("bespokelabs/test-s1K-claude-3-7-sonnet")
