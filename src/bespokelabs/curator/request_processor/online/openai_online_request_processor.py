@@ -15,7 +15,7 @@ from bespokelabs.curator.request_processor import openai_request_mixin
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
 from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, _TokenCount
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, _TokenUsage
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsage
 
@@ -130,14 +130,14 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         else:
             return 0
 
-    def estimate_total_tokens(self, messages: list) -> _TokenCount:
+    def estimate_total_tokens(self, messages: list) -> _TokenUsage:
         """Estimate total tokens for a request using OpenAI's token counting rules.
 
         Args:
             messages (list): List of message dictionaries with role and content
 
         Returns:
-            _TokenCount: Estimated input and output tokens including message formatting tokens
+            _TokenUsage: Estimated input and output tokens including message formatting tokens
 
         Note:
             Includes:
@@ -160,7 +160,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         num_tokens += 2  # every reply is primed with <im_start>assistant
         output_tokens = self.estimate_output_tokens()
-        return _TokenCount(input=num_tokens, output=output_tokens)
+        return _TokenUsage(input=num_tokens, output=output_tokens)
 
     def check_structured_output_support(self) -> bool:
         """Check if the model supports structured output based on model name and date.

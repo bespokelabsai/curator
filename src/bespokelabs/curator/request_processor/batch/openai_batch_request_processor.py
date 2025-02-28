@@ -16,7 +16,7 @@ from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIReq
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-from bespokelabs.curator.types.token_usage import TokenUsage
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 _PROGRESS_STATE = {"validating", "finalizing", "cancelling", "in_progress", "pre_schedule"}
 _FINISHED_STATE = {"completed", "failed", "expired", "cancelled"}
@@ -195,11 +195,11 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             # if we get length?
             # can use litellm and my pr https://github.com/BerriAI/litellm/pull/7264
             # resubmission also related to the expiration
-            token_usage = TokenUsage(
-                prompt_tokens=usage.get("prompt_tokens", 0),
-                completion_tokens=usage.get("completion_tokens", 0),
-                total_tokens=usage.get("total_tokens", 0),
+            token_usage = _TokenUsage(
+                input=usage.get("prompt_tokens", 0),
+                output=usage.get("completion_tokens", 0),
             )
+            token_usage.total = usage.get("total_tokens", 0)
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
             cost = self._cost_processor.cost(
                 model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw, completion_window=self.config.completion_window
