@@ -485,22 +485,27 @@ class OnlineStatusTracker:
 
         # Calculate remaining cost using current estimates and remaining requests
         remaining_requests = self.total_requests - (self.num_tasks_succeeded + self.num_tasks_failed + self.num_tasks_already_completed)
-        logger.info(f"in flight requests: {self.num_estimates}\n" f"remaining requests: {remaining_requests}\n" f"total requests: {self.total_requests}")
         if self.num_estimates > 0:
             in_flight_cost = self.estimated_cost_average * self.num_estimates
 
             if self.num_tasks_succeeded > 0:
                 # Calculate weighted average between actual and in-flight costs
                 avg_actual_cost = self.total_cost / self.num_tasks_succeeded
-                total_weight = self.num_tasks_succeeded + self.num_estimates
-                weighted_avg_cost = ((avg_actual_cost * self.num_tasks_succeeded) + (self.estimated_cost_average * self.num_estimates)) / total_weight
+
+                # Weight factor for successful tasks vs estimates to converge to average actual cost quicker
+                success_weight_factor = 3
+                total_weight = (self.num_tasks_succeeded * success_weight_factor) + self.num_estimates
+                weighted_avg_cost = (
+                    (avg_actual_cost * (self.num_tasks_succeeded * success_weight_factor)) + (self.estimated_cost_average * self.num_estimates)
+                ) / total_weight
 
                 # Calculate remaining cost using weighted average
-                remaining_cost = weighted_avg_cost * (remaining_requests - self.num_estimates)
+                remaining_cost = weighted_avg_cost * remaining_requests
                 self.projected_remaining_cost = in_flight_cost + remaining_cost
             else:
                 # If no successful requests, use average of in-flight estimates
                 self.projected_remaining_cost = self.estimated_cost_average * remaining_requests
+
         else:
             # No in-flight requests, use actual average if available
             if self.num_tasks_succeeded > 0:
@@ -509,5 +514,4 @@ class OnlineStatusTracker:
             else:
                 # Fallback to the current estimate
                 self.projected_remaining_cost = estimated_cost * remaining_requests
-
         self._refresh_console()
