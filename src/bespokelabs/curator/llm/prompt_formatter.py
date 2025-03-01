@@ -145,11 +145,7 @@ class PromptFormatter:
             return response_message
 
         try:
-            # If response_message is already an instance of response_format, return it
-            if isinstance(response_message, self.response_format):
-                return response_message
-
-            # First try to parse the response message as JSON if it's a string
+            # First try to parse the response message as JSON
             if isinstance(response_message, str):
                 try:
                     response_dict = json.loads(response_message)
@@ -157,8 +153,7 @@ class PromptFormatter:
                     logger.warning(f"Failed to parse response message as JSON: {response_message}. The model likely returned an invalid JSON format.")
                     raise e
             else:
-                # If it's already a dict or BaseModel, convert to dict
-                response_dict = response_message.model_dump() if hasattr(response_message, "model_dump") else response_message
+                response_dict = response_message
 
             # Then construct the Pydantic model from the parsed dict
             response_message = self.response_format(**response_dict)
