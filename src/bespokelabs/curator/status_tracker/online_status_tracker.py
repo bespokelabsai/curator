@@ -487,15 +487,12 @@ class OnlineStatusTracker:
                 avg_actual_cost = self.total_cost / self.num_tasks_succeeded
 
                 # Weight factor for successful tasks vs estimates to converge to average actual cost quicker
-                success_weight_factor = 3
+                success_weight_factor = 5
                 total_weight = (self.num_tasks_succeeded * success_weight_factor) + self.num_estimates
-                weighted_avg_cost = (
-                    (avg_actual_cost * (self.num_tasks_succeeded * success_weight_factor)) + (self.estimated_cost_average * self.num_estimates)
-                ) / total_weight
+                weighted_avg_cost = ((avg_actual_cost * (self.num_tasks_succeeded * success_weight_factor)) + in_flight_cost) / total_weight
 
                 # Calculate remaining cost using weighted average
-                remaining_cost = weighted_avg_cost * remaining_requests
-                self.projected_remaining_cost = in_flight_cost + remaining_cost
+                self.projected_remaining_cost = weighted_avg_cost * remaining_requests
             else:
                 # If no successful requests, use average of in-flight estimates
                 self.projected_remaining_cost = self.estimated_cost_average * remaining_requests
