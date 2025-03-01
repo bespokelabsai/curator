@@ -128,7 +128,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         if self.config.model in litellm.model_cost:
             return litellm.get_max_tokens(model=self.config.model) // 4
         else:
-            return 0
+            return 4096  # default to 4096
 
     def estimate_total_tokens(self, messages: list) -> _TokenUsage:
         """Estimate total tokens for a request using OpenAI's token counting rules.
@@ -160,6 +160,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         num_tokens += 2  # every reply is primed with <im_start>assistant
         output_tokens = self.estimate_output_tokens()
+        logger.info(f"num_tokens: {num_tokens}, output_tokens: {output_tokens}")
         return _TokenUsage(input=num_tokens, output=output_tokens)
 
     def check_structured_output_support(self) -> bool:
