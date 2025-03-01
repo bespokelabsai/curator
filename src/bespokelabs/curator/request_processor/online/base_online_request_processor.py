@@ -475,12 +475,12 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """
         try:
             # Estimate tokens before making request
+            generic_response = None
             token_estimate: _TokenUsage = blocked_capacity or self.estimate_total_tokens(request.generic_request.messages)
 
             # Add new estimate to projection (pre_request=True indicates new estimate)
             status_tracker.update_cost_projection(token_estimate, pre_request=True)
 
-            generic_response = None
             generic_response = await self.call_single_request(
                 request=request,
                 session=session,
