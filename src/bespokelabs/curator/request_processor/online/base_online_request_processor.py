@@ -480,6 +480,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             # Add new estimate to projection (pre_request=True indicates new estimate)
             status_tracker.update_cost_projection(token_estimate, pre_request=True)
 
+            generic_response = None
             generic_response = await self.call_single_request(
                 request=request,
                 session=session,
@@ -494,29 +495,16 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 )
                 # Update cost projection with actual usage but mark as failed
                 status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
-                if generic_response.token_usage is not None:
-                    used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
-                    status_tracker.update_cost_projection(used_tokens)
-                else:
-                    status_tracker.update_cost_projection(None)
                 raise ValueError(f"finish_reason was {generic_response.finish_reason}")
-
-            # Update cost projection with actual usage
-            used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
-
-            # Update stats with actual usage
-            status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
-            status_tracker.update_cost_projection(used_tokens)
-
-            # Allows us to retry on responses that don't match the response format
-            self.prompt_formatter.response_to_response_format(generic_response.response_message)
-
-            # Free the extra capacity blocked before request with actual consumed capacity.
-            self._free_capacity(status_tracker, used_tokens, blocked_capacity)
-
         except Exception as e:
             status_tracker.num_other_errors += 1
             request.result.append(e)
+
+            if generic_response and generic_response.token_usage is not None:
+                used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
+                status_tracker.update_cost_projection(used_tokens)
+            else:
+                status_tracker.update_cost_projection(None)
 
             if request.attempts_left > 0:
                 request.attempts_left -= 1
@@ -558,6 +546,18 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         status_tracker.num_tasks_in_progress -= 1
         status_tracker.num_tasks_succeeded += 1
+
+        # Update cost projection with actual usage
+        used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
+        # Update stats with actual usage
+        status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+        status_tracker.update_cost_projection(used_tokens)
+
+        # Allows us to retry on responses that don't match the response format
+        self.prompt_formatter.response_to_response_format(generic_response.response_message)
+
+        # Free the extra capacity blocked before request with actual consumed capacity.
+        self._free_capacity(status_tracker, used_tokens, blocked_capacity)
 
     def _add_output_token_moving_window(self, tokens):
         self._output_tokens_window.append(tokens)
