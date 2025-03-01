@@ -346,6 +346,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
                     raise Exception("Response is empty")
                 if self.config.return_completions_object:
                     response_message = dict(completion_obj)
+                elif self.config.generation_params.get("n", 1) > 1:
+                    response_message = [choice["message"]["content"] for choice in completion_obj["choices"]]
                 else:
                     response_message = completion_obj["choices"][0]["message"]["content"]
         except litellm.RateLimitError as e:
