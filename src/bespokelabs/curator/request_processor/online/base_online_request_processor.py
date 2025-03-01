@@ -496,6 +496,10 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 # Update cost projection with actual usage but mark as failed
                 status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
                 raise ValueError(f"finish_reason was {generic_response.finish_reason}")
+
+            # Allows us to retry on responses that don't match the response format
+            self.prompt_formatter.response_to_response_format(generic_response.response_message)
+
         except Exception as e:
             status_tracker.num_other_errors += 1
             request.result.append(e)
@@ -552,9 +556,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         # Update stats with actual usage
         status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
         status_tracker.update_cost_projection(used_tokens)
-
-        # Allows us to retry on responses that don't match the response format
-        self.prompt_formatter.response_to_response_format(generic_response.response_message)
 
         # Free the extra capacity blocked before request with actual consumed capacity.
         self._free_capacity(status_tracker, used_tokens, blocked_capacity)
