@@ -163,21 +163,8 @@ class OnlineStatusTracker:
         )
         self._live.start()
 
-    def update_stats(self, token_usage: _TokenUsage, cost: float):
-        """Update statistics in the tracker with token usage and cost."""
-        if token_usage:
-            self.total_prompt_tokens += token_usage.input
-            self.total_completion_tokens += token_usage.output
-            self.total_tokens += token_usage.total
-        if cost:
-            self.total_cost += cost
-
-        # Update main progress bar
-        self._progress.update(
-            self._task_id,
-            completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
-        )
-
+    def _refresh_console(self):
+        """Refresh the console display with latest stats."""
         # Calculate stats
         elapsed_minutes = (time.time() - self.start_time) / 60
         current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
@@ -242,7 +229,6 @@ class OnlineStatusTracker:
                 f"[dim]{self.viewer_client.curator_viewer_url}[/dim]\n"
             )
         else:
-            # Add info about enabling hosted curator viewer
             viewer_text = (
                 "[bold white]Curator Viewer:[/bold white] [yellow]Disabled[/yellow]\n"
                 "Set [yellow]HOSTED_CURATOR_VIEWER=[cyan]1[/cyan][/yellow] to view your data live at "
@@ -250,13 +236,28 @@ class OnlineStatusTracker:
             )
         stats_text = viewer_text + stats_text
 
+        # Update main progress bar
+        self._progress.update(
+            self._task_id,
+            completed=self.num_tasks_succeeded + self.num_tasks_already_completed,
+        )
+
         # Update stats display
         self._stats.update(
             self._stats_task_id,
             description=stats_text,
         )
 
-    # End of Selection
+    def update_stats(self, token_usage: _TokenUsage, cost: float):
+        """Update statistics in the tracker with token usage and cost."""
+        if token_usage:
+            self.total_prompt_tokens += token_usage.input
+            self.total_completion_tokens += token_usage.output
+            self.total_tokens += token_usage.total
+        if cost:
+            self.total_cost += cost
+
+        self._refresh_console()
 
     def stop_tracker(self):
         """Stop the tracker."""
@@ -459,14 +460,7 @@ class OnlineStatusTracker:
         return input_cost + output_cost
 
     def update_cost_projection(self, token_count: _TokenUsage | None, pre_request: bool = False):
-        """Update cost projections based on token estimates or actual usage.
-
-        If pre_request is True, this is a new estimate before API call.
-            - Update moving average of estimates.
-        If pre_request is False, this is an actual usage after API call.
-            - If either success or failure, decrement estimate count.
-            - Update moving average using the latest actual cost.
-        """
+        """Update cost projections based on token estimates or actual usage."""
         # Calculate estimated cost
         if token_count is None:
             estimated_cost = 0
@@ -484,8 +478,8 @@ class OnlineStatusTracker:
                 self.num_estimates -= 1
 
         # Calculate remaining cost using current estimates and remaining requests
-        remaining_requests = self.total_requests - (self.num_tasks_succeeded + self.num_tasks_failed)
-
+        remaining_requests = self.total_requests - (self.num_tasks_succeeded + self.num_tasks_failed + self.num_tasks_already_completed)
+        logger.info(f"in flight requests: {self.num_estimates}\n" f"remaining requests: {remaining_requests}\n" f"total requests: {self.total_requests}")
         if self.num_estimates > 0:
             in_flight_cost = self.estimated_cost_average * self.num_estimates
 
@@ -509,3 +503,5 @@ class OnlineStatusTracker:
             else:
                 # Fallback to the current estimate
                 self.projected_remaining_cost = estimated_cost * remaining_requests
+
+        self._refresh_console()
