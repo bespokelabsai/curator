@@ -14,7 +14,7 @@ from bespokelabs.curator.request_processor.config import BatchRequestProcessorCo
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-from bespokelabs.curator.types.token_usage import TokenUsage
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 
 class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
@@ -237,10 +237,9 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
 
             usage = response_body.get("usage", {})
 
-            token_usage = TokenUsage(
-                prompt_tokens=usage.get("input_tokens", 0),
-                completion_tokens=usage.get("output_tokens", 0),
-                total_tokens=usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
+            token_usage = _TokenUsage(
+                input=usage.get("input_tokens", 0),
+                output=usage.get("output_tokens", 0),
             )
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
 

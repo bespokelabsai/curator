@@ -23,10 +23,11 @@ from bespokelabs.curator.request_processor import _DEFAULT_COST_MAP
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, _TokenCount
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.prompt import _MultiModalPrompt
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 _MAX_OUTPUT_MVA_WINDOW = 50
 
@@ -218,7 +219,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             return self.default_max_tokens_per_minute
 
     @abstractmethod
-    def estimate_total_tokens(self, messages: list) -> int:
+    def estimate_total_tokens(self, messages: list) -> _TokenUsage:
         """Estimate total tokens for a request.
 
         Args:
@@ -446,7 +447,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         if status_tracker.num_tasks_failed > 0:
             logger.warning(f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} requests failed. Errors logged to {response_file}.")
 
-    def _free_capacity(self, status_tracker: OnlineStatusTracker, used_capacity: "_TokenCount", blocked_capacity: "_TokenCount"):
+    def _free_capacity(self, status_tracker: OnlineStatusTracker, used_capacity: "_TokenUsage", blocked_capacity: "_TokenUsage"):
         if status_tracker.max_tokens_per_minute is not None:
             status_tracker.free_capacity(used_capacity, blocked_capacity)
 
@@ -457,7 +458,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         retry_queue: asyncio.Queue,
         response_file: str,
         status_tracker: OnlineStatusTracker,
-        blocked_capacity: "_TokenCount",
+        blocked_capacity: "_TokenUsage",
     ) -> None:
         """Common wrapper for handling a single request with error handling and retries.
 
@@ -473,6 +474,13 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             blocked_capacity: Blocked token capacity
         """
         try:
+            # Estimate tokens before making request
+            generic_response = None
+            token_estimate: _TokenUsage = blocked_capacity or self.estimate_total_tokens(request.generic_request.messages)
+
+            # Add new estimate to projection (pre_request=True indicates new estimate)
+            status_tracker.update_cost_projection(token_estimate, pre_request=True)
+
             generic_response = await self.call_single_request(
                 request=request,
                 session=session,
@@ -485,20 +493,18 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     " Raw response {generic_response.raw_response} "
                     "for request {generic_response.raw_request}"
                 )
+                # Update cost projection with actual usage but mark as failed
+                status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
                 raise ValueError(f"finish_reason was {generic_response.finish_reason}")
-
-            status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
-
-            # Allows us to retry on responses that don't match the response format
-            self.prompt_formatter.response_to_response_format(generic_response.response_message)
-
-            # Free the extra capacity blocked before request with actual consumed capacity.
-            used_capacity = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
-            self._free_capacity(status_tracker, used_capacity=used_capacity, blocked_capacity=blocked_capacity)
-
         except Exception as e:
             status_tracker.num_other_errors += 1
             request.result.append(e)
+
+            if generic_response and generic_response.token_usage is not None:
+                used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
+                status_tracker.update_cost_projection(used_tokens)
+            else:
+                status_tracker.update_cost_projection(None)
 
             if request.attempts_left > 0:
                 request.attempts_left -= 1
@@ -530,7 +536,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 status_tracker.num_tasks_failed += 1
             return
         else:
-            self._add_output_token_moving_window(generic_response.token_usage.completion_tokens)
+            self._add_output_token_moving_window(generic_response.token_usage.output)
         finally:
             if self._semaphore:
                 self._semaphore.release()
@@ -540,6 +546,18 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         status_tracker.num_tasks_in_progress -= 1
         status_tracker.num_tasks_succeeded += 1
+
+        # Update cost projection with actual usage
+        used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
+        # Update stats with actual usage
+        status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+        status_tracker.update_cost_projection(used_tokens)
+
+        # Allows us to retry on responses that don't match the response format
+        self.prompt_formatter.response_to_response_format(generic_response.response_message)
+
+        # Free the extra capacity blocked before request with actual consumed capacity.
+        self._free_capacity(status_tracker, used_tokens, blocked_capacity)
 
     def _add_output_token_moving_window(self, tokens):
         self._output_tokens_window.append(tokens)

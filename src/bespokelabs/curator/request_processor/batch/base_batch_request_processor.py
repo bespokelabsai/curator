@@ -16,7 +16,7 @@ from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusT
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-from bespokelabs.curator.types.token_usage import TokenUsage
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 
 class BaseBatchRequestProcessor(BaseRequestProcessor):
@@ -466,7 +466,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 generic_request_map[generic_request.original_row_idx] = generic_request
 
         # Track total token usage and cost for this batch
-        total_token_usage = TokenUsage(prompt_tokens=0, completion_tokens=0, total_tokens=0)
+        total_token_usage = _TokenUsage(input=0, output=0)
         total_cost = 0.0
 
         # appending allows for the resubmitted resumed batch
@@ -497,9 +497,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
                 # Update token and cost totals
                 if generic_response.token_usage:
-                    total_token_usage.prompt_tokens += generic_response.token_usage.prompt_tokens
-                    total_token_usage.completion_tokens += generic_response.token_usage.completion_tokens
-                    total_token_usage.total_tokens += generic_response.token_usage.total_tokens
+                    total_token_usage.input += generic_response.token_usage.input
+                    total_token_usage.output += generic_response.token_usage.output
                 if generic_response.response_cost:
                     total_cost += generic_response.response_cost
 

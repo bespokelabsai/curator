@@ -18,7 +18,7 @@ from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
-from bespokelabs.curator.types.generic_response import TokenUsage
+from bespokelabs.curator.types.generic_response import _TokenUsage
 
 
 class BatchStatusTracker(BaseModel):
@@ -432,12 +432,12 @@ class BatchStatusTracker(BaseModel):
         return "\n".join(status_lines)
 
     # TODO: Add update cost as well for batch request processor
-    def update_token_and_cost(self, token_usage: TokenUsage, cost: float):
+    def update_token_and_cost(self, token_usage: _TokenUsage, cost: float):
         """Update statistics with token usage and cost information."""
         if token_usage:
-            self.total_prompt_tokens += token_usage.prompt_tokens
-            self.total_completion_tokens += token_usage.completion_tokens
-            self.total_tokens += token_usage.total_tokens
+            self.total_prompt_tokens += token_usage.input
+            self.total_completion_tokens += token_usage.output
+            self.total_tokens += token_usage.total
         if cost:
             self.total_cost += cost
         self.update_display()
