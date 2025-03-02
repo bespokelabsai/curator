@@ -36,6 +36,7 @@ class OpenAIClientOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIReque
         - Automatically detects and respects API rate limits
         - Handles token counting using tiktoken
         - Supports structured output via JSON schema
+        - Can utilize multiple clients in parallel via round-robin selection when num_clients > 1
     """
 
     def __init__(self, config: OnlineRequestProcessorConfig, compatible_provider: str = None):
@@ -44,7 +45,7 @@ class OpenAIClientOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIReque
         self._compatible_provider = compatible_provider or self.backend
         self._cost_processor = cost_processor_factory(config=config, backend=self._compatible_provider)
 
-        # Initialize OpenAI client
+        # Initialize OpenAI client(s)
         self.client_options = {}
         if self.config.base_url:
             self.client_options["base_url"] = self.config.base_url
@@ -56,7 +57,18 @@ class OpenAIClientOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIReque
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
 
         self.client_options["api_key"] = self.api_key
-        self.client = openai.AsyncOpenAI(**self.client_options)
+
+        # Initialize multiple clients if configured
+        self.num_clients = self.config.num_clients or 1
+        self.clients = []
+        for _ in range(self.num_clients):
+            self.clients.append(openai.AsyncOpenAI(**self.client_options))
+
+        # Use the first client as the default for backward compatibility
+        self.client = self.clients[0]
+
+        # Add a counter for round-robin client selection
+        self._next_client_index = 0
 
         if self.config.base_url != "https://api.deepseek.com":
             # DeepSeek does not return rate limits in headers
@@ -240,8 +252,13 @@ class OpenAIClientOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIReque
             # Convert the API-specific request to parameters for the Python client
             api_request = request.api_specific_request
 
-            # Create the completion using the OpenAI Python client
-            response = await self.client.chat.completions.create(
+            # Select the next client using round-robin
+            client_index = self._next_client_index
+            self._next_client_index = (self._next_client_index + 1) % self.num_clients
+            current_client = self.clients[client_index]
+
+            # Create the completion using the selected OpenAI Python client
+            response = await current_client.chat.completions.create(
                 model=api_request["model"],
                 messages=api_request["messages"],
                 **{k: v for k, v in api_request.items() if k not in ["model", "messages"]},
