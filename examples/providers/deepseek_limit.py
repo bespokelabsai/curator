@@ -31,7 +31,7 @@ llm = Reasoner(
         "base_url": "https://api.deepseek.com/",
         "api_key": os.environ.get("DEEPSEEK_API_KEY"),
         "require_all_responses": False,
-        "max_retries": 2,
+        "max_retries": 0,
     },
 )
 
@@ -39,4 +39,4 @@ ds = load_dataset("mlfoundations-dev/herorun1_code", split="train")
 ds = llm(ds.take(25_000))
 # print("REASONING: ", ds[0]["deepseek_reasoning"])
 # print("\n\nSOLUTION: ", ds[0]["deepseek_solution"])
-ds.push_to_hub("mlfoundations-dev/herorun1_code-test")
+ds.push_to_hub("mlfoundations-dev/herorun1_code_0-25000")

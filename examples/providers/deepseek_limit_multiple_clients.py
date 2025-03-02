@@ -32,27 +32,17 @@ llm = Reasoner(
     backend="openai_client",
     generation_params={"temperature": 0.0},
     backend_params={
-        "max_requests_per_minute": 500,
+        "max_requests_per_minute": 2_500,
         "max_tokens_per_minute": 1_000_000_000,
         "base_url": "https://api.deepseek.com/",
         "api_key": os.environ.get("DEEPSEEK_API_KEY"),
         "require_all_responses": False,
-        "max_retries": 2,
-        "num_clients": 5,  # Create 5 OpenAI clients for parallel requests
+        "max_retries": 0,
+        "num_clients": 2,  # Create 2 OpenAI clients for parallel requests
     },
 )
 
-# Load the dataset
-print("Loading dataset...")
-ds = load_dataset("simplescaling/s1K", split="train")
 
-# Process the dataset with the LLM using multiple clients in parallel
-print(f"Processing dataset with {llm.backend_params['num_clients']} parallel clients...")
-processed_ds = llm(ds[:20])  # Process a subset for demonstration
-
-# Display results
-print(f"Processed {len(processed_ds)} examples")
-print("\nSample result:")
-print(f"Question: {processed_ds[0]['problem']}")
-print(f"Reasoning: {processed_ds[0]['deepseek_reasoning']}")
-print(f"Solution: {processed_ds[0]['deepseek_solution']}")
+ds = load_dataset("mlfoundations-dev/herorun1_code", split="train")
+ds = llm(ds.select(range(25_000, 50_000)))
+ds.push_to_hub("mlfoundations-dev/herorun1_code_25000-50000")
