@@ -94,6 +94,8 @@ class OnlineStatusTracker:
     # Add client field and exclude from serialization
     viewer_client: Optional[Client] = field(default=None, repr=False, compare=False)
 
+    max_concurrent_requests_seen: int = 0
+
     def __post_init__(self):
         """Post init."""
         if self.token_limit_strategy == TokenLimitStrategy.combined:
@@ -194,6 +196,9 @@ class OnlineStatusTracker:
         avg_completion = self.total_completion_tokens / max(1, self.num_tasks_succeeded)
         avg_cost = self.total_cost / max(1, self.num_tasks_succeeded)
         projected_cost = avg_cost * self.total_requests
+
+        # Update max concurrent requests seen
+        self.max_concurrent_requests_seen = max(self.max_concurrent_requests_seen, self.num_tasks_in_progress)
 
         # Format stats text
         stats_text = (
@@ -321,6 +326,7 @@ class OnlineStatusTracker:
         table.add_row("Total Time", f"{elapsed_time:.2f}s")
         table.add_row("Average Time per Request", f"{elapsed_time / max(1, self.num_tasks_succeeded):.2f}s")
         table.add_row("Requests per Minute", f"{rpm:.1f}")
+        table.add_row("Max Concurrent Requests", str(self.max_concurrent_requests_seen))
         table.add_row("Input Tokens per Minute", f"{input_tpm:.1f}")
         table.add_row("Output Tokens per Minute", f"{output_tpm:.1f}")
 
