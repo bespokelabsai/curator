@@ -35,6 +35,6 @@ llm = Reasoner(
 
 ds = load_dataset("mlfoundations-dev/herorun1_code", split="train")
 ds = llm(ds.take(5_000))
-print("REASONING: ", ds[0]["deepseek_reasoning"])
-print("\n\nSOLUTION: ", ds[0]["deepseek_solution"])
+# print("REASONING: ", ds[0]["deepseek_reasoning"])
+# print("\n\nSOLUTION: ", ds[0]["deepseek_solution"])
 ds.push_to_hub("mlfoundations-dev/herorun1_code-test")
