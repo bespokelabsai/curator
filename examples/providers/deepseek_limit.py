@@ -26,15 +26,17 @@ llm = Reasoner(
     backend="openai_client",
     generation_params={"temperature": 0.0},
     backend_params={
-        "max_requests_per_minute": 500,
-        "max_tokens_per_minute": 100_000_000,
+        "max_requests_per_minute": 2_500,
+        "max_tokens_per_minute": 1_000_000_000,
         "base_url": "https://api.deepseek.com/",
         "api_key": os.environ.get("DEEPSEEK_API_KEY"),
+        "require_reasoning": False,
+        "max_retries": 2,
     },
 )
 
 ds = load_dataset("mlfoundations-dev/herorun1_code", split="train")
-ds = llm(ds.take(5_000))
+ds = llm(ds.take(25_000))
 # print("REASONING: ", ds[0]["deepseek_reasoning"])
 # print("\n\nSOLUTION: ", ds[0]["deepseek_solution"])
 ds.push_to_hub("mlfoundations-dev/herorun1_code-test")
