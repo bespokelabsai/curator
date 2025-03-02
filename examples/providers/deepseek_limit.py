@@ -30,7 +30,7 @@ llm = Reasoner(
         "max_tokens_per_minute": 1_000_000_000,
         "base_url": "https://api.deepseek.com/",
         "api_key": os.environ.get("DEEPSEEK_API_KEY"),
-        "require_reasoning": False,
+        "require_all_responses": False,
         "max_retries": 2,
     },
 )
