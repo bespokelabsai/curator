@@ -37,12 +37,12 @@ llm = Reasoner(
         "base_url": "https://api.deepseek.com/",
         "api_key": os.environ.get("DEEPSEEK_API_KEY"),
         "require_all_responses": False,
-        "max_retries": 0,
-        "num_clients": 2,  # Create 2 OpenAI clients for parallel requests
+        "max_retries": 1,
+        "num_clients": 4,  # Create 2 OpenAI clients for parallel requests
     },
 )
 
 
 ds = load_dataset("mlfoundations-dev/herorun1_code", split="train")
-ds = llm(ds.select(range(25_000, 50_000)))
-ds.push_to_hub("mlfoundations-dev/herorun1_code_25000-50000")
+ds = llm(ds.select(range(50_000, len(ds))))
+ds.push_to_hub("mlfoundations-dev/herorun1_code_50000-end")
