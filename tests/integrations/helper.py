@@ -191,6 +191,7 @@ def create_basic(
     batch_check_interval=1,
     raw_prompt=False,
     generation_params=None,
+    parse_func=None,
 ):
     llm_params = llm_params or {}
     generation_params = generation_params or []
@@ -215,6 +216,8 @@ def create_basic(
             backend_params=llm_params,
             raw_prompt=raw_prompt,
         )
+    if parse_func:
+        prompter.prompt_formatter.parse_func = parse_func
     prompter._request_processor._tracker_console = tracker_console
     if mocking:
         prompter = mocking(prompter)

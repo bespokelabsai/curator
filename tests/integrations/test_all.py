@@ -195,6 +195,21 @@ def test_basic_cache(caplog, temp_working_dir, mock_dataset):
             assert f"Using cached output dataset. {CACHE_MSG}" in caplog.text
 
 
+@pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
+def test_cache_with_changed_parse(caplog, temp_working_dir, mock_dataset):
+    temp_working_dir, _, vcr_config = temp_working_dir
+    with vcr_config.use_cassette("basic_completion.yaml"):
+        distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset)
+
+    def new_parse(input, response):
+        return {"new_recipe": response}
+
+    logger = "bespokelabs.curator.request_processor.base_request_processor"
+    with caplog.at_level(logging.INFO, logger=logger):
+        distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset, parse_func=new_parse)
+        assert "new_recipe" in distilled_dataset.column_names
+
+
 @pytest.mark.skip
 @pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
 def test_low_rpm_setting(temp_working_dir, mock_dataset):

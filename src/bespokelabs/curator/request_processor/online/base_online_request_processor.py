@@ -577,10 +577,12 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             data: Response data to append
             filename: File to append to
         """
+        raw_response = data.response_message
         responses = self._process_response(data)
         if not responses:
             return
         data.parsed_response_message = responses
+        data.response_message = raw_response
         data_dump = data.model_dump()
         json_string = json.dumps(data_dump, default=str)
         async with aiofiles.open(filename, "a") as f:
