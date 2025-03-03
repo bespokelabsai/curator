@@ -143,11 +143,13 @@ class LLM:
         else:
             # Get the source code of the prompt and parse methods
             prompt_func_hash = _get_function_hash(self.prompt_formatter.prompt_func)
+            parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
 
             fingerprint_str = "_".join(
                 [
                     str(dataset_hash),
                     str(prompt_func_hash),
+                    str(parse_func_hash),
                     str(self.prompt_formatter.model_name),
                     str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
                     str(self.batch_mode),
