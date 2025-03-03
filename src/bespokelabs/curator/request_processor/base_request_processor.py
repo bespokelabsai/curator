@@ -412,8 +412,10 @@ class BaseRequestProcessor(ABC):
                                 error_sample.append(str(response.response_errors))
                             continue
 
-                        if response.parsed_response_message is None:
-                            response.parsed_response_message = self._process_response(response)
+                        # TODO: Find a way to not process responses that have already been processed
+                        # We cannot just check if parsed_response_message is not None because it could be from cached previous run
+                        # response.
+                        response.parsed_response_message = self._process_response(response)
 
                         for row in response.parsed_response_message:
                             if isinstance(row, BaseModel):
