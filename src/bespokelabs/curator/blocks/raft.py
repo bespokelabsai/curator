@@ -19,9 +19,9 @@ prompt_templates = {
     "question": lambda x, chunk: [
         {
             "role": "system",
-            "content": """You are a synthetic question-answer pair generator. Given a chunk of context about 
-             some topic(s), generate %s example questions a user could ask and would be answered using information from the chunk. 
-             For example, if the given context was a Wikipedia paragraph about the United States, an example question could be 
+            "content": """You are a synthetic question-answer pair generator. Given a chunk of context about
+             some topic(s), generate %s example questions a user could ask and would be answered using information from the chunk.
+             For example, if the given context was a Wikipedia paragraph about the United States, an example question could be
              'How many states are in the United States?'"""
             % (x),
         },
@@ -30,9 +30,10 @@ prompt_templates = {
     ],
     "cot": """
         Question: {question}\nContext: {context}\n
-        Answer this question using the information given in the context above. Here is things to pay attention to: 
-        - First provide step-by-step reasoning on how to answer the question. 
-        - In the reasoning, if you need to copy paste some sentences from the context, include them in ##begin_quote## and ##end_quote##. This would mean that things outside of ##begin_quote## and ##end_quote## are not directly copy paste from the context. 
+        Answer this question using the information given in the context above. Here is things to pay attention to:
+        - First provide step-by-step reasoning on how to answer the question.
+        - In the reasoning, if you need to copy paste some sentences from the context, include them in ##begin_quote## and ##end_quote##.
+        This would mean that things outside of ##begin_quote## and ##end_quote## are not directly copy paste from the context.
         - End your response with final answer in the form <ANSWER>: $answer, the answer should be succinct.
         You MUST begin your final answer with the tag "<ANSWER>:".
     """,
@@ -59,9 +60,7 @@ class _RaftQuestion(LLM):
         return [{"chunk_id": input["chunk_id"], "question": q} for q in response.questions]
 
 
-class SamplingStrategy(Protocol):
-    """Protocol defining sampling strategy interface."""
-
+class _SamplingStrategy(Protocol):
     def __call__(self, population: List[T], k: int) -> List[T]: ...
 
 
@@ -76,13 +75,14 @@ class _ContextFormatter:
         return "".join(f"<{self.document_tag}>{doc}</{self.document_tag}>\n" for doc in documents)
 
 
-# TODO; add support for sampler
+# TODO; add support for injecting sampler.
 class _RaftAnswer(LLM):
     """Enhanced answer generator component for RAFT."""
 
-    def __init__(self, chunks: datasets.Dataset, *args, n: int = 5, distractors: int = 5, p: float = 0.8, sampler: Optional[SamplingStrategy] = None, **kwargs):
-        """
-        Initialize the RaftAnswer generator.
+    def __init__(
+        self, chunks: datasets.Dataset, *args, n: int = 5, distractors: int = 5, p: float = 0.8, sampler: Optional[_SamplingStrategy] = None, **kwargs
+    ):
+        """Initialize the RaftAnswer generator.
 
         Args:
             chunks: Dataset containing chunks of text
@@ -90,6 +90,8 @@ class _RaftAnswer(LLM):
             distractors: Number of distractor documents
             p: Probability of including oracle document
             sampler: Custom sampling strategy (defaults to random.sample)
+            *args: Additional arguments
+            **kwargs: Additional keyword arguments
         """
         super().__init__(*args, **kwargs)
         self.n = n
@@ -132,8 +134,7 @@ class _RaftAnswer(LLM):
         }
 
     def _get_document_set(self, chunk_id: ChunkId, oracle_document: Content) -> DocumentSet:
-        """
-        Get a set of documents including the oracle and distractors.
+        """Get a set of documents including the oracle and distractors.
 
         Returns:
             DocumentSet with documents, oracle index, and whether oracle is present
@@ -191,9 +192,10 @@ class Raft:
         n_questions: int = 2,
         p: float = 0.8,
         backend: str | None = None,
-        backend_params: dict = {},
-        generation_params: dict = {},
+        backend_params: dict | None = None,
+        generation_params: dict | None = None,
     ):
+        """Initialize the RAFT class."""
         self.chunk_size = chunk_size
         self.n_questions = n_questions
         self.distractors = distractors
@@ -205,7 +207,6 @@ class Raft:
 
     def __call__(self, text: str | List[str]) -> datasets.Dataset:
         """Processes text into structured HF dataset."""
-
         if isinstance(text, str):
             chunks = chunk_text(text, self.chunk_size)
         else:
