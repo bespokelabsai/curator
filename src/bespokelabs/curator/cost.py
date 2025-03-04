@@ -36,7 +36,9 @@ class _LitellmCostProcessor:
     def cost(self, *, completion_window="*", **kwargs):
         cost_to_complete = 0.0
         if self.config.model in litellm.model_cost:
-            cost_to_complete = litellm.completion_cost(model=self.config.model, **kwargs)
+            if "model" not in kwargs:
+                kwargs["model"] = self.config.model
+            cost_to_complete = litellm.completion_cost(**kwargs)
         if self.batch:
             cost_to_complete *= 0.5
         return cost_to_complete
