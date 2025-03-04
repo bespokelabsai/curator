@@ -14,6 +14,7 @@ RATE_LIMIT_HEADER = {
 class _LitellmCostProcessor:
     def __init__(self, config, batch=False) -> None:
         self.batch = batch
+        self.config = config
         if config.in_mtok_cost is not None:
             cost_per_input_token = config.in_mtok_cost / 1e6
             if config.out_mtok_cost is not None:
@@ -33,14 +34,9 @@ class _LitellmCostProcessor:
             )
 
     def cost(self, *, completion_window="*", **kwargs):
-        if "completion_response" in kwargs:
-            model = kwargs["completion_response"]["model"]
-        else:
-            model = kwargs.pop("model", None)
-
         cost_to_complete = 0.0
-        if model in litellm.model_cost:
-            cost_to_complete = litellm.completion_cost(model=model, **kwargs)
+        if self.config.model in litellm.model_cost:
+            cost_to_complete = litellm.completion_cost(model=self.config.model, **kwargs)
         if self.batch:
             cost_to_complete *= 0.5
         return cost_to_complete
@@ -88,18 +84,12 @@ class _KlusterAICostProcessor(_LitellmCostProcessor):
         return model + "." + completion_window
 
     def cost(self, *, completion_window="*", **kwargs):
-        if "completion_response" in kwargs:
-            model = kwargs["completion_response"]["model"]
-        else:
-            model = kwargs.get("model", None)
         times = 2 if self.batch else 1
-        if _KlusterAICostProcessor._wrap(model, completion_window) in _KlusterAICostProcessor._registered_models:
+        if _KlusterAICostProcessor._wrap(self.config.model, completion_window) in _KlusterAICostProcessor._registered_models:
             return super().cost(completion_window=completion_window, **kwargs) * times
 
-        import litellm
-
-        litellm.register_model(_get_litellm_cost_map(model, provider="klusterai", completion_window=completion_window))
-        _KlusterAICostProcessor._registered_models.add(_KlusterAICostProcessor._wrap(model, completion_window))
+        litellm.register_model(_get_litellm_cost_map(self.config.model, provider="klusterai", completion_window=completion_window))
+        _KlusterAICostProcessor._registered_models.add(_KlusterAICostProcessor._wrap(self.config.model, completion_window))
         return super().cost(completion_window=completion_window, **kwargs) * times
 
 
@@ -123,8 +113,6 @@ class _InferenceNetCostProcessor(_LitellmCostProcessor):
         times = 2 if self.batch else 1
         if _InferenceNetCostProcessor._wrap(model, completion_window) in _InferenceNetCostProcessor._registered_models:
             return super().cost(completion_window=completion_window, **kwargs) * times
-
-        import litellm
 
         litellm.register_model(_get_litellm_cost_map(model, provider="inference.net", completion_window=completion_window))
         _InferenceNetCostProcessor._registered_models.add(_InferenceNetCostProcessor._wrap(model, completion_window))

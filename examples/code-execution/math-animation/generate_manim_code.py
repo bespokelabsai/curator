@@ -4,6 +4,7 @@ This module implements a CodeGenerator for generating manim code for mathematica
 It uses a large language model to generate manim code for a given mathematical concept.
 """
 
+import argparse
 import logging
 import os
 from datetime import datetime
@@ -11,7 +12,6 @@ from typing import Dict
 
 from datasets import load_dataset, load_from_disk
 
-import argparse
 from bespokelabs import curator
 
 # ruff: noqa
