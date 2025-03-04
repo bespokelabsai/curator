@@ -25,6 +25,9 @@ _TOKEN_LIMIT_STRATEGY_DESCRIPTION = {
     "seperate": "separate input/output",
 }
 
+# Weight factor for successful tasks vs estimates to converge to average actual cost quicker
+_SUCCESS_WEIGHT_FACTOR = 5
+
 
 class TokenLimitStrategy(str, Enum):
     """Token limit Strategy enum."""
@@ -492,10 +495,8 @@ class OnlineStatusTracker:
                 # Calculate weighted average between actual and in-flight costs
                 avg_actual_cost = self.total_cost / self.num_tasks_succeeded
 
-                # Weight factor for successful tasks vs estimates to converge to average actual cost quicker
-                success_weight_factor = 5
-                total_weight = (self.num_tasks_succeeded * success_weight_factor) + self.num_estimates
-                weighted_avg_cost = ((avg_actual_cost * (self.num_tasks_succeeded * success_weight_factor)) + in_flight_cost) / total_weight
+                total_weight = (self.num_tasks_succeeded * _SUCCESS_WEIGHT_FACTOR) + self.num_estimates
+                weighted_avg_cost = ((avg_actual_cost * (self.num_tasks_succeeded * _SUCCESS_WEIGHT_FACTOR)) + in_flight_cost) / total_weight
 
                 # Calculate remaining cost using weighted average
                 self.projected_remaining_cost = weighted_avg_cost * remaining_requests
