@@ -4,7 +4,7 @@ import logging
 import typing as t
 import uuid
 
-from datasets import Dataset, load_dataset
+from datasets import Dataset, DatasetDict, load_dataset
 from rich.progress import Progress
 
 from bespokelabs.curator import _CONSOLE, constants
@@ -30,6 +30,13 @@ def push_to_viewer(dataset: Dataset | str, session_id: str | None = None, hf_par
         logger.info(f"Downloading dataset {dataset} from huggingface")
         hf_params = {} or hf_params
         dataset = load_dataset(dataset, **hf_params)
+    if isinstance(dataset, DatasetDict):
+        raise TypeError(
+            "Expected a `datasets.Dataset` object, but received a `datasets.DatasetDict`. "
+            "Please select a specific split (e.g., `dataset['train']`) before passing it."
+        )
+    elif not isinstance(dataset, Dataset):
+        raise TypeError(f"Expected a `datasets.Dataset` object, but received a `{type(dataset)}`.")
 
     client = Client(hosted=True)
     uid = str(uuid.uuid4())
