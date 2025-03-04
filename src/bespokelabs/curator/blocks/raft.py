@@ -1,3 +1,5 @@
+"""RAFT: Question and Answer generation from text."""
+
 import functools
 import random
 from collections import namedtuple
@@ -15,20 +17,20 @@ Question = str
 ChunkDict = Dict[ChunkId, Dict[str, Content]]
 T = TypeVar("T")
 
-prompt_templates = {
-    "question": lambda x, chunk: [
-        {
-            "role": "system",
-            "content": """You are a synthetic question-answer pair generator. Given a chunk of context about
+_DEFAULT_QUESTION_PROMPT = lambda x, chunk: [  # noqa: E731
+    {
+        "role": "system",
+        "content": """You are a synthetic question-answer pair generator. Given a chunk of context about
              some topic(s), generate %s example questions a user could ask and would be answered using information from the chunk.
              For example, if the given context was a Wikipedia paragraph about the United States, an example question could be
              'How many states are in the United States?'"""
-            % (x),
-        },
-        {"role": "system", "content": "The questions should be able to be answered in a few words or less. Include only the questions in your response."},
-        {"role": "user", "content": str(chunk)},
-    ],
-    "cot": """
+        % (x),
+    },
+    {"role": "system", "content": "The questions should be able to be answered in a few words or less. Include only the questions in your response."},
+    {"role": "user", "content": str(chunk)},
+]
+
+_DEFAULT_ANSWER_PROMPT = """
         Question: {question}\nContext: {context}\n
         Answer this question using the information given in the context above. Here is things to pay attention to:
         - First provide step-by-step reasoning on how to answer the question.
@@ -36,8 +38,7 @@ prompt_templates = {
         This would mean that things outside of ##begin_quote## and ##end_quote## are not directly copy paste from the context.
         - End your response with final answer in the form <ANSWER>: $answer, the answer should be succinct.
         You MUST begin your final answer with the tag "<ANSWER>:".
-    """,
-}
+    """
 
 
 class Questions(BaseModel):
@@ -54,7 +55,7 @@ class _RaftQuestion(LLM):
         self.n = n
 
     def prompt(self, input: dict) -> str:
-        return prompt_templates["question"](self.n, input["content"])
+        return _DEFAULT_QUESTION_PROMPT(self.n, input["content"])
 
     def parse(self, input: dict, response: Questions) -> List[Dict[str, str]]:
         return [{"chunk_id": input["chunk_id"], "question": q} for q in response.questions]
@@ -106,7 +107,7 @@ class _RaftAnswer(LLM):
     def prompt(self, input: dict) -> str:
         """Generate prompt for the question."""
         content = self.chunks[input["chunk_id"]]["content"]
-        return prompt_templates["cot"].format(question=input["question"], context=content)
+        return _DEFAULT_ANSWER_PROMPT.format(question=input["question"], context=content)
 
     def parse(self, input: dict, response: str) -> Dict[str, str]:
         """Parse response and generate dataset with context."""
@@ -139,7 +140,6 @@ class _RaftAnswer(LLM):
         Returns:
             DocumentSet with documents, oracle index, and whether oracle is present
         """
-        # Get all available chunk indices
         chunk_count = len(self.chunks)
         available_indices = [i for i in range(chunk_count) if i != chunk_id]
 
@@ -181,29 +181,31 @@ def chunk_text(text: str, chunk_size: int) -> datasets.Dataset:
     return datasets.Dataset.from_list(chunks)
 
 
+# Paper: https://arxiv.org/html/2403.10131v1
+# Reference Code:  https://github.com/ShishirPatil/gorilla/blob/main/raft/raft.py
+@dataclass
 class Raft:
-    """RAFT class to generate structured datasets from large text."""
+    """RAFT class to generate structured QA datasets from text.
 
-    def __init__(
-        self,
-        model: str,
-        distractors: int = 3,
-        chunk_size: int = 1000,
-        n_questions: int = 2,
-        p: float = 0.8,
-        backend: str | None = None,
-        backend_params: dict | None = None,
-        generation_params: dict | None = None,
-    ):
-        """Initialize the RAFT class."""
-        self.chunk_size = chunk_size
-        self.n_questions = n_questions
-        self.distractors = distractors
-        self.model = model
-        self.backend = backend
-        self.backend_params = backend_params
-        self.generation_params = generation_params
-        self.p = p
+    Args:
+        model: Model name to use for question and answer generation
+        distractors: Number of distractor documents to include
+        chunk_size: Size of text chunks to generate questions for
+        n_questions: Number of questions to generate for each chunk
+        p: Probability of including oracle document
+        backend: Backend to use for question and answer generation
+        backend_params: Backend specific parameters
+        generation_params: Generation specific parameters
+    """
+
+    model: str
+    distractors: int = 3
+    chunk_size: int = 1000
+    n_questions: int = 2
+    p: float = 0.8
+    backend: str | None = None
+    backend_params: dict | None = None
+    generation_params: dict | None = None
 
     def __call__(self, text: str | List[str]) -> datasets.Dataset:
         """Processes text into structured HF dataset."""
