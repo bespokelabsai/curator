@@ -20,6 +20,8 @@ from bespokelabs.curator.types.token_usage import _TokenUsage
 """
 Gemini latest rate limits:
 
+gemini-2.0-pro	50k records
+gemini-2.0-flash	150k records
 gemini-1.5-pro	50k records
 gemini-1.5-flash	150k records
 gemini-1.0-pro	150k records
@@ -27,6 +29,8 @@ gemini-1.0-pro-vision	50k records
 """
 # NOTE: Do not change the order.
 _GEMINI_BATCH_RATELIMIT_MAP = {
+    "gemini-2.0-pro": 50_000,
+    "gemini-2.0-flash": 150_000,
     "gemini-1.5-pro": 50_000,
     "gemini-1.5-flash": 150_000,
     "gemini-1.0-pro-vision": 50_000,
@@ -85,7 +89,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
 
     def _initialize_cloud(self):
         self._location = os.environ.get("GOOGLE_CLOUD_REGION", "us-central1")
-        self._project_id = str(os.environ.get("GOOGLE_CLOUD_PROJECT"))
+        self._project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
         self._bucket_name = os.environ.get("GEMINI_BUCKET_NAME")
 
         assert self._bucket_name, "GEMINI_BUCKET_NAME environment variable is not set"
