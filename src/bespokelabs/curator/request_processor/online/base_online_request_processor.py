@@ -334,7 +334,11 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         tcp_limit = self.max_concurrent_requests if status_tracker.max_requests_per_minute is None else status_tracker.max_requests_per_minute
         # Update session status to inprogress
         await self._viewer_client.session_inprogress()
+        #connector = aiohttp.TCPConnector(limit=10 * tcp_limit, keepalive_timeout=1740)
         connector = aiohttp.TCPConnector(limit=10 * tcp_limit)
+        timeout = aiohttp.ClientTimeout(total=1740, connect=10, sock_connect=10, sock_read=1740)
+
+        #async with aiohttp.ClientSession(timeout=timeout, connector=connector) as session:
         async with aiohttp.ClientSession(connector=connector) as session:
             async with aiofiles.open(generic_request_filepath) as file:
                 pending_requests = []
