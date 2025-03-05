@@ -126,6 +126,10 @@ class _RequestProcessorFactory:
             from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
 
             _request_processor = OpenAIBatchRequestProcessor(config, compatible_provider="inference.net")
+        elif backend == "openai_client" and not batch:
+            from bespokelabs.curator.request_processor.online.openai_client_online_request_processor import OpenAIClientOnlineRequestProcessor
+
+            _request_processor = OpenAIClientOnlineRequestProcessor(config)
         elif backend == "openai" and not batch:
             from bespokelabs.curator.request_processor.online.openai_online_request_processor import OpenAIOnlineRequestProcessor
 
