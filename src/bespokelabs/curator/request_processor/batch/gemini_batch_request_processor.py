@@ -20,6 +20,8 @@ from bespokelabs.curator.types.token_usage import _TokenUsage
 """
 Gemini latest rate limits:
 
+gemini-2.0-pro	50k records
+gemini-2.0-flash	150k records
 gemini-1.5-pro	50k records
 gemini-1.5-flash	150k records
 gemini-1.0-pro	150k records
@@ -27,6 +29,8 @@ gemini-1.0-pro-vision	50k records
 """
 # NOTE: Do not change the order.
 _GEMINI_BATCH_RATELIMIT_MAP = {
+    "gemini-2.0-pro": 50_000,
+    "gemini-2.0-flash": 150_000,
     "gemini-1.5-pro": 50_000,
     "gemini-1.5-flash": 150_000,
     "gemini-1.0-pro-vision": 50_000,
