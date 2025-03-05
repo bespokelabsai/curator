@@ -299,6 +299,11 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     def free_capacity(self, tracker, tokens):
         """Free blocked capacity."""
 
+    def aiohttp_connector(self, tcp_limit: int) -> aiohttp.ClientSession:
+        """Create an aiohttp connector with rate limiting."""
+        connector = aiohttp.TCPConnector(limit=10 * tcp_limit)
+        return aiohttp.ClientSession(connector=connector)
+
     async def process_requests_from_file(
         self,
         generic_request_filepath: str,
@@ -334,12 +339,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         tcp_limit = self.max_concurrent_requests if status_tracker.max_requests_per_minute is None else status_tracker.max_requests_per_minute
         # Update session status to inprogress
         await self._viewer_client.session_inprogress()
-        #connector = aiohttp.TCPConnector(limit=10 * tcp_limit, keepalive_timeout=1740)
-        connector = aiohttp.TCPConnector(limit=10 * tcp_limit)
-        timeout = aiohttp.ClientTimeout(total=1740, connect=10, sock_connect=10, sock_read=1740)
 
-        #async with aiohttp.ClientSession(timeout=timeout, connector=connector) as session:
-        async with aiohttp.ClientSession(connector=connector) as session:
+        async with self.aiohttp_connector(tcp_limit) as session:
             async with aiofiles.open(generic_request_filepath) as file:
                 pending_requests = []
                 async for line in file:
