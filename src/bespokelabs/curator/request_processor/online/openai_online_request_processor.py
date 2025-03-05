@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import time
 from typing import TypeVar
@@ -25,6 +26,42 @@ _DEFAULT_OPENAI_URL: str = "https://api.openai.com/v1/chat/completions"
 
 _OPENAI_MULTIMODAL_SUPPORTED_MODELS = {"gpt-4o", "gpt-4o-mini", "gpt-4o-vision"}
 _OPENAI_ALLOWED_IMAGE_SIZE_MB = 20
+
+
+async def _handle_longlive_response(response: aiohttp.ClientResponse):
+    content_lines = []
+    content_buffer = ""
+
+    async for line in response.content:
+        line_str = line.decode("utf-8").strip()
+
+        if not line_str:
+            continue
+
+        content_buffer += line_str
+        content_lines.append(line_str)
+
+    if not content_lines:
+        return {"error": "Empty response from API"}
+
+    try:
+        return json.loads(content_buffer)
+    except json.JSONDecodeError:
+        try:
+            return json.loads("".join(content_lines))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse API response: {e}\nRaw response: {content_buffer}") from e
+
+
+async def fetch_response(session, *, url, headers, payload, timeout, longlived_response=False):
+    """Fetch response from the API."""
+    async with session.post(url, headers=headers, json=payload, timeout=timeout) as response:
+        if response.status != 200:
+            error_text = await response.text()
+            raise Exception(f"API Error: {response.status} - {error_text}")
+        if longlived_response:
+            return await _handle_longlive_response(response)
+        return await response.json()
 
 
 class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixin):
@@ -57,12 +94,15 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         else:
             self.url = self.config.base_url + self._DEFAULT_COMPLETION_SUFFIX
 
-        if self.config.base_url == "https://api.deepseek.com":
+        self._longlived_response = False
+        if self.config.base_url.rstrip("/") == "https://api.deepseek.com":
             # DeepSeek does not return rate limits in headers
             # https://api-docs.deepseek.com/quick_start/rate_limit.
             # And sending an empty request for rate limits results in a 400 error like this:
             # {'error': {'message': 'Empty input messages', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_request_error'}}
             self.api_key = self.config.api_key or os.getenv("DEEPSEEK_API_KEY")
+            self._longlived_response = True
+            self.config.request_timeout = 60 * 30  # 30 minutes
         else:
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
             self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
@@ -77,6 +117,15 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
     def compatible_provider(self) -> str:
         """Compatible provider property."""
         return self._compatible_provider
+
+    def aiohttp_connector(self, tcp_limit: int) -> aiohttp.ClientSession:
+        """Create an aiohttp connector with rate limiting."""
+        if self._longlived_response:
+            connector = aiohttp.TCPConnector(limit=10 * tcp_limit, keepalive_timeout=self.config.request_timeout)
+            timeout = aiohttp.ClientTimeout(total=self.config.request_timeout, connect=10, sock_connect=10, sock_read=self.config.request_timeout)
+            return aiohttp.ClientSession(timeout=timeout, connector=connector)
+        else:
+            return super().aiohttp_connector(tcp_limit)
 
     def get_header_based_rate_limits(self) -> tuple[int, int]:
         """Get rate limits from OpenAI API headers.
@@ -239,58 +288,56 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         request_header = {"Authorization": f"Bearer {self.api_key}"}
         if "/deployments" in self.url:  # Azure deployment
             request_header = {"api-key": f"{self.api_key}"}
-        async with session.post(
-            self.url,
+        response = await fetch_response(
+            session,
+            url=self.url,
             headers=request_header,
-            json=request.api_specific_request,
+            payload=request.api_specific_request,
             timeout=self.config.request_timeout,
-        ) as response_obj:
-            response = await response_obj.json()
+            longlived_response=self._longlived_response,
+        )
 
-            if response is None:
-                raise Exception("Response is empty")
-            elif "error" in response:
-                status_tracker.num_api_errors += 1
-                error = response["error"]
-                error_message = error if isinstance(error, str) else error.get("message", "")
-                if "rate limit" in error_message.lower():
-                    status_tracker.time_of_last_rate_limit_error = time.time()
-                    status_tracker.num_rate_limit_errors += 1
-                    status_tracker.num_api_errors -= 1
-                    # because handle_single_request_with_retries will double count otherwise
-                    status_tracker.num_other_errors -= 1
-                raise Exception(f"API error: {error}")
+        if response is None:
+            raise Exception("Response is empty")
+        elif "error" in response:
+            status_tracker.num_api_errors += 1
+            error = response["error"]
+            error_message = error if isinstance(error, str) else error.get("message", "")
+            if "rate limit" in error_message.lower():
+                status_tracker.time_of_last_rate_limit_error = time.time()
+                status_tracker.num_rate_limit_errors += 1
+                status_tracker.num_api_errors -= 1
+                # because handle_single_request_with_retries will double count otherwise
+                status_tracker.num_other_errors -= 1
+            raise Exception(f"API error: {error}")
 
-            if response_obj.status != 200:
-                raise Exception(f"API request failed with status {response_obj.status}: {response}")
+        if self.config.return_completions_object:
+            response_message = dict(response)
+        else:
+            response_message = response["choices"][0]["message"]["content"]
+        finish_reason = response["choices"][0].get("finish_reason", "unknown")
+        usage = response["usage"]
+        token_usage = _TokenUsage(
+            prompt_tokens=usage["prompt_tokens"],
+            completion_tokens=usage["completion_tokens"],
+            total_tokens=usage["total_tokens"],
+        )
 
-            if self.config.return_completions_object:
-                response_message = dict(response)
-            else:
-                response_message = response["choices"][0]["message"]["content"]
-            finish_reason = response["choices"][0].get("finish_reason", "unknown")
-            usage = response["usage"]
-            token_usage = _TokenUsage(
-                input=usage["prompt_tokens"],
-                output=usage["completion_tokens"],
-                total=usage["total_tokens"],
-            )
+        cost = self.completion_cost(response)
 
-            cost = self.completion_cost(response)
-
-            # Create and return response
-            return GenericResponse(
-                response_message=response_message,
-                response_errors=None,
-                raw_request=request.api_specific_request,
-                raw_response=response,
-                generic_request=request.generic_request,
-                created_at=request.created_at,
-                finished_at=datetime.datetime.now(),
-                token_usage=token_usage,
-                response_cost=cost,
-                finish_reason=finish_reason,
-            )
+        # Create and return response
+        return GenericResponse(
+            response_message=response_message,
+            response_errors=None,
+            raw_request=request.api_specific_request,
+            raw_response=response,
+            generic_request=request.generic_request,
+            created_at=request.created_at,
+            finished_at=datetime.datetime.now(),
+            token_usage=token_usage,
+            response_cost=cost,
+            finish_reason=finish_reason,
+        )
 
     def get_token_encoding(self) -> str:
         """Get the token encoding name for a given model."""
