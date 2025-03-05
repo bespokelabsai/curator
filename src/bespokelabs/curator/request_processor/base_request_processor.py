@@ -416,6 +416,9 @@ class BaseRequestProcessor(ABC):
                         # We cannot just check if parsed_response_message is not None because it could be from cached previous run
                         # response.
                         response.parsed_response_message = self._process_response(response)
+                        if response.parsed_response_message is None:
+                            failed_responses_count += 1
+                            continue
 
                         for row in response.parsed_response_message:
                             if isinstance(row, BaseModel):
