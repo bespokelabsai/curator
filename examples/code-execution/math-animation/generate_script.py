@@ -8,7 +8,6 @@ from pydantic import BaseModel, Field
 
 from bespokelabs import curator
 
-
 # ruff: noqa
 # Set up logging
 logging.basicConfig(
