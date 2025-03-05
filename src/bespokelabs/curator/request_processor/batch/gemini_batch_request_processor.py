@@ -89,7 +89,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
 
     def _initialize_cloud(self):
         self._location = os.environ.get("GOOGLE_CLOUD_REGION", "us-central1")
-        self._project_id = str(os.environ.get("GOOGLE_CLOUD_PROJECT"))
+        self._project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
         self._bucket_name = os.environ.get("GEMINI_BUCKET_NAME")
 
         assert self._bucket_name, "GEMINI_BUCKET_NAME environment variable is not set"
