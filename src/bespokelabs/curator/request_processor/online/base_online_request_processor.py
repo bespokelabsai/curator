@@ -134,7 +134,11 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         pass
 
     def _handle_multi_modal_prompt(self, message):
-        def _openai_mutlimodal_format(data, mime_type="image/png"):
+        content = []
+        texts = message.texts
+
+        def _format_multimodal(data, mime_type="image/png"):
+            """Format multimodal prompt data for API request."""
             if data.url and not data.is_local:
                 return {"type": "image_url", "image_url": {"url": data.url}}
             else:
@@ -147,19 +151,16 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                         "url": f"data:{mime_type};base64,{base64_content}",
                     },
                 }
-                if mime_type == "image/png":
+                if "image" in mime_type:
                     content["image_url"].update({"detail": data.detail})
                 return content
-
-        content = []
-        texts = message.texts
 
         for text in texts:
             content.append({"type": "text", "text": text})
         for image in message.images:
-            content.append(_openai_mutlimodal_format(image))
+            content.append(_format_multimodal(image, mime_type=image.mime_type))
         for file in message.files:
-            content.append(_openai_mutlimodal_format(file, mime_type=file.mime_type))
+            content.append(_format_multimodal(file, mime_type=file.mime_type))
 
         return content
 

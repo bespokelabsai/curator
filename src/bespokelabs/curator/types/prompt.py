@@ -14,6 +14,7 @@ class BaseType(BaseModel):
 
     url: str = Field("", description="The URL of the file.")
     type: t.ClassVar[str] = Field(..., description="The type of the multimodal prompt.")
+    mime_type: str | None = Field(None, description="The MIME type of the file.")
 
     @staticmethod
     def _is_local_uri(path):
@@ -80,11 +81,16 @@ class Image(BaseType):
             raise ValueError("Only one of 'url' or 'content' must be provided.")
         return self
 
+    def model_post_init(self, __context):
+        """Run after initialization."""
+        if self.mime_type is None and self.url:
+            mime_type, _ = mimetypes.guess_type(self.url)
+            self.mime_type = mime_type.lower() if mime_type else "image/png"
+
 
 class File(BaseType):
     """A class to represent a file for multimodal prompts."""
 
-    mime_type: str | None = Field(None, description="The MIME type of the file.")
     type: t.ClassVar[str] = "file"
 
     @field_validator("mime_type", mode="before")
