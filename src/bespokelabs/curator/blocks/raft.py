@@ -76,7 +76,6 @@ class _ContextFormatter:
         return "".join(f"<{self.document_tag}>{doc}</{self.document_tag}>\n" for doc in documents)
 
 
-# TODO; add support for injecting sampler.
 class _RaftAnswer(LLM):
     """Enhanced answer generator component for RAFT."""
 
@@ -123,15 +122,16 @@ class _RaftAnswer(LLM):
         # Create metadata
         title_placeholders = ["placeholder_title"] * len(doc_set.documents)
         metadata = {"title": [title_placeholders], "sentences": [doc_set.documents]}
+        instruction = context + "\n" + input["question"]
 
         return {
             "question": input["question"],
             "cot_answer": response,
             "oracle_document": oracle_document,
-            "context": context,
+            "context": metadata,
+            "instruction": instruction,
             "oracle_present": doc_set.oracle_present,
             "oracle_index": doc_set.oracle_index if doc_set.oracle_present else -1,
-            **metadata,
         }
 
     def _get_document_set(self, chunk_id: ChunkId, oracle_document: Content) -> DocumentSet:
