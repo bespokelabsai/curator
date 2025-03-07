@@ -64,6 +64,7 @@ class CodeExecutionResponse(BaseModel):
 class CodeExecutionBackendConfig(BaseModel):
     """Configuration for the code execution backend."""
 
+    use_metadata_db: bool = True
     max_requests_per_minute: int = 10000
     max_retries: int = 3
     seconds_to_pause_on_rate_limit: int = 10
