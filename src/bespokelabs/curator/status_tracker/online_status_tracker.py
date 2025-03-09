@@ -125,9 +125,14 @@ class OnlineStatusTracker:
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
         if RICH_CLI_DISABLED:
+            desc = (
+                f"Processing {self.total_requests} requests using {self.model} | "
+                f"Model Pricing (per 1M tokens) - Input: ${self.input_cost_per_million or 0:.3f}, "
+                f"Output: ${self.output_cost_per_million or 0:.3f}"
+            )
             self._pbar = get_progress_bar(
                 total=self.total_requests,
-                desc=f"Processing {self.total_requests} requests using {self.model}",
+                desc=desc,
             )
             return
 
@@ -198,11 +203,37 @@ class OnlineStatusTracker:
 
     def _refresh_console(self):
         """Refresh the console display with latest stats."""
+        # Calculate common stats
+        elapsed_minutes = (time.time() - self.start_time) / 60
+        current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
+        input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+        output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
+        avg_prompt = self.total_prompt_tokens / max(1, self.num_tasks_succeeded)
+        avg_completion = self.total_completion_tokens / max(1, self.num_tasks_succeeded)
+        projected_total = self.total_cost + self.projected_remaining_cost
+
         if RICH_CLI_DISABLED:
             if hasattr(self, "_pbar"):
-                self._pbar.n = (
-                    self.num_tasks_succeeded + self.num_tasks_already_completed
+                # Update progress
+                self._pbar.n = self.num_tasks_succeeded + self.num_tasks_already_completed
+                
+                # Update description with detailed stats
+                self._pbar.set_description(
+                    f"Success: {self.num_tasks_succeeded}/{self.total_requests} "
+                    f"({(self.num_tasks_succeeded/max(1, self.total_requests))*100:.1f}%) | "
+                    f"Failed: {self.num_tasks_failed} | "
+                    f"In Progress: {self.num_tasks_in_progress} | "
+                    f"RPM: {current_rpm:.1f}"
                 )
+                
+                # Update postfix with additional stats
+                self._pbar.set_postfix({
+                    "Cost": f"${self.total_cost:.3f}",
+                    "Est. Total": f"${projected_total:.3f}",
+                    "Tokens/Req": f"{avg_prompt:.0f}/{avg_completion:.0f}",
+                    "TPM": f"{input_tpm:.0f}/{output_tpm:.0f}"
+                })
+                
                 self._pbar.refresh()
             return
 
@@ -332,16 +363,38 @@ class OnlineStatusTracker:
         if RICH_CLI_DISABLED:
             if hasattr(self, "_pbar"):
                 self._pbar.close()
-
-            # Log final statistics
-            logger.info(
-                f"\nFinal Statistics:\n"
-                f"Total Requests: {self.total_requests}\n"
-                f"Successful: {self.num_tasks_succeeded}\n"
-                f"Failed: {self.num_tasks_failed}\n"
-                f"Total Cost: ${self.total_cost:.2f}\n"
-                f"Total Tokens: {self.total_tokens:,}"
-            )
+            
+            # Calculate final stats
+            elapsed_minutes = (time.time() - self.start_time) / 60
+            current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
+            avg_prompt = self.total_prompt_tokens / max(1, self.num_tasks_succeeded)
+            avg_completion = self.total_completion_tokens / max(1, self.num_tasks_succeeded)
+            projected_total = self.total_cost + self.projected_remaining_cost
+            
+            # Log comprehensive final statistics
+            logger.info("\n" + "="*80)
+            logger.info("Final Statistics:")
+            logger.info("-"*80)
+            logger.info("Requests:")
+            logger.info(f"  • Total: {self.total_requests}")
+            logger.info(f"  • Successful: {self.num_tasks_succeeded}")
+            logger.info(f"  • Failed: {self.num_tasks_failed}")
+            logger.info(f"  • Cached: {self.num_tasks_already_completed}")
+            logger.info(f"  • Average RPM: {current_rpm:.1f}")
+            logger.info("\nTokens:")
+            logger.info(f"  • Total Input: {self.total_prompt_tokens:,}")
+            logger.info(f"  • Total Output: {self.total_completion_tokens:,}")
+            logger.info(f"  • Average Input/Request: {avg_prompt:.1f}")
+            logger.info(f"  • Average Output/Request: {avg_completion:.1f}")
+            logger.info("\nCosts:")
+            logger.info(f"  • Total Cost: ${self.total_cost:.3f}")
+            logger.info(f"  • Cost/Minute: ${self.total_cost/max(0.01, elapsed_minutes):.3f}")
+            logger.info(f"  • Projected Total: ${projected_total:.3f}")
+            logger.info("\nModel Information:")
+            logger.info(f"  • Model: {self.model}")
+            logger.info(f"  • Input Cost (per 1M tokens): ${self.input_cost_per_million or 0:.3f}")
+            logger.info(f"  • Output Cost (per 1M tokens): ${self.output_cost_per_million or 0:.3f}")
+            logger.info("="*80 + "\n")
             return
 
         if hasattr(self, "_live"):
