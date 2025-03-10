@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Protocol, TypeVar
 import datasets
 from pydantic import BaseModel, Field
 
-from bespokelabs.curator import LLM
+from bespokelabs import curator
 
 ChunkId = int
 Content = str
@@ -47,7 +47,7 @@ class Questions(BaseModel):
     questions: List[str] = Field(description="A list of questions.")
 
 
-class _RaftQuestion(LLM):
+class _RaftQuestion(curator.LLM):
     response_format = Questions
 
     def __init__(self, *args, n: int = 5, **kwargs):
@@ -76,7 +76,7 @@ class _ContextFormatter:
         return "".join(f"<{self.document_tag}>{doc}</{self.document_tag}>\n" for doc in documents)
 
 
-class _RaftAnswer(LLM):
+class _RaftAnswer(curator.LLM):
     """Enhanced answer generator component for RAFT."""
 
     def __init__(
