@@ -1,0 +1,85 @@
+A Protocol to Exposure Path Analysis for Multiple Stressors Associated with Cardiovascular
+Disease Risk: A Novel Approach Using NHANES Data
+Jiangling Liua,1
+, Ya Liua,1
+, Banyun Zhenga,1, Longjian Liub,2
+, Heqing Shena,2
+1Jiangling Liu, Ya Liu and Banyun Zheng contributed equally to this work.
+2To whom correspondence may be addressed.
+Author affiliations: aState Key Laboratory of Vaccines for Infectious Diseases, Xiang An Biomedicine
+Laboratory & State Key Laboratory of Molecular Vaccinology and Molecular Diagnostics, School of
+Public Health, Xiamen University, Xiamen, 361102, China; bDepartment of Epidemiology and
+Biostatistics, Dornsife School of Public Health, Drexel University, Philadelphia, PA, 19104, USA.
+Corresponding authors:
+Heqing Shen, School of Public Health, Xiamen University, 4221-117 Xiang’an South Road, Xiamen,
+361102, China; Email: hqshen@xmu.edu.cn.
+ORCID of the author: https://orcid.org/0000-0002-6544-4919.
+Longjian Liu: Drexel University, Longjian.Liu@Drexel.edu
+Jiangling Liu: Xiamen University, liujiangling@stu.xmu.edu.cn
+Ya Liu: Xiamen University, 32620221150850@stu.xmu.edu.cn
+Banyun Zheng: Xiamen University, zhengbanyun@stu.xmu.edu.cn
+Declaration of competing financial interests (CFl): The authors of this manuscript hereby declare that
+there are no financial or personal relationships with other people or organizations that could
+inappropriately influence or bias the content of this paper. There are no competing financial interests to
+disclose.
+1
+Abstract
+Background: Multiple medical and non-medical stressors, along with the complicity of their exposure
+pathways, have posted significant challenges to the epidemiological interpretation of the non-
+communicable diseases, including cardiovascular disease (CVD).
+Objective: To develop a protocol for deconstructing the complex exposure pathways linking various
+stressors to adverse outcomes and to elucidate the sequential determinants contributing to CVD risk in
+depth.
+Methods: In this study, we developed a Path-Lasso approach, rooted in Adaptive Lasso regression, to
+construct the network and paths to interpret the determinants of CVD in an in-depth way by using data
+from the National Health and Nutrition Examination Survey (NHANES). Univariate logistic regression
+was initially employed to screen out all potential factors of influencing CVD. Then a programmed
+approach, using Path-Lasso technique, stratified covariates and established a causal network to predict
+CVD risk.
+Results: Age, smoking and waist circumference were identified as the most significant predictors of
+CVD risk. Other factors, such as race, marital status, physical activity, cadmium exposure and diabetes
+acted as the intermediary or proximal variables. All these stressors (or nodes) formed the network with
+paths (or edges to link the CVD), in which the latent layer variables that causally associate to the outcome
+are linearly formed by the stressors in each layer.
+Discussion: The Path-Lasso approach revealed the epidemiological pathways, linking covariates to CVD
+risk, which is instrumental in elucidating the inter-covariate transitions of their predication to the
+outcome, and providing the hierarchal network for foundation of the assessment of CVD risk and the
+beyond.
+Keywords: Path-Lasso; Adaptive Lasso regression; Path Analysis, Cardiovascular disease
+2
+1 Introduction
+The medical and non-medical stressors that predict the risk of a specific disease or adverse health
+outcome is usually multivariable and interactive. From a broad vision, a stressor can be any factor to
+which a human is exposed, from the point of contact between the stressor and receptor, moving inward
+into the human body and outward to the general environment, including the ecosphere. This means that
+the exposure pathways can be traced to the ecologic level, community level, or the individual level1
+.
+Since a stressor can be any physical, chemical and biological entity or socioeconomic condition that
+induces an adverse response, the World Health Organization (WHO) defines social determinants of
+health (SDOH) as the factors influencing health outcomes. All determents together form the source-to-
+outcome continuum for human exposure, which can also be categorized at multiple levels, including
+different groups or within an individual from the internal exposure to the target-sites. The multiple
+stressors are often hierarchically organized based on their common action on the defined outcome. For
+example, alcohol consumption are generally unhealthy that can work as the negative factor, increasing
+the risk of over 60 diseases2
+. Genome-wide association study (GWAS) has identified that certain single-
+nucleotide polymorphisms (SNPs), such as ADH1B (rs1229984), KLB (rs13130794), BTF3P13
+(rs144198753), GCKR (rs1260326), SLC39A8 (rs13107325) and DRD2 (rs11214609), that are related
+to the excessive consumption of alcohol. It is also well-known that the distribution of SNPs varies by
+race and ethnicity. For example, ADH1B and other ADH and ALDH variants associated with alcohol
+consumption occur at low frequencies among populations of European ancestry but are more common
+in populations of East Asian ancestry3
+. Given exposure to alcohol can directly impact human health, the
+internal factors of SNPs can directly modify the alcohol risk that associate the diseases via excessive
+alcohol consumption, and the racial identity can modify the distribution of SNPs. A simplified pathway
+can be drawn from race to SNPs to disease in a population. Meanwhile, alcohol consumption can be
+influenced by many other factors, such as personal habits, economic status, traditional culture, and so on.
+In the context of any stressor that increases the risk of adverse outcome, distal stressors may
+hierarchically regulate proximal ones. This means that information, such as variable variation, can flow
+from the upstream stressor to downstream stressors along these pathways. Mapping these pathways
+would be useful for public health prevention. Basically, the follow of information from stressor to stressor
+toward a health outcome indicates some redundant. In other words, downstream variable transit the same
+information, at least partially the same, to the outcome as the upstream variable. Therefore, the redundant
+analysis of the multiple variables’ association to the same outcome will be meaningful to address the
+potential pathways. Given the multiple stressor crosstalk in prediction of the same outcome, the
+information flux from stressor to stressor also suggests a causal network.
