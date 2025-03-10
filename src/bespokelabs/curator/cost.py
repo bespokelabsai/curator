@@ -22,13 +22,17 @@ class _LitellmCostProcessor:
             else:
                 cost_per_output_token = cost_per_input_token
 
+            litellm_provider = "openai"
+            if "/" in config.model:
+                litellm_provider = config.model.split("/")[0]
+
             litellm.register_model(
                 {
                     config.model: {
                         "max_tokens": 8192,
                         "input_cost_per_token": cost_per_input_token,
                         "output_cost_per_token": cost_per_output_token,
-                        "litellm_provider": "openai",
+                        "litellm_provider": litellm_provider,
                     }
                 }
             )
