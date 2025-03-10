@@ -1,11 +1,12 @@
 import os
 
-import pdfplumber
 import torch
 from langchain.vectorstores import FAISS
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_openai import OpenAIEmbeddings
 from transformers import AutoModelForCausalLM, AutoTokenizer
+
+from examples.blocks.raft.utils import text_extraction
 
 model_path = os.environ.get("MODEL_PATH", "llama3-finetuned/final")
 
@@ -16,11 +17,8 @@ CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 512))
 assert CHUNK_SIZE > 0
 
 arxiv_id = os.environ.get("ARXIV_ID", "2503.03323")  # change this to the arxiv id of the paper you want to test
-with pdfplumber.open(f"{arxiv_id}.pdf") as pdf:
-    text = ""
-    for page in pdf.pages:
-        text += page.extract_text() or ""
 
+text = text_extraction(f"{arxiv_id}.pdf", backend=os.environ.get("OCR_BACKEND", "aryn"))
 
 embeddings = OpenAIEmbeddings()
 

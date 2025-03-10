@@ -1,7 +1,6 @@
 import os
 
 import numpy as np
-import pdfplumber
 import requests
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_openai import OpenAIEmbeddings
@@ -10,6 +9,7 @@ from sklearn.cluster import DBSCAN
 from sklearn.metrics.pairwise import cosine_similarity
 
 from bespokelabs.curator.blocks.raft import Raft
+from examples.blocks.raft.utils import text_extraction
 
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 512))
 assert CHUNK_SIZE > 0
@@ -27,13 +27,7 @@ except requests.exceptions.RequestException as e:
 with open(f"{arxiv_id}.pdf", "wb") as f:
     f.write(response.content)
 
-with pdfplumber.open(f"{arxiv_id}.pdf") as pdf:
-    text = ""
-    for page in pdf.pages:
-        text += page.extract_text() or ""
-
-with open(f"{arxiv_id}.txt", "w", encoding="utf-8") as f:
-    f.write(text)
+text = text_extraction(f"{arxiv_id}.pdf", backend=os.environ.get("OCR_BACKEND", "aryn"))
 
 
 def remove_redundant_questions(dataset, similarity_threshold=0.85):

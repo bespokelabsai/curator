@@ -1,4 +1,9 @@
-"""RAFT: Question and Answer generation from text."""
+"""RAFT: Adapting Language Model to Domain-Specific RAG.
+
+Reference:
+- Paper: https://arxiv.org/html/2403.10131v1
+- Reference Code:  https://github.com/ShishirPatil/gorilla/blob/main/raft/raft.py
+"""
 
 import functools
 import random
@@ -181,8 +186,6 @@ def chunk_text(text: str, chunk_size: int) -> datasets.Dataset:
     return datasets.Dataset.from_list(chunks)
 
 
-# Paper: https://arxiv.org/html/2403.10131v1
-# Reference Code:  https://github.com/ShishirPatil/gorilla/blob/main/raft/raft.py
 @dataclass
 class Raft:
     """RAFT class to generate structured QA datasets from text.
