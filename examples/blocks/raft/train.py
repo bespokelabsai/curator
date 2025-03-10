@@ -14,6 +14,7 @@ MAX_LENGTH = 8192
 TEST_SIZE = 0.05
 USE_DEEPSPEED = os.getenv("DISTRIBUTED", False)
 DS_CONFIG_PATH = "ds_config.json"
+DATA_PATH = "./raft_dataset.parquet"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -29,8 +30,7 @@ def process_dataset(data_path):
 
 
 print("Processing dataset...")
-data_path = "./raft_dataset.parquet"  # Update this to your dataset path
-dataset = process_dataset(data_path)
+dataset = process_dataset(DATA_PATH)
 
 
 def format_for_llama(example):

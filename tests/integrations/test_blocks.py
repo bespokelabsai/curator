@@ -20,15 +20,16 @@ _ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai"}]
 def test_basic_raft(temp_working_dir):
     temp_working_dir, backend, vcr_config = temp_working_dir
     hash_book = {
-        "openai": "9906685f6b535a2242529453ad992bc7313e410f173b2311197e466cfce1144f",
+        "openai": "93911791271bde9993f0112f27087bef9e612bb06bb448219dec2ea109657199",
     }
 
     with vcr_config.use_cassette("basic_block_raft.yaml"):
-        # Capture the output to verify status tracker
         with open("tests/integrations/common_fixtures/raft.txt", "rb") as file:
             text = file.read().decode("utf-8")
         raft = Raft(model="gpt-4o-mini", distractors=2, n_questions=1, chunk_size=1024, p=0.95)
         dataset = raft(text)
 
-        recipes = "".join([qa[0] for qa in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
+        qas = [qa[0] for qa in dataset.to_pandas().values.tolist()]
+        qas.sort()
+        qas = "".join(qas)
+        assert _hash_string(qas) == hash_book[backend]

@@ -41,14 +41,14 @@ _DEFAULT_ANSWER_PROMPT = """
     """
 
 
-class Questions(BaseModel):
+class _Questions(BaseModel):
     """A list of questions."""
 
     questions: List[str] = Field(description="A list of questions.")
 
 
 class _RaftQuestion(curator.LLM):
-    response_format = Questions
+    response_format = _Questions
 
     def __init__(self, *args, n: int = 5, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,7 +57,7 @@ class _RaftQuestion(curator.LLM):
     def prompt(self, input: dict) -> str:
         return _DEFAULT_QUESTION_PROMPT(self.n, input["content"])
 
-    def parse(self, input: dict, response: Questions) -> List[Dict[str, str]]:
+    def parse(self, input: dict, response: _Questions) -> List[Dict[str, str]]:
         return [{"chunk_id": input["chunk_id"], "question": q} for q in response.questions]
 
 

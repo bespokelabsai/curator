@@ -11,10 +11,19 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from bespokelabs.curator.blocks.raft import Raft
 
-raft = Raft(model="gpt-4o", distractors=3, n_questions=10, chunk_size=512, p=0.85)
+CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 512))
+assert CHUNK_SIZE > 0
+
+raft = Raft(model="gpt-4o", distractors=3, n_questions=10, chunk_size=CHUNK_SIZE, p=0.85)
+model = SentenceTransformer("all-MiniLM-L6-v2")
 
 arxiv_id = os.environ.get("ARXIV_ID", "2503.03323")  # change this to the arxiv id of the paper you want to test
-response = requests.get(f"https://arxiv.org/pdf/{arxiv_id}.pdf", stream=True)
+try:
+    response = requests.get(f"https://arxiv.org/pdf/{arxiv_id}.pdf", stream=True)
+except requests.exceptions.RequestException as e:
+    print(f"Failed to download the paper: {e}")
+    exit(1)
+
 with open(f"{arxiv_id}.pdf", "wb") as f:
     f.write(response.content)
 
@@ -30,8 +39,6 @@ with open(f"{arxiv_id}.txt", "w", encoding="utf-8") as f:
 def remove_redundant_questions(dataset, similarity_threshold=0.85):
     """Removes redundant questions from a Hugging Face dataset with QA pairs."""
     questions = dataset["question"]
-
-    model = SentenceTransformer("all-MiniLM-L6-v2")
 
     print("Generating embeddings for questions...")
     embeddings = model.encode(questions, show_progress_bar=True)
@@ -82,7 +89,7 @@ def remove_redundant_questions(dataset, similarity_threshold=0.85):
 
 if __name__ == "__main__":
     embeddings = OpenAIEmbeddings()
-    n_of_chunks = len(text) // 512
+    n_of_chunks = len(text) // CHUNK_SIZE
     text_splitter = SemanticChunker(
         embeddings=embeddings,
         number_of_chunks=n_of_chunks,

@@ -11,7 +11,9 @@ model_path = os.environ.get("MODEL_PATH", "llama3-finetuned/final")
 
 tokenizer = AutoTokenizer.from_pretrained(model_path)
 model = AutoModelForCausalLM.from_pretrained(model_path).cuda()
-CHUNK_SIZE = 512
+
+CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 512))
+assert CHUNK_SIZE > 0
 
 arxiv_id = os.environ.get("ARXIV_ID", "2503.03323")  # change this to the arxiv id of the paper you want to test
 with pdfplumber.open(f"{arxiv_id}.pdf") as pdf:
@@ -70,7 +72,7 @@ def perform_rag(query, model, tokenizer, top_k=3):
 
 
 while True:
-    query = input("Enter prompt: ")
+    query = input("Enter prompt (Press Ctrl-c to exit): ")
     answer = perform_rag(
         query,
         model,
