@@ -1,0 +1,13 @@
+numpy
+pdfplumber
+requests
+sentence-transformers
+scikit-learn
+torch
+langchain
+langchain-experimental
+langchain-openai
+transformers
+faiss-cpu
+datasets
+bespokelabs-curator

@@ -7,7 +7,7 @@ pip install -r reqs.txt
 ### Export environment variables
 ```shell
 # Prepare the environment
-export ARXIV_ID="2001.00001"
+export ARXIV_ID="2503.03323"
 export MODEL_PATH="llama3-finetuned/final"
 export DISTRIBUTED=1
 ```
