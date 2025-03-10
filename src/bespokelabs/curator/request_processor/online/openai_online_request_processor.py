@@ -92,10 +92,10 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             else:
                 self.url = _DEFAULT_OPENAI_URL
         else:
-            self.url = self.config.base_url + self._DEFAULT_COMPLETION_SUFFIX
+            self.url = self.config.base_url.rstrip("/") + self._DEFAULT_COMPLETION_SUFFIX
 
         self._longlived_response = False
-        if self.config.base_url.rstrip("/") == "https://api.deepseek.com":
+        if "api.deepseek.com" in self.url:
             # DeepSeek does not return rate limits in headers
             # https://api-docs.deepseek.com/quick_start/rate_limit.
             # And sending an empty request for rate limits results in a 400 error like this:
