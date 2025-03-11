@@ -1,5 +1,7 @@
 import typing as t
 
+import instructor
+import litellm
 from mistralai import Mistral
 
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
@@ -169,8 +171,33 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         """Creates an API-specific request body from a generic request body.
 
         Transforms a GenericRequest into the format expected by MIstral's batch API.
+
+        Args:
+            generic_request: Generic request object containing model, messages,
+            and optional response format.
+
+        Returns:
+            dict: API-specific request body for Mistral's batch API includes:
+            - custom_id: Original row index of the request.
+            - body: dictionary containing max_token, messages and other parameters.
+
+        Reference: Mistral batch API documentation: https://docs.mistral.ai/capabilities/batch/
         """
-        pass
+        _, kwargs = instructor.handle_response_model(
+            self.prompt_formatter.response_format,
+            mode=instructor.Mode.JSON,
+            messages=generic_request.messages,
+        )
+        request = {
+            "custom_id": str(generic_request.original_row_idx),
+            "body": {
+                "max_tokens": litellm.get_max_tokens(self.config.model),
+                "messages": generic_request.messages,
+                **kwargs,  # contains 'system' and 'messages'
+                **generic_request.generation_params,
+            },
+        }
+        return request
 
     async def upload_batch_file(self, file_content: bytes) -> t.Any:
         """Uploads a batch file to Mistral and waits until ready."""
