@@ -52,7 +52,7 @@ class Image(BaseType):
     content: bytes | PIL_Image.Image | str = Field("", description="Image content bytes.")
     detail: str = Field("auto", description="Details about the image. Note 'auto' is only supported for OpenAI client.")
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    mime_type: str | None = Field("image/png", description="The MIME type of the file.")
+    mime_type: str | None = Field(None, description="The MIME type of the file.")
 
     type: t.ClassVar[str] = "image"
 

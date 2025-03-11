@@ -208,7 +208,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
             _TokenUsage: Total estimated tokens (input and output)
         """
         input_tokens = litellm.token_counter(model=self.config.model, messages=messages)
-        output_tokens = self.estimate_output_tokens()
+        output_tokens = int(self.estimate_output_tokens())
         return _TokenUsage(input=input_tokens, output=output_tokens)
 
     def test_call(self):
