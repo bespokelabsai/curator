@@ -8,6 +8,8 @@ from io import BytesIO
 from PIL import Image as PIL_Image
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator, model_validator
 
+from bespokelabs.curator.log import logger
+
 
 class BaseType(BaseModel):
     """A class to represent the base type for multimodal prompts."""
@@ -86,6 +88,8 @@ class Image(BaseType):
         """Run after initialization."""
         if self.mime_type is None and self.url:
             mime_type, _ = mimetypes.guess_type(self.url)
+            if not mime_type:
+                logger.warning(f"Failed to guess MIME type for {self.url}.")
             self.mime_type = mime_type.lower() if mime_type else "image/png"
 
 
