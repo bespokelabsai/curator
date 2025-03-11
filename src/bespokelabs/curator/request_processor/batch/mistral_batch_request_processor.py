@@ -265,8 +265,24 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             return self.parse_api_specific_batch_object(batch, metadata.get("request_file"))
 
     async def retrieve_batch(self, batch: GenericBatch) -> GenericBatch:
-        """Retrieve current status of a batch from Mistral's API."""
-        pass
+        """Retrieve current status of a batch from Mistral's API.
+
+        Args:
+            batch: The batch object to retrieve status for.
+
+        Returns:
+            GenericBatch: Updated batch object with current status.
+            None: If the batch is not found or inaccessible.
+
+        Side Effects:
+            - Logs error is batch retrieval fails
+        """
+        try:
+            batch = await self.client.jobs.get(job_id=batch.id)
+        except Exception as e:
+            logger.error(f"Failed to retrieve batch: {e}")
+            return None
+        return self.parse_api_specific_batch_object(batch, request_file=batch.request_file)
 
     async def download_batch(self, batch: GenericBatch) -> list[dict] | None:
         """Download the results of a completed batch."""
