@@ -7,7 +7,7 @@ This example folder provides an implementation of RAFT (Retrieval Augmented Fine
 First, install the required dependencies:
 
 ```shell
-pip install -r reqs.txt
+pip install -r requirements.txt
 ```
 
 ## Setup
@@ -17,8 +17,8 @@ Before running the scripts, configure your environment variables:
 
 ```shell
 # Prepare the environment
-export ARXIV_ID="2503.03323"
-export OCR_BACKEND="aryn"  # Options: "aryn" or "python" (pdfplumber)
+export PDF_URL="https://arxiv.org/pdf/2503.03323.pdf"
+export OCR_BACKEND="aryn"  # Options: "aryn" or "local" (pdfplumber)
 export DISTRIBUTED=1  # Enable multi-GPU training
 ```
 
@@ -27,12 +27,12 @@ export DISTRIBUTED=1  # Enable multi-GPU training
 Prepare the dataset using RAFT with **Curator**:
 
 ```shell
-python3 raft.py
+PYTHONPATH=./:.. python3 raft.py
 ```
 
 This step processes domain-specific documents, extracts text, generates questions, and prepares data for fine-tuning the LLM.
 
-## Fine-Tune Llama 3 (8B) Model
+## Fine-Tune Llama-3.1-8B-Instruct Model
 
 ### Single GPU Training
 Run fine-tuning on a single GPU:
@@ -52,5 +52,5 @@ DISTRIBUTED=1 deepspeed --num_gpus=4 train.py
 After fine-tuning, perform inference using the RAFT fine-tuned model:
 
 ```shell
-python3 run.py
+PYTHONPATH=./:.. python3 run.py
 ```

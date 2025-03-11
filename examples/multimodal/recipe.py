@@ -26,8 +26,8 @@ def main():
     ingredients = [
         {"spice_level": ingredient[0], "image_url": ingredient[1]}
         for ingredient in [
-            ("very spicy", "image1.jpeg"),
-            ("not so spicy", "file_example_PNG_500kB.png"),
+            ("very spicy", "https://cdn.tasteatlas.com//images/ingredients/fcee541cd2354ed8b68b50d1aa1acad8.jpeg"),
+            ("not so spicy", "https://cdn.tasteatlas.com//images/dishes/da5fd425608f48b09555f5257a8d3a86.jpg"),
         ]
     ]
     ingredients = Dataset.from_list(ingredients)
@@ -45,8 +45,8 @@ def main():
     #############################################
 
     recipe_generator = RecipeGenerator(
-        model_name="claude-3-5-sonnet-20241022",
-        backend="litellm",
+        model_name="gpt-4o-mini",
+        backend="openai",
     )
 
     # Generate recipes for all ingredients

@@ -1,7 +1,7 @@
-def text_extraction(path, backend="aryn"):
+def extract_text(path, backend="aryn"):
     """Extract text from a PDF file using the specified backend."""
     print(f"Extracting text from {path} using {backend} backend")
-    text = ""
+    text = []
     if backend == "aryn":
         from aryn_sdk.partition import partition_file
 
@@ -11,13 +11,15 @@ def text_extraction(path, backend="aryn"):
         elements = data["elements"]
         for element in elements:
             try:
-                text += element["text_representation"]
+                text.append(element["text_representation"])
             except KeyError:
                 continue
-    else:
+    elif backend == "local":
         import pdfplumber
 
         with pdfplumber.open(path) as pdf:
             for page in pdf.pages:
-                text += page.extract_text() or ""
-    return text
+                text.append(page.extract_text() or "")
+    else:
+        raise ValueError(f"Invalid OCR backend: {backend}")
+    return "".join(text)

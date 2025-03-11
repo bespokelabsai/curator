@@ -1,0 +1,25 @@
+# Core Libraries
+numpy
+requests
+
+# PDF Processing
+pdfplumber
+
+# Machine Learning & NLP
+torch
+scikit-learn
+sentence-transformers
+transformers
+
+# Vector Search
+faiss-cpu
+
+# Data Handling
+datasets
+
+# LangChain & AI Frameworks
+langchain
+langchain-experimental
+langchain-openai
+
+bespokelabs-curator

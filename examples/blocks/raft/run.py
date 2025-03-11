@@ -6,7 +6,7 @@ from langchain_experimental.text_splitter import SemanticChunker
 from langchain_openai import OpenAIEmbeddings
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from examples.blocks.raft.utils import text_extraction
+from examples.blocks.raft.utils import extract_text
 
 model_path = os.environ.get("MODEL_PATH", "llama3-finetuned/final")
 
@@ -16,9 +16,11 @@ model = AutoModelForCausalLM.from_pretrained(model_path).cuda()
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 512))
 assert CHUNK_SIZE > 0
 
-arxiv_id = os.environ.get("ARXIV_ID", "2503.03323")  # change this to the arxiv id of the paper you want to test
+default_pdf_url = "https://arxiv.org/pdf/2503.03323.pdf"
+pdf_url = os.environ.get("PDF_URL", default_pdf_url)
 
-text = text_extraction(f"{arxiv_id}.pdf", backend=os.environ.get("OCR_BACKEND", "aryn"))
+pdf_file = pdf_url.split("/")[-1]
+text = extract_text(pdf_file, backend=os.environ.get("OCR_BACKEND", "aryn"))
 
 embeddings = OpenAIEmbeddings()
 
@@ -33,7 +35,7 @@ print("Creating embeddings and vector store...")
 vector_store = FAISS.from_texts(chunks, embeddings)
 
 
-def perform_rag(query, model, tokenizer, top_k=3):
+def retrieve_and_generate(query, model, tokenizer, top_k=3):
     """Perform Retrieval-Augmented Generation (RAG) on a PDF file."""
     print(f"Retrieving top {top_k} chunks for query: '{query}'")
     results = vector_store.similarity_search(query, k=top_k)
@@ -71,7 +73,7 @@ def perform_rag(query, model, tokenizer, top_k=3):
 
 while True:
     query = input("Enter prompt (Press Ctrl-c to exit): ")
-    answer = perform_rag(
+    answer = retrieve_and_generate(
         query,
         model,
         tokenizer,

@@ -9,31 +9,34 @@ from sklearn.cluster import DBSCAN
 from sklearn.metrics.pairwise import cosine_similarity
 
 from bespokelabs.curator.blocks.raft import Raft
-from examples.blocks.raft.utils import text_extraction
+from examples.blocks.raft.utils import extract_text
 
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 512))
 assert CHUNK_SIZE > 0
 
 raft = Raft(model="gpt-4o", distractors=3, n_questions=10, chunk_size=CHUNK_SIZE, p=0.85)
-model = SentenceTransformer("all-MiniLM-L6-v2")
 
-arxiv_id = os.environ.get("ARXIV_ID", "2503.03323")  # change this to the arxiv id of the paper you want to test
+default_pdf_url = "https://arxiv.org/pdf/2503.03323.pdf"
+pdf_url = os.environ.get("PDF_URL", default_pdf_url)
+
 try:
-    response = requests.get(f"https://arxiv.org/pdf/{arxiv_id}.pdf", stream=True)
+    response = requests.get(pdf_url, stream=True)
 except requests.exceptions.RequestException as e:
-    print(f"Failed to download the paper: {e}")
+    print(f"Failed to download the pdf: {e}")
     exit(1)
 
-with open(f"{arxiv_id}.pdf", "wb") as f:
+
+pdf_file = pdf_url.split("/")[-1]
+with open(pdf_file, "wb") as f:
     f.write(response.content)
 
-text = text_extraction(f"{arxiv_id}.pdf", backend=os.environ.get("OCR_BACKEND", "aryn"))
+text = extract_text(pdf_file, backend=os.environ.get("OCR_BACKEND", "aryn"))
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
 
 
-def remove_redundant_questions(dataset, similarity_threshold=0.85):
-    """Removes redundant questions from a Hugging Face dataset with QA pairs."""
-    questions = dataset["question"]
-
+def compute_clusters(questions, model, similarity_threshold=0.85):
+    """Computes clusters of similar questions based on embeddings and cosine similarity."""
     print("Generating embeddings for questions...")
     embeddings = model.encode(questions, show_progress_bar=True)
 
@@ -45,8 +48,15 @@ def remove_redundant_questions(dataset, similarity_threshold=0.85):
     distances = np.maximum(distances, 0)
 
     clustering = DBSCAN(eps=1 - similarity_threshold, min_samples=2, metric="precomputed").fit(distances)
-
     labels = clustering.labels_
+
+    return embeddings, labels
+
+
+def remove_redundant_questions(dataset, model, similarity_threshold=0.85):
+    """Removes redundant questions from a Hugging Face dataset with QA pairs."""
+    questions = dataset["question"]
+    embeddings, labels = compute_clusters(questions, model, similarity_threshold)
 
     questions_to_keep = set()
 
@@ -75,10 +85,7 @@ def remove_redundant_questions(dataset, similarity_threshold=0.85):
     print(f"Filtered dataset size: {len(filtered_indices)}")
     print(f"Removed {len(dataset) - len(filtered_indices)} redundant questions")
 
-    # Create a new filtered dataset
-    filtered_dataset = dataset.select(filtered_indices)
-
-    return filtered_dataset
+    return dataset.select(filtered_indices)
 
 
 if __name__ == "__main__":
