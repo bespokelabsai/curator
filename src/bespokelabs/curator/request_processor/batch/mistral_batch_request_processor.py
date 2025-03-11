@@ -7,6 +7,7 @@ from bespokelabs.curator.request_processor.config import BatchRequestProcessorCo
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 # Reference for Mistral status: https://github.com/mistralai/client-python/blob/main/docs/models/batchjobstatus.md
 _PROGRESS_STATE = {"QUEUED", "RUNNING", "CANCELLATION_REQUESTED"}
@@ -115,8 +116,54 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         )
 
     def parse_api_specific_response(self, raw_response: dict, generic_request: GenericRequest, batch: GenericBatch) -> GenericResponse:
-        """Parse Mistral API response into generic format."""
-        pass
+        """Parse Mistral API response into generic format.
+
+        Processes raw responses from Mistral's batch API, handling both successful
+        and failed responses. For successful responses, calculates token usage
+        and applies batch pricing discount.
+
+        Args:
+            raw_response: Raw response dictionary from Mistral's API.
+            generic_request: Original generic request object.
+            batch: The batch object containing timing information.
+
+        Returns:
+            GenericResponse: Standardized response object with parsed message,
+                errors, token usage, and cost information.
+
+        Side Effects: # TODO: Add side effects
+            - Calculates costs with 50% batch discount
+            - Handles failed requests with error details
+
+        Reference: Mistral API request/response format: https://docs.mistral.ai/api/#tag/chat
+        """
+        if raw_response.status_code != 200:
+            response_message = None
+            response_errors = raw_response["detail"]["msg"]
+            token_usage = None
+            cost = None
+        else:
+            response_message = raw_response["choices"][0]["message"]["content"]
+            response_errors = None
+            token_usage = _TokenUsage(
+                prompt_tokens=raw_response["usage"]["prompt_tokens"],
+                completion_tokens=raw_response["usage"]["completion_tokens"],
+                total_tokens=raw_response["usage"]["total_tokens"],
+            )
+            cost = raw_response["metadata"]["cost"]
+            # TODO: Mistral chat-completions doesnt have cost as per docs (though for fine-tning it does have a `cost` key in metadata): (https://docs.mistral.ai/api/#tag/chat)
+
+        return GenericResponse(
+            response_message=response_message,
+            response_errors=response_errors,
+            raw_response=raw_response,
+            raw_request=None,
+            generic_request=generic_request,
+            created_at=batch.created_at,
+            finished_at=batch.finished_at,
+            token_usage=token_usage,
+            response_cost=cost,
+        )
 
     def create_api_specific_request_batch(self, generic_request: GenericRequest) -> dict:
         """Creates an API-specific request body from a generic request body.
