@@ -157,6 +157,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             request_counts=self.parse_api_specific_request_counts(batch.request_counts),
             raw_batch=batch.model_dump(),
             raw_status=batch.processing_status,
+            attempts_left=self.config.max_retries,
         )
 
     def create_api_specific_request_batch(self, generic_request: GenericRequest) -> dict:
