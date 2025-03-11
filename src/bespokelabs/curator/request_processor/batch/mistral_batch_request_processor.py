@@ -4,6 +4,7 @@ import instructor
 import litellm
 from mistralai import Mistral
 
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
@@ -199,13 +200,50 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         }
         return request
 
-    async def upload_batch_file(self, file_content: bytes) -> t.Any:
-        """Uploads a batch file to Mistral and waits until ready."""
-        pass
+    async def upload_batch_file(self, file_content: bytes) -> t.Any:  # TODO: Define the return type
+        """Uploads a batch file to OpenAI and waits until ready.
+
+        Args:
+            file_content (bytes): The encoded file content to upload
+
+        Returns:
+            str: The uploaded file object from OpenAI
+        """
+        batch_file_upload = await self.client.upload(
+            file={
+                "filename": "None",  # TODO: Add filename
+                "content": file_content,
+            },
+            purpose="batch",
+        )
+        return batch_file_upload
 
     async def create_batch(self, batch_file_id: str, metadata: dict) -> t.Any:
-        """Creates a batch job with Mistral using an uploaded file."""
-        pass
+        """Creates a batch job with Mistral using an uploaded file.
+
+        Args:
+            batch_file_id (str): ID of the uploaded file to use for the batch
+            metadata (dict): Metadata to be included with the batch
+
+        Returns:
+            Batch: The created batch object from OpenAI
+
+        Raises:
+            Exception: If batch creation fails
+
+        Reference: Mistral batch API documentation (batch processing full example): https://docs.mistral.ai/capabilities/batch/#tag/ocr/operation/ocr_v1_ocr_post
+        """
+        try:
+            batch = await self.client.batch.jobs.create(
+                input_files=batch_file_id,
+                model=self.config.model,
+                endpoint="/v1/chat/completions",
+                metadata=metadata,
+            )
+        except Exception as e:
+            logger.error(f"Error submitting batch: {e}")
+            raise e
+        return batch
 
     async def submit_batch(self, requests: list[dict], metadata: dict) -> GenericBatch:
         """Handles the complete batch submission process."""
