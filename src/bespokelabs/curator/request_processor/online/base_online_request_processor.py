@@ -139,6 +139,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         def _format_multimodal(data, mime_type="image/png"):
             """Format multimodal prompt data for API request."""
+            mime_type = mime_type or "image/png"
             if data.url and not data.is_local:
                 return {"type": "image_url", "image_url": {"url": data.url}}
             else:
