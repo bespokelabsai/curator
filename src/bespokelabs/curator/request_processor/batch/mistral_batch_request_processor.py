@@ -246,8 +246,23 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         return batch
 
     async def submit_batch(self, requests: list[dict], metadata: dict) -> GenericBatch:
-        """Handles the complete batch submission process."""
-        pass
+        """Handles the complete batch submission process.
+
+        Args:
+            requests (list[dict]): List of API-specific requests to submit
+            metadata (dict): Metadata to be included with the batch
+
+        Returns:
+            Batch: The created batch object for Mistral
+
+        Side Effects:
+            - Updates tracker with submitted batch status
+        """
+        async with self.semaphore:
+            file_content = self.create_batch_file(requests)
+            batch_file = await self.upload_batch_file(file_content)
+            batch = await self.create_batch(batch_file.id, metadata)
+            return self.parse_api_specific_batch_object(batch, metadata.get("request_file"))
 
     async def retrieve_batch(self, batch: GenericBatch) -> GenericBatch:
         """Retrieve current status of a batch from Mistral's API."""
