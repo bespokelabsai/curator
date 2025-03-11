@@ -20,6 +20,7 @@ from bespokelabs.curator.types.token_usage import _TokenUsage
 
 _PROGRESS_STATE = {"validating", "finalizing", "cancelling", "in_progress", "pre_schedule"}
 _FINISHED_STATE = {"completed", "failed", "expired", "cancelled"}
+_FAILED_STATE = {"failed"}
 
 _UNSUPPORTED_FILE_STATUS_API_PROVIDERS = ("api.kluster.ai", "batch.inference.net")
 
@@ -126,6 +127,8 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             status = GenericBatchStatus.SUBMITTED.value
         elif batch.status in _FINISHED_STATE:
             status = GenericBatchStatus.FINISHED.value
+        elif batch.status in _FAILED_STATE:
+            status = GenericBatchStatus.FAILED.value
         else:
             raise ValueError(f"Unknown batch status: {batch.status}")
 
@@ -150,6 +153,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             raw_batch=raw_batch,
             request_counts=self.parse_api_specific_request_counts(batch.request_counts),
             raw_status=batch.status,
+            attempts_left=self.config.max_retries,
         )
 
     def parse_api_specific_response(

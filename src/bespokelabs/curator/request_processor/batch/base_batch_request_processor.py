@@ -380,6 +380,40 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             )
         return file_content
 
+    async def resubmit_batch_from_request_file(
+        self,
+        request_file: str,
+        completed_request_ids: set[int],
+        attempts_left: int,
+    ):
+        """Resubmit a batch of requests from a file.
+
+        Reads requests from file, converts them to API-specific format,
+        and submits them as a batch.
+
+        Args:
+            request_file: Path to file containing request data.
+            completed_request_ids: Set of request IDs that have already been completed
+                and should be skipped.
+            attempts_left: Number of attempts left to download the results.
+
+        Side Effects:
+            - Updates batch submission progress bar
+            - Updates tracker with submitted batch status
+            - Creates batch metadata with request file path
+            - Updates batch objects file
+        """
+        metadata = {"request_file": request_file}
+        requests = self.requests_from_generic_request_file(request_file, completed_request_ids)
+        if not requests:
+            logger.warning(f"Batch {request_file} has no requests to resubmit.")
+            return
+        batch = await self.submit_batch(requests, metadata)
+        batch.attempts_left = attempts_left
+        self.tracker.mark_as_submitted(batch, len(requests))
+        await self.update_batch_objects_file()
+        return batch
+
     async def submit_batch_from_request_file(
         self,
         request_file: str,
@@ -584,8 +618,10 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             - Marks completed batches as finished
         """
         async with self.semaphore:
+            attempts_left = batch.attempts_left
             batch = await self.retrieve_batch(batch)
             if batch is not None:
+                batch.attempts_left = attempts_left
                 self.tracker.update_submitted(batch)
 
                 n_succeeded_requests = batch.request_counts.succeeded
@@ -602,6 +638,29 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                     logger.debug(f"Batch {batch.id} finished with status: {batch.raw_status}")
                     self.tracker.mark_as_finished(batch)
                     await self.update_batch_objects_file()
+                elif batch.status == GenericBatchStatus.FAILED.value:
+                    logger.warning(f"Batch {batch.id} failed with status: {batch.raw_status}")
+                    self.tracker.mark_as_finished(batch)
+                    if batch.attempts_left > 0:
+                        batch.attempts_left -= 1
+                        logger.warning(
+                            f"Batch {batch.id} failed during attempt " f"{self.config.max_retries - batch.attempts_left} of {self.config.max_retries} "
+                        )
+                        self.tracker.append_to_resubmit(batch)
+
+                    else:
+                        logger.error(f"Batch {batch.id} failed after {self.config.max_retries} attempts.")
+
+    async def resubmit_batch(self, batch: GenericBatch) -> None:
+        """Resubmit a failed batch for additional attempts.
+
+        Args:
+            batch: The batch object to resubmit.
+        """
+        response_file = batch.request_file.replace("requests_", "responses_")
+        completed_request_ids, _ = self.validate_existing_response_file(response_file)
+        await self.resubmit_batch_from_request_file(batch.request_file, completed_request_ids, attempts_left=batch.attempts_left)
+        self.tracker.mark_as_resubmitted(batch)
 
     async def poll_and_process_batches(self) -> None:
         """Monitor and process batches until completion.
@@ -634,6 +693,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             download_tasks = [self.download_batch_to_response_file(batch) for batch in self.tracker.finished_batches.values()]
             # Failed downloads return None and print any errors that occurred
             all_response_files.extend(await asyncio.gather(*download_tasks))
+            resubmit_tasks = [self.resubmit_batch(batch) for batch in self.tracker.to_resubmit_batches.values()]
+            await asyncio.gather(*resubmit_tasks)
 
             logger.debug(
                 f"Batches returned: {self.tracker.n_finished_or_downloaded_batches:,}/{self.tracker.n_total_batches:,} "
