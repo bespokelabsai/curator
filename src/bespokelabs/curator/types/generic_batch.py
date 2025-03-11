@@ -13,6 +13,7 @@ class GenericBatchStatus(Enum):
     SUBMITTED = "submitted"  # Batch has been submitted but not yet processed
     FINISHED = "finished"  # Batch processing has completed
     DOWNLOADED = "downloaded"  # Results have been downloaded
+    FAILED = "failed"  # Batch processing failed
 
 
 class GenericBatchRequestCounts(BaseModel):
@@ -36,6 +37,7 @@ class GenericBatch(BaseModel):
     request_counts: GenericBatchRequestCounts  # Statistics about the requests
     raw_status: str  # Raw status string from the API
     raw_batch: dict  # Complete raw batch data from the API
+    attempts_left: int  # Number of attempts left to download the results
 
     model_config = {
         "json_encoders": {datetime.datetime: lambda dt: dt.isoformat()},
