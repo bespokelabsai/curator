@@ -307,5 +307,28 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         return results
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:
-        """Cancel a batch job."""
-        pass
+        """Cancel a running batch job.
+
+        Args:
+            batch: The batch object to cancel.
+
+        Returns:
+            GenericBatch: Updated batch object after cancellation attempt.
+
+        Side Effects:
+            - Attempts to cancel batch with Mistral's API
+            - Retrieves current batch status before attempting cancellation
+            - Logs success or failure of cancellation
+
+        """
+        try:
+            if batch.status in _FINISHED_STATE:
+                logger.warning(f"Batch {batch.id} is already finished, cannot cancel.")
+                return self.parse_api_specific_batch_object(batch, request_file=batch.request_file)
+            else:
+                batch = await self.client.batch.jobs.cancel(job_id=batch.id)
+                logger.info(f"Successfully cancelled batch: {batch.id}")
+                return self.parse_api_specific_batch_object(batch, request_file=batch.request_file)
+        except Exception as e:
+            logger.error(f"Failed to cancel batch: {e}")
+            raise
