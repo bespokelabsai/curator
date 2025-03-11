@@ -69,7 +69,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             raw_request_counts_object=mistral_batch_object.model_dump(),
         )
 
-    def parse_api_specific_batch_object(self, mistral_batch_object, request_file: str | None = None) -> GenericBatch:
+    def parse_api_specific_batch_object(self, mistral_batch_object: t.Any, request_file: str | None = None) -> GenericBatch:
         """Convert a Mistral batch object to generic format.
 
         Convert Mistral-specific request counts to generic format.
