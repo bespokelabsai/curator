@@ -285,8 +285,26 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         return self.parse_api_specific_batch_object(batch, request_file=batch.request_file)
 
     async def download_batch(self, batch: GenericBatch) -> list[dict] | None:
-        """Download the results of a completed batch."""
-        pass
+        """Download and process batch results from Mistral.
+
+        Args:
+            batch: The batch object to download results for.
+
+        Returns:
+            list[dict] | None: List of response dictionaries if successful,
+                None if download fails or batch has no output.
+
+        Side Effects:
+            - Downloads files from Mistral's API
+            - Logs batch status and any errors
+        """
+        try:
+            batch_object = await self.retrieve_batch(batch)
+            results = await self.client.files.download(batch_object.output_file)
+        except Exception as e:
+            logger.error(f"Failed to download batch results: {e}")
+            return None
+        return results
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:
         """Cancel a batch job."""
