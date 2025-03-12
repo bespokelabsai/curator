@@ -135,19 +135,20 @@ class CodeExecutor:
         fingerprint = self._hash_fingerprint(dataset_hash, disable_cache)
 
         # Initialize and store metadata
-        metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
-        metadata_db = CodeMetadataDB(metadata_db_path)
+        if self._code_executor.config.use_metadata_db:
+            metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
+            metadata_db = CodeMetadataDB(metadata_db_path)
 
-        metadata_dict = {
-            "timestamp": datetime.now().isoformat(),
-            "dataset_hash": dataset_hash,
-            "code": _get_function_source(self.code),
-            "code_input": _get_function_source(self.code_input),
-            "code_output": _get_function_source(self.code_output),
-            "run_hash": fingerprint,
-        }
+            metadata_dict = {
+                "timestamp": datetime.now().isoformat(),
+                "dataset_hash": dataset_hash,
+                "code": _get_function_source(self.code),
+                "code_input": _get_function_source(self.code_input),
+                "code_output": _get_function_source(self.code_output),
+                "run_hash": fingerprint,
+            }
 
-        metadata_db.store_metadata(metadata_dict)
+            metadata_db.store_metadata(metadata_dict)
 
         # Set up run-specific cache directory
         run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
