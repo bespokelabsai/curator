@@ -20,6 +20,15 @@ Before running the scripts, configure your environment variables:
 export PDF_URL="https://arxiv.org/pdf/2503.03323.pdf"
 export OCR_BACKEND="aryn"  # Options: "aryn" or "local" (pdfplumber)
 export DISTRIBUTED=1  # Enable multi-GPU training
+export OPENAI_API_KEY=<your_openai_api_key>
+```
+
+## OCR Backend Configuration
+If backend is set to `aryn`, you need to set aryn api key:
+goto [Aryn](https://console.aryn.ai/api-keys) and get your api key and set it as an environment variable:
+
+```shell
+export ARYN_API_KEY=<you_key>
 ```
 
 ## Dataset Preparation
@@ -27,7 +36,7 @@ export DISTRIBUTED=1  # Enable multi-GPU training
 Prepare the dataset using RAFT with **Curator**:
 
 ```shell
-PYTHONPATH=./:.. python3 raft.py
+PYTHONPATH=./:.. python3 examples/blocks/raft/raft.py
 ```
 
 This step processes domain-specific documents, extracts text, generates questions, and prepares data for fine-tuning the LLM.
@@ -45,12 +54,12 @@ python3 train.py
 For distributed training across multiple GPUs, use DeepSpeed:
 
 ```shell
-DISTRIBUTED=1 deepspeed --num_gpus=4 train.py
+DISTRIBUTED=1 deepspeed --num_gpus=4 examples/blocks/raft/train.py
 ```
 
 ## Running RAFT for Inference
 After fine-tuning, perform inference using the RAFT fine-tuned model:
 
 ```shell
-PYTHONPATH=./:.. python3 run.py
+PYTHONPATH=./:.. python3 examples/blocks/raft/run.py
 ```

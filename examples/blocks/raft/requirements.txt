@@ -23,3 +23,6 @@ langchain-experimental
 langchain-openai
 
 bespokelabs-curator
+aryn_sdk
+deepspeed
+accelerate>=0.26.0

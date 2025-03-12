@@ -99,7 +99,7 @@ if __name__ == "__main__":
     chunks = text_splitter.split_text(text)
 
     dataset = raft(chunks)
-    dataset = remove_redundant_questions(dataset)
+    dataset = remove_redundant_questions(dataset, model)
 
     dataset.to_parquet("raft_dataset.parquet")
     print(dataset[0].keys())
