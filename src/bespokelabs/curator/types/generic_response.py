@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 from bespokelabs.curator.types.generic_request import GenericRequest
-from bespokelabs.curator.types.token_usage import TokenUsage
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 """A generic response model for LLM API requests.
 
@@ -36,7 +36,7 @@ class GenericResponse(BaseModel):
     generic_request: GenericRequest
     created_at: datetime.datetime
     finished_at: datetime.datetime
-    token_usage: Optional[TokenUsage] = None
+    token_usage: Optional[_TokenUsage] = None
     response_cost: Optional[float] = None
     finish_reason: Optional[str] = None
 

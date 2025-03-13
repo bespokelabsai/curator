@@ -1,4 +1,3 @@
-import logging
 import typing as t
 
 import instructor
@@ -6,15 +5,16 @@ import litellm
 from anthropic import AsyncAnthropic
 from anthropic.types.messages import MessageBatch, MessageBatchRequestCounts
 from anthropic.types.shared.not_found_error import NotFoundError
+from litellm.litellm_core_utils.core_helpers import map_finish_reason
 
+from bespokelabs.curator.log import logger
+from bespokelabs.curator.misc import safe_model_dump
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-from bespokelabs.curator.types.token_usage import TokenUsage
-
-logger = logging.getLogger(__name__)
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 
 class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
@@ -214,22 +214,42 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         token_usage = None
         cost = None
         response_message = None
+        finish_reason = "unknown"
 
         if result_type == "succeeded":
             response_body = raw_response["result"]["message"]
             if self.config.return_completions_object:
                 response_message_raw = response_body
             else:
-                response_message_raw = response_body["content"][0]["text"]
+                content_blocks = response_body.get("content", [])
+                if content_blocks:
+                    for block in content_blocks:
+                        if block.get("type") == "text":
+                            response_message_raw = block.get("text", "")
+                            break
+                    else:
+                        response_message_raw = str(content_blocks)
+                else:
+                    response_message_raw = ""
+
+            # Get stop reason
+            finish_reason = response_body.get("stop_reason", "unknown")
+
             usage = response_body.get("usage", {})
 
-            token_usage = TokenUsage(
-                prompt_tokens=usage.get("input_tokens", 0),
-                completion_tokens=usage.get("output_tokens", 0),
-                total_tokens=usage.get("input_tokens", 0) + usage.get("output_tokens", 0),
+            token_usage = _TokenUsage(
+                input=usage.get("input_tokens", 0),
+                output=usage.get("output_tokens", 0),
             )
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
-            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw)
+
+            all_text_response = ""
+            for msg in response_body["content"]:
+                all_text_response += msg.get("text") or ""  # in case this is None
+                all_text_response += msg.get("thinking") or ""  # in case this is None
+
+            # TODO we should directly use the token counts returned by anthropic in the response...
+            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response)
 
         elif result_type == "errored":
             error = raw_response["result"]["error"]
@@ -241,6 +261,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         else:
             raise ValueError(f"Unknown result type: {result_type}")
 
+        finish_reason = map_finish_reason(finish_reason)
         return GenericResponse(
             response_message=response_message,
             response_errors=response_errors,
@@ -251,6 +272,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             finished_at=batch.finished_at,
             token_usage=token_usage,
             response_cost=cost,
+            finish_reason=finish_reason,
         )
 
     async def submit_batch(self, requests: list[dict], metadata: dict) -> GenericBatch:
@@ -289,7 +311,6 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             except NotFoundError:
                 logger.warning(f"batch object {batch.id} not found. Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
                 return None
-
             request_file = self.tracker.submitted_batches[batch.id].request_file
             return self.parse_api_specific_batch_object(batch, request_file=request_file)
 
@@ -312,7 +333,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             responses = []
             results_stream = await self.client.messages.batches.results(batch.id)
             async for result in results_stream:
-                responses.append(result.model_dump())
+                responses.append(safe_model_dump(result))
             return responses
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:

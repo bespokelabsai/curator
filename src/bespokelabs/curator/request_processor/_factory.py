@@ -1,9 +1,9 @@
-import logging
 import os
 import typing as t
 
 from pydantic import BaseModel
 
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.config import (
     BackendParamsType,
     BatchRequestProcessorConfig,
@@ -11,8 +11,6 @@ from bespokelabs.curator.request_processor.config import (
     OnlineRequestProcessorConfig,
     _validate_backend_params,
 )
-
-logger = logging.getLogger(__name__)
 
 if t.TYPE_CHECKING:
     from pydantic import BaseModel
@@ -62,7 +60,7 @@ class _RequestProcessorFactory:
             logger.info(f"Requesting text output from {model_name}, using OpenAI backend")
             return "openai"
 
-        if batch and "claude" in model_name:
+        if "claude" in model_name:
             logger.info(f"Requesting output from {model_name}, using Anthropic backend")
             return "anthropic"
 
@@ -145,7 +143,9 @@ class _RequestProcessorFactory:
 
             _request_processor = GeminiBatchRequestProcessor(config)
         elif backend == "anthropic" and not batch:
-            raise ValueError("Online mode is not currently supported with Anthropic backend.")
+            from bespokelabs.curator.request_processor.online.anthropic_online_request_processor import AnthropicOnlineRequestProcessor
+
+            _request_processor = AnthropicOnlineRequestProcessor(config)
         elif backend == "litellm" and batch:
             raise ValueError("Batch mode is not supported with LiteLLM backend")
         elif backend == "litellm":

@@ -6,7 +6,7 @@ from rich.console import Console
 from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
 from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
-from bespokelabs.curator.types.generic_response import TokenUsage
+from bespokelabs.curator.types.generic_response import _TokenUsage
 
 
 def test_online_status_tracker_display():
@@ -118,7 +118,7 @@ def test_batch_status_tracker_display():
     tracker.mark_as_submitted(batch, n_requests=20)
 
     # Update token usage and cost
-    token_usage = TokenUsage(prompt_tokens=1000, completion_tokens=2000, total_tokens=3000)
+    token_usage = _TokenUsage(input=1000, output=2000)
     tracker.update_token_and_cost(token_usage, cost=0.123)
 
     # Mark batch as downloaded
@@ -168,7 +168,7 @@ def test_batch_status_tracker_final_stats():
     tracker.mark_as_submitted(batch, n_requests=50)
 
     # Update token usage and cost
-    token_usage = TokenUsage(prompt_tokens=1000, completion_tokens=2000, total_tokens=3000)
+    token_usage = _TokenUsage(input=1000, output=2000)
     tracker.update_token_and_cost(token_usage, cost=0.123)
 
     # Mark as finished and downloaded
@@ -181,7 +181,7 @@ def test_batch_status_tracker_final_stats():
     # Get the captured output
     captured = output.getvalue()
     # Test serialization
-    assert isinstance(tracker.json(), str)
+    assert isinstance(tracker.model_dump_json(), str)
 
     # Verify the final statistics table
     assert "Final Curator Statistics" in captured, captured

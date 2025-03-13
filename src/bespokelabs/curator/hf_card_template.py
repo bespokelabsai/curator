@@ -2,7 +2,8 @@ HUGGINGFACE_CARD_TEMPLATE = """
 ---
 language: en
 license: mit
-tag: curator
+tags:
+- curator
 ---
 
 <a href="https://github.com/bespokelabsai/curator/">

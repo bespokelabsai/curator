@@ -7,29 +7,27 @@ handling rate limiting, retries, and concurrent processing.
 import asyncio
 import datetime
 import json
-import logging
 import os
 import time
 import typing as t
 from abc import ABC, abstractmethod
-from collections import deque
+from collections import Counter, deque
 from dataclasses import dataclass, field
 
 import aiofiles
 import aiohttp
 
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor import _DEFAULT_COST_MAP
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy, _TokenCount
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.prompt import _MultiModalPrompt
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 _MAX_OUTPUT_MVA_WINDOW = 50
 
@@ -136,7 +134,11 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         pass
 
     def _handle_multi_modal_prompt(self, message):
-        def _openai_mutlimodal_format(data, mime_type="image/png"):
+        content = []
+        texts = message.texts
+
+        def _format_multimodal(data, mime_type="image/png"):
+            """Format multimodal prompt data for API request."""
             if data.url and not data.is_local:
                 return {"type": "image_url", "image_url": {"url": data.url}}
             else:
@@ -149,19 +151,16 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                         "url": f"data:{mime_type};base64,{base64_content}",
                     },
                 }
-                if mime_type == "image/png":
+                if "image" in mime_type:
                     content["image_url"].update({"detail": data.detail})
                 return content
-
-        content = []
-        texts = message.texts
 
         for text in texts:
             content.append({"type": "text", "text": text})
         for image in message.images:
-            content.append(_openai_mutlimodal_format(image))
+            content.append(_format_multimodal(image, mime_type=image.mime_type))
         for file in message.files:
-            content.append(_openai_mutlimodal_format(file, mime_type=file.mime_type))
+            content.append(_format_multimodal(file, mime_type=file.mime_type))
 
         return content
 
@@ -221,7 +220,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             return self.default_max_tokens_per_minute
 
     @abstractmethod
-    def estimate_total_tokens(self, messages: list) -> int:
+    def estimate_total_tokens(self, messages: list) -> _TokenUsage:
         """Estimate total tokens for a request.
 
         Args:
@@ -319,13 +318,15 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             max_requests_per_minute=self.max_requests_per_minute,
             max_tokens_per_minute=self.max_tokens_per_minute,
             compatible_provider=self.compatible_provider,
+            viewer_client=self._viewer_client,
         )
 
-        completed_request_ids = self.validate_existing_response_file(response_file)
         # Resume if a response file exists
+        completed_request_ids, completed_parsed_responses = self.validate_existing_response_file(response_file)
 
         # Count total requests
         status_tracker.num_tasks_already_completed = len(completed_request_ids)
+        status_tracker.num_parsed_responses = completed_parsed_responses
         status_tracker.total_requests = self.total_requests
         status_tracker.model = self.prompt_formatter.model_name
         status_tracker.start_tracker(self._tracker_console)
@@ -447,7 +448,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         if status_tracker.num_tasks_failed > 0:
             logger.warning(f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} requests failed. Errors logged to {response_file}.")
 
-    def _free_capacity(self, status_tracker: OnlineStatusTracker, used_capacity: "_TokenCount", blocked_capacity: "_TokenCount"):
+    def _free_capacity(self, status_tracker: OnlineStatusTracker, used_capacity: "_TokenUsage", blocked_capacity: "_TokenUsage"):
         if status_tracker.max_tokens_per_minute is not None:
             status_tracker.free_capacity(used_capacity, blocked_capacity)
 
@@ -458,7 +459,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         retry_queue: asyncio.Queue,
         response_file: str,
         status_tracker: OnlineStatusTracker,
-        blocked_capacity: "_TokenCount",
+        blocked_capacity: "_TokenUsage",
     ) -> None:
         """Common wrapper for handling a single request with error handling and retries.
 
@@ -474,6 +475,13 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             blocked_capacity: Blocked token capacity
         """
         try:
+            # Estimate tokens before making request
+            generic_response = None
+            token_estimate: _TokenUsage = blocked_capacity or self.estimate_total_tokens(request.generic_request.messages)
+
+            # Add new estimate to projection (pre_request=True indicates new estimate)
+            status_tracker.update_cost_projection(token_estimate, pre_request=True)
+
             generic_response = await self.call_single_request(
                 request=request,
                 session=session,
@@ -486,20 +494,22 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     " Raw response {generic_response.raw_response} "
                     "for request {generic_response.raw_request}"
                 )
+                # Update cost projection with actual usage but mark as failed
+                status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
                 raise ValueError(f"finish_reason was {generic_response.finish_reason}")
-
-            status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
 
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
 
-            # Free the extra capacity blocked before request with actual consumed capacity.
-            used_capacity = _TokenCount(input=generic_response.token_usage.prompt_tokens, output=generic_response.token_usage.completion_tokens)
-            self._free_capacity(status_tracker, used_capacity=used_capacity, blocked_capacity=blocked_capacity)
-
         except Exception as e:
             status_tracker.num_other_errors += 1
             request.result.append(e)
+
+            if generic_response and generic_response.token_usage is not None:
+                used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
+                status_tracker.update_cost_projection(used_tokens)
+            else:
+                status_tracker.update_cost_projection(None)
 
             if request.attempts_left > 0:
                 request.attempts_left -= 1
@@ -510,13 +520,16 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 )
                 retry_queue.put_nowait(request)
             else:
+                error_counts = Counter(str(err) for err in request.result)
+                formatted_errors = [f"{error}(x{count})" for error, count in error_counts.items()]
                 logger.error(
                     f"Request {request.task_id} failed permanently after exhausting all {self.config.max_retries} retry attempts. "
-                    f"Errors: {[str(e) for e in request.result]}"
+                    f"Errors: {formatted_errors}"
                 )
+
                 generic_response = GenericResponse(
                     response_message=None,
-                    response_errors=[str(e) for e in request.result],
+                    response_errors=formatted_errors,
                     raw_request=request.api_specific_request,
                     raw_response=None,
                     generic_request=request.generic_request,
@@ -528,7 +541,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 status_tracker.num_tasks_failed += 1
             return
         else:
-            self._add_output_token_moving_window(generic_response.token_usage.completion_tokens)
+            self._add_output_token_moving_window(generic_response.token_usage.output)
         finally:
             if self._semaphore:
                 self._semaphore.release()
@@ -538,6 +551,15 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
         status_tracker.num_tasks_in_progress -= 1
         status_tracker.num_tasks_succeeded += 1
+
+        # Update cost projection with actual usage
+        used_tokens: _TokenUsage = _TokenUsage(input=generic_response.token_usage.input, output=generic_response.token_usage.output)
+        # Update stats with actual usage
+        status_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+        status_tracker.update_cost_projection(used_tokens)
+
+        # Free the extra capacity blocked before request with actual consumed capacity.
+        self._free_capacity(status_tracker, used_tokens, blocked_capacity)
 
     def _add_output_token_moving_window(self, tokens):
         self._output_tokens_window.append(tokens)
@@ -575,10 +597,12 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             data: Response data to append
             filename: File to append to
         """
+        raw_response = data.response_message
         responses = self._process_response(data)
         if not responses:
             return
         data.parsed_response_message = responses
+        data.response_message = raw_response
         data_dump = data.model_dump()
         json_string = json.dumps(data_dump, default=str)
         async with aiofiles.open(filename, "a") as f:

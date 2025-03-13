@@ -1,5 +1,4 @@
 import datetime
-import logging
 import os
 import time
 from typing import TypeVar
@@ -11,16 +10,16 @@ import tiktoken
 
 from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.file_utilities import get_base64_size
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor import openai_request_mixin
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
 from bespokelabs.curator.request_processor.openai_request_mixin import OpenAIRequestMixin
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, _TokenCount
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
 from bespokelabs.curator.types.generic_request import GenericRequest
-from bespokelabs.curator.types.generic_response import GenericResponse, TokenUsage
+from bespokelabs.curator.types.generic_response import GenericResponse, _TokenUsage
 
 T = TypeVar("T")
-logger = logger = logging.getLogger(__name__)
 
 _DEFAULT_OPENAI_URL: str = "https://api.openai.com/v1/chat/completions"
 
@@ -129,16 +128,16 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         if self.config.model in litellm.model_cost:
             return litellm.get_max_tokens(model=self.config.model) // 4
         else:
-            return 0
+            return 4096
 
-    def estimate_total_tokens(self, messages: list) -> _TokenCount:
+    def estimate_total_tokens(self, messages: list) -> _TokenUsage:
         """Estimate total tokens for a request using OpenAI's token counting rules.
 
         Args:
             messages (list): List of message dictionaries with role and content
 
         Returns:
-            _TokenCount: Estimated input and output tokens including message formatting tokens
+            _TokenUsage: Estimated input and output tokens including message formatting tokens
 
         Note:
             Includes:
@@ -161,7 +160,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         num_tokens += 2  # every reply is primed with <im_start>assistant
         output_tokens = self.estimate_output_tokens()
-        return _TokenCount(input=num_tokens, output=output_tokens)
+        return _TokenUsage(input=num_tokens, output=output_tokens)
 
     def check_structured_output_support(self) -> bool:
         """Check if the model supports structured output based on model name and date.
@@ -265,10 +264,10 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                 response_message = response["choices"][0]["message"]["content"]
             finish_reason = response["choices"][0].get("finish_reason", "unknown")
             usage = response["usage"]
-            token_usage = TokenUsage(
-                prompt_tokens=usage["prompt_tokens"],
-                completion_tokens=usage["completion_tokens"],
-                total_tokens=usage["total_tokens"],
+            token_usage = _TokenUsage(
+                input=usage["prompt_tokens"],
+                output=usage["completion_tokens"],
+                total=usage["total_tokens"],
             )
 
             cost = self.completion_cost(response)

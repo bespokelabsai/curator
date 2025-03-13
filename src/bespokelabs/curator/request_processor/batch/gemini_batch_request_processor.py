@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import typing as t
 from functools import lru_cache
@@ -10,19 +9,19 @@ from pydantic import BaseModel
 from vertexai.batch_prediction import BatchPredictionJob
 
 from bespokelabs.curator import constants
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-from bespokelabs.curator.types.token_usage import TokenUsage
-
-logger = logging.getLogger(__name__)
-
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 """
 Gemini latest rate limits:
 
+gemini-2.0-pro	50k records
+gemini-2.0-flash	150k records
 gemini-1.5-pro	50k records
 gemini-1.5-flash	150k records
 gemini-1.0-pro	150k records
@@ -30,6 +29,8 @@ gemini-1.0-pro-vision	50k records
 """
 # NOTE: Do not change the order.
 _GEMINI_BATCH_RATELIMIT_MAP = {
+    "gemini-2.0-pro": 50_000,
+    "gemini-2.0-flash": 150_000,
     "gemini-1.5-pro": 50_000,
     "gemini-1.5-flash": 150_000,
     "gemini-1.0-pro-vision": 50_000,
@@ -88,7 +89,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
 
     def _initialize_cloud(self):
         self._location = os.environ.get("GOOGLE_CLOUD_REGION", "us-central1")
-        self._project_id = str(os.environ.get("GOOGLE_CLOUD_PROJECT"))
+        self._project_id = os.environ.get("GOOGLE_CLOUD_PROJECT")
         self._bucket_name = os.environ.get("GEMINI_BUCKET_NAME")
 
         assert self._bucket_name, "GEMINI_BUCKET_NAME environment variable is not set"
@@ -300,11 +301,12 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
                 response_message_raw = response_body["candidates"][0]["content"]["parts"][0]["text"]
             usage = response_body.get("usageMetadata", {})
 
-            token_usage = TokenUsage(
-                prompt_tokens=usage.get("promptTokenCount", 0),
-                completion_tokens=usage.get("candidatesTokenCount", 0),
-                total_tokens=usage.get("totalTokenCount", 0),
+            token_usage = _TokenUsage(
+                input=usage.get("promptTokenCount", 0),
+                output=usage.get("candidatesTokenCount", 0),
+                total=usage.get("totalTokenCount", 0),
             )
+
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
 
             cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw)

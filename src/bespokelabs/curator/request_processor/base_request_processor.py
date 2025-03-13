@@ -4,9 +4,9 @@ import asyncio
 import functools
 import glob
 import json
-import logging
 import os
 import resource
+import typing as t
 from abc import ABC, abstractmethod
 from math import ceil
 from typing import TYPE_CHECKING, List, Optional
@@ -19,6 +19,7 @@ from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.file_utilities import count_lines
 from bespokelabs.curator.hf_card_template import HUGGINGFACE_CARD_TEMPLATE
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig, RequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.generic_response import GenericResponse
@@ -26,7 +27,6 @@ from bespokelabs.curator.types.generic_response import GenericResponse
 if TYPE_CHECKING:
     from datasets import Dataset
 
-logger = logging.getLogger(__name__)
 
 CACHE_MSG = "If you want to regenerate the dataset, disable or delete the cache."
 
@@ -412,8 +412,13 @@ class BaseRequestProcessor(ABC):
                                 error_sample.append(str(response.response_errors))
                             continue
 
+                        # TODO: Find a way to not process responses that have already been processed
+                        # We cannot just check if parsed_response_message is not None because it could be from cached previous run
+                        # response.
+                        response.parsed_response_message = self._process_response(response)
                         if response.parsed_response_message is None:
-                            response.parsed_response_message = self._process_response(response)
+                            failed_responses_count += 1
+                            continue
 
                         for row in response.parsed_response_message:
                             if isinstance(row, BaseModel):
@@ -493,7 +498,7 @@ class BaseRequestProcessor(ABC):
         )
         card.push_to_hub(repo_id)
 
-    def validate_existing_response_file(self, response_file: str) -> set[int]:
+    def validate_existing_response_file(self, response_file: str) -> t.Union[set[int], int]:
         """Parse an existing response file to identify completed requests and removes failed requests.
 
         Args:
@@ -501,9 +506,11 @@ class BaseRequestProcessor(ABC):
 
         Returns:
             set[int]: Set of completed request IDs that were already successfully processed
+            int: Number of completed parsed responses
         """
         completed_request_ids = set()
         failed_request_ids = set()
+        completed_parsed_responses = 0
 
         if os.path.exists(response_file):
             logger.info(f"Resuming progress by reading existing file: {response_file}")
@@ -520,6 +527,8 @@ class BaseRequestProcessor(ABC):
                         parsing_error_responses += 1
                         continue
                     row_id = response.generic_request.original_row_idx
+                    if response.parsed_response_message:
+                        completed_parsed_responses += len(response.parsed_response_message)
                     if response.response_errors:
                         logger.debug(f"Request {row_id} previously failed due to errors: {response.response_errors}, removing from output and will retry")
                         failed_request_ids.add(row_id)
@@ -536,7 +545,7 @@ class BaseRequestProcessor(ABC):
             )
             os.replace(temp_filepath, response_file)
 
-        return completed_request_ids
+        return completed_request_ids, completed_parsed_responses
 
     def read_metadata_file(self, request_file: str) -> int:
         """Read the number of jobs from the metadata file.

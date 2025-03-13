@@ -22,6 +22,35 @@ class QAs(BaseModel):
     qas: t.List[QA] = Field(description="A list of QAs")
 
 
+class Reasoner(curator.LLM):
+    return_completions_object = True
+
+    def prompt(self, input):  # noqa: D102
+        return input["question"]
+
+    def parse(self, input, response):
+        """Parse the LLM response to extract reasoning and solution."""
+        content = response["content"]
+        thinking = ""
+        text = ""
+
+        for content_block in content:
+            if content_block["type"] == "thinking":
+                if "thinking" in content_block:
+                    thinking = content_block["thinking"]
+                else:
+                    thinking = content_block["text"]
+
+            elif content_block["type"] == "text":
+                text = content_block["text"]
+            elif content_block["type"] == "redacted_thinking":
+                print("Redacted thinking block! (notifying you for fun)")
+
+        input["model_thinking_trajectory"] = thinking
+        input["model_attempt"] = text
+        return input
+
+
 class BasicLLM(curator.LLM):
     def __init__(self, *args, **kwargs):
         self.raw_prompt = kwargs.pop("raw_prompt", False)
@@ -161,8 +190,11 @@ def create_basic(
     return_prompter=False,
     batch_check_interval=1,
     raw_prompt=False,
+    generation_params=None,
+    parse_func=None,
 ):
     llm_params = llm_params or {}
+    generation_params = generation_params or []
     if batch:
         llm_params["batch_check_interval"] = batch_check_interval
 
@@ -174,6 +206,8 @@ def create_basic(
             backend_params=llm_params,
             raw_prompt=raw_prompt,
         )
+    elif model and "claude" in model and "3-7" in model:
+        prompter = Reasoner(model_name=model, generation_params=generation_params, batch=batch, backend_params=llm_params)
     else:
         prompter = BasicLLM(
             model_name=model or _DEFAULT_MODEL_MAP[backend],
@@ -182,6 +216,8 @@ def create_basic(
             backend_params=llm_params,
             raw_prompt=raw_prompt,
         )
+    if parse_func:
+        prompter.prompt_formatter.parse_func = parse_func
     prompter._request_processor._tracker_console = tracker_console
     if mocking:
         prompter = mocking(prompter)

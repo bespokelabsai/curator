@@ -28,6 +28,7 @@ class CodeExecutionRequest(BaseModel):
     execution_params: Optional[CodeExecutionRequestParams] = None
     original_row: Optional[Dict[str, Any]] = None
     original_row_idx: Optional[int] = None
+    execution_directory: Optional[str] = None
 
 
 class CodeAPIRequest(BaseModel):
@@ -48,12 +49,13 @@ class CodeExecutionOutput(BaseModel):
     error: Optional[str] = None
     stdout: Optional[str] = None
     stderr: Optional[str] = None
+    files: Optional[str] = None
 
 
 class CodeExecutionResponse(BaseModel):
     """Response from the code execution backend."""
 
-    exec_output: CodeExecutionOutput
+    exec_output: Optional[CodeExecutionOutput] = None
     code_api_request: Optional[CodeAPIRequest] = None
     created_at: datetime.datetime = field(default_factory=datetime.datetime.now)
     finished_at: datetime.datetime = field(default_factory=datetime.datetime.now)
@@ -66,3 +68,4 @@ class CodeExecutionBackendConfig(BaseModel):
     max_retries: int = 3
     seconds_to_pause_on_rate_limit: int = 10
     base_url: Optional[str] = None
+    docker_image: Optional[str] = None

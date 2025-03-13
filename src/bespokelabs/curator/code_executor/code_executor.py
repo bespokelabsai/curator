@@ -5,7 +5,6 @@ for future runs. It supports different backend execution engines and customizabl
 execution parameters.
 """
 
-import logging
 import os
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, TypeVar
@@ -18,6 +17,7 @@ from bespokelabs.curator.code_executor.code_formatter import CodeFormatter
 from bespokelabs.curator.code_executor.db import CodeMetadataDB
 from bespokelabs.curator.code_executor.types import CodeExecutionRequestParams
 from bespokelabs.curator.llm.llm import _convert_to_dataset, _get_function_hash, _get_function_source
+from bespokelabs.curator.log import logger
 
 if TYPE_CHECKING:
     from datasets import Dataset
@@ -26,7 +26,6 @@ if TYPE_CHECKING:
 _CURATOR_DEFAULT_CACHE_DIR = "~/.cache/curator"
 T = TypeVar("T")
 _DictOrBaseModel = Dict[str, Any] | BaseModel
-logger = logging.getLogger(__name__)
 
 
 class CodeExecutor:
@@ -43,7 +42,7 @@ class CodeExecutor:
 
     def code_input(self, row: dict):
         """Extract input from a dataset row."""
-        pass
+        return ""
 
     def code_output(self, row: dict, execution_output: Any):
         """Extract output from a dataset row."""
@@ -113,7 +112,8 @@ class CodeExecutor:
             Dataset: Processed dataset with execution results
         """
         # Convert input to Dataset format
-        dataset = _convert_to_dataset(dataset)
+        if dataset:
+            dataset = _convert_to_dataset(dataset)
 
         # Set up cache directory
         if working_dir is None:

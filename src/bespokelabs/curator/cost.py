@@ -1,4 +1,3 @@
-import logging
 from collections import defaultdict
 
 import litellm
@@ -6,7 +5,6 @@ import litellm
 from bespokelabs.curator.request_processor import _DEFAULT_COST_MAP
 
 litellm.suppress_debug_info = True
-logger = logging.getLogger(__name__)
 
 RATE_LIMIT_HEADER = {
     "api.together.xyz": {"request-key": {"key": "x-ratelimit-limit", "type": "rps"}, "token-key": {"key": "x-ratelimit-limit-tokens", "type": "tps"}}
@@ -16,6 +14,7 @@ RATE_LIMIT_HEADER = {
 class _LitellmCostProcessor:
     def __init__(self, config, batch=False) -> None:
         self.batch = batch
+        self.config = config
         if config.in_mtok_cost is not None:
             cost_per_input_token = config.in_mtok_cost / 1e6
             if config.out_mtok_cost is not None:
@@ -23,25 +22,26 @@ class _LitellmCostProcessor:
             else:
                 cost_per_output_token = cost_per_input_token
 
+            litellm_provider = "openai"
+            if "/" in config.model:
+                litellm_provider = config.model.split("/")[0]
+
             litellm.register_model(
                 {
                     config.model: {
                         "max_tokens": 8192,
                         "input_cost_per_token": cost_per_input_token,
                         "output_cost_per_token": cost_per_output_token,
-                        "litellm_provider": "openai",
+                        "litellm_provider": litellm_provider,
                     }
                 }
             )
 
     def cost(self, *, completion_window="*", **kwargs):
-        if "completion_response" in kwargs:
-            model = kwargs["completion_response"]["model"]
-        else:
-            model = kwargs.get("model", None)
-
         cost_to_complete = 0.0
-        if model in litellm.model_cost:
+        if self.config.model in litellm.model_cost:
+            if "model" not in kwargs:
+                kwargs["model"] = self.config.model
             cost_to_complete = litellm.completion_cost(**kwargs)
         if self.batch:
             cost_to_complete *= 0.5
@@ -90,18 +90,12 @@ class _KlusterAICostProcessor(_LitellmCostProcessor):
         return model + "." + completion_window
 
     def cost(self, *, completion_window="*", **kwargs):
-        if "completion_response" in kwargs:
-            model = kwargs["completion_response"]["model"]
-        else:
-            model = kwargs.get("model", None)
         times = 2 if self.batch else 1
-        if _KlusterAICostProcessor._wrap(model, completion_window) in _KlusterAICostProcessor._registered_models:
+        if _KlusterAICostProcessor._wrap(self.config.model, completion_window) in _KlusterAICostProcessor._registered_models:
             return super().cost(completion_window=completion_window, **kwargs) * times
 
-        import litellm
-
-        litellm.register_model(_get_litellm_cost_map(model, provider="klusterai", completion_window=completion_window))
-        _KlusterAICostProcessor._registered_models.add(_KlusterAICostProcessor._wrap(model, completion_window))
+        litellm.register_model(_get_litellm_cost_map(self.config.model, provider="klusterai", completion_window=completion_window))
+        _KlusterAICostProcessor._registered_models.add(_KlusterAICostProcessor._wrap(self.config.model, completion_window))
         return super().cost(completion_window=completion_window, **kwargs) * times
 
 
@@ -125,8 +119,6 @@ class _InferenceNetCostProcessor(_LitellmCostProcessor):
         times = 2 if self.batch else 1
         if _InferenceNetCostProcessor._wrap(model, completion_window) in _InferenceNetCostProcessor._registered_models:
             return super().cost(completion_window=completion_window, **kwargs) * times
-
-        import litellm
 
         litellm.register_model(_get_litellm_cost_map(model, provider="inference.net", completion_window=completion_window))
         _InferenceNetCostProcessor._registered_models.add(_InferenceNetCostProcessor._wrap(model, completion_window))

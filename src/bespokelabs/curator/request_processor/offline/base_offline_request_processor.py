@@ -1,19 +1,16 @@
 import datetime
 import json
-import logging
 import typing as t
 from abc import ABC
 from dataclasses import dataclass, field
 
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import OfflineRequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 if t.TYPE_CHECKING:
     from bespokelabs.curator.status_tracker.offline_status_tracker import OfflineStatusTracker
@@ -153,7 +150,8 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         status_tracker = OfflineStatusTracker()
 
         # Track completed requests for resume functionality
-        completed_request_ids = self.validate_existing_response_file(save_filepath)
+        completed_request_ids, completed_parsed_responses = self.validate_existing_response_file(save_filepath)
+        status_tracker.num_parsed_responses = completed_parsed_responses
 
         if not hasattr(self, "model_class"):
             self.load_offline_model()  # Load the offline model if it hasn't been loaded yet

@@ -6,6 +6,7 @@ import pytest
 import vcr
 from datasets import Dataset
 
+os.environ["TELEMETRY_ENABLED"] = "false"
 mode = os.environ.get("VCR_MODE", None)
 _KEY_MAP = {
     "openai": "OPENAI_API_KEY",
@@ -57,6 +58,12 @@ def mock_dataset():
     finally:
         # TODO: cleanup?
         pass
+
+
+@pytest.fixture
+def mock_reasoning_dataset():
+    dataset = Dataset.from_parquet("tests/integrations/common_fixtures/reasoning_dataset.parquet")
+    yield dataset
 
 
 @pytest.fixture
