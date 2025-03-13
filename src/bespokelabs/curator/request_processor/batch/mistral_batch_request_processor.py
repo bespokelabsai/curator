@@ -1,3 +1,5 @@
+import tempfile
+
 import instructor
 import litellm
 from mistralai import Mistral
@@ -131,7 +133,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             GenericResponse: Standardized response object with parsed message,
                 errors, token usage, and cost information.
 
-        Side Effects: # TODO: Add side effects
+        Side Effects:
             - Calculates costs with 50% batch discount
             - Handles failed requests with error details
 
@@ -206,9 +208,13 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         Returns:
             UploadFileOutTypedDict: The uploaded file object from Mistral
         """
+        with tempfile.NamedTemporaryFile(delete=True) as temp_file:
+            temp_file.write(file_content)
+            temp_file.flush()
+
         batch_file_upload = await self.client.upload(
             file={
-                "filename": "None",  # TODO: Add filename
+                "filename": temp_file.name,
                 "content": file_content,
             },
             purpose="batch",
