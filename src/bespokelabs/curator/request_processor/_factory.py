@@ -64,6 +64,10 @@ class _RequestProcessorFactory:
             logger.info(f"Requesting output from {model_name}, using Anthropic backend")
             return "anthropic"
 
+        if any(x in model_name for x in ["codestral", "mistral", "ministral", "pixtral"]):
+            logger.info(f"Requesting output from {model_name}, using Mistral backend")
+            return "mistral"
+
         # Default to LiteLLM for all other cases
         logger.info(f"Requesting {'structured' if response_format else 'text'} output from {model_name}, using LiteLLM backend")
         return "litellm"
@@ -156,6 +160,13 @@ class _RequestProcessorFactory:
             from bespokelabs.curator.request_processor.offline.vllm_offline_request_processor import VLLMOfflineRequestProcessor
 
             _request_processor = VLLMOfflineRequestProcessor(config)
+
+        elif backend == "mistral" and not batch:
+            raise ValueError("Online mode is not supported with Mistral backend")
+        elif backend == "mistral" and batch:
+            from bespokelabs.curator.request_processor.batch.mistral_batch_request_processor import MistralBatchRequestProcessor
+
+            _request_processor = MistralBatchRequestProcessor(config)
         else:
             raise ValueError(f"Unknown backend: {backend}")
 
