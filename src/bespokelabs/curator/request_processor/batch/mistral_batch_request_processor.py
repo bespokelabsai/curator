@@ -1,9 +1,7 @@
-import os
 import tempfile
 
 import instructor
 import litellm
-from dotenv import load_dotenv
 from mistralai import Mistral
 from mistralai.models import BatchJobOut, UploadFileOutTypedDict
 
@@ -30,15 +28,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         """Initialize the MistralBatchRequestProcessor."""
         super().__init__(config)
-        # TODO: Add support for having API key in config directly.
-        load_dotenv()
-        config.api_key = config.api_key or os.getenv("MISTRAL_API_KEY")
-
-        if not config.api_key:
-            raise ValueError("Mistral API key is required for batch processing.")
-
         self.client = Mistral(api_key=config.api_key)
-        config.batch_size = 1  # DEBUG: Set batch size to 1 for testing
 
     @property
     def backend(self):
