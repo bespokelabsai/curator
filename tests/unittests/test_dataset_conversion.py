@@ -27,10 +27,10 @@ def test_is_message_list(single_message, conversation, conversation_with_system)
 
 
 def test_convert_to_dataset(single_message, conversation, conversation_with_system):
-    assert _convert_to_dataset("test").to_list() == [{"prompt": "test"}]
-    assert _convert_to_dataset(single_message).to_list() == [{"prompt": single_message}]
-    assert _convert_to_dataset(conversation).to_list() == [{"prompt": conversation}]
-    assert _convert_to_dataset(conversation_with_system).to_list() == [{"prompt": conversation_with_system}]
-    assert _convert_to_dataset([conversation, conversation_with_system]).to_list() == [{"prompt": conversation}, {"prompt": conversation_with_system}]
+    assert _convert_to_dataset("test").to_list() == [{"prompt__internal": "test"}]
+    assert _convert_to_dataset(single_message).to_list() == [{"prompt__internal": single_message}]
+    assert _convert_to_dataset(conversation).to_list() == [{"prompt__internal": conversation}]
+    assert _convert_to_dataset(conversation_with_system).to_list() == [{"prompt__internal": conversation_with_system}]
+    assert _convert_to_dataset([conversation, conversation_with_system]).to_list() == [{"prompt__internal": conversation}, {"prompt__internal": conversation_with_system}]
     assert _convert_to_dataset(Dataset.from_list([{"prompt": "test"}])).to_list() == [{"prompt": "test"}]
     assert _convert_to_dataset([{"prompt": "test"}]).to_list() == [{"prompt": "test"}]
