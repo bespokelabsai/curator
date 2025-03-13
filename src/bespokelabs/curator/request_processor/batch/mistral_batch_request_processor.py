@@ -162,8 +162,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
                 completion_tokens=raw_response["usage"]["completion_tokens"],
                 total_tokens=raw_response["usage"]["total_tokens"],
             )
-            cost = raw_response["metadata"]["cost"]
-            # TODO: Mistral chat-completions doesnt have cost as per docs (though for fine-tning it does have a `cost` key in metadata): (https://docs.mistral.ai/api/#tag/chat)
+            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message)
 
         return GenericResponse(
             response_message=response_message,
