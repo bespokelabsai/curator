@@ -1,6 +1,7 @@
 import pytest
 from datasets import Dataset
 
+from bespokelabs.curator.constants import _INTERNAL_PROMPT_KEY
 from bespokelabs.curator.llm.llm import _convert_to_dataset, _is_message_list
 
 
@@ -27,10 +28,13 @@ def test_is_message_list(single_message, conversation, conversation_with_system)
 
 
 def test_convert_to_dataset(single_message, conversation, conversation_with_system):
-    assert _convert_to_dataset("test").to_list() == [{"prompt__internal": "test"}]
-    assert _convert_to_dataset(single_message).to_list() == [{"prompt__internal": single_message}]
-    assert _convert_to_dataset(conversation).to_list() == [{"prompt__internal": conversation}]
-    assert _convert_to_dataset(conversation_with_system).to_list() == [{"prompt__internal": conversation_with_system}]
-    assert _convert_to_dataset([conversation, conversation_with_system]).to_list() == [{"prompt__internal": conversation}, {"prompt__internal": conversation_with_system}]
+    assert _convert_to_dataset("test").to_list() == [{_INTERNAL_PROMPT_KEY: "test"}]
+    assert _convert_to_dataset(single_message).to_list() == [{_INTERNAL_PROMPT_KEY: single_message}]
+    assert _convert_to_dataset(conversation).to_list() == [{_INTERNAL_PROMPT_KEY: conversation}]
+    assert _convert_to_dataset(conversation_with_system).to_list() == [{_INTERNAL_PROMPT_KEY: conversation_with_system}]
+    assert _convert_to_dataset([conversation, conversation_with_system]).to_list() == [
+        {_INTERNAL_PROMPT_KEY: conversation},
+        {_INTERNAL_PROMPT_KEY: conversation_with_system},
+    ]
     assert _convert_to_dataset(Dataset.from_list([{"prompt": "test"}])).to_list() == [{"prompt": "test"}]
-    assert _convert_to_dataset([{"prompt": "test"}]).to_list() == [{"prompt": "test"}]
+    assert _convert_to_dataset([{"new_prompt": "test"}]).to_list() == [{"new_prompt": "test"}]

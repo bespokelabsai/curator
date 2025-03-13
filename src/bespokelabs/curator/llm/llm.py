@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from xxhash import xxh64
 
 from bespokelabs.curator.client import Client
-from bespokelabs.curator.constants import _CURATOR_DEFAULT_CACHE_DIR
+from bespokelabs.curator.constants import _CURATOR_DEFAULT_CACHE_DIR, _INTERNAL_PROMPT_KEY
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.log import add_file_handler, logger
@@ -35,7 +35,7 @@ class LLM:
         """Prompt the LLM.
 
         Args:
-            input: The input row used to construct the prompt
+            input: The input row used to construct the prompt.
 
         Returns:
             The prompt to send to the LLM. Can follow the following formats:
@@ -48,10 +48,7 @@ class LLM:
             The list [{"role": "user", "content": "Write a poem about love"},
             {"role": "assistant", "content": "Here is a poem about love"}]
         """
-        # Check for prompt__internal first, which is our internal key
-        if "prompt__internal" in input:
-            return input["prompt__internal"]
-        return input["prompt"]
+        return input
 
     def parse(self, input: _DictOrBaseModel, response: _DictOrBaseModel) -> _DictOrBaseModel:
         """Parse the response from the LLM and combine it with the input.
@@ -63,22 +60,11 @@ class LLM:
         Returns:
             The parsed output row that combines the input and response,
         """
-        # Create a modified input without prompt__internal
-        cleaned_input = {}
-        if isinstance(input, dict):
-            cleaned_input = {k: v for k, v in input.items() if k != "prompt__internal"}
-        # Process the response
         if isinstance(response, str):
-            result = {"response": response}
+            return {"response": response}
         elif isinstance(response, BaseModel):
-            result = response.model_dump()
-        else:
-            result = response
-        # Combine cleaned input with result if needed
-        if cleaned_input:
-            if isinstance(result, dict):
-                result = {**cleaned_input, **result}
-        return result
+            return response.model_dump()
+        return response
 
     def __init__(
         self,
@@ -344,17 +330,17 @@ def _convert_to_dataset(iterable: Iterable) -> "Dataset":
     """Convert an iterable to a Dataset.
 
     The prompt is expected to be a prompt string or a list of messages.
-    It will be stored with the key 'prompt__internal' internally.
+    It will be stored with the key '__internal_prompt' internally.
     """
     if isinstance(iterable, str) or _is_message_list(iterable):
         # A single string or list of messages is converted to a dataset with a single row
-        dataset = Dataset.from_list([{"prompt__internal": iterable}])
+        dataset = Dataset.from_list([{_INTERNAL_PROMPT_KEY: iterable}])
     elif not isinstance(iterable, Dataset) and iterable is not None:
         # Wrap the iterable in a generator, the prompt is expected to be a prompt string or a list of messages
         def wrapped_iterable():
             for input in iterable:
                 if isinstance(input, str) or _is_message_list(input):
-                    yield {"prompt__internal": input}
+                    yield {_INTERNAL_PROMPT_KEY: input}
                 else:
                     yield input
 

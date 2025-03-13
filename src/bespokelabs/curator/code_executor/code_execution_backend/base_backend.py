@@ -18,15 +18,13 @@ from pydantic import BaseModel, ValidationError
 from bespokelabs.curator.code_executor.code_formatter import CodeFormatter
 from bespokelabs.curator.code_executor.tracker import CodeExecutionStatusTracker
 from bespokelabs.curator.code_executor.types import CodeAPIRequest, CodeExecutionOutput, CodeExecutionRequest, CodeExecutionResponse
+from bespokelabs.curator.constants import _CACHE_MSG
 from bespokelabs.curator.file_utilities import count_lines
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
 if TYPE_CHECKING:
     from datasets import Dataset
-
-
-CACHE_MSG = "If you want to regenerate the dataset, disable or delete the cache."
 
 
 class BaseCodeExecutionBackend:
@@ -363,7 +361,7 @@ class BaseCodeExecutionBackend:
         incomplete_files = self._verify_existing_request_files(dataset)
 
         if len(incomplete_files) == 0:
-            logger.info(f"Using cached requests. {CACHE_MSG}")
+            logger.info(f"Using cached requests. {_CACHE_MSG}")
             # count existing jobs in file and print first job
             with open(request_files[0], "r") as f:
                 # Count lines and store first job
@@ -440,7 +438,7 @@ class BaseCodeExecutionBackend:
         if os.path.exists(dataset_file):
             logger.debug(f"Loading dataset from {dataset_file}")
             try:
-                logger.info(f"Using cached output dataset. {CACHE_MSG}")
+                logger.info(f"Using cached output dataset. {_CACHE_MSG}")
                 return self._load_from_dataset_file(dataset_file)
             except pyarrow.lib.ArrowInvalid:
                 os.remove(dataset_file)

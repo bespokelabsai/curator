@@ -32,7 +32,7 @@ def test_same_dataset_caching(tmp_path, temp_working_dir):
     _, _, vcr_config = temp_working_dir
 
     with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        dataset = Dataset.from_list([{"prompt": "Say '1'. Do not explain."}])
+        dataset = ["Say '1'. Do not explain."]
         prompter = curator.LLM(model_name="gpt-4o-mini")
 
         result = prompter(dataset, working_dir=str(tmp_path))
@@ -52,9 +52,14 @@ def test_different_dataset_caching(tmp_path, temp_working_dir):
     _, _, vcr_config = temp_working_dir
 
     with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        dataset1 = Dataset.from_list([{"prompt": "Say '1'. Do not explain."}])
-        dataset2 = Dataset.from_list([{"prompt": "Say '2'. Do not explain."}])
-        prompter = curator.LLM(model_name="gpt-4o-mini")
+        dataset1 = Dataset.from_list([{"my_prompt": "Say '1'. Do not explain."}])
+        dataset2 = Dataset.from_list([{"my_prompt": "Say '2'. Do not explain."}])
+
+        class Prompter(curator.LLM):
+            def prompt(self, input: str):
+                return input["my_prompt"]
+
+        prompter = Prompter(model_name="gpt-4o-mini")
 
         result = prompter(dataset1, working_dir=str(tmp_path))
         assert result.to_pandas().iloc[0]["response"] == "1"
