@@ -1,8 +1,7 @@
-import typing as t
-
 import instructor
 import litellm
 from mistralai import Mistral
+from mistralai.models import BatchJobOut, UploadFileOutTypedDict
 
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
@@ -49,9 +48,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         """The maximum number of concurrent batch operations."""
         return 100  # NOTE Example limit, adjust based on Mistral's documentation (https://mistral.ai/products/la-plateforme#pricing)
 
-    def parse_api_specific_request_counts(
-        self, mistral_batch_object: t.Any
-    ) -> GenericBatchRequestCounts:  # TODO: Replace t.Any with the correct type (idea: Should I create a pydantic model for Mistral's Batch object?)
+    def parse_api_specific_request_counts(self, mistral_batch_object: BatchJobOut) -> GenericBatchRequestCounts:
         """Convert Mistral-specific request counts to generic format.
 
         Handles the following Mistral request count statuses:
@@ -73,7 +70,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             raw_request_counts_object=mistral_batch_object.model_dump(),
         )
 
-    def parse_api_specific_batch_object(self, mistral_batch_object: t.Any, request_file: str | None = None) -> GenericBatch:
+    def parse_api_specific_batch_object(self, mistral_batch_object: BatchJobOut, request_file: str | None = None) -> GenericBatch:
         """Convert a Mistral batch object to generic format.
 
         Convert Mistral-specific request counts to generic format.
@@ -200,14 +197,14 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         }
         return request
 
-    async def upload_batch_file(self, file_content: bytes) -> t.Any:  # TODO: Define the return type
-        """Uploads a batch file to OpenAI and waits until ready.
+    async def upload_batch_file(self, file_content: bytes) -> UploadFileOutTypedDict:
+        """Uploads a batch file to Mistral and waits until ready.
 
         Args:
             file_content (bytes): The encoded file content to upload
 
         Returns:
-            str: The uploaded file object from OpenAI
+            UploadFileOutTypedDict: The uploaded file object from Mistral
         """
         batch_file_upload = await self.client.upload(
             file={
@@ -218,7 +215,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         )
         return batch_file_upload
 
-    async def create_batch(self, batch_file_id: str, metadata: dict) -> t.Any:
+    async def create_batch(self, batch_file_id: str, metadata: dict) -> BatchJobOut:
         """Creates a batch job with Mistral using an uploaded file.
 
         Args:
@@ -226,7 +223,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             metadata (dict): Metadata to be included with the batch
 
         Returns:
-            Batch: The created batch object from OpenAI
+            Batch: The created batch object from Mistral
 
         Raises:
             Exception: If batch creation fails
