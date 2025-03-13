@@ -162,11 +162,18 @@ class _RequestProcessorFactory:
             _request_processor = VLLMOfflineRequestProcessor(config)
 
         elif backend == "mistral" and not batch:
-            raise ValueError("Online mode is not supported with Mistral backend")
+            config.api_key = config.api_key or os.getenv("MISTRAL_API_KEY")
+            if not config.api_key:
+                raise ValueError("MISTRAL_API_KEY is not set")
+            raise ValueError("Only batch mode is supported with Mistral backend")
         elif backend == "mistral" and batch:
+            config.api_key = config.api_key or os.getenv("MISTRAL_API_KEY")
+            if not config.api_key:
+                raise ValueError("MISTRAL_API_KEY is not set")
             from bespokelabs.curator.request_processor.batch.mistral_batch_request_processor import MistralBatchRequestProcessor
 
             _request_processor = MistralBatchRequestProcessor(config)
+
         else:
             raise ValueError(f"Unknown backend: {backend}")
 
