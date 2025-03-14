@@ -60,9 +60,7 @@ def push_to_viewer(dataset: Dataset | str, session_id: str | None = None, hf_par
 
     view_url = f"{constants.PUBLIC_CURATOR_VIEWER_DATASET_URL}/{session_id}"
     viewer_text = (
-        f"[bold white]Curator Viewer:[/bold white] "
-        f"[blue][link={view_url}]:sparkles: Open Curator Viewer[/link] :sparkles:[/blue]\n"
-        f"[dim]{view_url}[/dim]\n"
+        f"[bold white]Curator Viewer:[/bold white] [blue][link={view_url}]:sparkles: Open Curator Viewer[/link] :sparkles:[/blue]\n[dim]{view_url}[/dim]\n"
     )
     _CONSOLE.print(viewer_text)
     semaphore = asyncio.Semaphore(max_concurrent_requests)
@@ -75,13 +73,13 @@ def push_to_viewer(dataset: Dataset | str, session_id: str | None = None, hf_par
                 nonlocal task, progress
                 response_data = {"parsed_response_message": [row]}
                 response_data_json = json.dumps(response_data)
-                async with semaphore:
-                    await client.stream_response(response_data_json, idx)
+                await client.stream_response(response_data_json, idx)
                 progress.update(task, advance=1)
 
-            tasks = [send_row(idx, row) for idx, row in enumerate(dataset)]
+            for idx, row in enumerate(dataset):
+                async with semaphore:
+                    await send_row(idx, row)
 
-            await asyncio.gather(*tasks)
             await client.session_completed()
 
     run_in_event_loop(send_responses())
