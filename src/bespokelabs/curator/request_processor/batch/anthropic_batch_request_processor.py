@@ -142,6 +142,8 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             status = GenericBatchStatus.SUBMITTED.value
         elif batch.processing_status in ["ended"]:
             status = GenericBatchStatus.FINISHED.value
+        elif batch.processing_status in ["failed"]:
+            status = GenericBatchStatus.FAILED.value
         else:
             raise ValueError(f"Unknown batch status: {batch.processing_status}")
 
@@ -155,6 +157,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             request_counts=self.parse_api_specific_request_counts(batch.request_counts),
             raw_batch=batch.model_dump(),
             raw_status=batch.processing_status,
+            attempts_left=self.config.max_retries,
         )
 
     def create_api_specific_request_batch(self, generic_request: GenericRequest) -> dict:
