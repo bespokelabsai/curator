@@ -496,24 +496,31 @@ class BaseRequestProcessor(ABC):
         )
         card.push_to_hub(repo_id)
 
-    def _check_response_validity(self, response: GenericResponse) -> bool:
+    def _get_validated_response(self, line: str) -> tuple[GenericResponse | None, bool]:
         """Check if a response is valid or has errors.
 
         Args:
-            response: The response to check
+            line: The line to process into a GenericResponse.
 
         Returns:
-            is_valid: True if the response is valid, False otherwise
+            response: The response if it is valid, None otherwise.
+            is_valid: True if the response is valid, False otherwise.
         """
-        row_id = response.generic_request.original_row_idx
+        response = None
+        try:
+            response = GenericResponse.model_validate_json(line)
+            row_id = response.generic_request.original_row_idx
+            if response.response_errors:
+                logger.debug(f"Request {row_id} previously failed due to errors: {response.response_errors}, removing from output and will retry")
+                return None, False
+            if response.response_message is None:
+                logger.debug(f"Request {row_id} previously failed due to no response. Removing from output and will retry.")
+                return None, False
+        except (json.JSONDecodeError, ValidationError):
+            logger.warning(f"Skipping response due to error parsing line: {line}")
+            return None, False
 
-        if response.response_errors:
-            logger.debug(f"Request {row_id} previously failed due to errors: {response.response_errors}, removing from output and will retry")
-            return False
-        if response.response_message is None:
-            logger.debug(f"Request {row_id} previously failed due to no response. Removing from output and will retry.")
-            return False
-        return True
+        return response, True
 
     def validate_existing_response_file(self, response_file: str) -> t.Union[set[int], int]:
         """Parse an existing response file to identify completed requests and removes failed requests.
@@ -538,20 +545,18 @@ class BaseRequestProcessor(ABC):
 
         with open(response_file, "r") as input_file, open(temp_filepath, "w") as output_file:
             for line in input_file:
-                try:
-                    response = GenericResponse.model_validate_json(line)
-                    row_id = response.generic_request.original_row_idx
-                    is_valid = self._check_response_validity(response)
-                    if is_valid:
-                        if response.parsed_response_message:
-                            completed_parsed_responses += len(response.parsed_response_message)
-                        completed_request_ids.add(row_id)
-                        output_file.write(line)
-                    else:
-                        failed_request_ids.add(row_id)
-                except (json.JSONDecodeError, ValidationError):
-                    logger.warning("Skipping response due to error parsing line")
+                response, is_valid = self._get_validated_response(line)
+                if not response:
                     parsing_error_responses += 1
+                    continue
+                row_id = response.generic_request.original_row_idx
+                if response.parsed_response_message:
+                    completed_parsed_responses += len(response.parsed_response_message)
+                if is_valid:
+                    completed_request_ids.add(row_id)
+                    output_file.write(line)
+                else:
+                    failed_request_ids.add(row_id)
 
         logger.info(
             f"Found {len(completed_request_ids)} successful requests and {len(failed_request_ids)} "
