@@ -37,7 +37,7 @@ class GenericBatch(BaseModel):
     request_counts: GenericBatchRequestCounts  # Statistics about the requests
     raw_status: str  # Raw status string from the API
     raw_batch: dict  # Complete raw batch data from the API
-    attempts_left: int  # Number of attempts left to download the results
+    attempts_left: int = 1  # Number of attempts left to download the results
 
     model_config = {
         "json_encoders": {datetime.datetime: lambda dt: dt.isoformat()},
