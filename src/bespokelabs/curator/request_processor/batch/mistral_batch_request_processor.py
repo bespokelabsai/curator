@@ -1,4 +1,5 @@
 import tempfile
+from enum import Enum
 
 import instructor
 import litellm
@@ -13,9 +14,46 @@ from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import _TokenUsage
 
-# Reference for Mistral status: https://github.com/mistralai/client-python/blob/main/docs/models/batchjobstatus.md
-_PROGRESS_STATE = {"QUEUED", "RUNNING", "CANCELLATION_REQUESTED"}
-_FINISHED_STATE = {"SUCCESS", "FAILED", "TIMEOUT_EXCEEDED", "CANCELLED"}
+
+class MistralProgressStates(Enum):
+    """Mistral-specific batch progress states.
+
+    Reference for Mistral status: https://github.com/mistralai/client-python/blob/main/docs/models/batchjobstatus.md.
+    """
+
+    QUEUED = "QUEUED"
+    RUNNING = "RUNNING"
+    CANCELLATION_REQUESTED = "CANCELLATION_REQUESTED"
+
+    @classmethod
+    def has_value(cls, value: str) -> bool:
+        """Check if the value is in the enum.
+
+        Args:
+            value: The value to check.
+        """
+        return any(value == item.value for item in cls)
+
+
+class MistralFinishedStates(Enum):
+    """Mistral-specific batch finished states.
+
+    Reference for Mistral status: https://github.com/mistralai/client-python/blob/main/docs/models/batchjobstatus.md.
+    """
+
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"
+    TIMEOUT_EXCEEDED = "TIMEOUT_EXCEEDED"
+    CANCELLED = "CANCELLED"
+
+    @classmethod
+    def has_value(cls, value: str) -> bool:
+        """Check if the value is in the enum.
+
+        Args:
+            value: The value to check.
+        """
+        return any(value == item.value for item in cls)
 
 
 class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
@@ -98,9 +136,9 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
 
         Reference: Mistral client-python: https://github.com/mistralai/client-python/blob/main/docs/models/batchjobout.md
         """
-        if mistral_batch_object.status in _PROGRESS_STATE:
+        if MistralProgressStates.has_value(mistral_batch_object.status):
             status = GenericBatchStatus.SUBMITTED
-        elif mistral_batch_object.status in _FINISHED_STATE:
+        elif MistralFinishedStates.has_value(mistral_batch_object.status):
             status = GenericBatchStatus.FINISHED
         else:
             raise ValueError(f"Unknown batch status: {mistral_batch_object.status}")
@@ -324,7 +362,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
 
         """
         try:
-            if batch.status in _FINISHED_STATE:
+            if MistralFinishedStates.has_value(batch.status):
                 logger.warning(f"Batch {batch.id} is already finished, cannot cancel.")
                 return self.parse_api_specific_batch_object(batch, request_file=batch.request_file)
             else:
