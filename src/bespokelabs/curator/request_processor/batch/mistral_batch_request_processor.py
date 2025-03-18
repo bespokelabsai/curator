@@ -187,13 +187,13 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             response_message = raw_response["response"]["body"]["choices"][0]["message"]["content"]
             response_errors = None
             token_usage = _TokenUsage(
-                prompt_tokens=raw_response["response"]["body"]["usage"]["prompt_tokens"],
-                completion_tokens=raw_response["response"]["body"]["usage"]["completion_tokens"],
-                total_tokens=raw_response["response"]["body"]["usage"]["total_tokens"],
+                input=int(raw_response["response"]["body"]["usage"]["prompt_tokens"]),
+                output=int(raw_response["response"]["body"]["usage"]["completion_tokens"]),
+                total=int(raw_response["response"]["body"]["usage"]["total_tokens"]),
             )
-            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message)
+            cost = self._cost_processor.cost(model="mistral/" + self.config.model, prompt=str(generic_request.messages), completion=response_message)
 
-        return GenericResponse(
+        generic_response = GenericResponse(
             response_message=response_message,
             response_errors=response_errors,
             raw_response=raw_response,
@@ -204,6 +204,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             token_usage=token_usage,
             response_cost=cost,
         )
+        return generic_response
 
     def create_api_specific_request_batch(self, generic_request: GenericRequest) -> dict:
         """Creates an API-specific request body from a generic request body.
