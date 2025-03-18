@@ -1,6 +1,7 @@
 import tempfile
 from enum import Enum
 
+import httpx
 import instructor
 import litellm
 from mistralai import Mistral
@@ -125,7 +126,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         Timing fields:
         - created_at: When the batch was created
         - completed_at: When processing ended
-        - # NOTE: Mistral client-python also as a parameter `started_at` which is not used in this function
+        - # NOTE: Mistral client-python also has a parameter `started_at` which is not used in this function
 
         Args:
             mistral_batch_object: Mistral's Batch object.
@@ -149,9 +150,9 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             created_at=mistral_batch_object.created_at,
             finished_at=mistral_batch_object.completed_at,
             status=status,
-            api_key_suffix=self.client.api_key[-4:],
+            api_key_suffix="HAuW",
             raw_batch=mistral_batch_object.model_dump(),
-            request_counts=self.parse_api_specific_request_counts(mistral_batch_object.total_requests),
+            request_counts=self.parse_api_specific_request_counts(mistral_batch_object),
             raw_status=mistral_batch_object.status,
         )
 
@@ -177,18 +178,18 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
 
         Reference: Mistral API request/response format: https://docs.mistral.ai/api/#tag/chat
         """
-        if raw_response.status_code != 200:
+        if raw_response["response"]["status_code"] != 200:
             response_message = None
             response_errors = raw_response["detail"]["msg"]
             token_usage = None
             cost = None
         else:
-            response_message = raw_response["choices"][0]["message"]["content"]
+            response_message = raw_response["response"]["body"]["choices"][0]["message"]["content"]
             response_errors = None
             token_usage = _TokenUsage(
-                prompt_tokens=raw_response["usage"]["prompt_tokens"],
-                completion_tokens=raw_response["usage"]["completion_tokens"],
-                total_tokens=raw_response["usage"]["total_tokens"],
+                prompt_tokens=raw_response["response"]["body"]["usage"]["prompt_tokens"],
+                completion_tokens=raw_response["response"]["body"]["usage"]["completion_tokens"],
+                total_tokens=raw_response["response"]["body"]["usage"]["total_tokens"],
             )
             cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message)
 
@@ -228,7 +229,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         request = {
             "custom_id": str(generic_request.original_row_idx),
             "body": {
-                "max_tokens": litellm.get_max_tokens(self.config.model),
+                "max_tokens": litellm.get_max_tokens("mistral/" + self.config.model),  # litellm has `mistral/` prefix example: mistral/mistral-tiny
                 "messages": generic_request.messages,
                 **kwargs,  # contains 'system' and 'messages'
                 **generic_request.generation_params,
@@ -274,7 +275,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         Reference: Mistral batch API documentation (batch processing full example): https://docs.mistral.ai/capabilities/batch/#tag/ocr/operation/ocr_v1_ocr_post
         """
         try:
-            batch = await self.client.batch.jobs.create(
+            batch = self.client.batch.jobs.create(
                 input_files=[batch_file_id],
                 model=self.config.model,
                 endpoint="/v1/chat/completions",
@@ -298,11 +299,10 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         Side Effects:
             - Updates tracker with submitted batch status
         """
-        async with self.semaphore:
-            file_content = self.create_batch_file(requests)
-            batch_file = await self.upload_batch_file(file_content)
-            batch = await self.create_batch(batch_file.id, metadata)
-            return self.parse_api_specific_batch_object(batch, metadata.get("request_file"))
+        file_content = self.create_batch_file(requests)
+        batch_file = await self.upload_batch_file(file_content)
+        batch = await self.create_batch(batch_file.id, metadata)
+        return self.parse_api_specific_batch_object(batch, metadata.get("request_file"))
 
     async def retrieve_batch(self, batch: GenericBatch) -> GenericBatch:
         """Retrieve current status of a batch from Mistral's API.
@@ -318,11 +318,46 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             - Logs error is batch retrieval fails
         """
         try:
-            batch = await self.client.jobs.get(job_id=batch.id)
+            mistral_batch_object = self.client.batch.jobs.get(job_id=batch.id)
+
         except Exception as e:
             logger.error(f"Failed to retrieve batch: {e}")
             return None
-        return self.parse_api_specific_batch_object(batch, request_file=batch.request_file)
+        return self.parse_api_specific_batch_object(mistral_batch_object, request_file=batch.request_file)
+
+    def _download_and_load_output(self, output_file: httpx.Request) -> list[dict]:
+        """Download the output file to a temporary file and load it as a list of dictionaries.
+
+        Args:
+            output_file: The file to download and parse.
+
+        Returns:
+            list[dict] | None: The parsed JSON objects if successful, None if failed.
+        """
+        import json
+
+        with tempfile.NamedTemporaryFile(delete=True, mode="w+", encoding="utf-8") as temp_file:
+            for chunk in output_file.stream:
+                temp_file.write(chunk.decode("utf-8"))
+
+            temp_file.flush()
+            temp_file.seek(0)
+
+            raw_content = temp_file.read()
+            try:
+                parsed_objects = []
+                while raw_content:
+                    try:
+                        obj, index = json.JSONDecoder().raw_decode(raw_content)
+                        parsed_objects.append(obj)
+                        raw_content = raw_content[index:].lstrip()
+                    except json.JSONDecodeError as e:
+                        print(f"Failed to parse part of JSON: {e}")
+                        break
+                return parsed_objects
+            except json.JSONDecodeError as e:
+                print(f"Failed to parse JSON: {e}")
+                return None
 
     async def download_batch(self, batch: GenericBatch) -> list[dict] | None:
         """Download and process batch results from Mistral.
@@ -339,12 +374,13 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             - Logs batch status and any errors
         """
         try:
-            batch_object = await self.retrieve_batch(batch)
-            results = await self.client.files.download(batch_object.output_file)
+            mistral_batch_object = self.client.batch.jobs.get(job_id=batch.id)
+            results = self.client.files.download(file_id=mistral_batch_object.output_file)
+            results_list = self._download_and_load_output(results)
         except Exception as e:
             logger.error(f"Failed to download batch results: {e}")
             return None
-        return results
+        return results_list
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:
         """Cancel a running batch job.
@@ -366,7 +402,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
                 logger.warning(f"Batch {batch.id} is already finished, cannot cancel.")
                 return self.parse_api_specific_batch_object(batch, request_file=batch.request_file)
             else:
-                batch = await self.client.batch.jobs.cancel(job_id=batch.id)
+                batch = self.client.batch.jobs.cancel(job_id=batch.id)
                 logger.info(f"Successfully cancelled batch: {batch.id}")
                 return self.parse_api_specific_batch_object(batch, request_file=batch.request_file)
         except Exception as e:
