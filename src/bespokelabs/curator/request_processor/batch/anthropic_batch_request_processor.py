@@ -142,8 +142,6 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             status = GenericBatchStatus.SUBMITTED.value
         elif batch.processing_status in ["ended"]:
             status = GenericBatchStatus.FINISHED.value
-        elif batch.processing_status in ["failed"]:
-            status = GenericBatchStatus.FAILED.value
         else:
             raise ValueError(f"Unknown batch status: {batch.processing_status}")
 

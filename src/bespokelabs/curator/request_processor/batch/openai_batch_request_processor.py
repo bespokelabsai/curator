@@ -127,8 +127,6 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             status = GenericBatchStatus.SUBMITTED.value
         elif batch.status in _FINISHED_STATE:
             status = GenericBatchStatus.FINISHED.value
-        elif batch.status in _FAILED_STATE:
-            status = GenericBatchStatus.FAILED.value
         else:
             raise ValueError(f"Unknown batch status: {batch.status}")
 

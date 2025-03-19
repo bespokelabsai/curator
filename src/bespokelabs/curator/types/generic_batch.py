@@ -13,7 +13,6 @@ class GenericBatchStatus(Enum):
     SUBMITTED = "submitted"  # Batch has been submitted but not yet processed
     FINISHED = "finished"  # Batch processing has completed
     DOWNLOADED = "downloaded"  # Results have been downloaded
-    FAILED = "failed"  # Batch processing failed
 
 
 class GenericBatchRequestCounts(BaseModel):
