@@ -549,6 +549,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             logger.warning(f"Batch {batch.id} has {len(invalid_finish_responses)} invalid finish responses. Please check the logs above for details.")
             invalid_finish_reasons = dict(Counter([response["finish_reason"] for response in invalid_finish_responses]))
             logger.warning(f"Invalid finish responses: {invalid_finish_reasons}")
+            logger.warning("Retrying these requests by resubmitting the batch.")
+            await self._tag_batch_as_retry(batch)
 
         # Update tracker with token usage and cost stats
         self.tracker.update_token_and_cost(total_token_usage, total_cost)
@@ -638,18 +640,18 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                     logger.debug(f"Batch {batch.id} finished with status: {batch.raw_status}")
                     self.tracker.mark_as_finished(batch)
                     await self.update_batch_objects_file()
-                elif batch.status == GenericBatchStatus.FAILED.value:
-                    logger.warning(f"Batch {batch.id} failed with status: {batch.raw_status}")
-                    self.tracker.mark_as_finished(batch)
-                    if batch.attempts_left > 0:
-                        batch.attempts_left -= 1
-                        logger.warning(
-                            f"Batch {batch.id} failed during attempt " f"{self.config.max_retries - batch.attempts_left} of {self.config.max_retries} "
-                        )
-                        self.tracker.append_to_resubmit(batch)
+                    if n_failed_requests > 0:
+                        await self._tag_batch_as_retry(batch)
 
-                    else:
-                        logger.error(f"Batch {batch.id} failed after {self.config.max_retries} attempts.")
+    async def _tag_batch_as_retry(self, batch: GenericBatch) -> None:
+        logger.warning(f"Batch {batch.id} has failed requests. Tagging for resubmission.")
+        if batch.attempts_left > 0:
+            batch.attempts_left -= 1
+            logger.warning(f"Batch {batch.id} failed during attempt " f"{self.config.max_retries - batch.attempts_left} of {self.config.max_retries} ")
+            self.tracker.append_to_resubmit(batch)
+
+        else:
+            logger.error(f"Batch {batch.id} failed after {self.config.max_retries} attempts.")
 
     async def resubmit_batch(self, batch: GenericBatch) -> None:
         """Resubmit a failed batch for additional attempts.
