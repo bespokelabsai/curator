@@ -155,6 +155,7 @@ class BatchStatusTracker(BaseModel):
 
         # Calculate stats
         n_submitted_requests = self.n_total_requests - (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests)
+        n_submitted_requests = max(0, n_submitted_requests)
         avg_prompt = self.total_prompt_tokens / max(1, self.n_finished_or_downloaded_succeeded_requests)
         avg_completion = self.total_completion_tokens / max(1, self.n_finished_or_downloaded_succeeded_requests)
         avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
