@@ -232,7 +232,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         """
         batch_file_upload = self.client.files.upload(
             file={
-                "file_name": f"curator_cache-fingerprint_requests_{uuid.uuid4().hex}",  # Random placeholder name
+                "file_name": f"curator_{uuid.uuid4().hex}",  # Random placeholder name
                 "content": file_content,
             },
             purpose="batch",
