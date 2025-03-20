@@ -19,7 +19,7 @@
 </div>
 
 <div align="center">
-[ English | <a href="README_zh.md">中文</a> ]
+[ English | <a href="docs/README_zh.md">中文</a> ]
 </div>
 
 ## 🎉 What's New 
