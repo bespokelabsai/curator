@@ -40,6 +40,7 @@ class BatchStatusTracker(BaseModel):
     n_total_requests: int = Field(default=0)
     unsubmitted_request_files: set[str] = Field(default_factory=set)
     submitted_batches: dict[str, GenericBatch] = Field(default_factory=dict)
+    to_resubmit_batches: dict[str, GenericBatch] = Field(default_factory=dict)
     finished_batches: dict[str, GenericBatch] = Field(default_factory=dict)
     downloaded_batches: dict[str, GenericBatch] = Field(default_factory=dict)
 
@@ -154,6 +155,7 @@ class BatchStatusTracker(BaseModel):
 
         # Calculate stats
         n_submitted_requests = self.n_total_requests - (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests)
+        n_submitted_requests = max(0, n_submitted_requests)
         avg_prompt = self.total_prompt_tokens / max(1, self.n_finished_or_downloaded_succeeded_requests)
         avg_completion = self.total_completion_tokens / max(1, self.n_finished_or_downloaded_succeeded_requests)
         avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
@@ -359,6 +361,27 @@ class BatchStatusTracker(BaseModel):
     def n_finished_or_downloaded_batches(self) -> int:
         """Get the total number of batches that are either finished or downloaded."""
         return self.n_finished_batches + self.n_downloaded_batches
+
+    def append_to_resubmit(self, batch: GenericBatch):
+        """Append a batch to be resubmitted and update tracking counters.
+
+        Args:
+            batch: The batch to append
+        """
+        batch.status = GenericBatchStatus.SUBMITTED.value
+        self.to_resubmit_batches[batch.id] = batch
+        logger.debug(f"Marked {batch.request_file} as resubmitted with batch {batch.id}")
+        self.update_display()
+
+    def mark_as_resubmitted(self, batch: GenericBatch):
+        """Mark a batch as resubmitted and update tracking counters.
+
+        Args:
+            batch: The batch to mark as submitted
+        """
+        self.to_resubmit_batches.pop(batch.id)
+        logger.debug(f"Marked {batch.request_file} as resubmitted with batch {batch.id}")
+        self.update_display()
 
     def mark_as_submitted(self, batch: GenericBatch, n_requests: int):
         """Mark a batch as submitted and update tracking counters.

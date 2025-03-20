@@ -20,6 +20,7 @@ from bespokelabs.curator.types.token_usage import _TokenUsage
 
 _PROGRESS_STATE = {"validating", "finalizing", "cancelling", "in_progress", "pre_schedule"}
 _FINISHED_STATE = {"completed", "failed", "expired", "cancelled"}
+_FAILED_STATE = {"failed"}
 
 _UNSUPPORTED_FILE_STATUS_API_PROVIDERS = ("api.kluster.ai", "batch.inference.net")
 
@@ -150,6 +151,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             raw_batch=raw_batch,
             request_counts=self.parse_api_specific_request_counts(batch.request_counts),
             raw_status=batch.status,
+            attempts_left=self.config.max_retries,
         )
 
     def parse_api_specific_response(
@@ -183,6 +185,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             response_errors = [str(raw_response["response"]["status_code"])]
             token_usage = None
             cost = None
+            finish_reason = "unknown"
         else:
             response_body = raw_response["response"]["body"]
             if self.config.return_completions_object:
@@ -195,6 +198,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
             # if we get length?
             # can use litellm and my pr https://github.com/BerriAI/litellm/pull/7264
             # resubmission also related to the expiration
+            finish_reason = response_body["choices"][0].get("finish_reason", "unknown")
             token_usage = _TokenUsage(
                 input=usage.get("prompt_tokens", 0),
                 output=usage.get("completion_tokens", 0),
@@ -208,6 +212,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         return GenericResponse(
             response_message=response_message,
             response_errors=response_errors,
+            finish_reason=finish_reason,
             raw_response=raw_response,
             raw_request=None,
             generic_request=generic_request,
