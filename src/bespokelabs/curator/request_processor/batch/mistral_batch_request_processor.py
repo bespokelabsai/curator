@@ -67,6 +67,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         """Initialize the MistralBatchRequestProcessor."""
         super().__init__(config)
+        self.api_key = config.api_key
         self.client = Mistral(api_key=config.api_key)
 
     @property
@@ -150,7 +151,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             created_at=mistral_batch_object.created_at,
             finished_at=mistral_batch_object.completed_at,
             status=status,
-            api_key_suffix="HAuW",
+            api_key_suffix=self.api_key[-4:],
             raw_batch=mistral_batch_object.model_dump(),
             request_counts=self.parse_api_specific_request_counts(mistral_batch_object),
             raw_status=mistral_batch_object.status,
