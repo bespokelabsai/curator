@@ -1,6 +1,5 @@
 import json
 import uuid
-from enum import Enum
 
 import httpx
 import instructor
@@ -11,13 +10,13 @@ from mistralai.models import BatchJobOut, UploadFileOutTypedDict
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
-from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
+from bespokelabs.curator.types.generic_batch import BaseState, GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import _TokenUsage
 
 
-class MistralProgressStates(Enum):
+class MistralProgressStates(BaseState):
     """Mistral-specific batch progress states.
 
     Reference for Mistral status: https://github.com/mistralai/client-python/blob/main/docs/models/batchjobstatus.md.
@@ -27,17 +26,8 @@ class MistralProgressStates(Enum):
     RUNNING = "RUNNING"
     CANCELLATION_REQUESTED = "CANCELLATION_REQUESTED"
 
-    @classmethod
-    def has_value(cls, value: str) -> bool:
-        """Check if the value is in the enum.
 
-        Args:
-            value: The value to check.
-        """
-        return any(value == item.value for item in cls)
-
-
-class MistralFinishedStates(Enum):
+class MistralFinishedStates(BaseState):
     """Mistral-specific batch finished states.
 
     Reference for Mistral status: https://github.com/mistralai/client-python/blob/main/docs/models/batchjobstatus.md.
@@ -47,15 +37,6 @@ class MistralFinishedStates(Enum):
     FAILED = "FAILED"
     TIMEOUT_EXCEEDED = "TIMEOUT_EXCEEDED"
     CANCELLED = "CANCELLED"
-
-    @classmethod
-    def has_value(cls, value: str) -> bool:
-        """Check if the value is in the enum.
-
-        Args:
-            value: The value to check.
-        """
-        return any(value == item.value for item in cls)
 
 
 class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
