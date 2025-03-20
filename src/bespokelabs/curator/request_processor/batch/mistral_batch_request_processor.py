@@ -1,4 +1,5 @@
-import tempfile
+import json
+import uuid
 from enum import Enum
 
 import httpx
@@ -248,13 +249,9 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         Returns:
             UploadFileOutTypedDict: The uploaded file object from Mistral
         """
-        with tempfile.NamedTemporaryFile(delete=True) as temp_file:
-            temp_file.write(file_content)
-            temp_file.flush()
-
         batch_file_upload = self.client.files.upload(
             file={
-                "file_name": temp_file.name,
+                "file_name": f"curator_cache-fingerprint_requests_{uuid.uuid4().hex}",  # Random placeholder name
                 "content": file_content,
             },
             purpose="batch",
@@ -328,7 +325,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         return self.parse_api_specific_batch_object(mistral_batch_object, request_file=batch.request_file)
 
     def _download_and_load_output(self, output_file: httpx.Request) -> list[dict]:
-        """Download the output file to a temporary file and load it as a list of dictionaries.
+        """Parses a JSON stream from the output file object.
 
         Args:
             output_file: The file to download and parse.
@@ -336,30 +333,23 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
         Returns:
             list[dict] | None: The parsed JSON objects if successful, None if failed.
         """
-        import json
+        try:
+            raw_content = "".join(chunk.decode("utf-8") for chunk in output_file.stream)
+            parsed_objects = []
 
-        with tempfile.NamedTemporaryFile(delete=True, mode="w+", encoding="utf-8") as temp_file:
-            for chunk in output_file.stream:
-                temp_file.write(chunk.decode("utf-8"))
+            while raw_content:
+                try:
+                    obj, index = json.JSONDecoder().raw_decode(raw_content)
+                    parsed_objects.append(obj)
+                    raw_content = raw_content[index:].lstrip()
+                except json.JSONDecodeError as e:
+                    print(f"Failed to parse part of JSON: {e}")
+                    break
 
-            temp_file.flush()
-            temp_file.seek(0)
-
-            raw_content = temp_file.read()
-            try:
-                parsed_objects = []
-                while raw_content:
-                    try:
-                        obj, index = json.JSONDecoder().raw_decode(raw_content)
-                        parsed_objects.append(obj)
-                        raw_content = raw_content[index:].lstrip()
-                    except json.JSONDecodeError as e:
-                        print(f"Failed to parse part of JSON: {e}")
-                        break
-                return parsed_objects
-            except json.JSONDecodeError as e:
-                print(f"Failed to parse JSON: {e}")
-                return None
+            return parsed_objects
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse JSON: {e}")
+            return None
 
     async def download_batch(self, batch: GenericBatch) -> list[dict] | None:
         """Download and process batch results from Mistral.
