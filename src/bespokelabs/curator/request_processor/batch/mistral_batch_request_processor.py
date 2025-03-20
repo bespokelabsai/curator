@@ -78,17 +78,17 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
     @property
     def max_requests_per_batch(self) -> int:
         """The maximum number of requests that can be processed in a batch."""
-        return 1000000  # 1 million
+        return 1000000  # 1 million (Reference: Mistral batch inference docs: https://docs.mistral.ai/capabilities/batch/)
 
     @property
     def max_bytes_per_batch(self) -> int:
         """The maximum number of bytes that can be processed in a batch."""
-        return 500 * 1024 * 1024  # 500 MB
+        return 500 * 1024 * 1024  # 500 MB (arbitrary limit)
 
     @property
     def max_concurrent_batch_operations(self) -> int:
         """The maximum number of concurrent batch operations."""
-        return 100
+        return 100  # (arbitrary limit)
 
     def parse_api_specific_request_counts(self, mistral_batch_object: BatchJobOut) -> GenericBatchRequestCounts:
         """Convert Mistral-specific request counts to generic format.
@@ -210,7 +210,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
     def create_api_specific_request_batch(self, generic_request: GenericRequest) -> dict:
         """Creates an API-specific request body from a generic request body.
 
-        Transforms a GenericRequest into the format expected by MIstral's batch API.
+        Transforms a GenericRequest into the format expected by Mistral's batch API.
 
         Args:
             generic_request: Generic request object containing model, messages,
