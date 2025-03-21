@@ -209,6 +209,7 @@ class Raft:
     backend: str | None = None
     backend_params: dict | None = None
     generation_params: dict | None = None
+    answer_generator_cls: _RaftAnswer | None = None
 
     def __call__(self, text: str | List[str]) -> datasets.Dataset:
         """Processes text into structured HF dataset."""
@@ -220,8 +221,13 @@ class Raft:
         question_gen = _RaftQuestion(model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params)
         questions = question_gen(chunks)
 
-        answer_gen = _RaftAnswer(
-            chunks=chunks, model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params
-        )
+        if self.answer_generator_cls is None:
+            answer_gen = _RaftAnswer(
+                chunks=chunks, model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params
+            )
+        else:
+            answer_gen = self.answer_generator_cls(
+                chunks=chunks, model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params
+            )
         qas = answer_gen(questions)
         return qas
