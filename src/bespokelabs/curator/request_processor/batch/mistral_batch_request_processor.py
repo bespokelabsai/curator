@@ -4,6 +4,7 @@ import uuid
 import httpx
 import instructor
 import litellm
+from litellm import model_cost
 from mistralai import Mistral
 from mistralai.models import BatchJobOut, UploadFileOutTypedDict
 
@@ -71,6 +72,18 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
     def max_concurrent_batch_operations(self) -> int:
         """The maximum number of concurrent batch operations."""
         return 100  # (arbitrary limit)
+
+    def set_model_cost(self):
+        """Set input and output tracker cost information for the Mistral model."""
+        if f"mistral/{self.prompt_formatter.model_name}" in model_cost:
+            self.tracker.input_cost_per_million = (model_cost["mistral/" + self.prompt_formatter.model_name]["input_cost_per_token"] * 1_000_000) * 0.5
+            self.tracker.output_cost_per_million = (model_cost["mistral/" + self.prompt_formatter.model_name]["output_cost_per_token"] * 1_000_000) * 0.5
+
+        else:
+            super().set_model_cost()
+
+        # Start the tracker with the console from constructor
+        self.tracker.start_tracker(self._tracker_console)
 
     def parse_api_specific_request_counts(self, mistral_batch_object: BatchJobOut) -> GenericBatchRequestCounts:
         """Convert Mistral-specific request counts to generic format.
@@ -174,6 +187,9 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
                 output=int(raw_response["response"]["body"]["usage"]["completion_tokens"]),
                 total=int(raw_response["response"]["body"]["usage"]["total_tokens"]),
             )
+            print("[DEBUG] self.tracker.input_cost_per_million:", self.tracker.input_cost_per_million)
+            print("[DEBUG] self.tracker.output_cost_per_million:", self.tracker.output_cost_per_million)
+
             cost = self._cost_processor.cost(model="mistral/" + self.config.model, prompt=str(generic_request.messages), completion=response_message)
 
         generic_response = GenericResponse(
