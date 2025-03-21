@@ -51,6 +51,21 @@ Check out our full documentation for [getting started](https://docs.bespokelabs.
 ```bash
 pip install bespokelabs-curator
 ```
+## 📕 Examples
+| **Task** | **Link(s)** | **Goal** |
+|----------|--------------|-------------|
+| **Finetuning/Distillation with Curator** | <a target="_blank" href="https://colab.research.google.com/drive/1YoA23-cBcWpaSErULzBI2bo2LPGo37GQ"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> | Finetuning a model to identify features of a product |
+| **Code Execution** | <a href="https://colab.research.google.com/drive/1YKj1-BC66-3LgNkf1m5AEPswIYtpOU-k" target="_blank"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>| Execute code generated with Curator |
+| **3Blue1Brown video generation** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/code-execution/math-animation" target="_blank">Code</a> | Generate videos similar to 3Blue1Brown and render them using code execution! |
+| **Synthetic charts** | <a href="https://github.com/bespokelabsai/curator/blob/main/examples/code-execution/chart-generation/charts.py" target="_blank">Code</a> | Generate charts synthetically.
+| **Function calling** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/function-calling" target="_blank">Code</a> | Generate data for finetuning for function calling. |
+| **Reasoning dataset generation (Bespoke Stratos)** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/bespoke-stratos-data-generation" target="_blank">Code</a> | Generate the Bespoke-Stratos-17k dataset, focusing on reasoning traces from math, coding, and problem-solving datasets. |
+| **Reasoning dataset generation (Open Thoughts)** | <a href="https://github.com/open-thoughts/open-thoughts" target="_blank">Code</a> | Generate the Open-Thoughts-114k dataset, focusing on reasoning traces from math, coding, and problem-solving datasets.|
+| **Multimodal** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/multimodal" target="_blank">Code</a> | Demonstrates multimodal capabilities by generating recipes from food images |
+| **Ungrounded Question Answer generation** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/ungrounded-qa" target="_blank">Code</a> | Generate diverse question-answer pairs using techniques similar to the CAMEL paper |
+| **RAFT** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/blocks/raft" target="_blank">Code</a> | Implement Retrieval Augmented Fine-Tuning (RAFT) that processes domain-specific documents, generates questions, and prepares data for fine-tuning LLMs. |
+
+
 
 ## 🚀 Quickstart
 
