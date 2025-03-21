@@ -40,3 +40,12 @@ class GenericBatch(BaseModel):
     model_config = {
         "json_encoders": {datetime.datetime: lambda dt: dt.isoformat()},
     }
+
+
+class BaseState(Enum):
+    """Base enum class for defining state constants with a helper method to verify if a given value exists."""
+
+    @classmethod
+    def has_value(cls, value):
+        """Check if the given value exists in the enum."""
+        return any(value == item.value for item in cls)

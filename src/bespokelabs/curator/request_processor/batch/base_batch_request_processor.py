@@ -306,7 +306,10 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         self.tracker.model = self.prompt_formatter.model_name
         self.tracker.n_total_requests = self.total_requests
+        self.set_model_cost()
 
+    def set_model_cost(self):
+        """Set cost information for the current model."""
         # Set cost information if available
         if self.prompt_formatter.model_name in model_cost:
             # Batch requests are 50% cheaper
