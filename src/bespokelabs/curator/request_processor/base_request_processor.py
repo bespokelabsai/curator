@@ -15,6 +15,7 @@ import aiofiles
 import pyarrow
 from pydantic import BaseModel, ValidationError
 
+from bespokelabs.curator.constants import _CACHE_MSG
 from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.file_utilities import count_lines
 from bespokelabs.curator.hf_card_template import HUGGINGFACE_CARD_TEMPLATE
@@ -26,9 +27,6 @@ from bespokelabs.curator.types.generic_response import GenericResponse
 
 if TYPE_CHECKING:
     from datasets import Dataset
-
-
-CACHE_MSG = "If you want to regenerate the dataset, disable or delete the cache."
 
 
 class BaseRequestProcessor(ABC):
@@ -210,7 +208,7 @@ class BaseRequestProcessor(ABC):
         incomplete_files = self._verify_existing_request_files(dataset)
 
         if len(incomplete_files) == 0:
-            logger.info(f"Using cached requests. {CACHE_MSG}")
+            logger.info(f"Using cached requests. {_CACHE_MSG}")
             # count existing jobs in file and print first job
             with open(request_files[0], "r") as f:
                 # Count lines and store first job
@@ -326,7 +324,7 @@ class BaseRequestProcessor(ABC):
         if os.path.exists(dataset_file):
             logger.debug(f"Loading dataset from {dataset_file}")
             try:
-                logger.info(f"Using cached output dataset. {CACHE_MSG}")
+                logger.info(f"Using cached output dataset. {_CACHE_MSG}")
                 return self._load_from_dataset_file(dataset_file)
             except pyarrow.lib.ArrowInvalid:
                 os.remove(dataset_file)
@@ -498,6 +496,32 @@ class BaseRequestProcessor(ABC):
         )
         card.push_to_hub(repo_id)
 
+    def _get_validated_response(self, line: str) -> tuple[GenericResponse | None, bool]:
+        """Check if a response is valid or has errors.
+
+        Args:
+            line: The line to process into a GenericResponse.
+
+        Returns:
+            response: The response if it is valid, None otherwise.
+            is_valid: True if the response is valid, False otherwise.
+        """
+        response = None
+        try:
+            response = GenericResponse.model_validate_json(line)
+            row_id = response.generic_request.original_row_idx
+            if response.response_errors:
+                logger.debug(f"Request {row_id} previously failed due to errors: {response.response_errors}, removing from output and will retry")
+                return None, False
+            if response.response_message is None:
+                logger.debug(f"Request {row_id} previously failed due to no response. Removing from output and will retry.")
+                return None, False
+        except (json.JSONDecodeError, ValidationError):
+            logger.warning(f"Skipping response due to error parsing line: {line}")
+            return None, False
+
+        return response, True
+
     def validate_existing_response_file(self, response_file: str) -> t.Union[set[int], int]:
         """Parse an existing response file to identify completed requests and removes failed requests.
 
@@ -508,42 +532,37 @@ class BaseRequestProcessor(ABC):
             set[int]: Set of completed request IDs that were already successfully processed
             int: Number of completed parsed responses
         """
+        if not os.path.exists(response_file):
+            return set(), 0
+
         completed_request_ids = set()
         failed_request_ids = set()
         completed_parsed_responses = 0
+        parsing_error_responses = 0
+        logger.info(f"Resuming progress by reading existing file: {response_file}")
+        logger.debug(f"Removing all failed requests from {response_file} so they can be retried")
+        temp_filepath = response_file + ".temp"
 
-        if os.path.exists(response_file):
-            logger.info(f"Resuming progress by reading existing file: {response_file}")
-            logger.debug(f"Removing all failed requests from {response_file} so they can be retried")
-            temp_filepath = response_file + ".temp"
+        with open(response_file, "r") as input_file, open(temp_filepath, "w") as output_file:
+            for line in input_file:
+                response, is_valid = self._get_validated_response(line)
+                if not response:
+                    parsing_error_responses += 1
+                    continue
+                row_id = response.generic_request.original_row_idx
+                if response.parsed_response_message:
+                    completed_parsed_responses += len(response.parsed_response_message)
+                if is_valid:
+                    completed_request_ids.add(row_id)
+                    output_file.write(line)
+                else:
+                    failed_request_ids.add(row_id)
 
-            parsing_error_responses = 0
-            with open(response_file, "r") as input_file, open(temp_filepath, "w") as output_file:
-                for line in input_file:
-                    try:
-                        response = GenericResponse.model_validate_json(line)
-                    except (json.JSONDecodeError, ValidationError):
-                        logger.warning("Skipping response due to error parsing line")
-                        parsing_error_responses += 1
-                        continue
-                    row_id = response.generic_request.original_row_idx
-                    if response.parsed_response_message:
-                        completed_parsed_responses += len(response.parsed_response_message)
-                    if response.response_errors:
-                        logger.debug(f"Request {row_id} previously failed due to errors: {response.response_errors}, removing from output and will retry")
-                        failed_request_ids.add(row_id)
-                    elif response.response_message is None:
-                        logger.debug(f"Request {row_id} previously failed due to no response. Removing from output and will retry.")
-                        failed_request_ids.add(row_id)
-                    else:
-                        completed_request_ids.add(row_id)
-                        output_file.write(line)
-
-            logger.info(
-                f"Found {len(completed_request_ids)} successful requests and {len(failed_request_ids)} "
-                f"previously failed requests and {parsing_error_responses} parsing errors in {response_file}"
-            )
-            os.replace(temp_filepath, response_file)
+        logger.info(
+            f"Found {len(completed_request_ids)} successful requests and {len(failed_request_ids)} "
+            f"previously failed requests and {parsing_error_responses} parsing errors in {response_file}"
+        )
+        os.replace(temp_filepath, response_file)
 
         return completed_request_ids, completed_parsed_responses
 

@@ -335,7 +335,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         try:
             blob_name = f"batch_requests/{filename}"
             blob = self._bucket.blob(blob_name)
-            jsonl_data = "\n".join(json.dumps(item) for item in requests)
+            jsonl_data = "\n".join(json.dumps(item, ensure_ascii=False) for item in requests)
             blob.upload_from_string(jsonl_data, content_type="application/jsonl+json")
         except Exception as e:
             logger.error(f"Could not upload batch file request to gcloud at {gcs_path} :: reason {e}")

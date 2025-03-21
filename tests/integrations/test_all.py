@@ -186,13 +186,13 @@ def test_basic_cache(caplog, temp_working_dir, mock_dataset):
         distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset)
 
         # This should use cache
-        from bespokelabs.curator.request_processor.base_request_processor import CACHE_MSG
+        from bespokelabs.curator.constants import _CACHE_MSG
 
         logger = "bespokelabs.curator.request_processor.base_request_processor"
         with caplog.at_level(logging.INFO, logger=logger):
             helper.create_basic(temp_working_dir, mock_dataset)
             distilled_dataset.cleanup_cache_files()
-            assert f"Using cached output dataset. {CACHE_MSG}" in caplog.text
+            assert f"Using cached output dataset. {_CACHE_MSG}" in caplog.text
 
 
 @pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)

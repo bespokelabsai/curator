@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 
 from pydantic import BaseModel, ValidationError
 
+from bespokelabs.curator.constants import _INTERNAL_PROMPT_KEY
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.prompt import _MultiModalPrompt
@@ -59,6 +60,29 @@ class PromptFormatter:
     response_format: Optional[Type[BaseModel]] = None
     generation_params: dict = field(default_factory=dict)
 
+    def get_prompts(self, row: _DictOrBaseModel) -> str | list[str]:
+        """Get the prompts for the given row."""
+        sig = inspect.signature(self.prompt_func)
+        if len(sig.parameters) == 0:
+            return self.prompt_func()
+        if len(sig.parameters) == 1:
+            if isinstance(row, dict):
+                if _INTERNAL_PROMPT_KEY in row:
+                    return self.prompt_func(row[_INTERNAL_PROMPT_KEY])
+            return self.prompt_func(row)
+        raise ValueError(f"Prompting function {self.prompt_func} must have 0 or 1 arguments.")
+
+    def get_messages(self, prompts: str | list[str]) -> list[dict]:
+        """Get the messages for the given prompts."""
+        if isinstance(prompts, str):
+            return [{"role": "user", "content": prompts}]
+        elif isinstance(prompts, list):
+            _validate_messages(prompts)
+            return prompts
+        elif isinstance(prompts, tuple):
+            return [{"role": "user", "content": _MultiModalPrompt.load(prompts)}]
+        raise ValueError(f"The return value of the `prompt` method {type(prompts)} did not match the expected format.")
+
     def create_generic_request(self, row: _DictOrBaseModel, idx: int, generation_params_per_row: bool = False) -> GenericRequest:
         """Format the request object based off of `LLM` attributes.
 
@@ -72,30 +96,12 @@ class PromptFormatter:
         Raises:
             ValueError: If prompt_func has invalid number of arguments or returns invalid format
         """
-        sig = inspect.signature(self.prompt_func)
-        if len(sig.parameters) == 0:
-            prompts = self.prompt_func()
-        elif len(sig.parameters) == 1:
-            prompts = self.prompt_func(row)
-        else:
-            raise ValueError(f"Prompting function {self.prompt_func} must have 0 or 1 arguments.")
-
-        multimodal_prompt = False
-        if isinstance(prompts, str):
-            messages = [{"role": "user", "content": prompts}]
-        elif isinstance(prompts, list):
-            multimodal_prompt = False
-            _validate_messages(prompts)
-            messages = prompts
-        elif isinstance(prompts, tuple):
-            multimodal_prompt = True
-            messages = [{"role": "user", "content": _MultiModalPrompt.load(prompts)}]
-        else:
-            raise ValueError(f"The return value of the `prompt` method {type(prompts)} did not match the expected format.")
-
         # Convert BaseModel to dict for serialization
         if isinstance(row, BaseModel):
             row = row.model_dump()
+        prompts = self.get_prompts(row)
+        messages = self.get_messages(prompts)
+        multimodal_prompt = isinstance(prompts, tuple)
 
         row_generation_params = copy.deepcopy(self.generation_params)
         # Specify generation_params given in the row if applicable

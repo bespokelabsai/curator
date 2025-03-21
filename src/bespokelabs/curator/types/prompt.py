@@ -8,12 +8,15 @@ from io import BytesIO
 from PIL import Image as PIL_Image
 from pydantic import BaseModel, ConfigDict, Field, field_serializer, field_validator, model_validator
 
+from bespokelabs.curator.log import logger
+
 
 class BaseType(BaseModel):
     """A class to represent the base type for multimodal prompts."""
 
     url: str = Field("", description="The URL of the file.")
     type: t.ClassVar[str] = Field(..., description="The type of the multimodal prompt.")
+    mime_type: str | None = Field(None, description="The MIME type of the file.")
 
     @staticmethod
     def _is_local_uri(path):
@@ -49,6 +52,7 @@ class Image(BaseType):
     content: bytes | PIL_Image.Image | str = Field("", description="Image content bytes.")
     detail: str = Field("auto", description="Details about the image. Note 'auto' is only supported for OpenAI client.")
     model_config = ConfigDict(arbitrary_types_allowed=True)
+    mime_type: str | None = Field(None, description="The MIME type of the file.")
 
     type: t.ClassVar[str] = "image"
 
@@ -80,11 +84,18 @@ class Image(BaseType):
             raise ValueError("Only one of 'url' or 'content' must be provided.")
         return self
 
+    def model_post_init(self, __context):
+        """Run after initialization."""
+        if self.mime_type is None and self.url:
+            mime_type, _ = mimetypes.guess_type(self.url)
+            if not mime_type:
+                logger.warning(f"Failed to guess MIME type for {self.url}.")
+            self.mime_type = mime_type.lower() if mime_type else "image/png"
+
 
 class File(BaseType):
     """A class to represent a file for multimodal prompts."""
 
-    mime_type: str | None = Field(None, description="The MIME type of the file.")
     type: t.ClassVar[str] = "file"
 
     @field_validator("mime_type", mode="before")
