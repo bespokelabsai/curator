@@ -15,7 +15,7 @@ from rich.table import Table
 from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
-from bespokelabs.curator.log import logger
+from bespokelabs.curator.log import logger, RICH_CLI_DISABLED, get_progress_bar
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
 from bespokelabs.curator.types.generic_response import _TokenUsage
@@ -66,7 +66,14 @@ class BatchStatusTracker(BaseModel):
     viewer_client: Optional[Client] = Field(default=None)
 
     def start_tracker(self, console: Optional[Console] = None):
-        """Start the progress tracker with rich console output."""
+        """Start the progress tracker."""
+        if RICH_CLI_DISABLED:
+            self._pbar = get_progress_bar(
+                total=self.n_total_requests,
+                desc=f"Processing {self.n_total_requests} requests using {self.model}"
+            )
+            return
+
         self._console = _CONSOLE if console is None else console
 
         # Create progress bar display
@@ -122,7 +129,22 @@ class BatchStatusTracker(BaseModel):
         self._live.start()
 
     def stop_tracker(self):
-        """Stop the tracker and display final statistics."""
+        """Stop the tracker."""
+        if RICH_CLI_DISABLED:
+            if hasattr(self, '_pbar'):
+                self._pbar.close()
+            
+            # Log final statistics
+            logger.info(
+                f"\nFinal Statistics:\n"
+                f"Total Requests: {self.n_total_requests}\n"
+                f"Downloaded Succeeded: {self.n_downloaded_succeeded_requests}\n"
+                f"Downloaded Failed: {self.n_downloaded_failed_requests}\n"
+                f"Total Cost: ${self.total_cost:.2f}\n"
+                f"Total Tokens: {self.total_tokens:,}"
+            )
+            return
+
         if hasattr(self, "_live"):
             # Stop the live display
             self._live.stop()
@@ -145,7 +167,20 @@ class BatchStatusTracker(BaseModel):
             self._live.stop()
 
     def update_display(self):
-        """Update statistics with token usage and cost information."""
+        """Update statistics display."""
+        if RICH_CLI_DISABLED:
+            if hasattr(self, '_pbar'):
+                self._pbar.n = self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+                self._pbar.refresh()
+                
+                # Log important stats periodically
+                if self.n_downloaded_succeeded_requests % 10 == 0:
+                    logger.info(
+                        f"Progress: {self.n_downloaded_succeeded_requests}/{self.n_total_requests} "
+                        f"(Failed: {self.n_downloaded_failed_requests})"
+                    )
+            return
+
         # Update main progress bar
         self._progress.update(
             self._task_id,
