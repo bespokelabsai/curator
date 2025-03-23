@@ -8,7 +8,18 @@ from rich.logging import RichHandler
 LOG_FORMAT = "%(asctime)s | %(levelname)-8s | %(module)s:%(lineno)d - %(message)s"
 ROOT_LOG_LEVEL = logging.DEBUG
 
-_CONSOLE = Console(stderr=True)
+# Check environment variable for display mode
+USE_RICH_DISPLAY = os.environ.get("CURATOR_USE_RICH", "1").lower() in (
+    "1",
+    "true",
+    "yes",
+)
+
+# Create console based on display mode
+if USE_RICH_DISPLAY:
+    _CONSOLE = Console(stderr=True)
+else:
+    _CONSOLE = None
 
 
 class Logger:
@@ -27,10 +38,16 @@ class Logger:
         self.logger = logging.getLogger("curator")
         self.logger.setLevel(ROOT_LOG_LEVEL)
         if not self.logger.handlers:
-            rich_handler = RichHandler(console=_CONSOLE)
-            rich_handler.setLevel(logging.INFO)
-
-            self.logger.addHandler(rich_handler)
+            if USE_RICH_DISPLAY:
+                rich_handler = RichHandler(console=_CONSOLE)
+                rich_handler.setLevel(logging.INFO)
+                self.logger.addHandler(rich_handler)
+            else:
+                # Use standard logging handler for non-rich mode
+                stream_handler = logging.StreamHandler()
+                stream_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+                stream_handler.setLevel(logging.INFO)
+                self.logger.addHandler(stream_handler)
 
     def get_logger(self, name):
         """Get logger instance."""
@@ -45,7 +62,9 @@ def add_file_handler(log_dir):
     global logger
     log_file = os.path.join(log_dir, "curator.log")
     formatter = logging.Formatter(LOG_FORMAT)
-    file_handler = logging.handlers.RotatingFileHandler(log_file, maxBytes=5 * 1024 * 1024, backupCount=5)
+    file_handler = logging.handlers.RotatingFileHandler(
+        log_file, maxBytes=5 * 1024 * 1024, backupCount=5
+    )
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
