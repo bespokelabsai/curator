@@ -53,7 +53,7 @@ class BatchStatusTracker(BaseModel):
         "_live",
         "_task_id",
         "_stats_task_id",
-        "pbar",  # Add pbar to excluded fields
+        "pbar",
     }
 
     n_total_requests: int = Field(default=0)
@@ -145,6 +145,10 @@ class BatchStatusTracker(BaseModel):
         self._task_id = self._progress.add_task(
             description="",
             total=self.n_total_requests,
+            # Since we don't automatically retry failed requests within a run, we can count
+            # failed downloaded requests as "completed". Users who require
+            # 100% success rate can set require_all_responses to True and
+            # manually retry.
             completed=self.n_downloaded_succeeded_requests
             + self.n_downloaded_failed_requests,
         )
