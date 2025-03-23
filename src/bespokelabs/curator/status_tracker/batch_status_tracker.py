@@ -91,6 +91,7 @@ class BatchStatusTracker(BaseModel):
 
     # Compatible provider
     compatible_provider: Optional[str] = Field(default=None)
+    completion_window: Optional[int] = Field(default=None)
 
     # Model information
     model: str = Field(default="")
@@ -130,14 +131,14 @@ class BatchStatusTracker(BaseModel):
                 from bespokelabs.curator.cost import external_model_cost
 
                 costs = external_model_cost(
-                    self.model, provider=self.compatible_provider
+                    self.model, provider=self.compatible_provider, completion_window=self.completion_window
                 )
                 self.input_cost_per_million = costs["input_cost_per_token"] * 1_000_000
                 self.output_cost_per_million = (
                     costs["output_cost_per_token"] * 1_000_000
                 )
         except Exception as e:
-            logger.debug(f"Could not determine model costs: {e}")
+            logger.warning(f"Could not determine model costs: {e}")
             self.input_cost_per_million = None
             self.output_cost_per_million = None
 
