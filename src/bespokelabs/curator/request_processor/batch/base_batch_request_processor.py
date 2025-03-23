@@ -296,7 +296,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         if os.path.exists(self.batch_objects_file):
             with open(self.batch_objects_file, "r") as f:
                 self.tracker = BatchStatusTracker.model_validate_json(f.read())
-                self.tracker.viewer_client = self._viewer_client # Note that viewer_client is not serialized
+                self.tracker.viewer_client = self._viewer_client  # Note that viewer_client is not serialized
             logger.info(f"Loaded existing tracker from {self.batch_objects_file}")
         else:
             self.tracker = BatchStatusTracker(

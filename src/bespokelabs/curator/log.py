@@ -62,9 +62,7 @@ def add_file_handler(log_dir):
     global logger
     log_file = os.path.join(log_dir, "curator.log")
     formatter = logging.Formatter(LOG_FORMAT)
-    file_handler = logging.handlers.RotatingFileHandler(
-        log_file, maxBytes=5 * 1024 * 1024, backupCount=5
-    )
+    file_handler = logging.handlers.RotatingFileHandler(log_file, maxBytes=5 * 1024 * 1024, backupCount=5)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)

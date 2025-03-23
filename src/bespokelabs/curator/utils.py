@@ -9,8 +9,9 @@ from rich.progress import Progress
 
 from bespokelabs.curator import _CONSOLE, constants
 from bespokelabs.curator.client import Client, _SessionStatus
-from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.log import USE_RICH_DISPLAY
+from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,9 +42,7 @@ def push_to_viewer(
             "Please select a specific split (e.g., `dataset['train']`) before passing it."
         )
     elif not isinstance(dataset, Dataset):
-        raise TypeError(
-            f"Expected a `datasets.Dataset` object, but received a `{type(dataset)}`."
-        )
+        raise TypeError(f"Expected a `datasets.Dataset` object, but received a `{type(dataset)}`.")
 
     client = Client(hosted=True)
     uid = str(uuid.uuid4())
@@ -66,7 +65,9 @@ def push_to_viewer(
         raise Exception("Failed to create session.")
 
     view_url = f"{constants.PUBLIC_CURATOR_VIEWER_DATASET_URL}/{session_id}"
-    viewer_text = f"[bold white]Curator Viewer:[/bold white] [blue][link={view_url}]:sparkles: Open Curator Viewer[/link] :sparkles:[/blue]\n[dim]{view_url}[/dim]\n"
+    viewer_text = (
+        f"[bold white]Curator Viewer:[/bold white] [blue][link={view_url}]:sparkles: Open Curator Viewer[/link] :sparkles:[/blue]\n[dim]{view_url}[/dim]\n"
+    )
     if USE_RICH_DISPLAY:
         _CONSOLE.print(viewer_text)
     else:
@@ -75,9 +76,7 @@ def push_to_viewer(
 
     async def send_responses():
         with Progress() as progress:
-            task = progress.add_task(
-                "[cyan]Uploading dataset rows...", total=len(dataset)
-            )
+            task = progress.add_task("[cyan]Uploading dataset rows...", total=len(dataset))
 
             async def send_row(idx, row):
                 nonlocal task, progress
