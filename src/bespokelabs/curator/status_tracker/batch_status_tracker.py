@@ -91,7 +91,7 @@ class BatchStatusTracker(BaseModel):
 
     # Compatible provider
     compatible_provider: Optional[str] = Field(default=None)
-    completion_window: Optional[int] = Field(default=None)
+    completion_window: Optional[str] = Field(default=None)
 
     # Model information
     model: str = Field(default="")
