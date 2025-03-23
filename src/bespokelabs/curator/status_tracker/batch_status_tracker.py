@@ -26,6 +26,24 @@ from bespokelabs.curator.log import logger, USE_RICH_DISPLAY
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
 from bespokelabs.curator.types.generic_response import _TokenUsage
+from bespokelabs.curator.status_tracker.tqdm_constants.colors import (
+    BLUE,
+    GREEN,
+    RED,
+    YELLOW,
+    MAGENTA,
+    CYAN,
+    BOLD,
+    END,
+    SUCCESS,
+    ERROR,
+    WARNING,
+    COST,
+    MODEL,
+    METRIC,
+    HEADER,
+)
+from litellm import model_cost
 
 
 class BatchStatusTracker(BaseModel):
@@ -56,6 +74,9 @@ class BatchStatusTracker(BaseModel):
         "pbar",
     }
 
+    # Add pbar field with None as default
+    pbar: Optional[tqdm.tqdm] = Field(default=None, exclude=True)
+
     n_total_requests: int = Field(default=0)
     unsubmitted_request_files: set[str] = Field(default_factory=set)
     submitted_batches: dict[str, GenericBatch] = Field(default_factory=dict)
@@ -67,6 +88,9 @@ class BatchStatusTracker(BaseModel):
     total_completion_tokens: int = Field(default=0)
     total_tokens: int = Field(default=0)
     total_cost: float = Field(default=0.0)
+
+    # Compatible provider
+    compatible_provider: Optional[str] = Field(default=None)
 
     # Model information
     model: str = Field(default="")
@@ -84,34 +108,55 @@ class BatchStatusTracker(BaseModel):
     # Add client field
     viewer_client: Optional[Client] = Field(default=None)
 
-    def model_post_init(self, **data):
+    # Add fields for cost projections
+    projected_remaining_cost: float = Field(default=0.0)
+    estimated_cost_average: float = Field(default=0.0)
+    num_estimates: int = Field(default=0)
+
+    def model_post_init(self, __context__) -> None:
         """Post init processing after model initialization."""
-        super().model_post_init(**data)
+        super().model_post_init(__context__)
 
         # Initialize cost strings with appropriate formatting based on display mode
-        self.input_cost_str = (
-            f"[red]${self.input_cost_per_million:.3f}[/red]"
-            if self.input_cost_per_million is not None
-            else "[dim]N/A[/dim]"
-        )
-        if not USE_RICH_DISPLAY:
-            self.input_cost_str = (
-                f"${self.input_cost_per_million:.3f}"
-                if self.input_cost_per_million is not None
-                else "N/A"
-            )
+        try:
+            if self.model in model_cost:
+                self.input_cost_per_million = (
+                    model_cost[self.model]["input_cost_per_token"] * 1_000_000
+                )
+                self.output_cost_per_million = (
+                    model_cost[self.model]["output_cost_per_token"] * 1_000_000
+                )
+            elif self.compatible_provider:
+                from bespokelabs.curator.cost import external_model_cost
 
-        self.output_cost_str = (
-            f"[red]${self.output_cost_per_million:.3f}[/red]"
-            if self.output_cost_per_million is not None
-            else "[dim]N/A[/dim]"
-        )
-        if not USE_RICH_DISPLAY:
-            self.output_cost_str = (
-                f"${self.output_cost_per_million:.3f}"
-                if self.output_cost_per_million is not None
-                else "N/A"
-            )
+                costs = external_model_cost(
+                    self.model, provider=self.compatible_provider
+                )
+                self.input_cost_per_million = costs["input_cost_per_token"] * 1_000_000
+                self.output_cost_per_million = (
+                    costs["output_cost_per_token"] * 1_000_000
+                )
+        except Exception as e:
+            logger.debug(f"Could not determine model costs: {e}")
+            self.input_cost_per_million = None
+            self.output_cost_per_million = None
+
+        # Format the cost strings based on the values we got
+        if self.input_cost_per_million is not None:
+            if USE_RICH_DISPLAY:
+                self.input_cost_str = f"[red]${self.input_cost_per_million:.3f}[/red]"
+            else:
+                self.input_cost_str = f"${self.input_cost_per_million:.3f}"
+        else:
+            self.input_cost_str = "[dim]N/A[/dim]" if USE_RICH_DISPLAY else "N/A"
+
+        if self.output_cost_per_million is not None:
+            if USE_RICH_DISPLAY:
+                self.output_cost_str = f"[red]${self.output_cost_per_million:.3f}[/red]"
+            else:
+                self.output_cost_str = f"${self.output_cost_per_million:.3f}"
+        else:
+            self.output_cost_str = "[dim]N/A[/dim]" if USE_RICH_DISPLAY else "N/A"
 
     def start_tracker(self, console: Optional[Console] = None):
         """Start the progress tracker."""
@@ -190,42 +235,110 @@ class BatchStatusTracker(BaseModel):
         """Log current statistics when using tqdm mode."""
         if not USE_RICH_DISPLAY:
             elapsed_minutes = (time.time() - self.start_time) / 60
-            avg_prompt = self.total_prompt_tokens / max(
-                1, self.n_finished_or_downloaded_succeeded_requests
+            rpm = (
+                self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+            ) / max(0.001, elapsed_minutes)
+            input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+            output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
+
+            # Calculate averages based on completed tasks
+            total_completed = max(1, self.n_downloaded_succeeded_requests)
+            avg_prompt = self.total_prompt_tokens / total_completed
+            avg_completion = self.total_completion_tokens / total_completed
+            avg_cost = self.total_cost / total_completed
+
+            # Calculate remaining requests and projected costs
+            remaining_requests = self.n_total_requests - (
+                self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
             )
-            avg_completion = self.total_completion_tokens / max(
-                1, self.n_finished_or_downloaded_succeeded_requests
+            self.projected_remaining_cost = avg_cost * remaining_requests
+            projected_total = self.total_cost + self.projected_remaining_cost
+
+            # Update TQDM description with key metrics
+            self.pbar.set_description(
+                f"Processing {MODEL}{self.model}{END} "
+                f"[{WARNING}{self.n_submitted_batches} batches running{END} • "
+                f"{COST}${self.total_cost:.3f} spent{END} • "
+                f"{METRIC}{rpm:.1f} RPM{END}]"
             )
-            avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
-            projected_cost = avg_cost * self.n_total_requests
 
             stats_msg = (
                 f"\nBatch Status Update:\n"
-                f"Batches - Total: {self.n_total_batches}, "
-                f"Submitted: {self.n_submitted_batches}, "
-                f"Downloaded: {self.n_downloaded_batches}\n"
-                f"Requests - Total: {self.n_total_requests}, "
-                f"Succeeded: {self.n_downloaded_succeeded_requests}, "
-                f"Failed: {self.n_downloaded_failed_requests}\n"
-                f"Tokens - Avg Input: {avg_prompt:.0f}, "
-                f"Avg Output: {avg_completion:.0f}\n"
-                f"Cost - Current: ${self.total_cost:.3f}, "
-                f"Projected: ${projected_cost:.3f}\n"
+                f"{HEADER}Batches:{END} Total: {METRIC}{self.n_total_batches}{END} • "
+                f"Submitted: {WARNING}{self.n_submitted_batches}{END} • "
+                f"Finished: {SUCCESS}{self.n_finished_batches}{END} • "
+                f"Downloaded: {SUCCESS}{self.n_downloaded_batches}{END}\n"
+                f"{HEADER}Requests:{END} Total: {METRIC}{self.n_total_requests}{END} • "
+                f"Succeeded: {SUCCESS}{self.n_downloaded_succeeded_requests}✓{END} • "
+                f"Failed: {ERROR}{self.n_downloaded_failed_requests}✗{END} • "
+                f"RPM: {METRIC}{rpm:.1f}{END}\n"
+                f"{HEADER}Tokens:{END} Avg Input: {METRIC}{avg_prompt:.0f}{END} • "
+                f"Input TPM: {METRIC}{input_tpm:.0f}{END} • "
+                f"Avg Output: {METRIC}{avg_completion:.0f}{END} • "
+                f"Output TPM: {METRIC}{output_tpm:.0f}{END}\n"
+                f"{HEADER}Cost:{END} Current: {COST}${self.total_cost:.3f}{END} • "
+                f"Projected Remaining: {COST}${self.projected_remaining_cost:.3f}{END} • "
+                f"Projected Total: {COST}${projected_total:.3f}{END} • "
+                f"Rate: {COST}${self.total_cost / max(0.01, elapsed_minutes):.3f}/min{END}\n"
+                f"{HEADER}Model:{END} Name: {MODEL}{self.model}{END}\n"
+                f"{HEADER}Model Pricing:{END} Per 1M tokens: "
+                f"Input: {COST}{self.input_cost_str}{END} • "
+                f"Output: {COST}{self.output_cost_str}{END}"
             )
             logger.info(stats_msg)
 
     def update_display(self):
         """Update the display based on current mode."""
+        current_time = time.time()
+
         if USE_RICH_DISPLAY:
             self._refresh_console()
         else:
-            self.pbar.n = (
-                self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
-            )
-            self.pbar.refresh()
-            # Log stats periodically (every 5 batch updates)
-            if (self.n_downloaded_batches + self.n_submitted_batches) % 5 == 0:
-                self._log_stats()
+            if self.pbar:
+                # Always update progress bar position
+                self.pbar.n = (
+                    self.n_downloaded_succeeded_requests
+                    + self.n_downloaded_failed_requests
+                )
+                self.pbar.refresh()
+
+                # Update stats in any of these conditions:
+                # 1. When batch states change
+                # 2. Every 5 seconds
+                # 3. When costs or tokens change
+                should_update = (
+                    current_time - getattr(self, "_last_stats_update", 0)
+                    >= 5  # Time-based update
+                    or self.n_submitted_batches
+                    != getattr(
+                        self, "_last_submitted_batches", -1
+                    )  # Batch state changes
+                    or self.n_finished_batches
+                    != getattr(self, "_last_finished_batches", -1)
+                    or self.n_downloaded_batches
+                    != getattr(self, "_last_downloaded_batches", -1)
+                    or self.n_downloaded_succeeded_requests
+                    != getattr(
+                        self, "_last_succeeded_requests", -1
+                    )  # Request state changes
+                    or self.n_downloaded_failed_requests
+                    != getattr(self, "_last_failed_requests", -1)
+                    or self.total_tokens
+                    != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
+                    or self.total_cost != getattr(self, "_last_total_cost", -1)
+                )
+
+                if should_update:
+                    self._log_stats()
+                    # Store current values for next comparison
+                    self._last_stats_update = current_time
+                    self._last_submitted_batches = self.n_submitted_batches
+                    self._last_finished_batches = self.n_finished_batches
+                    self._last_downloaded_batches = self.n_downloaded_batches
+                    self._last_succeeded_requests = self.n_downloaded_succeeded_requests
+                    self._last_failed_requests = self.n_downloaded_failed_requests
+                    self._last_total_tokens = self.total_tokens
+                    self._last_total_cost = self.total_cost
 
     def stop_tracker(self):
         """Stop the tracker and display final statistics."""
@@ -316,6 +429,14 @@ class BatchStatusTracker(BaseModel):
         # Cost Statistics
         table.add_row("Costs", "", style="bold magenta")
         table.add_row("Total Cost", f"[red]${self.total_cost:.3f}[/red]")
+        table.add_row(
+            "Projected Remaining Cost",
+            f"[red]${self.projected_remaining_cost:.3f}[/red]",
+        )
+        table.add_row(
+            "Projected Total Cost",
+            f"[red]${(self.total_cost + self.projected_remaining_cost):.3f}[/red]",
+        )
         if self.n_finished_or_downloaded_succeeded_requests > 0:
             table.add_row(
                 "Average Cost per Request",
@@ -350,20 +471,48 @@ class BatchStatusTracker(BaseModel):
         """Display final statistics in plain text format."""
         elapsed_time = time.time() - self.start_time
         elapsed_minutes = elapsed_time / 60
+        rpm = self.n_downloaded_succeeded_requests / max(0.001, elapsed_minutes)
+        input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+        output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
 
         stats = [
-            "\nFinal Batch Statistics:",
-            f"Model: {self.model}",
-            f"Total Batches: {self.n_total_batches}",
-            f"Submitted: {self.n_submitted_batches}",
-            f"Downloaded: {self.n_downloaded_batches}",
-            f"Total Requests: {self.n_total_requests}",
-            f"Successful: {self.n_downloaded_succeeded_requests}",
-            f"Failed: {self.n_downloaded_failed_requests}",
-            f"Total Tokens: {self.total_tokens:,}",
-            f"Total Cost: ${self.total_cost:.3f}",
-            f"Average Cost per Request: ${self.total_cost / max(1, self.n_downloaded_succeeded_requests):.3f}",
-            f"Total Time: {elapsed_time:.2f}s",
+            f"\n{HEADER}Final Statistics:{END}",
+            f"{HEADER}Model Information:{END}",
+            f"  Model: {MODEL}{self.model}{END}",
+            "",
+            f"{HEADER}Batch Statistics:{END}",
+            f"  Total Batches: {METRIC}{self.n_total_batches}{END}",
+            f"  Submitted: {WARNING}{self.n_submitted_batches}{END}",
+            f"  Finished: {SUCCESS}{self.n_finished_batches}{END}",
+            f"  Downloaded: {SUCCESS}{self.n_downloaded_batches}{END}",
+            "",
+            f"{HEADER}Request Statistics:{END}",
+            f"  Total Requests: {METRIC}{self.n_total_requests}{END}",
+            f"  Succeeded: {SUCCESS}{self.n_downloaded_succeeded_requests}{END}",
+            f"  Failed: {ERROR}{self.n_downloaded_failed_requests}{END}",
+            "",
+            f"{HEADER}Token Statistics:{END}",
+            f"  Total Tokens Used: {METRIC}{self.total_tokens:,}{END}",
+            f"  Total Input Tokens: {METRIC}{self.total_prompt_tokens:,}{END}",
+            f"  Total Output Tokens: {METRIC}{self.total_completion_tokens:,}{END}",
+            f"  Average Tokens per Request: {METRIC}{int(self.total_tokens / max(1, self.n_downloaded_succeeded_requests))}{END}",
+            f"  Average Input Tokens: {METRIC}{int(self.total_prompt_tokens / max(1, self.n_downloaded_succeeded_requests))}{END}",
+            f"  Average Output Tokens: {METRIC}{int(self.total_completion_tokens / max(1, self.n_downloaded_succeeded_requests))}{END}",
+            "",
+            f"{HEADER}Cost Statistics:{END}",
+            f"  Total Cost: {COST}${self.total_cost:.3f}{END}",
+            f"  Projected Remaining Cost: {COST}${self.projected_remaining_cost:.3f}{END}",
+            f"  Projected Total Cost: {COST}${(self.total_cost + self.projected_remaining_cost):.3f}{END}",
+            f"  Average Cost per Request: {COST}${self.total_cost / max(1, self.n_downloaded_succeeded_requests):.3f}{END}",
+            f"  Input Cost per 1M Tokens: {COST}{self.input_cost_str}{END}",
+            f"  Output Cost per 1M Tokens: {COST}{self.output_cost_str}{END}",
+            "",
+            f"{HEADER}Performance Statistics:{END}",
+            f"  Total Time: {METRIC}{elapsed_time:.2f}s{END}",
+            f"  Average Time per Request: {METRIC}{elapsed_time / max(1, self.n_downloaded_succeeded_requests):.2f}s{END}",
+            f"  Requests per Minute: {METRIC}{rpm:.1f}{END}",
+            f"  Input Tokens per Minute: {METRIC}{input_tpm:.1f}{END}",
+            f"  Output Tokens per Minute: {METRIC}{output_tpm:.1f}{END}",
         ]
         logger.info("\n".join(stats))
 
@@ -550,3 +699,102 @@ class BatchStatusTracker(BaseModel):
             "exclude", None
         )  # Remove any existing exclude to avoid duplicate argument
         return super().model_dump_json(exclude=self._excluded_fields, **kwargs)
+
+    def _refresh_console(self):
+        """Refresh the console display with latest stats."""
+        # Calculate stats
+        elapsed_minutes = (time.time() - self.start_time) / 60
+        rpm = (
+            self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+        ) / max(0.001, elapsed_minutes)
+        input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+        output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
+        avg_prompt = self.total_prompt_tokens / max(
+            1, self.n_downloaded_succeeded_requests
+        )
+        avg_completion = self.total_completion_tokens / max(
+            1, self.n_downloaded_succeeded_requests
+        )
+
+        # Calculate projected costs
+        remaining_requests = self.n_total_requests - (
+            self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+        )
+        avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
+        self.projected_remaining_cost = avg_cost * remaining_requests
+        projected_total = self.total_cost + self.projected_remaining_cost
+
+        # Format stats text
+        stats_text = (
+            f"[bold white]Batches:[/bold white] "
+            f"[white]Total:[/white] [blue]{self.n_total_batches}[/blue] "
+            f"[white]•[/white] "
+            f"[white]Submitted:[/white] [yellow]{self.n_submitted_batches}[/yellow] "
+            f"[white]•[/white] "
+            f"[white]Finished:[/white] [green]{self.n_finished_batches}[/green] "
+            f"[white]•[/white] "
+            f"[white]Downloaded:[/white] [green]{self.n_downloaded_batches}[/green]\n"
+            f"[bold white]Requests:[/bold white] "
+            f"[white]Total:[/white] [blue]{self.n_total_requests}[/blue] "
+            f"[white]•[/white] "
+            f"[white]Succeeded:[/white] [green]{self.n_downloaded_succeeded_requests}✓[/green] "
+            f"[white]•[/white] "
+            f"[white]Failed:[/white] [red]{self.n_downloaded_failed_requests}✗[/red] "
+            f"[white]•[/white] "
+            f"[white]RPM:[/white] [blue]{rpm:.1f}[/blue]\n"
+            f"[bold white]Tokens:[/bold white] "
+            f"[white]Avg Input:[/white] [blue]{avg_prompt:.0f}[/blue] "
+            f"[white]•[/white] "
+            f"[white]Input TPM:[/white] [blue]{input_tpm:.0f}[/blue] "
+            f"[white]•[/white] "
+            f"[white]Avg Output:[/white] [blue]{avg_completion:.0f}[/blue] "
+            f"[white]•[/white] "
+            f"[white]Output TPM:[/white] [blue]{output_tpm:.0f}[/blue]\n"
+            f"[bold white]Cost:[/bold white] "
+            f"[white]Current:[/white] [magenta]${self.total_cost:.3f}[/magenta] "
+            f"[white]•[/white] "
+            f"[white]Projected Remaining:[/white] [magenta]${self.projected_remaining_cost:.3f}[/magenta] "
+            f"[white]•[/white] "
+            f"[white]Projected Total:[/white] [magenta]${projected_total:.3f}[/magenta] "
+            f"[white]•[/white] "
+            f"[white]Rate:[/white] [magenta]${self.total_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]\n"
+            f"[bold white]Model:[/bold white] "
+            f"[white]Name:[/white] [blue]{self.model}[/blue]\n"
+            f"[bold white]Model Pricing:[/bold white] "
+            f"[white]Per 1M tokens:[/white] "
+            f"[white]Input:[/white] {self.input_cost_str} "
+            f"[white]•[/white] "
+            f"[white]Output:[/white] {self.output_cost_str}"
+        )
+
+        # Add curator viewer link if client is available and hosted
+        if (
+            self.viewer_client
+            and self.viewer_client.hosted
+            and self.viewer_client.curator_viewer_url
+        ):
+            viewer_text = (
+                f"[bold white]Curator Viewer:[/bold white] "
+                f"[blue][link={self.viewer_client.curator_viewer_url}]:sparkles: Open Curator Viewer[/link] :sparkles:[/blue]\n"
+                f"[dim]{self.viewer_client.curator_viewer_url}[/dim]\n"
+            )
+        else:
+            viewer_text = (
+                "[bold white]Curator Viewer:[/bold white] [yellow]Disabled[/yellow]\n"
+                "Set [yellow]HOSTED_CURATOR_VIEWER=[cyan]1[/cyan][/yellow] to view your data live at "
+                f"[blue]{PUBLIC_CURATOR_VIEWER_HOME_URL}[/blue]\n"
+            )
+        stats_text = viewer_text + stats_text
+
+        # Update main progress bar
+        self._progress.update(
+            self._task_id,
+            completed=self.n_downloaded_succeeded_requests
+            + self.n_downloaded_failed_requests,
+        )
+
+        # Update stats display
+        self._stats.update(
+            self._stats_task_id,
+            description=stats_text,
+        )

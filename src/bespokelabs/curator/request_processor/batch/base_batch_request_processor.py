@@ -302,6 +302,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             self.tracker = BatchStatusTracker(
                 unsubmitted_request_files=set(request_files),
                 viewer_client=self._viewer_client,
+                compatible_provider=self.compatible_provider,
             )
 
         self.tracker.model = self.prompt_formatter.model_name
