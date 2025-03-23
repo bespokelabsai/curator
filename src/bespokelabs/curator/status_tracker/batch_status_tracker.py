@@ -18,23 +18,7 @@ from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
 from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
-from bespokelabs.curator.status_tracker.tqdm_constants.colors import (
-    BLUE,
-    BOLD,
-    COST,
-    CYAN,
-    END,
-    ERROR,
-    GREEN,
-    HEADER,
-    MAGENTA,
-    METRIC,
-    MODEL,
-    RED,
-    SUCCESS,
-    WARNING,
-    YELLOW,
-)
+from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
 from bespokelabs.curator.types.generic_response import _TokenUsage
