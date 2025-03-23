@@ -112,6 +112,7 @@ class BatchStatusTracker(BaseModel):
             self.input_cost_per_million = None
             self.output_cost_per_million = None
 
+    def _format_cost_str(self):
         # Format the cost strings based on the values we got
         if self.input_cost_per_million is not None:
             if USE_RICH_DISPLAY:
@@ -187,6 +188,7 @@ class BatchStatusTracker(BaseModel):
             refresh_per_second=4,
             transient=True,
         )
+        self._format_cost_str()
         self._live.start()
 
     def _start_tqdm_tracker(self):
@@ -198,6 +200,7 @@ class BatchStatusTracker(BaseModel):
             unit="req",
         )
         # Log initial stats
+        self._format_cost_str()
         self._log_stats()
 
     def _log_stats(self):
@@ -229,7 +232,7 @@ class BatchStatusTracker(BaseModel):
 
             stats_msg = (
                 f"\nBatch Status Update:\n"
-                f"{HEADER}Batches:{END} Total: {METRIC}{self.n_total_batches}{END} • "
+                f"{HEADER}Batches:{END} Total: {METRIC}{self.n_total_batches}✓{END} • "
                 f"Submitted: {WARNING}{self.n_submitted_batches}{END} • "
                 f"Finished: {SUCCESS}{self.n_finished_batches}{END} • "
                 f"Downloaded: {SUCCESS}{self.n_downloaded_batches}{END}\n"
@@ -655,13 +658,13 @@ class BatchStatusTracker(BaseModel):
         # Format stats text
         stats_text = (
             f"[bold white]Batches:[/bold white] "
-            f"[white]Total:[/white] [blue]{self.n_total_batches}[/blue] "
+            f"[white]Total:[/white] [blue]{self.n_total_batches}✓[/blue] "
             f"[white]•[/white] "
             f"[white]Submitted:[/white] [yellow]{self.n_submitted_batches}[/yellow] "
             f"[white]•[/white] "
-            f"[white]Finished:[/white] [green]{self.n_finished_batches}[/green] "
+            f"[white]Finished:[/white] [green]{self.n_finished_batches}✓[/green] "
             f"[white]•[/white] "
-            f"[white]Downloaded:[/white] [green]{self.n_downloaded_batches}[/green]\n"
+            f"[white]Downloaded:[/white] [green]{self.n_downloaded_batches}✓[/green]\n"
             f"[bold white]Requests:[/bold white] "
             f"[white]Total:[/white] [blue]{self.n_total_requests}[/blue] "
             f"[white]•[/white] "
