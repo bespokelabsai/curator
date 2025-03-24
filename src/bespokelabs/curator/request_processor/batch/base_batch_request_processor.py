@@ -380,13 +380,13 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             )
         return file_content
 
-    async def resubmit_batch_from_request_file(
+    async def submit_batch_from_request_file(
         self,
         request_file: str,
         completed_request_ids: set[int],
-        attempts_left: int,
+        attempts_left: int | None = None,
     ):
-        """Resubmit a batch of requests from a file.
+        """Submit a batch of requests from a file.
 
         Reads requests from file, converts them to API-specific format,
         and submits them as a batch.
@@ -406,40 +406,13 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         metadata = {"request_file": request_file}
         requests = self.requests_from_generic_request_file(request_file, completed_request_ids)
         if not requests:
-            logger.warning(f"Batch {request_file} has no requests to resubmit.")
+            logger.warning(f"Batch {request_file} has no requests to submit.")
             return
         batch = await self.submit_batch(requests, metadata)
-        batch.attempts_left = attempts_left
+        batch.attempts_left = attempts_left or self.config.max_retries
         self.tracker.mark_as_submitted(batch, len(requests))
         await self.update_batch_objects_file()
         return batch
-
-    async def submit_batch_from_request_file(
-        self,
-        request_file: str,
-        completed_request_ids: set[int],
-    ):
-        """Submit a batch of requests from a file.
-
-        Reads requests from file, converts them to API-specific format,
-        and submits them as a batch.
-
-        Args:
-            request_file: Path to file containing request data.
-            completed_request_ids: Set of request IDs that have already been completed
-                and should be skipped.
-
-        Side Effects:
-            - Updates batch submission progress bar
-            - Updates tracker with submitted batch status
-            - Creates batch metadata with request file path
-            - Updates batch objects file
-        """
-        metadata = {"request_file": request_file}
-        requests = self.requests_from_generic_request_file(request_file, completed_request_ids)
-        batch = await self.submit_batch(requests, metadata)
-        self.tracker.mark_as_submitted(batch, len(requests))
-        await self.update_batch_objects_file()
 
     def requests_from_generic_request_file(self, request_file: str, completed_request_ids: set[int]) -> list[dict]:
         """Reads and converts generic requests from a file into API-specific request format.
@@ -661,7 +634,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         """
         response_file = batch.request_file.replace("requests_", "responses_")
         completed_request_ids, _ = self.validate_existing_response_file(response_file)
-        await self.resubmit_batch_from_request_file(batch.request_file, completed_request_ids, attempts_left=batch.attempts_left)
+        await self.submit_batch_from_request_file(batch.request_file, completed_request_ids, attempts_left=batch.attempts_left)
         self.tracker.mark_as_resubmitted(batch)
 
     async def poll_and_process_batches(self) -> None:

@@ -20,7 +20,6 @@ from bespokelabs.curator.types.token_usage import _TokenUsage
 
 _PROGRESS_STATE = {"validating", "finalizing", "cancelling", "in_progress", "pre_schedule"}
 _FINISHED_STATE = {"completed", "failed", "expired", "cancelled"}
-_FAILED_STATE = {"failed"}
 
 _UNSUPPORTED_FILE_STATUS_API_PROVIDERS = ("api.kluster.ai", "batch.inference.net")
 
