@@ -11,14 +11,29 @@ from rich import box
 from rich.console import Console, Group
 from rich.live import Live
 from rich.panel import Panel
-from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn, TimeRemainingColumn
+from rich.progress import (
+    BarColumn,
+    Progress,
+    TextColumn,
+    TimeElapsedColumn,
+    TimeRemainingColumn,
+)
 from rich.table import Table
 
 from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
 from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
-from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
+from bespokelabs.curator.status_tracker.tqdm_constants.colors import (
+    COST,
+    END,
+    ERROR,
+    HEADER,
+    METRIC,
+    MODEL,
+    SUCCESS,
+    WARNING,
+)
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
 from bespokelabs.curator.types.generic_response import _TokenUsage
@@ -99,14 +114,24 @@ class BatchStatusTracker(BaseModel):
         # Initialize cost strings with appropriate formatting based on display mode
         try:
             if self.model in model_cost:
-                self.input_cost_per_million = model_cost[self.model]["input_cost_per_token"] * 1_000_000
-                self.output_cost_per_million = model_cost[self.model]["output_cost_per_token"] * 1_000_000
+                self.input_cost_per_million = (
+                    model_cost[self.model]["input_cost_per_token"] * 1_000_000
+                )
+                self.output_cost_per_million = (
+                    model_cost[self.model]["output_cost_per_token"] * 1_000_000
+                )
             elif self.compatible_provider:
                 from bespokelabs.curator.cost import external_model_cost
 
-                costs = external_model_cost(self.model, provider=self.compatible_provider, completion_window=self.completion_window)
+                costs = external_model_cost(
+                    self.model,
+                    provider=self.compatible_provider,
+                    completion_window=self.completion_window,
+                )
                 self.input_cost_per_million = costs["input_cost_per_token"] * 1_000_000
-                self.output_cost_per_million = costs["output_cost_per_token"] * 1_000_000
+                self.output_cost_per_million = (
+                    costs["output_cost_per_token"] * 1_000_000
+                )
         except Exception as e:
             logger.warning(f"Could not determine model costs: {e}")
             self.input_cost_per_million = None
@@ -166,7 +191,8 @@ class BatchStatusTracker(BaseModel):
             # failed downloaded requests as "completed". Users who require
             # 100% success rate can set require_all_responses to True and
             # manually retry.
-            completed=self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests,
+            completed=self.n_downloaded_succeeded_requests
+            + self.n_downloaded_failed_requests,
         )
 
         self._stats_task_id = self._stats.add_task(
@@ -195,7 +221,8 @@ class BatchStatusTracker(BaseModel):
         """Start the tqdm progress tracker."""
         self.pbar = tqdm.tqdm(
             total=self.n_total_requests,
-            initial=self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests,
+            initial=self.n_downloaded_succeeded_requests
+            + self.n_downloaded_failed_requests,
             desc=f"Processing {self.model}",
             unit="req",
         )
@@ -206,48 +233,39 @@ class BatchStatusTracker(BaseModel):
     def _log_stats(self):
         """Log current statistics when using tqdm mode."""
         if not USE_RICH_DISPLAY:
-            elapsed_minutes = (time.time() - self.start_time) / 60
-            rpm = (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests) / max(0.001, elapsed_minutes)
-            input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
-            output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
-
-            # Calculate averages based on completed tasks
-            total_completed = max(1, self.n_downloaded_succeeded_requests)
-            avg_prompt = self.total_prompt_tokens / total_completed
-            avg_completion = self.total_completion_tokens / total_completed
-            avg_cost = self.total_cost / total_completed
-
-            # Calculate remaining requests and projected costs
-            remaining_requests = self.n_total_requests - (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests)
-            self.projected_remaining_cost = avg_cost * remaining_requests
-            projected_total = self.total_cost + self.projected_remaining_cost
+            n_submitted_requests = self.n_total_requests - (
+                self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+            )
+            avg_prompt = self.total_prompt_tokens / max(
+                1, self.n_finished_or_downloaded_succeeded_requests
+            )
+            avg_completion = self.total_completion_tokens / max(
+                1, self.n_finished_or_downloaded_succeeded_requests
+            )
+            avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
+            projected_cost = avg_cost * self.n_total_requests
 
             # Update TQDM description with key metrics
             self.pbar.set_description(
                 f"Processing {MODEL}{self.model}{END} "
                 f"[{WARNING}{self.n_submitted_batches} batches running{END} • "
-                f"{COST}${self.total_cost:.3f} spent{END} • "
-                f"{METRIC}{rpm:.1f} RPM{END}]"
+                f"{COST}${self.total_cost:.3f} spent{END}]"
             )
 
             stats_msg = (
                 f"\nBatch Status Update:\n"
-                f"{HEADER}Batches:{END} Total: {METRIC}{self.n_total_batches}✓{END} • "
-                f"Submitted: {WARNING}{self.n_submitted_batches}{END} • "
-                f"Finished: {SUCCESS}{self.n_finished_batches}{END} • "
-                f"Downloaded: {SUCCESS}{self.n_downloaded_batches}{END}\n"
+                f"{HEADER}Batches:{END} Total: {METRIC}{self.n_total_batches}{END} • "
+                f"Submitted: {WARNING}{self.n_submitted_batches}⋯{END} • "
+                f"Downloaded: {SUCCESS}{self.n_downloaded_batches}✓{END}\n"
                 f"{HEADER}Requests:{END} Total: {METRIC}{self.n_total_requests}{END} • "
+                f"Submitted: {WARNING}{n_submitted_requests}⋯{END} • "
                 f"Succeeded: {SUCCESS}{self.n_downloaded_succeeded_requests}✓{END} • "
-                f"Failed: {ERROR}{self.n_downloaded_failed_requests}✗{END} • "
-                f"RPM: {METRIC}{rpm:.1f}{END}\n"
+                f"Failed: {ERROR}{self.n_downloaded_failed_requests}✗{END}\n"
                 f"{HEADER}Tokens:{END} Avg Input: {METRIC}{avg_prompt:.0f}{END} • "
-                f"Input TPM: {METRIC}{input_tpm:.0f}{END} • "
-                f"Avg Output: {METRIC}{avg_completion:.0f}{END} • "
-                f"Output TPM: {METRIC}{output_tpm:.0f}{END}\n"
+                f"Avg Output: {METRIC}{avg_completion:.0f}{END}\n"
                 f"{HEADER}Cost:{END} Current: {COST}${self.total_cost:.3f}{END} • "
-                f"Projected Remaining: {COST}${self.projected_remaining_cost:.3f}{END} • "
-                f"Projected Total: {COST}${projected_total:.3f}{END} • "
-                f"Rate: {COST}${self.total_cost / max(0.01, elapsed_minutes):.3f}/min{END}\n"
+                f"Projected: {COST}${projected_cost:.3f}{END} • "
+                f"Rate: {COST}${avg_cost:.3f}/request{END}\n"
                 f"{HEADER}Model:{END} Name: {MODEL}{self.model}{END}\n"
                 f"{HEADER}Model Pricing:{END} Per 1M tokens: "
                 f"Input: {COST}{self.input_cost_str}{END} • "
@@ -264,7 +282,10 @@ class BatchStatusTracker(BaseModel):
         else:
             if self.pbar:
                 # Always update progress bar position
-                self.pbar.n = self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+                self.pbar.n = (
+                    self.n_downloaded_succeeded_requests
+                    + self.n_downloaded_failed_requests
+                )
                 self.pbar.refresh()
 
                 # Update stats in any of these conditions:
@@ -272,13 +293,24 @@ class BatchStatusTracker(BaseModel):
                 # 2. Every 5 seconds
                 # 3. When costs or tokens change
                 should_update = (
-                    current_time - getattr(self, "_last_stats_update", 0) >= 5  # Time-based update
-                    or self.n_submitted_batches != getattr(self, "_last_submitted_batches", -1)  # Batch state changes
-                    or self.n_finished_batches != getattr(self, "_last_finished_batches", -1)
-                    or self.n_downloaded_batches != getattr(self, "_last_downloaded_batches", -1)
-                    or self.n_downloaded_succeeded_requests != getattr(self, "_last_succeeded_requests", -1)  # Request state changes
-                    or self.n_downloaded_failed_requests != getattr(self, "_last_failed_requests", -1)
-                    or self.total_tokens != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
+                    current_time - getattr(self, "_last_stats_update", 0)
+                    >= 5  # Time-based update
+                    or self.n_submitted_batches
+                    != getattr(
+                        self, "_last_submitted_batches", -1
+                    )  # Batch state changes
+                    or self.n_finished_batches
+                    != getattr(self, "_last_finished_batches", -1)
+                    or self.n_downloaded_batches
+                    != getattr(self, "_last_downloaded_batches", -1)
+                    or self.n_downloaded_succeeded_requests
+                    != getattr(
+                        self, "_last_succeeded_requests", -1
+                    )  # Request state changes
+                    or self.n_downloaded_failed_requests
+                    != getattr(self, "_last_failed_requests", -1)
+                    or self.total_tokens
+                    != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
                     or self.total_cost != getattr(self, "_last_total_cost", -1)
                 )
 
@@ -404,7 +436,9 @@ class BatchStatusTracker(BaseModel):
         table.add_row("Performance", "", style="bold magenta")
         elapsed_time = time.time() - self.start_time
         elapsed_minutes = elapsed_time / 60
-        rpm = (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests) / max(0.001, elapsed_minutes)
+        rpm = (
+            self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+        ) / max(0.001, elapsed_minutes)
         input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
         output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
 
@@ -435,7 +469,6 @@ class BatchStatusTracker(BaseModel):
             f"{HEADER}Batch Statistics:{END}",
             f"  Total Batches: {METRIC}{self.n_total_batches}{END}",
             f"  Submitted: {WARNING}{self.n_submitted_batches}{END}",
-            f"  Finished: {SUCCESS}{self.n_finished_batches}{END}",
             f"  Downloaded: {SUCCESS}{self.n_downloaded_batches}{END}",
             "",
             f"{HEADER}Request Statistics:{END}",
@@ -471,7 +504,12 @@ class BatchStatusTracker(BaseModel):
     @property
     def n_total_batches(self) -> int:
         """Get the total number of batches across all states."""
-        return self.n_unsubmitted_request_files + self.n_submitted_batches + self.n_finished_batches + self.n_downloaded_batches
+        return (
+            self.n_unsubmitted_request_files
+            + self.n_submitted_batches
+            + self.n_finished_batches
+            + self.n_downloaded_batches
+        )
 
     @property
     def n_unsubmitted_request_files(self) -> int:
@@ -500,7 +538,9 @@ class BatchStatusTracker(BaseModel):
         Returns:
             int: Total count of succeeded requests across submitted and finished batches.
         """
-        batches = list(self.submitted_batches.values()) + list(self.finished_batches.values())
+        batches = list(self.submitted_batches.values()) + list(
+            self.finished_batches.values()
+        )
         return sum(b.request_counts.succeeded for b in batches)
 
     @property
@@ -545,7 +585,11 @@ class BatchStatusTracker(BaseModel):
     @property
     def n_submitted_finished_or_downloaded_batches(self) -> int:
         """Get the total number of batches that are submitted, finished, or downloaded."""
-        return self.n_submitted_batches + self.n_finished_batches + self.n_downloaded_batches
+        return (
+            self.n_submitted_batches
+            + self.n_finished_batches
+            + self.n_downloaded_batches
+        )
 
     @property
     def n_finished_or_downloaded_batches(self) -> int:
@@ -636,59 +680,52 @@ class BatchStatusTracker(BaseModel):
 
     def model_dump_json(self, **kwargs) -> str:
         """Override model_dump_json to exclude non-serializable fields."""
-        kwargs.pop("exclude", None)  # Remove any existing exclude to avoid duplicate argument
+        kwargs.pop(
+            "exclude", None
+        )  # Remove any existing exclude to avoid duplicate argument
         return super().model_dump_json(exclude=self._excluded_fields, **kwargs)
 
     def _refresh_console(self):
         """Refresh the console display with latest stats."""
         # Calculate stats
-        elapsed_minutes = (time.time() - self.start_time) / 60
-        rpm = (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests) / max(0.001, elapsed_minutes)
-        input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
-        output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
-        avg_prompt = self.total_prompt_tokens / max(1, self.n_downloaded_succeeded_requests)
-        avg_completion = self.total_completion_tokens / max(1, self.n_downloaded_succeeded_requests)
-
-        # Calculate projected costs
-        remaining_requests = self.n_total_requests - (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests)
+        n_submitted_requests = self.n_total_requests - (
+            self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+        )
+        avg_prompt = self.total_prompt_tokens / max(
+            1, self.n_finished_or_downloaded_succeeded_requests
+        )
+        avg_completion = self.total_completion_tokens / max(
+            1, self.n_finished_or_downloaded_succeeded_requests
+        )
         avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
-        self.projected_remaining_cost = avg_cost * remaining_requests
-        projected_total = self.total_cost + self.projected_remaining_cost
+        projected_cost = avg_cost * self.n_total_requests
 
         # Format stats text
         stats_text = (
             f"[bold white]Batches:[/bold white] "
-            f"[white]Total:[/white] [blue]{self.n_total_batches}✓[/blue] "
+            f"[white]Total:[/white] [blue]{self.n_total_batches}[/blue] "
             f"[white]•[/white] "
-            f"[white]Submitted:[/white] [yellow]{self.n_submitted_batches}[/yellow] "
-            f"[white]•[/white] "
-            f"[white]Finished:[/white] [green]{self.n_finished_batches}✓[/green] "
+            f"[white]Submitted:[/white] [yellow]{self.n_submitted_batches}⋯[/yellow] "
             f"[white]•[/white] "
             f"[white]Downloaded:[/white] [green]{self.n_downloaded_batches}✓[/green]\n"
             f"[bold white]Requests:[/bold white] "
             f"[white]Total:[/white] [blue]{self.n_total_requests}[/blue] "
             f"[white]•[/white] "
+            f"[white]Submitted:[/white] [yellow]{n_submitted_requests}⋯[/yellow] "
+            f"[white]•[/white] "
             f"[white]Succeeded:[/white] [green]{self.n_downloaded_succeeded_requests}✓[/green] "
             f"[white]•[/white] "
-            f"[white]Failed:[/white] [red]{self.n_downloaded_failed_requests}✗[/red] "
-            f"[white]•[/white] "
-            f"[white]RPM:[/white] [blue]{rpm:.1f}[/blue]\n"
+            f"[white]Failed:[/white] [red]{self.n_downloaded_failed_requests}✗[/red]\n"
             f"[bold white]Tokens:[/bold white] "
             f"[white]Avg Input:[/white] [blue]{avg_prompt:.0f}[/blue] "
             f"[white]•[/white] "
-            f"[white]Input TPM:[/white] [blue]{input_tpm:.0f}[/blue] "
-            f"[white]•[/white] "
-            f"[white]Avg Output:[/white] [blue]{avg_completion:.0f}[/blue] "
-            f"[white]•[/white] "
-            f"[white]Output TPM:[/white] [blue]{output_tpm:.0f}[/blue]\n"
+            f"[white]Avg Output:[/white] [blue]{avg_completion:.0f}[/blue]\n"
             f"[bold white]Cost:[/bold white] "
             f"[white]Current:[/white] [magenta]${self.total_cost:.3f}[/magenta] "
             f"[white]•[/white] "
-            f"[white]Projected Remaining:[/white] [magenta]${self.projected_remaining_cost:.3f}[/magenta] "
+            f"[white]Projected:[/white] [magenta]${projected_cost:.3f}[/magenta] "
             f"[white]•[/white] "
-            f"[white]Projected Total:[/white] [magenta]${projected_total:.3f}[/magenta] "
-            f"[white]•[/white] "
-            f"[white]Rate:[/white] [magenta]${self.total_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]\n"
+            f"[white]Rate:[/white] [magenta]${avg_cost:.3f}/request[/magenta]\n"
             f"[bold white]Model:[/bold white] "
             f"[white]Name:[/white] [blue]{self.model}[/blue]\n"
             f"[bold white]Model Pricing:[/bold white] "
@@ -699,7 +736,11 @@ class BatchStatusTracker(BaseModel):
         )
 
         # Add curator viewer link if client is available and hosted
-        if self.viewer_client and self.viewer_client.hosted and self.viewer_client.curator_viewer_url:
+        if (
+            self.viewer_client
+            and self.viewer_client.hosted
+            and self.viewer_client.curator_viewer_url
+        ):
             viewer_text = (
                 f"[bold white]Curator Viewer:[/bold white] "
                 f"[blue][link={self.viewer_client.curator_viewer_url}]:sparkles: Open Curator Viewer[/link] :sparkles:[/blue]\n"
@@ -716,7 +757,8 @@ class BatchStatusTracker(BaseModel):
         # Update main progress bar
         self._progress.update(
             self._task_id,
-            completed=self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests,
+            completed=self.n_downloaded_succeeded_requests
+            + self.n_downloaded_failed_requests,
         )
 
         # Update stats display

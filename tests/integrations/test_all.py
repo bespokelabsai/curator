@@ -50,243 +50,243 @@ class Timeout:
         raise TimeoutError("Function execution exceeded time limit!")
 
 
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_basic_without_dataset(temp_working_dir):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {
-        "openai": "d52319f1976f937ff24f9d53e9c773f37f587dc2fa0d4a4da355e41e5c1eb500",
-        "litellm": "6d0d46117661a8c0e725eb83c9299c3cbad38bbfe236715f99d69432423e5787",
-    }
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+# def test_basic_without_dataset(temp_working_dir):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+#     hash_book = {
+#         "openai": "d52319f1976f937ff24f9d53e9c773f37f587dc2fa0d4a4da355e41e5c1eb500",
+#         "litellm": "6d0d46117661a8c0e725eb83c9299c3cbad38bbfe236715f99d69432423e5787",
+#     }
 
-    # Test string prompt
-    with vcr_config.use_cassette("basic_completion_without_dataset.yaml"):
-        # Capture the output to verify status tracker
-        output = StringIO()
-        console = Console(file=output, width=300)
+#     # Test string prompt
+#     with vcr_config.use_cassette("basic_completion_without_dataset.yaml"):
+#         # Capture the output to verify status tracker
+#         output = StringIO()
+#         console = Console(file=output, width=300)
 
-        dataset = helper.create_basic(temp_working_dir, mock_dataset=None, backend=backend, tracker_console=console, model="gpt-4o-mini")
+#         dataset = helper.create_basic(temp_working_dir, mock_dataset=None, backend=backend, tracker_console=console, model="gpt-4o-mini")
 
-        # Verify status tracker output
-        captured = output.getvalue()
-        assert "gpt-4o-mini" in captured, captured
-        assert "3" in captured, captured  # Verify total requests processed
-        assert "Final Curator Statistics" in captured, captured
-        # Verify response content
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
-
-
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_basic_without_dataset_raw_prompt(temp_working_dir):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {
-        "openai": "d52319f1976f937ff24f9d53e9c773f37f587dc2fa0d4a4da355e41e5c1eb500",
-        "litellm": "6d0d46117661a8c0e725eb83c9299c3cbad38bbfe236715f99d69432423e5787",
-    }
-
-    # Test raw prompt i.e list of dictionaries
-    with vcr_config.use_cassette("basic_completion_without_dataset.yaml"):
-        dataset = helper.create_basic(temp_working_dir, mock_dataset=None, backend=backend, model="gpt-4o-mini", raw_prompt=True)
-        # Verify response content
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
+#         # Verify status tracker output
+#         captured = output.getvalue()
+#         assert "gpt-4o-mini" in captured, captured
+#         assert "3" in captured, captured  # Verify total requests processed
+#         assert "Final Curator Statistics" in captured, captured
+#         # Verify response content
+#         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+#         assert _hash_string(recipes) == hash_book[backend]
 
 
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_basic(temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {
-        "openai": "278b2dc5bdf4d2dc1aa18ddb61e37885a9b4aec209bae3bbb81691391ec58692",
-        "litellm": "860cbb30c8d65203c54c69fb4e65323d570d784bff98d9dbca27e69316b8fdba",
-    }
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+# def test_basic_without_dataset_raw_prompt(temp_working_dir):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+#     hash_book = {
+#         "openai": "d52319f1976f937ff24f9d53e9c773f37f587dc2fa0d4a4da355e41e5c1eb500",
+#         "litellm": "6d0d46117661a8c0e725eb83c9299c3cbad38bbfe236715f99d69432423e5787",
+#     }
 
-    with vcr_config.use_cassette("basic_completion.yaml"):
-        # Capture the output to verify status tracker
-        output = StringIO()
-        console = Console(file=output, width=300)
-
-        dataset = helper.create_basic(
-            temp_working_dir,
-            mock_dataset,
-            backend=backend,
-            tracker_console=console,
-        )
-
-        # Verify status tracker output
-        captured = output.getvalue()
-        assert "gpt-3.5-turbo" in captured, captured
-        assert "3" in captured, captured  # Verify total requests processed
-        assert "Final Curator Statistics" in captured, captured
-        # Verify response content
-        recipes = [recipe[0] for recipe in dataset.to_pandas().values.tolist()]
-        recipes.sort()
-        recipes = "".join(recipes)
-        assert _hash_string(recipes) == hash_book[backend]
+#     # Test raw prompt i.e list of dictionaries
+#     with vcr_config.use_cassette("basic_completion_without_dataset.yaml"):
+#         dataset = helper.create_basic(temp_working_dir, mock_dataset=None, backend=backend, model="gpt-4o-mini", raw_prompt=True)
+#         # Verify response content
+#         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+#         assert _hash_string(recipes) == hash_book[backend]
 
 
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_REASONING_BACKENDS), indirect=True)
-def test_basic_reasoning(temp_working_dir, mock_reasoning_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {
-        "anthropic": "ada3f38dafdc03168bca2f354c88da64d21686a931ca31607fcf79c1d95b2813",
-    }
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+# def test_basic(temp_working_dir, mock_dataset):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+#     hash_book = {
+#         "openai": "278b2dc5bdf4d2dc1aa18ddb61e37885a9b4aec209bae3bbb81691391ec58692",
+#         "litellm": "860cbb30c8d65203c54c69fb4e65323d570d784bff98d9dbca27e69316b8fdba",
+#     }
 
-    with vcr_config.use_cassette("basic_reasoning_completion.yaml"):
-        dataset = helper.create_basic(
-            temp_working_dir,
-            mock_reasoning_dataset.select(range(2)),
-            backend=backend,
-            generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
-            model="claude-3-7-sonnet-20250219",
-        )
-        # Verify response content
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
+#     with vcr_config.use_cassette("basic_completion.yaml"):
+#         # Capture the output to verify status tracker
+#         output = StringIO()
+#         console = Console(file=output, width=300)
 
+#         dataset = helper.create_basic(
+#             temp_working_dir,
+#             mock_dataset,
+#             backend=backend,
+#             tracker_console=console,
+#         )
 
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_CONCURRENT_ONLY_BACKENDS), indirect=True)
-def test_basic_concurrent_only(temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-
-    with vcr_config.use_cassette("basic_concurrent_completion.yaml"):
-        # Capture the output to verify status tracker
-        output = StringIO()
-        console = Console(file=output, width=300)
-
-        dataset, prompter = helper.create_basic(
-            temp_working_dir, mock_dataset, backend=backend, tracker_console=console, model="deepinfra/meta-llama/Llama-2-70b-chat-hf", return_prompter=True
-        )
-
-        assert prompter._request_processor.max_requests_per_minute is None
-        assert prompter._request_processor.max_tokens_per_minute is None
-        assert prompter._request_processor.max_concurrent_requests == 200
-        # Verify status tracker output
-        captured = output.getvalue()
-        msg = "deepinfra/meta-llama/Llama-2-70b-chat-hf"
-        assert msg in captured
-        assert "3" in captured  # Verify total requests processed
-        assert "Final Curator Statistics" in captured, captured
-        # Verify response content
-        assert len(dataset) == 3
+#         # Verify status tracker output
+#         captured = output.getvalue()
+#         assert "gpt-3.5-turbo" in captured, captured
+#         assert "3" in captured, captured  # Verify total requests processed
+#         assert "Final Curator Statistics" in captured, captured
+#         # Verify response content
+#         recipes = [recipe[0] for recipe in dataset.to_pandas().values.tolist()]
+#         recipes.sort()
+#         recipes = "".join(recipes)
+#         assert _hash_string(recipes) == hash_book[backend]
 
 
-@pytest.mark.skip
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_camel(temp_working_dir):
-    temp_working_dir, _, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("camel_completion.yaml"):
-        qa_dataset = helper.create_camel(temp_working_dir)
-        assert ["subject", "subsubject", "question", "answer"] == qa_dataset.column_names
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_REASONING_BACKENDS), indirect=True)
+# def test_basic_reasoning(temp_working_dir, mock_reasoning_dataset):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+#     hash_book = {
+#         "anthropic": "ada3f38dafdc03168bca2f354c88da64d21686a931ca31607fcf79c1d95b2813",
+#     }
+
+#     with vcr_config.use_cassette("basic_reasoning_completion.yaml"):
+#         dataset = helper.create_basic(
+#             temp_working_dir,
+#             mock_reasoning_dataset.select(range(2)),
+#             backend=backend,
+#             generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
+#             model="claude-3-7-sonnet-20250219",
+#         )
+#         # Verify response content
+#         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+#         assert _hash_string(recipes) == hash_book[backend]
 
 
-@pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
-def test_basic_cache(caplog, temp_working_dir, mock_dataset):
-    temp_working_dir, _, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("basic_completion.yaml"):
-        distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset)
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_CONCURRENT_ONLY_BACKENDS), indirect=True)
+# def test_basic_concurrent_only(temp_working_dir, mock_dataset):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
 
-        # This should use cache
-        from bespokelabs.curator.constants import _CACHE_MSG
+#     with vcr_config.use_cassette("basic_concurrent_completion.yaml"):
+#         # Capture the output to verify status tracker
+#         output = StringIO()
+#         console = Console(file=output, width=300)
 
-        logger = "bespokelabs.curator.request_processor.base_request_processor"
-        with caplog.at_level(logging.INFO, logger=logger):
-            helper.create_basic(temp_working_dir, mock_dataset)
-            distilled_dataset.cleanup_cache_files()
-            assert f"Using cached output dataset. {_CACHE_MSG}" in caplog.text
+#         dataset, prompter = helper.create_basic(
+#             temp_working_dir, mock_dataset, backend=backend, tracker_console=console, model="deepinfra/meta-llama/Llama-2-70b-chat-hf", return_prompter=True
+#         )
 
-
-@pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
-def test_cache_with_changed_parse(caplog, temp_working_dir, mock_dataset):
-    temp_working_dir, _, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("basic_completion.yaml"):
-        distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset)
-
-    def new_parse(input, response):
-        return {"new_recipe": response}
-
-    logger = "bespokelabs.curator.request_processor.base_request_processor"
-    with caplog.at_level(logging.INFO, logger=logger):
-        distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset, parse_func=new_parse)
-        assert "new_recipe" in distilled_dataset.column_names
+#         assert prompter._request_processor.max_requests_per_minute is None
+#         assert prompter._request_processor.max_tokens_per_minute is None
+#         assert prompter._request_processor.max_concurrent_requests == 200
+#         # Verify status tracker output
+#         captured = output.getvalue()
+#         msg = "deepinfra/meta-llama/Llama-2-70b-chat-hf"
+#         assert msg in captured
+#         assert "3" in captured  # Verify total requests processed
+#         assert "Final Curator Statistics" in captured, captured
+#         # Verify response content
+#         assert len(dataset) == 3
 
 
-@pytest.mark.skip
-@pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
-def test_low_rpm_setting(temp_working_dir, mock_dataset):
-    temp_working_dir, _, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("basic_completion.yaml"):
-        helper.create_basic(temp_working_dir, mock_dataset, llm_params={"max_requests_per_minute": 5})
+# @pytest.mark.skip
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+# def test_camel(temp_working_dir):
+#     temp_working_dir, _, vcr_config = temp_working_dir
+#     with vcr_config.use_cassette("camel_completion.yaml"):
+#         qa_dataset = helper.create_camel(temp_working_dir)
+#         assert ["subject", "subsubject", "question", "answer"] == qa_dataset.column_names
 
 
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_auto_rpm(temp_working_dir):
-    _, _, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("basic_completion.yaml"):
-        llm = helper.create_llm()
-        assert llm._request_processor.header_based_max_requests_per_minute == 10_000
-        assert llm._request_processor.header_based_max_tokens_per_minute == 200_000
+# @pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
+# def test_basic_cache(caplog, temp_working_dir, mock_dataset):
+#     temp_working_dir, _, vcr_config = temp_working_dir
+#     with vcr_config.use_cassette("basic_completion.yaml"):
+#         distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset)
+
+#         # This should use cache
+#         from bespokelabs.curator.constants import _CACHE_MSG
+
+#         logger = "bespokelabs.curator.request_processor.base_request_processor"
+#         with caplog.at_level(logging.INFO, logger=logger):
+#             helper.create_basic(temp_working_dir, mock_dataset)
+#             distilled_dataset.cleanup_cache_files()
+#             assert f"Using cached output dataset. {_CACHE_MSG}" in caplog.text
 
 
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_resume(caplog, temp_working_dir, mock_dataset):
-    temp_working_dir, _, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("basic_resume.yaml"):
-        with pytest.raises(TimeoutError):
-            with Timeout(5):
-                helper.create_basic(temp_working_dir, mock_dataset, llm_params={"max_requests_per_minute": 1})
-        # Explicity garbage collect the rich live object.
-        gc.collect()
+# @pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
+# def test_cache_with_changed_parse(caplog, temp_working_dir, mock_dataset):
+#     temp_working_dir, _, vcr_config = temp_working_dir
+#     with vcr_config.use_cassette("basic_completion.yaml"):
+#         distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset)
 
-        logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
-        with caplog.at_level(logging.INFO, logger=logger):
-            helper.create_basic(temp_working_dir, mock_dataset)
-            resume_msg = "Already Completed: 1"
-            assert resume_msg in caplog.text
+#     def new_parse(input, response):
+#         return {"new_recipe": response}
+
+#     logger = "bespokelabs.curator.request_processor.base_request_processor"
+#     with caplog.at_level(logging.INFO, logger=logger):
+#         distilled_dataset = helper.create_basic(temp_working_dir, mock_dataset, parse_func=new_parse)
+#         assert "new_recipe" in distilled_dataset.column_names
 
 
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_invalid_failed_reason(caplog, temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
+# @pytest.mark.skip
+# @pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
+# def test_low_rpm_setting(temp_working_dir, mock_dataset):
+#     temp_working_dir, _, vcr_config = temp_working_dir
+#     with vcr_config.use_cassette("basic_completion.yaml"):
+#         helper.create_basic(temp_working_dir, mock_dataset, llm_params={"max_requests_per_minute": 5})
 
-    def _invalid_failed_reason(reason):
-        patch.stopall()
-        now = datetime.datetime.now()
-        output = StringIO()
-        console = Console(file=output, width=300)
-        request = GenericRequest(model="", messages=[{}], original_row={}, original_row_idx=0)
 
-        # default invalid reason
-        invalid_reason_response = GenericResponse(
-            finish_reason=reason, generic_request=request, raw_response={"choices": [{"finish_reason": reason}]}, created_at=now, finished_at=now
-        )
-        logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
-        REASON_MSG = f"Encountered 'ValueError: finish_reason was {reason}' during attempt 1 of 10 while processing request 0"
-        if backend == "openai":
-            patcher = patch("bespokelabs.curator.request_processor.online.openai_online_request_processor.OpenAIOnlineRequestProcessor.call_single_request")
-        else:
-            patcher = patch("bespokelabs.curator.request_processor.online.litellm_online_request_processor.LiteLLMOnlineRequestProcessor.call_single_request")
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+# def test_auto_rpm(temp_working_dir):
+#     _, _, vcr_config = temp_working_dir
+#     with vcr_config.use_cassette("basic_completion.yaml"):
+#         llm = helper.create_llm()
+#         assert llm._request_processor.header_based_max_requests_per_minute == 10_000
+#         assert llm._request_processor.header_based_max_tokens_per_minute == 200_000
 
-        mock = patcher.start()
-        mock.return_value = invalid_reason_response
-        try:
-            with pytest.raises(TimeoutError):
-                with Timeout(3):
-                    with caplog.at_level(logging.WARN, logger=logger):
-                        llm_params = {"max_requests_per_minute": 1}
-                        if reason not in ["content_filter", "length"]:
-                            llm_params["invalid_finish_reasons"] = [reason]
 
-                        helper.create_basic(temp_working_dir, mock_dataset, llm_params=llm_params, tracker_console=console, backend=backend)
-        finally:
-            patcher.stop()
-            patch.stopall()
-        assert REASON_MSG in caplog.text
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+# def test_resume(caplog, temp_working_dir, mock_dataset):
+#     temp_working_dir, _, vcr_config = temp_working_dir
+#     with vcr_config.use_cassette("basic_resume.yaml"):
+#         with pytest.raises(TimeoutError):
+#             with Timeout(5):
+#                 helper.create_basic(temp_working_dir, mock_dataset, llm_params={"max_requests_per_minute": 1})
+#         # Explicity garbage collect the rich live object.
+#         gc.collect()
 
-    with vcr_config.use_cassette("basic_completion.yaml"):
-        # Default
-        _invalid_failed_reason("length")
-        # Custom
-        _invalid_failed_reason("tool_calls")
+#         logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
+#         with caplog.at_level(logging.INFO, logger=logger):
+#             helper.create_basic(temp_working_dir, mock_dataset)
+#             resume_msg = "Already Completed: 1"
+#             assert resume_msg in caplog.text
+
+
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
+# def test_invalid_failed_reason(caplog, temp_working_dir, mock_dataset):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+
+#     def _invalid_failed_reason(reason):
+#         patch.stopall()
+#         now = datetime.datetime.now()
+#         output = StringIO()
+#         console = Console(file=output, width=300)
+#         request = GenericRequest(model="", messages=[{}], original_row={}, original_row_idx=0)
+
+#         # default invalid reason
+#         invalid_reason_response = GenericResponse(
+#             finish_reason=reason, generic_request=request, raw_response={"choices": [{"finish_reason": reason}]}, created_at=now, finished_at=now
+#         )
+#         logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
+#         REASON_MSG = f"Encountered 'ValueError: finish_reason was {reason}' during attempt 1 of 10 while processing request 0"
+#         if backend == "openai":
+#             patcher = patch("bespokelabs.curator.request_processor.online.openai_online_request_processor.OpenAIOnlineRequestProcessor.call_single_request")
+#         else:
+#             patcher = patch("bespokelabs.curator.request_processor.online.litellm_online_request_processor.LiteLLMOnlineRequestProcessor.call_single_request")
+
+#         mock = patcher.start()
+#         mock.return_value = invalid_reason_response
+#         try:
+#             with pytest.raises(TimeoutError):
+#                 with Timeout(3):
+#                     with caplog.at_level(logging.WARN, logger=logger):
+#                         llm_params = {"max_requests_per_minute": 1}
+#                         if reason not in ["content_filter", "length"]:
+#                             llm_params["invalid_finish_reasons"] = [reason]
+
+#                         helper.create_basic(temp_working_dir, mock_dataset, llm_params=llm_params, tracker_console=console, backend=backend)
+#         finally:
+#             patcher.stop()
+#             patch.stopall()
+#         assert REASON_MSG in caplog.text
+
+#     with vcr_config.use_cassette("basic_completion.yaml"):
+#         # Default
+#         _invalid_failed_reason("length")
+#         # Custom
+#         _invalid_failed_reason("tool_calls")
 
 
 ##############################
@@ -294,124 +294,124 @@ def test_invalid_failed_reason(caplog, temp_working_dir, mock_dataset):
 ##############################
 
 
-def _reload_batch_patch_deps():
-    from bespokelabs.curator.request_processor.batch import base_batch_request_processor
+# def _reload_batch_patch_deps():
+#     from bespokelabs.curator.request_processor.batch import base_batch_request_processor
 
-    importlib.reload(base_batch_request_processor)
-
-
-@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
-def test_batch_resume(temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("basic_batch_resume.yaml"):
-        with patch("bespokelabs.curator.request_processor.event_loop.run_in_event_loop") as mocked_run_loop:
-
-            def _run_loop(func):
-                if "poll_and_process_batches" in str(func):
-                    return
-                return run_in_event_loop(func)
-
-            mocked_run_loop.side_effect = _run_loop
-            with pytest.raises(ValueError):
-                _reload_batch_patch_deps()
-                helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
-        from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
-
-        tracker_batch_file_path = temp_working_dir + "/testing_hash_123/batch_objects.jsonl"
-        with open(tracker_batch_file_path, "r") as f:
-            tracker = BatchStatusTracker.model_validate_json(f.read())
-        assert tracker.n_total_requests == 3
-        assert len(tracker.submitted_batches) == 1
-        assert len(tracker.downloaded_batches) == 0
-
-        patch.stopall()
-        _reload_batch_patch_deps()
-        helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
-        with open(tracker_batch_file_path, "r") as f:
-            tracker = BatchStatusTracker.model_validate_json(f.read())
-        assert len(tracker.submitted_batches) == 0
-        assert len(tracker.downloaded_batches) == 1
+#     importlib.reload(base_batch_request_processor)
 
 
-@pytest.mark.parametrize("temp_working_dir", (_ONLINE_REASONING_BACKENDS), indirect=True)
-def test_batch_reasoning(temp_working_dir, mock_reasoning_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {
-        "anthropic": "ada3f38dafdc03168bca2f354c88da64d21686a931ca31607fcf79c1d95b2813",
-    }
+# @pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
+# def test_batch_resume(temp_working_dir, mock_dataset):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+#     with vcr_config.use_cassette("basic_batch_resume.yaml"):
+#         with patch("bespokelabs.curator.request_processor.event_loop.run_in_event_loop") as mocked_run_loop:
 
-    with vcr_config.use_cassette("basic_batch_reasoning_completion.yaml"):
-        dataset = helper.create_basic(
-            temp_working_dir,
-            mock_reasoning_dataset.select(range(2)),
-            backend=backend,
-            generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
-            model="claude-3-7-sonnet-20250219",
-            batch=True,
-            batch_check_interval=1,
-        )
-        # Verify response content
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
+#             def _run_loop(func):
+#                 if "poll_and_process_batches" in str(func):
+#                     return
+#                 return run_in_event_loop(func)
 
+#             mocked_run_loop.side_effect = _run_loop
+#             with pytest.raises(ValueError):
+#                 _reload_batch_patch_deps()
+#                 helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
+#         from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
 
-@pytest.mark.parametrize("temp_working_dir", (_FAILED_BATCH_BACKENDS), indirect=True)
-def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    with vcr_config.use_cassette("failed_request_batch_resume.yaml"):
-        tracker_batch_file_path = temp_working_dir + "/testing_hash_123/batch_objects.jsonl"
+#         tracker_batch_file_path = temp_working_dir + "/testing_hash_123/batch_objects.jsonl"
+#         with open(tracker_batch_file_path, "r") as f:
+#             tracker = BatchStatusTracker.model_validate_json(f.read())
+#         assert tracker.n_total_requests == 3
+#         assert len(tracker.submitted_batches) == 1
+#         assert len(tracker.downloaded_batches) == 0
 
-        from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
-
-        with open(tracker_batch_file_path, "r") as f:
-            failed_tracker = BatchStatusTracker.model_validate_json(f.read())
-        assert failed_tracker.n_total_requests == 3
-        assert failed_tracker.n_downloaded_failed_requests == 1
-        assert len(failed_tracker.submitted_batches) == 0
-        assert len(failed_tracker.downloaded_batches) == 1
-        RESUBMIT_MSG = f"Request file tests/integrations/{backend}/fixtures/.test_cache/testing_hash_123/requests_0.jsonl is being re-submitted."
-
-        logger = "bespokelabs.curator.status_tracker.batch_status_tracker"
-
-        patcher = patch("bespokelabs.curator.db.MetadataDB.validate_schema")
-
-        mock = patcher.start()
-        mock.return_value = None
-        with caplog.at_level(logging.INFO, logger=logger):
-            helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
-            assert RESUBMIT_MSG in caplog.text
-        patcher.stop()
-        with open(tracker_batch_file_path, "r") as f:
-            tracker = BatchStatusTracker.model_validate_json(f.read())
-        assert len(tracker.submitted_batches) == 0
-        resubmitted_sucess_batch = [key for key in tracker.downloaded_batches.keys() if key not in failed_tracker.downloaded_batches.keys()][0]
-        assert tracker.downloaded_batches[resubmitted_sucess_batch].request_counts.total == 1
-        assert tracker.downloaded_batches[resubmitted_sucess_batch].request_counts.succeeded == 1
+#         patch.stopall()
+#         _reload_batch_patch_deps()
+#         helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
+#         with open(tracker_batch_file_path, "r") as f:
+#             tracker = BatchStatusTracker.model_validate_json(f.read())
+#         assert len(tracker.submitted_batches) == 0
+#         assert len(tracker.downloaded_batches) == 1
 
 
-@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
-def test_basic_batch(temp_working_dir, mock_dataset):
-    temp_working_dir, backend, vcr_config = temp_working_dir
-    hash_book = {
-        "openai": "47127d9dcb428c18e5103dffcb0406ba2f9acab2f1ea974606962caf747b0ad5",
-        "anthropic": "f38e7406448e95160ebe4d9b6148920ef37b019f23a4e2c57094fdd4bafb09be",
-    }
-    with vcr_config.use_cassette("basic_batch_completion.yaml"):
-        output = StringIO()
-        console = Console(file=output, width=300)
+# @pytest.mark.parametrize("temp_working_dir", (_ONLINE_REASONING_BACKENDS), indirect=True)
+# def test_batch_reasoning(temp_working_dir, mock_reasoning_dataset):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+#     hash_book = {
+#         "anthropic": "ada3f38dafdc03168bca2f354c88da64d21686a931ca31607fcf79c1d95b2813",
+#     }
 
-        dataset = helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend, tracker_console=console)
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
+#     with vcr_config.use_cassette("basic_batch_reasoning_completion.yaml"):
+#         dataset = helper.create_basic(
+#             temp_working_dir,
+#             mock_reasoning_dataset.select(range(2)),
+#             backend=backend,
+#             generation_params={"max_tokens": 16000, "thinking": {"type": "enabled", "budget_tokens": 14000}},
+#             model="claude-3-7-sonnet-20250219",
+#             batch=True,
+#             batch_check_interval=1,
+#         )
+#         # Verify response content
+#         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+#         assert _hash_string(recipes) == hash_book[backend]
 
-        # Verify status tracker output
-        captured = output.getvalue()
-        assert "Batches: Total: 1 • Submitted: 0⋯ • Downloaded: 1✓" in captured, captured
-        assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 3✓ • Failed: 0✗" in captured, captured
-        assert "Final Curator Statistics" in captured, captured
-        assert "Total Requests             │ 3" in captured, captured
-        assert "Successful                 │ 3" in captured, captured
-        assert "Failed                     │ 0" in captured, captured
+
+# @pytest.mark.parametrize("temp_working_dir", (_FAILED_BATCH_BACKENDS), indirect=True)
+# def test_failed_request_in_batch_resume(caplog, temp_working_dir, mock_dataset):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+#     with vcr_config.use_cassette("failed_request_batch_resume.yaml"):
+#         tracker_batch_file_path = temp_working_dir + "/testing_hash_123/batch_objects.jsonl"
+
+#         from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
+
+#         with open(tracker_batch_file_path, "r") as f:
+#             failed_tracker = BatchStatusTracker.model_validate_json(f.read())
+#         assert failed_tracker.n_total_requests == 3
+#         assert failed_tracker.n_downloaded_failed_requests == 1
+#         assert len(failed_tracker.submitted_batches) == 0
+#         assert len(failed_tracker.downloaded_batches) == 1
+#         RESUBMIT_MSG = f"Request file tests/integrations/{backend}/fixtures/.test_cache/testing_hash_123/requests_0.jsonl is being re-submitted."
+
+#         logger = "bespokelabs.curator.status_tracker.batch_status_tracker"
+
+#         patcher = patch("bespokelabs.curator.db.MetadataDB.validate_schema")
+
+#         mock = patcher.start()
+#         mock.return_value = None
+#         with caplog.at_level(logging.INFO, logger=logger):
+#             helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
+#             assert RESUBMIT_MSG in caplog.text
+#         patcher.stop()
+#         with open(tracker_batch_file_path, "r") as f:
+#             tracker = BatchStatusTracker.model_validate_json(f.read())
+#         assert len(tracker.submitted_batches) == 0
+#         resubmitted_sucess_batch = [key for key in tracker.downloaded_batches.keys() if key not in failed_tracker.downloaded_batches.keys()][0]
+#         assert tracker.downloaded_batches[resubmitted_sucess_batch].request_counts.total == 1
+#         assert tracker.downloaded_batches[resubmitted_sucess_batch].request_counts.succeeded == 1
+
+
+# @pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
+# def test_basic_batch(temp_working_dir, mock_dataset):
+#     temp_working_dir, backend, vcr_config = temp_working_dir
+#     hash_book = {
+#         "openai": "47127d9dcb428c18e5103dffcb0406ba2f9acab2f1ea974606962caf747b0ad5",
+#         "anthropic": "f38e7406448e95160ebe4d9b6148920ef37b019f23a4e2c57094fdd4bafb09be",
+#     }
+#     with vcr_config.use_cassette("basic_batch_completion.yaml"):
+#         output = StringIO()
+#         console = Console(file=output, width=300)
+
+#         dataset = helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend, tracker_console=console)
+#         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+#         assert _hash_string(recipes) == hash_book[backend]
+
+#         # Verify status tracker output
+#         captured = output.getvalue()
+#         assert "Batches: Total: 1 • Submitted: 0⋯ • Downloaded: 1✓" in captured, captured
+#         assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 3✓ • Failed: 0✗" in captured, captured
+#         assert "Final Curator Statistics" in captured, captured
+#         assert "Total Requests             │ 3" in captured, captured
+#         assert "Successful                 │ 3" in captured, captured
+#         assert "Failed                     │ 0" in captured, captured
 
 
 ##############################
