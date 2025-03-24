@@ -37,10 +37,6 @@ class TokenLimitStrategy(str, Enum):
     seperate = "seperate"
     default = "combined"
 
-    def __str__(self):
-        """String representation of the token limit strategy."""
-        return _TOKEN_LIMIT_STRATEGY_DESCRIPTION[self.value]
-
 
 @dataclass
 class OnlineStatusTracker:
@@ -121,6 +117,21 @@ class OnlineStatusTracker:
         self.output_cost_str = f"[red]${self.output_cost_per_million:.3f}[/red]" if self.output_cost_per_million is not None else "[dim]N/A[/dim]"
         if not USE_RICH_DISPLAY:
             self.output_cost_str = f"${self.output_cost_per_million:.3f}" if self.output_cost_per_million is not None else "N/A"
+
+    def __str__(self):
+        """String representation of the token limit strategy."""
+        return (
+            f"Tasks - Started: {self.num_tasks_started}, "
+            f"In Progress: {self.num_tasks_in_progress}, "
+            f"Succeeded: {self.num_tasks_succeeded}, "
+            f"Failed: {self.num_tasks_failed}, "
+            f"Already Completed: {self.num_tasks_already_completed}\n"
+            f"Errors - API: {self.num_api_errors}, "
+            f"Rate Limit: {self.num_rate_limit_errors}, "
+            f"Other: {self.num_other_errors}, "
+            f"Total: {self.num_other_errors + self.num_api_errors + self.num_rate_limit_errors}"
+        )
+
 
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
