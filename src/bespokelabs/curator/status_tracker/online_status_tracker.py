@@ -132,7 +132,6 @@ class OnlineStatusTracker:
             f"Total: {self.num_other_errors + self.num_api_errors + self.num_rate_limit_errors}"
         )
 
-
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
         if USE_RICH_DISPLAY:
