@@ -27,7 +27,7 @@ _ONLINE_REASONING_BACKENDS = [{"integration": backend} for backend in {"anthropi
 _ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm"}]
 _ONLINE_CONCURRENT_ONLY_BACKENDS = [{"integration": backend} for backend in {"litellm/deepinfra"}]
 _FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"anthropic", "openai"}]
-_BATCH_BACKENDS = [{"integration": backend} for backend in {"anthropic", "openai", "mistral"}]
+_BATCH_BACKENDS = [{"integration": backend} for backend in {"anthropic", "openai"}]
 
 
 class TimeoutError(Exception):
