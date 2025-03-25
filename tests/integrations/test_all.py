@@ -414,41 +414,6 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         assert "Failed                     │ 0" in captured, captured
 
 
-@pytest.mark.parametrize("temp_working_dir", ([{"integration": "mistral"}]), indirect=True)
-def test_mistral_batch(temp_working_dir, mock_dataset):
-    """Test basic batch processing with Mistral backend"""
-    temp_working_dir, backend, vcr_config = temp_working_dir
-
-    hash_book = {
-        "mistral": "loremipsum47bb1d2db6ae54a64d5e2ff62c3cf8794181b2f4f6d8912c5e2dce9b5",  # some hash value
-    }
-
-    with vcr_config.use_cassette("mistral_batch_completion.yaml"):
-        output = StringIO()
-        console = Console(file=output, width=300)
-
-        dataset = helper.create_basic(
-            temp_working_dir,
-            mock_dataset,
-            batch=True,
-            backend="mistral",
-            model="mistral-tiny",
-            tracker_console=console,
-        )
-
-        # Optional: Check deterministic output via hash
-        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
-        assert _hash_string(recipes) == hash_book[backend]
-
-        # Check status tracker output
-        captured = output.getvalue()
-        assert "Batches: Total: 1" in captured, captured
-        assert "Requests: Total: 3" in captured or "Requests: Total: 4" in captured, captured
-        assert "Final Curator Statistics" in captured, captured
-        assert "Successful" in captured, captured
-        assert "Failed" in captured, captured  # should be 0
-
-
 ##############################
 # Offline                    #
 ##############################

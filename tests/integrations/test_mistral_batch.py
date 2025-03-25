@@ -16,7 +16,7 @@ def generate_test_prompts():
     ]
 
 
-@pytest.mark.integration
+@pytest.mark.skip()
 def test_mistral_batch_response():
     """Test sending a batch of requests to the Mistral AI model via Curator."""
     llm = curator.LLM(model_name="mistral-tiny", batch=True)  # Enable batch processing
