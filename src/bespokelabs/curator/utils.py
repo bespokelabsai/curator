@@ -9,12 +9,18 @@ from rich.progress import Progress
 
 from bespokelabs.curator import _CONSOLE, constants
 from bespokelabs.curator.client import Client, _SessionStatus
+from bespokelabs.curator.log import USE_RICH_DISPLAY
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
 logger = logging.getLogger(__name__)
 
 
-def push_to_viewer(dataset: Dataset | str, session_id: str | None = None, hf_params: t.Optional[t.Dict] = None, max_concurrent_requests: int = 100):
+def push_to_viewer(
+    dataset: Dataset | str,
+    session_id: str | None = None,
+    hf_params: t.Optional[t.Dict] = None,
+    max_concurrent_requests: int = 100,
+):
     """Push a dataset to the Curator Viewer.
 
     Args:
@@ -62,7 +68,10 @@ def push_to_viewer(dataset: Dataset | str, session_id: str | None = None, hf_par
     viewer_text = (
         f"[bold white]Curator Viewer:[/bold white] [blue][link={view_url}]:sparkles: Open Curator Viewer[/link] :sparkles:[/blue]\n[dim]{view_url}[/dim]\n"
     )
-    _CONSOLE.print(viewer_text)
+    if USE_RICH_DISPLAY:
+        _CONSOLE.print(viewer_text)
+    else:
+        logger.info(viewer_text)
     semaphore = asyncio.Semaphore(max_concurrent_requests)
 
     async def send_responses():

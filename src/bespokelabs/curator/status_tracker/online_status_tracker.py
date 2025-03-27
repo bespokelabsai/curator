@@ -16,7 +16,8 @@ from rich.table import Table
 from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
-from bespokelabs.curator.log import logger
+from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
+from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_response import _TokenUsage
 
@@ -35,10 +36,6 @@ class TokenLimitStrategy(str, Enum):
     combined = "combined"
     seperate = "seperate"
     default = "combined"
-
-    def __str__(self):
-        """String representation of the token limit strategy."""
-        return _TOKEN_LIMIT_STRATEGY_DESCRIPTION[self.value]
 
 
 @dataclass
@@ -61,7 +58,7 @@ class OnlineStatusTracker:
     max_tokens_per_minute: int | _TokenUsage = 0
     max_concurrent_requests: int | None = None
     max_tokens_per_minute: int = 0
-    pbar: tqdm = field(default=None)
+    pbar: Optional[tqdm.tqdm] = field(default=None, repr=False, compare=False)
     response_cost: float = 0
     time_of_last_rate_limit_error: float = field(default=0.0)
 
@@ -102,8 +99,48 @@ class OnlineStatusTracker:
             if not self.max_tokens_per_minute:
                 self.max_tokens_per_minute = _TokenUsage()
 
+        # Initialize cost strings
+        if self.model in model_cost:
+            self.input_cost_per_million = model_cost[self.model]["input_cost_per_token"] * 1_000_000
+            self.output_cost_per_million = model_cost[self.model]["output_cost_per_token"] * 1_000_000
+        else:
+            from bespokelabs.curator.cost import external_model_cost
+
+            self.input_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["input_cost_per_token"] * 1_000_000
+            self.output_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["output_cost_per_token"] * 1_000_000
+
+        # Handle None values for cost per million tokens
+        self.input_cost_str = f"[red]${self.input_cost_per_million:.3f}[/red]" if self.input_cost_per_million is not None else "[dim]N/A[/dim]"
+        if not USE_RICH_DISPLAY:
+            self.input_cost_str = f"${self.input_cost_per_million:.3f}" if self.input_cost_per_million is not None else "N/A"
+
+        self.output_cost_str = f"[red]${self.output_cost_per_million:.3f}[/red]" if self.output_cost_per_million is not None else "[dim]N/A[/dim]"
+        if not USE_RICH_DISPLAY:
+            self.output_cost_str = f"${self.output_cost_per_million:.3f}" if self.output_cost_per_million is not None else "N/A"
+
+    def __str__(self):
+        """String representation of the token limit strategy."""
+        return (
+            f"Tasks - Started: {self.num_tasks_started}, "
+            f"In Progress: {self.num_tasks_in_progress}, "
+            f"Succeeded: {self.num_tasks_succeeded}, "
+            f"Failed: {self.num_tasks_failed}, "
+            f"Already Completed: {self.num_tasks_already_completed}\n"
+            f"Errors - API: {self.num_api_errors}, "
+            f"Rate Limit: {self.num_rate_limit_errors}, "
+            f"Other: {self.num_other_errors}, "
+            f"Total: {self.num_other_errors + self.num_api_errors + self.num_rate_limit_errors}"
+        )
+
     def start_tracker(self, console: Optional[Console] = None):
         """Start the tracker."""
+        if USE_RICH_DISPLAY:
+            self._start_rich_tracker(console)
+        else:
+            self._start_tqdm_tracker()
+
+    def _start_rich_tracker(self, console: Optional[Console] = None):
+        """Start the rich progress tracker."""
         self._console = _CONSOLE if console is None else console
 
         # Safety check: ensure any existing live display is stopped
@@ -148,19 +185,6 @@ class OnlineStatusTracker:
             ),
         )
 
-        if self.model in model_cost:
-            self.input_cost_per_million = model_cost[self.model]["input_cost_per_token"] * 1_000_000
-            self.output_cost_per_million = model_cost[self.model]["output_cost_per_token"] * 1_000_000
-        else:
-            from bespokelabs.curator.cost import external_model_cost
-
-            self.input_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["input_cost_per_token"] * 1_000_000
-            self.output_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["output_cost_per_token"] * 1_000_000
-
-        # Handle None values for cost per million tokens
-        self.input_cost_str = f"[red]${self.input_cost_per_million:.3f}[/red]" if self.input_cost_per_million is not None else "[dim]N/A[/dim]"
-        self.output_cost_str = f"[red]${self.output_cost_per_million:.3f}[/red]" if self.output_cost_per_million is not None else "[dim]N/A[/dim]"
-
         # Create Live display with both progress and stats in one panel
         self._live = Live(
             Panel(
@@ -176,6 +200,104 @@ class OnlineStatusTracker:
             transient=True,
         )
         self._live.start()
+
+    def _start_tqdm_tracker(self):
+        """Start the tqdm progress tracker."""
+        self.pbar = tqdm.tqdm(
+            total=self.total_requests,
+            initial=self.num_tasks_already_completed,
+            desc=f"Processing {self.model}",
+            unit="req",
+        )
+        # Initialize last update time for periodic updates
+        self._last_stats_update = time.time()
+        self._last_display_update = time.time()
+        # Log initial stats
+        self._log_stats()
+
+    def _log_stats(self):
+        """Log current statistics when using tqdm mode."""
+        if not USE_RICH_DISPLAY:
+            elapsed_minutes = (time.time() - self.start_time) / 60
+            current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
+            input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+            output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
+
+            # Calculate averages based on completed tasks or in-progress tasks
+            total_tasks = max(1, self.num_tasks_succeeded + self.num_tasks_in_progress)
+            avg_prompt = self.total_prompt_tokens / total_tasks
+            avg_completion = self.total_completion_tokens / total_tasks
+            projected_total = self.total_cost + self.projected_remaining_cost
+            cost_per_minute = self.total_cost / max(0.01, elapsed_minutes)
+
+            # Update TQDM description with colored metrics
+            self.pbar.set_description(
+                f"Processing {MODEL}{self.model}{END} "
+                f"[{WARNING}{self.num_tasks_in_progress} running{END} • "
+                f"{COST}${self.total_cost:.3f} spent{END} • "
+                f"{METRIC}{current_rpm:.1f} RPM{END}]"
+            )
+
+            stats_msg = (
+                f"\nStatus Update:\n"
+                f"{HEADER}Requests:{END} Total: {METRIC}{self.total_requests}{END} • "
+                f"Cached: {SUCCESS}{self.num_tasks_already_completed}✓{END} • "
+                f"Success: {SUCCESS}{self.num_tasks_succeeded}✓{END} • "
+                f"Failed: {ERROR}{self.num_tasks_failed}✗{END} • "
+                f"In Progress: {WARNING}{self.num_tasks_in_progress}⋯{END} • "
+                f"RPM: {METRIC}{current_rpm:.1f}{END}\n"
+                f"{HEADER}Tokens:{END} Avg Input: {METRIC}{avg_prompt:.0f}{END} • "
+                f"Input TPM: {METRIC}{input_tpm:.0f}{END} • "
+                f"Avg Output: {METRIC}{avg_completion:.0f}{END} • "
+                f"Output TPM: {METRIC}{output_tpm:.0f}{END}\n"
+                f"{HEADER}Cost:{END} Current: {COST}${self.total_cost:.3f}{END} • "
+                f"Projected Remaining: {COST}${self.projected_remaining_cost:.3f}{END} • "
+                f"Projected Total: {COST}${projected_total:.3f}{END} • "
+                f"Rate: {COST}${cost_per_minute:.3f}/min{END}\n"
+                f"{HEADER}Rate Limits:{END} RPM: {METRIC}{self.max_requests_per_minute}{END} • "
+                f"TPM: {METRIC}{self.max_tokens_per_minute}{END} • "
+                f"TPM Strategy: {METRIC}{self.token_limit_strategy} token limit{END}\n"
+                f"{HEADER}Model:{END} Name: {MODEL}{self.model}{END}\n"
+                f"{HEADER}Model Pricing:{END} Per 1M tokens: "
+                f"Input: {COST}{self.input_cost_str}{END} • "
+                f"Output: {COST}{self.output_cost_str}{END}"
+            )
+            logger.info(stats_msg)
+
+    def update_display(self):
+        """Update the display based on current mode."""
+        current_time = time.time()
+
+        if USE_RICH_DISPLAY:
+            self._refresh_console()
+        else:
+            if self.pbar:
+                # Always update progress bar position
+                self.pbar.n = self.num_tasks_succeeded + self.num_tasks_already_completed
+                self.pbar.refresh()
+
+                # Update stats in any of these conditions:
+                # 1. When tasks change state (in_progress, succeeded, failed)
+                # 2. Every 5 seconds
+                # 3. When costs or tokens change
+                should_update = (
+                    current_time - self._last_stats_update >= 5  # Time-based update
+                    or self.num_tasks_in_progress != getattr(self, "_last_in_progress", -1)  # Task state change
+                    or self.num_tasks_succeeded != getattr(self, "_last_succeeded", -1)
+                    or self.num_tasks_failed != getattr(self, "_last_failed", -1)
+                    or self.total_tokens != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
+                    or self.total_cost != getattr(self, "_last_total_cost", -1)
+                )
+
+                if should_update:
+                    self._log_stats()
+                    self._last_stats_update = current_time
+                    # Store current values for next comparison
+                    self._last_in_progress = self.num_tasks_in_progress
+                    self._last_succeeded = self.num_tasks_succeeded
+                    self._last_failed = self.num_tasks_failed
+                    self._last_total_tokens = self.total_tokens
+                    self._last_total_cost = self.total_cost
 
     def _refresh_console(self):
         """Refresh the console display with latest stats."""
@@ -274,24 +396,53 @@ class OnlineStatusTracker:
         if cost:
             self.total_cost += cost
 
-        self._refresh_console()
+        self.update_display()
 
     def stop_tracker(self):
         """Stop the tracker."""
-        if hasattr(self, "_live"):
-            # Refresh one last time to show final state
-            self._progress.refresh()
-            self._stats.refresh()
-            # Stop the live display
-            self._live.stop()
-            # Print the final progress state
-            self._console.print(self._progress)
-            self._console.print(self._stats)
+        if USE_RICH_DISPLAY:
+            if hasattr(self, "_live"):
+                # Stop the live display
+                self._live.stop()
+                # Print the final progress state
+                self._console.print(self._progress)
+                self._console.print(self._stats)
+        else:
+            if self.pbar:
+                self.pbar.close()
+                # Log final stats
+                self._log_stats()
 
-        table = Table(
-            title="Final Curator Statistics",
-            box=box.ROUNDED,
+        # Display final statistics table
+        self.display_final_stats()
+
+        # Clean up non-serializable fields before telemetry
+        self.viewer_client = None
+        temp_pbar = self.pbar
+        self.pbar = None
+        metadata = asdict(self)
+        metadata.pop("viewer_client", None)
+        metadata.pop("pbar", None)
+        # Restore pbar if needed
+        self.pbar = temp_pbar
+
+        telemetry_client.capture(
+            TelemetryEvent(
+                event_type="OnlineRequest",
+                metadata=metadata,
+            )
         )
+
+    def display_final_stats(self):
+        """Display final statistics."""
+        if USE_RICH_DISPLAY:
+            self._display_rich_final_stats()
+        else:
+            self._display_simple_final_stats()
+
+    def _display_rich_final_stats(self):
+        """Display final statistics using rich table."""
+        table = Table(title="Final Curator Statistics", box=box.ROUNDED)
         table.add_column("Section/Metric", style="cyan")
         table.add_column("Value", style="yellow")
 
@@ -356,30 +507,50 @@ class OnlineStatusTracker:
 
         self._console.print(table)
 
-        # make a copy of the tracker and remove viewer_client for JSON serialization
-        self.viewer_client = None
-        metadata = asdict(self)
-        metadata.pop("viewer_client")
-        telemetry_client.capture(
-            TelemetryEvent(
-                event_type="OnlineRequest",
-                metadata=metadata,
-            )
-        )
+    def _display_simple_final_stats(self):
+        """Display final statistics in plain text format."""
+        elapsed_time = time.time() - self.start_time
+        elapsed_minutes = elapsed_time / 60
+        rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
+        input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
+        output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
 
-    def __str__(self):
-        """String representation of the status tracker."""
-        return (
-            f"Tasks - Started: {self.num_tasks_started}, "
-            f"In Progress: {self.num_tasks_in_progress}, "
-            f"Succeeded: {self.num_tasks_succeeded}, "
-            f"Failed: {self.num_tasks_failed}, "
-            f"Already Completed: {self.num_tasks_already_completed}\n"
-            f"Errors - API: {self.num_api_errors}, "
-            f"Rate Limit: {self.num_rate_limit_errors}, "
-            f"Other: {self.num_other_errors}, "
-            f"Total: {self.num_other_errors + self.num_api_errors + self.num_rate_limit_errors}"
-        )
+        stats = [
+            f"\n{HEADER}Final Statistics:{END}",
+            f"{HEADER}Model Information:{END}",
+            f"  Model: {MODEL}{self.model}{END}",
+            f"  Rate Limit (RPM): {METRIC}{self.max_requests_per_minute}{END}",
+            f"  Rate Limit (TPM): {METRIC}{self.max_tokens_per_minute}{END}",
+            "",
+            f"{HEADER}Request Statistics:{END}",
+            f"  Total Requests: {METRIC}{self.total_requests}{END}",
+            f"  Cached: {SUCCESS}{self.num_tasks_already_completed}{END}",
+            f"  Successful: {SUCCESS}{self.num_tasks_succeeded}{END}",
+            f"  Failed: {ERROR}{self.num_tasks_failed}{END}",
+            "",
+            f"{HEADER}Token Statistics:{END}",
+            f"  Total Tokens Used: {METRIC}{self.total_tokens:,}{END}",
+            f"  Total Input Tokens: {METRIC}{self.total_prompt_tokens:,}{END}",
+            f"  Total Output Tokens: {METRIC}{self.total_completion_tokens:,}{END}",
+            f"  Average Tokens per Request: {METRIC}{int(self.total_tokens / max(1, self.num_tasks_succeeded))}{END}",
+            f"  Average Input Tokens: {METRIC}{int(self.total_prompt_tokens / max(1, self.num_tasks_succeeded))}{END}",
+            f"  Average Output Tokens: {METRIC}{int(self.total_completion_tokens / max(1, self.num_tasks_succeeded))}{END}",
+            "",
+            f"{HEADER}Cost Statistics:{END}",
+            f"  Total Cost: {COST}${self.total_cost:.3f}{END}",
+            f"  Average Cost per Request: {COST}${self.total_cost / max(1, self.num_tasks_succeeded):.3f}{END}",
+            f"  Input Cost per 1M Tokens: {COST}{self.input_cost_str}{END}",
+            f"  Output Cost per 1M Tokens: {COST}{self.output_cost_str}{END}",
+            "",
+            f"{HEADER}Performance Statistics:{END}",
+            f"  Total Time: {METRIC}{elapsed_time:.2f}s{END}",
+            f"  Average Time per Request: {METRIC}{elapsed_time / max(1, self.num_tasks_succeeded):.2f}s{END}",
+            f"  Requests per Minute: {METRIC}{rpm:.1f}{END}",
+            f"  Max Concurrent Requests: {METRIC}{self.max_concurrent_requests_seen}{END}",
+            f"  Input Tokens per Minute: {METRIC}{input_tpm:.1f}{END}",
+            f"  Output Tokens per Minute: {METRIC}{output_tpm:.1f}{END}",
+        ]
+        logger.info("\n".join(stats))
 
     def update_capacity(self):
         """Update available capacity based on time elapsed."""
@@ -537,4 +708,5 @@ class OnlineStatusTracker:
             else:
                 # Fallback to the current estimate
                 self.projected_remaining_cost = estimated_cost * remaining_requests
-        self._refresh_console()
+
+        self.update_display()
