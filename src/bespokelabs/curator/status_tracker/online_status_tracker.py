@@ -248,7 +248,7 @@ class OnlineStatusTracker:
         else:
             viewer_text = (
                 "[bold white]Curator Viewer:[/bold white] [yellow]Disabled[/yellow]\n"
-                "Set [yellow]HOSTED_CURATOR_VIEWER=[cyan]1[/cyan][/yellow] to view your data live at "
+                "Set [yellow]CURATOR_VIEWER=[cyan]1[/cyan][/yellow] to view your data live at "
                 f"[blue]{PUBLIC_CURATOR_VIEWER_HOME_URL}[/blue]\n"
             )
         stats_text = viewer_text + stats_text

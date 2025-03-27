@@ -214,7 +214,7 @@ class BatchStatusTracker(BaseModel):
             viewer_text = (
                 "[bold white]Curator Viewer:[/bold white] "
                 "[yellow]Disabled[/yellow]\n"
-                f"Set [yellow]HOSTED_CURATOR_VIEWER=[cyan]1[/cyan][/yellow] to view your data live at [blue]{PUBLIC_CURATOR_VIEWER_HOME_URL}[/blue]"
+                f"Set [yellow]CURATOR_VIEWER=[cyan]1[/cyan][/yellow] to view your data live at [blue]{PUBLIC_CURATOR_VIEWER_HOME_URL}[/blue]"
             )
 
         stats_text = viewer_text + "\n" + stats_text

@@ -5,8 +5,8 @@ from bespokelabs import curator
 # For more information checkout https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-gemini-for-batch-inference
 
 
-# To visualize the dataset on Curator viewer, you can set HOSTED_CURATOR_VIEWER=1 environment variable, or set it here:
-# os.environ["HOSTED_CURATOR_VIEWER"]="1"
+# To visualize the dataset on Curator viewer, you can set CURATOR_VIEWER=1 environment variable, or set it here:
+# os.environ["CURATOR_VIEWER"]="1"
 
 # os.environ["GOOGLE_CLOUD_PROJECT"] = "<project-id>"
 # os.environ["GEMINI_BUCKET_NAME"] = "<bucket-name>"
