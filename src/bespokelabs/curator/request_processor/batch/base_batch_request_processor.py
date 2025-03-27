@@ -307,6 +307,33 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 completion_window=self.config.completion_window,
             )
 
+        self.tracker.model = self.prompt_formatter.model_name
+        self.tracker.n_total_requests = self.total_requests
+        self.set_model_cost()
+
+    def set_model_cost(self):
+        """Set cost information for the current model."""
+        # Set cost information if available
+        if self.prompt_formatter.model_name in model_cost:
+            # Batch requests are 50% cheaper
+            self.tracker.input_cost_per_million = (model_cost[self.prompt_formatter.model_name]["input_cost_per_token"] * 1_000_000) * 0.5
+            self.tracker.output_cost_per_million = (model_cost[self.prompt_formatter.model_name]["output_cost_per_token"] * 1_000_000) * 0.5
+        else:
+            from bespokelabs.curator.cost import external_model_cost
+
+            self.tracker.input_cost_per_million = (
+                external_model_cost(self.prompt_formatter.model_name, provider=self.compatible_provider, completion_window=self.config.completion_window)[
+                    "input_cost_per_token"
+                ]
+                * 1_000_000
+            )
+            self.tracker.output_cost_per_million = (
+                external_model_cost(self.prompt_formatter.model_name, provider=self.compatible_provider, completion_window=self.config.completion_window)[
+                    "output_cost_per_token"
+                ]
+                * 1_000_000
+            )
+
         # Start the tracker with the console from constructor
         self.tracker.start_tracker(self._tracker_console)
 

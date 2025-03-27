@@ -15,7 +15,7 @@ import aiofiles
 import pyarrow
 from pydantic import BaseModel, ValidationError
 
-from bespokelabs.curator.constants import _CACHE_MSG
+from bespokelabs.curator.constants import _CACHE_MSG, _INTERNAL_PROMPT_KEY
 from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.file_utilities import count_lines
 from bespokelabs.curator.hf_card_template import HUGGINGFACE_CARD_TEMPLATE
@@ -345,8 +345,12 @@ class BaseRequestProcessor(ABC):
         responses = None
         if self.prompt_formatter.parse_func:
             try:
+                if _INTERNAL_PROMPT_KEY in data.generic_request.original_row:
+                    row = data.generic_request.original_row[_INTERNAL_PROMPT_KEY]
+                else:
+                    row = data.generic_request.original_row
                 responses = self.prompt_formatter.parse_func(
-                    data.generic_request.original_row,
+                    row,
                     data.response_message,
                 )
             except Exception as e:
