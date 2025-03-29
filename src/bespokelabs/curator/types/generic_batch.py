@@ -37,6 +37,7 @@ class GenericBatch(BaseModel):
     raw_status: str  # Raw status string from the API
     raw_batch: dict  # Complete raw batch data from the API
     attempts_left: int = 1  # Number of attempts left to download the results
+    resubmitted: bool = False  # Whether the batch has been resubmitted
 
     model_config = {
         "json_encoders": {datetime.datetime: lambda dt: dt.isoformat()},

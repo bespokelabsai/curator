@@ -451,8 +451,8 @@ def test_batch_resubmission(caplog, temp_working_dir, mock_dataset):
         assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 4✓ • Failed: 1✗" in captured, captured
         assert "Final Curator Statistics" in captured, captured
         assert "Total Requests             │ 3" in captured, captured
-        assert "Successful                 │ 4" in captured, captured
-        assert "Failed                     │ 1" in captured, captured
+        assert "Successful                 │ 3" in captured, captured
+        assert "Failed                     │ 0" in captured, captured
 
 
 ##############################

@@ -38,6 +38,9 @@ class BatchStatusTracker(BaseModel):
     _excluded_fields = {"console", "progress", "task_id", "viewer_client", "_console", "_progress", "_stats", "_live", "_task_id", "_stats_task_id"}
 
     n_total_requests: int = Field(default=0)
+    n_final_success_requests: int = Field(default=0)
+    n_final_failed_requests: int = Field(default=0)
+
     unsubmitted_request_files: set[str] = Field(default_factory=set)
     submitted_batches: dict[str, GenericBatch] = Field(default_factory=dict)
     to_resubmit_batches: dict[str, GenericBatch] = Field(default_factory=dict)
@@ -240,8 +243,8 @@ class BatchStatusTracker(BaseModel):
         # Request Statistics
         table.add_row("Requests", "", style="bold magenta")
         table.add_row("Total Requests", str(self.n_total_requests))
-        table.add_row("Successful", f"[green]{self.n_finished_or_downloaded_succeeded_requests}[/green]")
-        table.add_row("Failed", f"[red]{self.n_finished_failed_requests + self.n_downloaded_failed_requests}[/red]")
+        table.add_row("Successful", f"[green]{self.n_final_success_requests}[/green]")
+        table.add_row("Failed", f"[red]{self.n_final_failed_requests}[/red]")
 
         # Token Statistics
         table.add_row("Tokens", "", style="bold magenta")
@@ -369,6 +372,7 @@ class BatchStatusTracker(BaseModel):
             batch: The batch to append
         """
         batch.status = GenericBatchStatus.SUBMITTED.value
+        batch.resubmitted = True
         self.to_resubmit_batches[batch.id] = batch
         logger.debug(f"Marked {batch.request_file} as resubmitted with batch {batch.id}")
         self.update_display()

@@ -683,8 +683,24 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         response_files = filter(None, all_response_files)
         await self.viewer_client.close()
+        # Update final stats
+        self._update_final_stats()
+
         if self.tracker.n_downloaded_batches == 0 or not response_files:
             raise RuntimeError(f"None of the submitted batches completed successfully. Please check the logs above and {self.web_dashboard} for errors.")
+
+    def _update_final_stats(self):
+        """Update final stats with the number of failed requests."""
+        import glob
+
+        response_files = glob.glob(os.path.join(self.working_dir, "responses_*.jsonl"))
+        sucessful_responses = 0
+        for response_file in response_files:
+            with open(response_file, "r") as f:
+                # count the number of lines in the file
+                sucessful_responses += sum(1 for _ in f)
+        self.tracker.n_final_failed_requests = self.tracker.n_total_requests - sucessful_responses
+        self.tracker.n_final_success_requests = sucessful_responses
 
     async def download_batch_to_response_file(self, batch: GenericBatch) -> str | None:
         """Download and process completed batch results."""
