@@ -1,6 +1,7 @@
 import logging
 import logging.handlers
 import os
+import sys
 
 from rich.console import Console
 from rich.logging import RichHandler
@@ -26,7 +27,9 @@ class Logger:
     def _init_logger(self):
         self.logger = logging.getLogger("curator")
         self.logger.setLevel(ROOT_LOG_LEVEL)
-        self.logger.propagate = False
+        IN_COLAB = "google.colab" in sys.modules
+        if IN_COLAB:
+            self.logger.propagate = False
         if not self.logger.handlers:
             rich_handler = RichHandler(console=_CONSOLE)
             rich_handler.setLevel(logging.INFO)
