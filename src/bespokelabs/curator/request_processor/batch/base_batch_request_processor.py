@@ -395,7 +395,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             request_file: Path to file containing request data.
             completed_request_ids: Set of request IDs that have already been completed
                 and should be skipped.
-            attempts_left: Number of attempts left to download the results.
+            attempts_left: Number of attempts left to resubmit for failed requests in a batch.
 
         Side Effects:
             - Updates batch submission progress bar
