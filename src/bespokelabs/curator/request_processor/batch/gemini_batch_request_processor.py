@@ -302,9 +302,8 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
                 if "parts" in response_message_raw:
                     response_message_raw = response_message_raw["parts"][0]["text"]
                 else:
-                    logger.warning("Model returned a citation response")
-                    citations = response_body["candidates"][0]["citationMetadata"]
-                    response_message_raw = ", ".join(c["title"] for c in citations)
+                    logger.warning("Model returned a citation response, serialize it into a string!")
+                    response_message_raw = json.dumps(response_body["candidates"][0]["citationMetadata"])
 
             usage = response_body.get("usageMetadata", {})
 
