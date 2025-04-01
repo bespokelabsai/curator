@@ -66,23 +66,21 @@ Ensure all properties are listed are sentences that are either True or False
  """
 
 _HeuristicEstimationPrompt = (
-    lambda q, p: """I am tasked to estimate the probability that a random solution to " """
-    + q
-    + """ " has the following property " """
-    + p
-    + """ "
-    Instructions:
-    1. Provide at least 3 reasons why the answer might be no.
-    { Insert your thoughts }
-    2. Provide at least 3 reasons why the answer might be yes.
-    { Insert your thoughts }
-    3. Rate the strength of each of the reasons given in the last two responses. Think like a superforecaster (e.g. Nate Silver).
-    { Insert your rating of the strength of each reason }
-    4. Aggregate your considerations.
-    { Insert your aggregated considerations }
-    5. Output your answer (a number between 0 and 1) with an asterisk at the beginning and end of the decimal.
-    { Insert your answer } """
+    lambda q, p: f"""I am tasked to estimate the probability that a random solution to "{q}" has the following property "{p}"
+
+Instructions:
+1. Provide at least 3 reasons why the answer might be no.
+{{ Insert your thoughts }}
+2. Provide at least 3 reasons why the answer might be yes.
+{{ Insert your thoughts }}
+3. Rate the strength of each of the reasons given in the last two responses. Think like a superforecaster (e.g. Nate Silver).
+{{ Insert your rating of the strength of each reason }}
+4. Aggregate your considerations.
+{{ Insert your aggregated considerations }}
+5. Output your answer (a number between 0 and 1) with an asterisk at the beginning and end of the decimal.
+{{ Insert your answer }}"""
 )
+
 _HeuristicEstimationPromptOptimal = """I’m playing a game where my friend has been tasked to:
 
 "{question}"
@@ -179,7 +177,7 @@ class StratifiedQA(curator.LLM):
         weights = input["probabilities"]
         sampled_property = random.choices(properties, weights=weights, k=1)[0]
 
-        return sampled_property + " " + input["question"]
+        return f'{sampled_property} {input["question"]}'
 
     def parse(self, input: dict, response: str) -> dict:
         """Parse the model response into the desired output format."""
@@ -194,15 +192,15 @@ class StratifiedGenerator:
         self.args = args
         self.kwargs = kwargs
         self.autostrat = AutoStratification(*self.args, **self.kwargs)
-        self.heuristic1 = HeuristicEstimation(*self.args, **self.kwargs)
-        self.heuristic2 = HeuristicEstimationNegation(*self.args, **self.kwargs)
+        self.heuristic = HeuristicEstimation(*self.args, **self.kwargs)
+        self.heuristic_negation = HeuristicEstimationNegation(*self.args, **self.kwargs)
         self.qa = StratifiedQA(*self.args, **self.kwargs)
 
-    def __call__(self, questions: Dataset) -> Dataset:
+    def __call__(self, questions: Dataset, working_dir: str | None = None) -> Dataset:
         """Generate questions for a given input."""
-        out1 = self.autostrat(questions)
-        out2 = self.heuristic1(out1)
-        out2 = self.heuristic1.collate(out2)
-        out2_2 = self.heuristic2(out2)
-        qas = self.qa(out2_2)
+        out1 = self.autostrat(questions, working_dir=working_dir)
+        out2 = self.heuristic(out1, working_dir=working_dir)
+        out2 = self.heuristic.collate(out2)
+        out2_2 = self.heuristic_negation(out2, working_dir=working_dir)
+        qas = self.qa(out2_2, working_dir=working_dir)
         return qas

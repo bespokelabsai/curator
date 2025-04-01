@@ -221,13 +221,9 @@ class Raft:
         question_gen = _RaftQuestion(model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params)
         questions = question_gen(chunks)
 
-        if self.answer_generator_cls is None:
-            answer_gen = _RaftAnswer(
-                chunks=chunks, model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params
-            )
-        else:
-            answer_gen = self.answer_generator_cls(
-                chunks=chunks, model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params
-            )
+        generator = self.answer_generator_cls or _RaftAnswer
+        answer_gen = generator(
+            chunks=chunks, model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params
+        )
         qas = answer_gen(questions)
         return qas
