@@ -293,39 +293,34 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         cost = None
         response_message = None
 
-        def _unpack_response():
-            nonlocal response_message, token_usage, cost
-            if result_type == "succeeded":
-                response_body = raw_response["response"]
-                if self.config.return_completions_object:
-                    response_message_raw = response_body
-                else:
-                    response_message_raw = response_body["candidates"][0]["content"]
-                    if "parts" in response_message_raw:
-                        response_message_raw = response_message_raw["parts"][0]["text"]
-                    else:
-                        logger.warning(f"Could not find parts in response_message_raw: {response_message_raw}")
-                        response_errors = ["Could not find parts in response_message_raw"]
-                        return response_message, response_errors, cost, token_usage
-
-                usage = response_body.get("usageMetadata", {})
-
-                token_usage = _TokenUsage(
-                    input=usage.get("promptTokenCount", 0),
-                    output=usage.get("candidatesTokenCount", 0),
-                    total=usage.get("totalTokenCount", 0),
-                )
-
-                response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
-
-                cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw)
-
-            # TODO: check other result types.
+        if result_type == "succeeded":
+            response_body = raw_response["response"]
+            if self.config.return_completions_object:
+                response_message_raw = response_body
             else:
-                response_errors = [f"Request {result_type}"]
-            return response_message, response_errors, cost, token_usage
+                response_message_raw = response_body["candidates"][0]["content"]
+                if "parts" in response_message_raw:
+                    response_message_raw = response_message_raw["parts"][0]["text"]
+                else:
+                    logger.warning("Model returned a citation response")
+                    citations = response_body["candidates"][0]["citationMetadata"]
+                    response_message_raw = ", ".join(c["title"] for c in citations)
 
-        response_message, response_errors, cost, token_usage = _unpack_response()
+            usage = response_body.get("usageMetadata", {})
+
+            token_usage = _TokenUsage(
+                input=usage.get("promptTokenCount", 0),
+                output=usage.get("candidatesTokenCount", 0),
+                total=usage.get("totalTokenCount", 0),
+            )
+
+            response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
+
+            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw)
+
+        # TODO: check other result types.
+        else:
+            response_errors = [f"Request {result_type}"]
 
         # TODO: Add finish reason in gemini
         return GenericResponse(
