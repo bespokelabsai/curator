@@ -110,8 +110,8 @@ class AutoStratification(curator.LLM):
         """Generate a prompt for property generation."""
         question = input.get("question", "Name a US state?")
         return [
-            {"role": "user", "content": _AutoStratificationPrompt.format(user_request=question)},
             {"role": "system", "content": "You’re a helpful brainstorming assistant that is careful to consider all factors to a problem."},
+            {"role": "user", "content": _AutoStratificationPrompt.format(user_request=question)},
         ]
 
     def parse(self, input: dict, response: PropertyList) -> dict:
@@ -127,11 +127,11 @@ class HeuristicEstimation(curator.LLM):
     def prompt(self, input: dict) -> str:
         """Generate a prompt for property generation."""
         return [
-            {"role": "user", "content": _HeuristicEstimationPrompt(input["question"], input["property"])},
             {
                 "role": "system",
                 "content": "You are an expert superforecaster, familiar with the work of Tetlock and others. Your mission is to generate accurate predictions for forecasting questions. Aggregate the information provided by the user. Make sure to give detailed reasoning.",  # noqa
             },
+            {"role": "user", "content": _HeuristicEstimationPrompt(input["question"], input["property"])},
         ]
 
     def parse(self, input: dict, response: PropertyList) -> dict:
@@ -154,11 +154,11 @@ class HeuristicEstimationNegation(curator.LLM):
         """Generate a prompt for property generation."""
         properties = [(pr, p) for pr, p in zip(input["property"], input["probability"])]
         return [
-            {"role": "user", "content": _HeuristicEstimationPromptOptimal.format(question=input["question"], properties=properties)},
             {
                 "role": "system",
                 "content": "You are an expert superforecaster, familiar with the work of Tetlock and others. Your mission is to generate accurate predictions for forecasting questions. Aggregate the information provided by the user. Make sure to give detailed reasoning.",  # noqa
             },
+            {"role": "user", "content": _HeuristicEstimationPromptOptimal.format(question=input["question"], properties=properties)},
         ]
 
     def parse(self, input: dict, response: OptimalProperties) -> dict:
@@ -198,9 +198,9 @@ class StratifiedGenerator:
 
     def __call__(self, questions: Dataset, working_dir: str | None = None) -> Dataset:
         """Generate questions for a given input."""
-        out1 = self.autostrat(questions, working_dir=working_dir)
-        out2 = self.heuristic(out1, working_dir=working_dir)
-        out2 = self.heuristic.collate(out2)
-        out2_2 = self.heuristic_negation(out2, working_dir=working_dir)
-        qas = self.qa(out2_2, working_dir=working_dir)
+        autostrat_df = self.autostrat(questions, working_dir=working_dir)
+        heuristic_estimation_df = self.heuristic(autostrat_df, working_dir=working_dir)
+        heuristic_estimation_df = self.heuristic.collate(heuristic_estimation_df)
+        resampling_df = self.heuristic_negation(heuristic_estimation_df, working_dir=working_dir)
+        qas = self.qa(resampling_df, working_dir=working_dir)
         return qas
