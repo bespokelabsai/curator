@@ -249,7 +249,7 @@ class OnlineStatusTracker:
                 viewer_msg = f"\n{HEADER}Curator Viewer:{END} Disabled (Set CURATOR_VIEWER=1 to view at {PUBLIC_CURATOR_VIEWER_HOME_URL})"
 
             stats_msg = (
-                f"\nStatus Update:\n"
+                f"{viewer_msg}\n"
                 f"{HEADER}Requests:{END} Total: {METRIC}{self.total_requests}{END} • "
                 f"Cached: {SUCCESS}{self.num_tasks_already_completed}✓{END} • "
                 f"Success: {SUCCESS}{self.num_tasks_succeeded}✓{END} • "
@@ -271,7 +271,6 @@ class OnlineStatusTracker:
                 f"{HEADER}Model Pricing:{END} Per 1M tokens: "
                 f"Input: {COST}{self.input_cost_str}{END} • "
                 f"Output: {COST}{self.output_cost_str}{END}"
-                f"{viewer_msg}"
             )
             logger.info(stats_msg)
 
