@@ -320,6 +320,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             max_tokens_per_minute=self.max_tokens_per_minute,
             compatible_provider=self.compatible_provider,
             viewer_client=self._viewer_client,
+            model=self.prompt_formatter.model_name,
+            total_requests=self.total_requests,
         )
 
         # Resume if a response file exists
@@ -328,8 +330,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         # Count total requests
         status_tracker.num_tasks_already_completed = len(completed_request_ids)
         status_tracker.num_parsed_responses = completed_parsed_responses
-        status_tracker.total_requests = self.total_requests
-        status_tracker.model = self.prompt_formatter.model_name
         status_tracker.start_tracker(self._tracker_console)
 
         # Use higher connector limit for better throughput
