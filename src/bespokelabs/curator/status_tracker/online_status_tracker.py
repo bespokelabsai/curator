@@ -29,6 +29,9 @@ _TOKEN_LIMIT_STRATEGY_DESCRIPTION = {
 # Weight factor for successful tasks vs estimates to converge to average actual cost quicker
 _SUCCESS_WEIGHT_FACTOR = 5
 
+# Time between status updates in seconds
+_STATUS_UPDATE_INTERVAL = 5
+
 
 class TokenLimitStrategy(str, Enum):
     """Token limit Strategy enum."""
@@ -238,6 +241,13 @@ class OnlineStatusTracker:
                 f"{METRIC}{current_rpm:.1f} RPM{END}]"
             )
 
+            # Add curator viewer link if available
+            viewer_msg = ""
+            if self.viewer_client and self.viewer_client.hosted and self.viewer_client.curator_viewer_url:
+                viewer_msg = f"\n{HEADER}Curator Viewer:{END} {self.viewer_client.curator_viewer_url}"
+            else:
+                viewer_msg = f"\n{HEADER}Curator Viewer:{END} Disabled (Set CURATOR_VIEWER=1 to view at {PUBLIC_CURATOR_VIEWER_HOME_URL})"
+
             stats_msg = (
                 f"\nStatus Update:\n"
                 f"{HEADER}Requests:{END} Total: {METRIC}{self.total_requests}{END} • "
@@ -261,6 +271,7 @@ class OnlineStatusTracker:
                 f"{HEADER}Model Pricing:{END} Per 1M tokens: "
                 f"Input: {COST}{self.input_cost_str}{END} • "
                 f"Output: {COST}{self.output_cost_str}{END}"
+                f"{viewer_msg}"
             )
             logger.info(stats_msg)
 
@@ -278,15 +289,17 @@ class OnlineStatusTracker:
 
                 # Update stats in any of these conditions:
                 # 1. When tasks change state (in_progress, succeeded, failed)
-                # 2. Every 5 seconds
+                # 2. Every _STATUS_UPDATE_INTERVAL seconds
                 # 3. When costs or tokens change
                 should_update = (
-                    current_time - self._last_stats_update >= 5  # Time-based update
-                    or self.num_tasks_in_progress != getattr(self, "_last_in_progress", -1)  # Task state change
-                    or self.num_tasks_succeeded != getattr(self, "_last_succeeded", -1)
-                    or self.num_tasks_failed != getattr(self, "_last_failed", -1)
-                    or self.total_tokens != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
-                    or self.total_cost != getattr(self, "_last_total_cost", -1)
+                    current_time - self._last_stats_update >= _STATUS_UPDATE_INTERVAL  # Time-based update
+                    and (
+                        self.num_tasks_in_progress != getattr(self, "_last_in_progress", -1)  # Task state change
+                        or self.num_tasks_succeeded != getattr(self, "_last_succeeded", -1)
+                        or self.num_tasks_failed != getattr(self, "_last_failed", -1)
+                        or self.total_tokens != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
+                        or self.total_cost != getattr(self, "_last_total_cost", -1)
+                    )
                 )
 
                 if should_update:
