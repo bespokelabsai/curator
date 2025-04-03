@@ -222,7 +222,7 @@ class OnlineStatusTracker:
         """Log current statistics when using tqdm mode."""
         if not USE_RICH_DISPLAY:
             elapsed_minutes = (time.time() - self.start_time) / 60
-            current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
+            current_rpm = (self.num_tasks_succeeded - self.num_tasks_already_completed) / max(0.001, elapsed_minutes)
             input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
             output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
 
@@ -315,7 +315,7 @@ class OnlineStatusTracker:
         """Refresh the console display with latest stats."""
         # Calculate stats
         elapsed_minutes = (time.time() - self.start_time) / 60
-        current_rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
+        current_rpm = (self.num_tasks_succeeded - self.num_tasks_started) / max(0.001, elapsed_minutes)
         input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
         output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
         avg_prompt = self.total_prompt_tokens / max(1, self.num_tasks_succeeded)
