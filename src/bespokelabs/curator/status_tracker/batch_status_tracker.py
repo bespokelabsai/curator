@@ -236,8 +236,15 @@ class BatchStatusTracker(BaseModel):
                 f"{COST}${self.total_cost:.3f} spent{END}]"
             )
 
+            # Add curator viewer link if available
+            viewer_msg = ""
+            if self.viewer_client and self.viewer_client.hosted and self.viewer_client.curator_viewer_url:
+                viewer_msg = f"\n{HEADER}Curator Viewer:{END} {self.viewer_client.curator_viewer_url}"
+            else:
+                viewer_msg = f"\n{HEADER}Curator Viewer:{END} Disabled (Set CURATOR_VIEWER=1 to view at {PUBLIC_CURATOR_VIEWER_HOME_URL})"
+
             stats_msg = (
-                f"\nBatch Status Update:\n"
+                f"{viewer_msg}\n"
                 f"{HEADER}Batches:{END} Total: {METRIC}{self.n_total_batches}{END} • "
                 f"Submitted: {WARNING}{self.n_submitted_batches}⋯{END} • "
                 f"Downloaded: {SUCCESS}{self.n_downloaded_batches}✓{END}\n"
@@ -275,13 +282,15 @@ class BatchStatusTracker(BaseModel):
                 # 3. When costs or tokens change
                 should_update = (
                     current_time - getattr(self, "_last_stats_update", 0) >= 5  # Time-based update
-                    or self.n_submitted_batches != getattr(self, "_last_submitted_batches", -1)  # Batch state changes
-                    or self.n_finished_batches != getattr(self, "_last_finished_batches", -1)
-                    or self.n_downloaded_batches != getattr(self, "_last_downloaded_batches", -1)
-                    or self.n_downloaded_succeeded_requests != getattr(self, "_last_succeeded_requests", -1)  # Request state changes
-                    or self.n_downloaded_failed_requests != getattr(self, "_last_failed_requests", -1)
-                    or self.total_tokens != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
-                    or self.total_cost != getattr(self, "_last_total_cost", -1)
+                    and (
+                        self.n_submitted_batches != getattr(self, "_last_submitted_batches", -1)  # Batch state changes
+                        or self.n_finished_batches != getattr(self, "_last_finished_batches", -1)
+                        or self.n_downloaded_batches != getattr(self, "_last_downloaded_batches", -1)
+                        or self.n_downloaded_succeeded_requests != getattr(self, "_last_succeeded_requests", -1)  # Request state changes
+                        or self.n_downloaded_failed_requests != getattr(self, "_last_failed_requests", -1)
+                        or self.total_tokens != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
+                        or self.total_cost != getattr(self, "_last_total_cost", -1)
+                    )
                 )
 
                 if should_update:
