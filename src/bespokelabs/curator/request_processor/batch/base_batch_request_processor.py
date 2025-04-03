@@ -6,8 +6,8 @@ from collections import Counter
 from typing import Optional
 
 import aiofiles
+from litellm import model_cost
 
-from bespokelabs.curator.cost import model_cost
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
