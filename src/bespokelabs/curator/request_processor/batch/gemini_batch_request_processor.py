@@ -315,7 +315,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         else:
             response_errors = [f"Request {result_type}"]
 
-        # TODO: may be move it to GenericBatch
+        # TODO: Add finish reason in gemini
         return GenericResponse(
             response_message=response_message,
             response_errors=response_errors,

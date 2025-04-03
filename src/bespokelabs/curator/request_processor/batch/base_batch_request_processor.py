@@ -7,6 +7,7 @@ from typing import Optional
 
 import aiofiles
 
+from bespokelabs.curator.cost import model_cost
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
@@ -390,6 +391,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         self,
         request_file: str,
         completed_request_ids: set[int],
+        attempts_left: int | None = None,
     ):
         """Submit a batch of requests from a file.
 
@@ -400,6 +402,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             request_file: Path to file containing request data.
             completed_request_ids: Set of request IDs that have already been completed
                 and should be skipped.
+            attempts_left: Number of attempts left to resubmit for failed requests in a batch.
 
         Side Effects:
             - Updates batch submission progress bar
@@ -409,9 +412,14 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         """
         metadata = {"request_file": request_file}
         requests = self.requests_from_generic_request_file(request_file, completed_request_ids)
+        if not requests:
+            logger.warning(f"Batch {request_file} has no requests to submit.")
+            return
         batch = await self.submit_batch(requests, metadata)
+        batch.attempts_left = attempts_left or self.config.max_retries
         self.tracker.mark_as_submitted(batch, len(requests))
         await self.update_batch_objects_file()
+        return batch
 
     def requests_from_generic_request_file(self, request_file: str, completed_request_ids: set[int]) -> list[dict]:
         """Reads and converts generic requests from a file into API-specific request format.
@@ -526,6 +534,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             logger.warning(f"Batch {batch.id} has {len(invalid_finish_responses)} invalid finish responses. Please check the logs above for details.")
             invalid_finish_reasons = dict(Counter([response["finish_reason"] for response in invalid_finish_responses]))
             logger.warning(f"Invalid finish responses: {invalid_finish_reasons}")
+            logger.warning("Retrying these requests by resubmitting the batch.")
+            await self._tag_batch_as_retry(batch)
 
         # Update tracker with token usage and cost stats
         self.tracker.update_token_and_cost(total_token_usage, total_cost)
@@ -595,8 +605,10 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             - Marks completed batches as finished
         """
         async with self.semaphore:
+            attempts_left = batch.attempts_left
             batch = await self.retrieve_batch(batch)
             if batch is not None:
+                batch.attempts_left = attempts_left
                 self.tracker.update_submitted(batch)
 
                 n_succeeded_requests = batch.request_counts.succeeded
@@ -613,6 +625,29 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                     logger.debug(f"Batch {batch.id} finished with status: {batch.raw_status}")
                     self.tracker.mark_as_finished(batch)
                     await self.update_batch_objects_file()
+                    if n_failed_requests > 0:
+                        await self._tag_batch_as_retry(batch)
+
+    async def _tag_batch_as_retry(self, batch: GenericBatch) -> None:
+        logger.warning(f"Batch {batch.id} has failed requests. Tagging for resubmission.")
+        if batch.attempts_left > 0:
+            batch.attempts_left -= 1
+            logger.warning(f"Batch {batch.id} failed during attempt " f"{self.config.max_retries - batch.attempts_left} of {self.config.max_retries} ")
+            self.tracker.append_to_resubmit(batch)
+
+        else:
+            logger.error(f"Batch {batch.id} failed after {self.config.max_retries} attempts.")
+
+    async def resubmit_batch(self, batch: GenericBatch) -> None:
+        """Resubmit a failed batch for additional attempts.
+
+        Args:
+            batch: The batch object to resubmit.
+        """
+        response_file = batch.request_file.replace("requests_", "responses_")
+        completed_request_ids, _ = self.validate_existing_response_file(response_file)
+        await self.submit_batch_from_request_file(batch.request_file, completed_request_ids, attempts_left=batch.attempts_left)
+        self.tracker.mark_as_resubmitted(batch)
 
     async def poll_and_process_batches(self) -> None:
         """Monitor and process batches until completion.
@@ -645,6 +680,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             download_tasks = [self.download_batch_to_response_file(batch) for batch in self.tracker.finished_batches.values()]
             # Failed downloads return None and print any errors that occurred
             all_response_files.extend(await asyncio.gather(*download_tasks))
+            resubmit_tasks = [self.resubmit_batch(batch) for batch in self.tracker.to_resubmit_batches.values()]
+            await asyncio.gather(*resubmit_tasks)
 
             logger.debug(
                 f"Batches returned: {self.tracker.n_finished_or_downloaded_batches:,}/{self.tracker.n_total_batches:,} "
@@ -658,8 +695,24 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         response_files = filter(None, all_response_files)
         await self.viewer_client.close()
+        # Update final stats
+        self._update_final_stats()
+
         if self.tracker.n_downloaded_batches == 0 or not response_files:
             raise RuntimeError(f"None of the submitted batches completed successfully. Please check the logs above and {self.web_dashboard} for errors.")
+
+    def _update_final_stats(self):
+        """Update final stats with the number of failed requests."""
+        import glob
+
+        response_files = glob.glob(os.path.join(self.working_dir, "responses_*.jsonl"))
+        sucessful_responses = 0
+        for response_file in response_files:
+            with open(response_file, "r") as f:
+                # count the number of lines in the file
+                sucessful_responses += sum(1 for _ in f)
+        self.tracker.n_final_failed_requests = self.tracker.n_total_requests - sucessful_responses
+        self.tracker.n_final_success_requests = sucessful_responses
 
     async def download_batch_to_response_file(self, batch: GenericBatch) -> str | None:
         """Download and process completed batch results."""

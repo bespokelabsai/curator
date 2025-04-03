@@ -414,6 +414,47 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         assert "Failed                     │ 0" in captured, captured
 
 
+@pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
+def test_batch_resubmission(caplog, temp_working_dir, mock_dataset):
+    """
+    Following test case is to verify the resubmission of failed requests in batch completion.
+    1. Create a batch completion with a dataset containing 3 requests.
+    2. VCR returns a response with 1 failed request i.e num_failed_requests = 1.
+    3. Verify the resubmission of failed request.
+    4. VCR returns the response of resubmitted request with invalid finish reason i.e length.
+    5. Again verify the resubmission of failed request.
+    """
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    hash_book = {
+        "openai": "58a8857e3752388c8bb2c625be0f4329c77298b58c26aa8005ea1c3a3b6a822e",
+    }
+    with vcr_config.use_cassette("resubmission_batch_completion.yaml"):
+        output = StringIO()
+        console = Console(file=output, width=300)
+
+        logger = "bespokelabs.curator.request_processor.batch.base_batch_request_processor"
+        with caplog.at_level(logging.WARNING, logger=logger):
+            dataset = helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend, tracker_console=console)
+        recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
+        assert _hash_string(recipes) == hash_book[backend]
+
+        # Verify status tracker output
+        captured = output.getvalue()
+
+        # Verify resubmission message
+        msg = "Request file tests/integrations/openai/fixtures/.test_cache/testing_hash_123/requests_0.jsonl is being re-submitted."
+        assert "has failed requests. Tagging for resubmission." in caplog.text
+        assert msg in caplog.text
+        assert "Invalid finish responses: {'length': 1}" in caplog.text
+
+        assert "Batches: Total: 3 • Submitted: 0⋯ • Downloaded: 3✓" in captured, captured
+        assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 4✓ • Failed: 1✗" in captured, captured
+        assert "Final Curator Statistics" in captured, captured
+        assert "Total Requests             │ 3" in captured, captured
+        assert "Successful                 │ 3" in captured, captured
+        assert "Failed                     │ 0" in captured, captured
+
+
 ##############################
 # Offline                    #
 ##############################

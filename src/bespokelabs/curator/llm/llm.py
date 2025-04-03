@@ -253,8 +253,8 @@ class LLM:
 
         if existing_session_id is not None and existing_viewer_sync is False:
             msg = (
-                f"There was a previous run with the same run hash ({metadata_dict['run_hash']}) without the HOSTED_CURATOR_VIEWER flag enabled, "
-                "and HOSTED_CURATOR_VIEWER flag is enabled for this run. This means that the Curator Viewer is potentially inconsistent with local data."
+                f"There was a previous run with the same run hash ({metadata_dict['run_hash']}) without the CURATOR_VIEWER flag enabled, "
+                "and CURATOR_VIEWER flag is enabled for this run. This means that the Curator Viewer is potentially inconsistent with local data."
                 "Pushing the full dataset to the Curator Viewer to ensure full consistency."
             )
             if self._request_processor.viewer_client.hosted:

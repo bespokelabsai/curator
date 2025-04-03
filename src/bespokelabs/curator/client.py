@@ -29,15 +29,30 @@ class Client:
         """Initialize the client."""
         self._session = None
         self._state = None
-        self._hosted = os.environ.get("HOSTED_CURATOR_VIEWER") in ["True", "true", "1", "t"]
+
+        # Check for deprecated environment variable
+        if os.environ.get("HOSTED_CURATOR_VIEWER"):
+            logger.warning("The environment variable 'HOSTED_CURATOR_VIEWER' is deprecated. Please use 'CURATOR_VIEWER' instead.")
+
+        # Use new environment variable with fallback to deprecated one
+        self._hosted = os.environ.get("CURATOR_VIEWER") in ["True", "true", "1", "t"] or os.environ.get("HOSTED_CURATOR_VIEWER") in ["True", "true", "1", "t"]
         self._hosted = self._hosted or hosted
         self.semaphore = asyncio.Semaphore(N_CONCURRENT_VIEWER_REQUESTS)
         self._async_client = None
+        self.api_key = os.environ.get("BESPOKE_API_KEY")
+        if self.api_key:
+            logger.info("Authenticated with Curator API key")
+        self._headers = {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
 
     @property
     def session(self):
         """Get the session ID."""
         return self._session
+
+    @property
+    def authenticated(self):
+        """Check if the client is authenticated."""
+        return self._authenticated
 
     @property
     def hosted(self):
@@ -61,7 +76,7 @@ class Client:
             return self.session
         metadata.update({"status": _SessionStatus.STARTED})
 
-        response = requests.post(f"{BASE_CLIENT_URL}/sessions", json=metadata)
+        response = requests.post(f"{BASE_CLIENT_URL}/sessions", json=metadata, headers=self._headers)
 
         if response.status_code == 200:
             self._session = response.json().get("session_id")
@@ -73,7 +88,7 @@ class Client:
 
     async def _update_state(self):
         async with httpx.AsyncClient() as client:
-            response = await client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json={"status": self._state})
+            response = await client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json={"status": self._state}, headers=self._headers)
         if response.status_code != 200:
             logger.debug(f"Failed to update session status: {response.status_code}, {response.text}")
 
@@ -107,7 +122,7 @@ class Client:
 
         response_data = json.dumps({"response_data": response_data})
         async with self.semaphore:
-            response = await self._async_client.post(f"{BASE_CLIENT_URL}/sessions/{self.session}/responses/{idx}", data=response_data)
+            response = await self._async_client.post(f"{BASE_CLIENT_URL}/sessions/{self.session}/responses/{idx}", data=response_data, headers=self._headers)
 
         if response.status_code != 200:
             logger.debug(f"Failed to stream response to curator Viewer: {response.status_code}, {response.text}")

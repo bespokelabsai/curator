@@ -158,7 +158,7 @@ def main(dataset_name, output_dataset_name):
     # Load the dataset
     dataset = load_dataset(dataset_name, split="train")
 
-    os.environ["HOSTED_CURATOR_VIEWER"] = "1"
+    os.environ["CURATOR_VIEWER"] = "1"
     # Initialize the code generator
     code_generator = ManimCodeGenerator(
         model_name="claude-3-7-sonnet-20250219",

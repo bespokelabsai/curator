@@ -278,55 +278,25 @@ See documentation:
 * [Anthropic batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-anthropic-for-batch-inference)
 * [Gemini batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-gemini-for-batch-inference)
 * [kluster.ai batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
+* [Mistral batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-mistral-for-batch-inference)
 
 ## Bespoke Curator Viewer
+The hosted curator viewer is a rich interface to visualize data -- and makes visually inspecting the data much easier.
 
-![Viewer in action](https://github.com/bespokelabsai/curator/blob/main/docs/curator-viewer.gif)
+You can enable it as follows:
 
-To run the bespoke dataset viewer:
+Bash:
 
-```bash
-curator-viewer
+```shell
+export CURATOR_VIEWER=1
+```
+Python/colab:
+```python
+import os
+os.environ["CURATOR_VIEWER"]="1"
 ```
 
-This will pop up a browser window with the viewer running on `127.0.0.1:3000` by default if you haven't specified a different host and port.
-
-The dataset viewer shows all the different runs you have made. Once a run is selected, you can see the dataset and the responses from the LLM.
-
-Optional parameters to run the viewer on a different host and port:
-```bash
->>> curator-viewer -h
-usage: curator-viewer [-h] [--host HOST] [--port PORT] [--verbose]
-
-Curator Viewer
-
-options:
-  -h, --help     show this help message and exit
-  --host HOST    Host to run the server on (default: localhost)
-  --port PORT    Port to run the server on (default: 3000)
-  --verbose, -v  Enables debug logging for more verbose output
-```
-
-The only requirement for running `curator-viewer` is to install node. You can install them by following the instructions [here](https://nodejs.org/en/download/package-manager).
-
-For example, to check if you have node installed, you can run:
-
-```bash
-node -v
-```
-
-If it's not installed, installing latest node on MacOS, you can run:
-
-```bash
-# installs nvm (Node Version Manager)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-# download and install Node.js (you may need to restart the terminal)
-nvm install 22
-# verifies the right Node.js version is in the environment
-node -v # should print `v22.11.0`
-# verifies the right npm version is in the environment
-npm -v # should print `10.9.0`
-```
+With this enabled, as curator generates data, it gets uploaded and you can see the responses streaming in the viewer. The URL for the viewer is displayed right next to the rich progress.
 
 ## Contributing
 Thank you to all the contributors for making this project possible!
