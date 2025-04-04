@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import typing as t
@@ -42,7 +43,7 @@ _REQUEST_FILE_SHARD_SIZE = 1024
 
 _FAILED = {"JOB_STATE_EXPIRED", "JOB_STATE_FAILED", "JOB_STATE_PAUSED"}
 _PROGRESS = {"JOB_STATE_CANCELLING", "JOB_STATE_PENDING", "JOB_STATE_QUEUED", "JOB_STATE_PAUSED", "JOB_STATE_RUNNING", "JOB_STATE_UPDATING"}
-_FINISHED = {"JOB_STATE_CANCELLED", "JOB_STATE_PARTIALLY_SUCCEEDED", "JOB_STATE_SUCCEEDED"}
+_FINISHED = {"JOB_STATE_CANCELLED", "JOB_STATE_PARTIALLY_SUCCEEDED", "JOB_STATE_SUCCEEDED"} | _FAILED
 
 
 def _response_format_to_json(cls: BaseModel):
@@ -117,7 +118,8 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             if self.config.model.startswith(prefix):
                 return _GEMINI_BATCH_RATELIMIT_MAP[prefix]
         else:
-            raise ValueError(f"Could not find rate limit for {self.config.model}")
+            logger.warning(f"Could not find max requests per batch limit for {self.config.model}")
+            return 50_000
 
     @property
     def max_bytes_per_batch(self) -> int:
@@ -252,10 +254,15 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             )
 
         if self.config.generation_params:
+            gen_params = copy.deepcopy(self.config.generation_params)
+            safety_settings = gen_params.pop("safetySettings", None)
             if "generationConfig" in request_object:
-                request_object["generationConfig"].update(self.config.generation_params)
-            else:
-                request_object.update({"generationConfig": self.config.generation_params})
+                request_object["generationConfig"].update(gen_params)
+            elif gen_params:
+                request_object.update({"generationConfig": gen_params})
+
+            if safety_settings:
+                request_object["safetySettings"] = safety_settings
 
         return {
             "request": request_object,
@@ -298,7 +305,13 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             if self.config.return_completions_object:
                 response_message_raw = response_body
             else:
-                response_message_raw = response_body["candidates"][0]["content"]["parts"][0]["text"]
+                response_message_raw = response_body["candidates"][0]["content"]
+                if "parts" in response_message_raw:
+                    response_message_raw = response_message_raw["parts"][0]["text"]
+                else:
+                    logger.warning("Model returned a citation response, serialize it into a string!")
+                    response_message_raw = json.dumps(response_body["candidates"][0]["citationMetadata"])
+
             usage = response_body.get("usageMetadata", {})
 
             token_usage = _TokenUsage(
