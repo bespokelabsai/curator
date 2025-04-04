@@ -239,9 +239,7 @@ class LLM:
             if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
                 raise ValueError("batch_cancel can only be used with batch mode")
 
-            dataset = self._request_processor.cancel_batches(
-                working_dir=run_cache_dir,
-            )
+            dataset = self._request_processor.cancel_batches()
         else:
             parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
             dataset = self._request_processor.run(
