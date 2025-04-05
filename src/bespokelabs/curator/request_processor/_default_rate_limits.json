@@ -3,48 +3,67 @@
     "providers": {
       "klusterai": {
         "cost": {
+          "klusterai/DeepSeek-V3": {
+            "max_tokens": 8192,
+            "input_cost_per_million": {
+              "*": 1.25,
+              "24h": 0.63,
+              "48h": 0.50,
+              "72h": 0.35
+            }
+          },
+          "klusterai/DeepSeek-R1": {
+            "max_tokens": 8192,
+            "input_cost_per_million": {
+              "*": 3.00,
+              "24h": 3.50,
+              "48h": 5.00,
+              "72h": 2.50
+            }
+          },
+          "klusterai/Gemma-3": {
+            "max_tokens": 8192,
+            "input_cost_per_million": {
+              "*": 0.35,
+              "24h": 0.30,
+              "48h": 0.25,
+              "72h": 0.20
+            }
+          },
           "klusterai/Meta-Llama-3.1-8B-Instruct-Turbo": {
             "max_tokens": 8192,
             "input_cost_per_million": {
               "*": 0.18,
-              "1h": 0.09,
-              "3h": 0.08,
-              "6h": 0.07,
-              "12h": 0.06,
-              "24h": 0.05
+              "24h": 0.05,
+              "48h": 0.04,
+              "72h": 0.03
             }
           },
           "klusterai/Meta-Llama-3.3-70B-Instruct-Turbo": {
             "max_tokens": 8192,
             "input_cost_per_million": {
-              "*": 0.7,
-              "1h": 0.35,
-              "3h": 0.33,
-              "6h": 0.3,
-              "12h": 0.25,
-              "24h": 0.2
+              "*": 0.70,
+              "24h": 0.20,
+              "48h": 0.18,
+              "72h": 0.15
             }
           },
           "klusterai/Meta-Llama-3.1-405B-Instruct-Turbo": {
             "max_tokens": 8192,
             "input_cost_per_million": {
-              "*": 3.5,
-              "1h": 1.75,
-              "3h": 1.6,
-              "6h": 1.45,
-              "12h": 1.2,
-              "24h": 0.99
+              "*": 3.50,
+              "24h": 0.99,
+              "48h": 0.89,
+              "72h": 0.79
             }
           },
-          "deepseek-ai/DeepSeek-R1": {
+          "klusterai/Qwen2.5-VL-7B-Instruct": {
             "max_tokens": 8192,
             "input_cost_per_million": {
-              "*": 7,
-              "1h": 5.5,
-              "3h": 5,
-              "6h": 4.5,
-              "12h": 4,
-              "24h": 3.5
+              "*": 0.30,
+              "24h": 0.15,
+              "48h": 0.10,
+              "72h": 0.05
             }
           }
         },
