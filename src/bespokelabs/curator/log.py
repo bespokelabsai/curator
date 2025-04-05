@@ -10,7 +10,7 @@ LOG_FORMAT = "%(asctime)s | %(levelname)-8s | %(module)s:%(lineno)d - %(message)
 ROOT_LOG_LEVEL = logging.DEBUG
 
 # Check environment variable for display mode
-USE_RICH_DISPLAY = os.environ.get("DISABLE_RICH_DISPLAY", "0").lower() not in (
+USE_RICH_DISPLAY = os.environ.get("CURATOR_DISABLE_RICH_DISPLAY", "0").lower() not in (
     "1",
     "true",
     "yes",
