@@ -298,6 +298,19 @@ os.environ["CURATOR_VIEWER"]="1"
 
 With this enabled, as curator generates data, it gets uploaded and you can see the responses streaming in the viewer. The URL for the viewer is displayed right next to the rich progress.
 
+## Environment Variables
+
+We support a range of environment variables to customize the behavior of Curator.
+
+Here is a complete table of environment variables:
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `CURATOR_VIEWER` | Enables the Curator viewer for visualizing data curation when `True`. | `False` |
+| `CURATOR_DISABLE_CACHE` | Disables caching for `curator.LLM` generations when `True`. Useful for fresh runs. | `False` |
+| `CURATOR_CACHE_DIR` | Sets the cache directory used for `curator.LLM` generations. | `~/.cache/curator` |
+| `CURATOR_DISABLE_RICH_DISPLAY` | When `True`, disables [Rich CLI](https://github.com/Textualize/rich) output (and falls back to [tqdm](https://tqdm.github.io/) logging) for local data generation monitoring. This is useful when debugging with inline breakpoints or interactive debuggers like `pdb`, where Rich's dynamic output can interfere with terminal input. | `False` |
+| `TELEMETRY_ENABLED` | Enable telemetry for curator usage tracking when `True` | `True` |
+
 ## Contributing
 Thank you to all the contributors for making this project possible!
 Please follow [these instructions](docs/CONTRIBUTING.md) on how to contribute.
