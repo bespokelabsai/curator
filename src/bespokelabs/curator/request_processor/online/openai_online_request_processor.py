@@ -95,6 +95,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             self.url = self.config.base_url.rstrip("/") + self._DEFAULT_COMPLETION_SUFFIX
 
         self._longlived_response = False
+
         if "api.deepseek.com" in self.url:
             # DeepSeek does not return rate limits in headers
             # https://api-docs.deepseek.com/quick_start/rate_limit.
@@ -103,6 +104,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             self.api_key = self.config.api_key or os.getenv("DEEPSEEK_API_KEY")
             self._longlived_response = True
             self.config.request_timeout = 60 * 30  # 30 minutes
+            self.manual_max_concurrent_requests = 10_000
         else:
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
             self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()

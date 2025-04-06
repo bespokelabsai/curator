@@ -86,8 +86,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self._tracker_console = None
         self._output_tokens_window = deque(maxlen=_MAX_OUTPUT_MVA_WINDOW)
         self._semaphore = None
-        if self.max_concurrent_requests is not None:
-            self._semaphore = asyncio.Semaphore(t.cast(int, self.max_concurrent_requests))
 
     @property
     def backend(self) -> str:
@@ -328,6 +326,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             model=self.prompt_formatter.model_name,
             total_requests=self.total_requests,
         )
+        if self.max_concurrent_requests is not None:
+            self._semaphore = asyncio.Semaphore(t.cast(int, self.max_concurrent_requests))
 
         # Resume if a response file exists
         completed_request_ids, completed_parsed_responses = self.validate_existing_response_file(response_file)
