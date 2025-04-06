@@ -42,7 +42,10 @@ async def _handle_longlive_response(response: aiohttp.ClientResponse):
         content_lines.append(line_str)
 
     if not content_lines:
-        return {"error": "Empty response from API"}
+        return {
+            "error": "Received an empty response from the API. Some providers, "
+            "such as DeepSeek, may disconnect after 30 minutes of inactivity, which can result in missing responses."
+        }
 
     try:
         return json.loads(content_buffer)
