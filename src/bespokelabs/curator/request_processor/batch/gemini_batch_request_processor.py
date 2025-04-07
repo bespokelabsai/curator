@@ -6,6 +6,7 @@ from functools import lru_cache
 
 import vertexai
 from google.cloud import aiplatform, storage
+from litellm.litellm_core_utils.core_helpers import map_finish_reason
 from pydantic import BaseModel
 from vertexai.batch_prediction import BatchPredictionJob
 
@@ -299,20 +300,30 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         token_usage = None
         cost = None
         response_message = None
+        finish_reason = "unkown"
 
+        response_message_raw = ""
         if result_type == "succeeded":
             response_body = raw_response["response"]
-            if self.config.return_completions_object:
-                response_message_raw = response_body
-            else:
-                response_message_raw = response_body["candidates"][0]["content"]
+            if "candidates" in response_body:
+                candidate = response_body["candidates"][0]
+                response_message_raw = candidate["content"]
+                finish_reason = candidate["finishReason"]
+
                 if "parts" in response_message_raw:
                     response_message_raw = response_message_raw["parts"][0]["text"]
-                else:
+                elif "citationMetadata" in candidate:
                     logger.warning("Model returned a citation response, serialize it into a string!")
-                    response_message_raw = json.dumps(response_body["candidates"][0]["citationMetadata"])
+                    response_message_raw = json.dumps(candidate["citationMetadata"])
+                else:
+                    response_message_raw = response_message_raw or ""
+            else:
+                finish_reason = "PROHIBITED_CONTENT"
+                logger.warning("No candidates for request, possibly due to content filtration.")
 
             usage = response_body.get("usageMetadata", {})
+            finish_reason = "SAFETY" if finish_reason == "PROHIBITED_CONTENT" else finish_reason
+            finish_reason = map_finish_reason(finish_reason)
 
             token_usage = _TokenUsage(
                 input=usage.get("promptTokenCount", 0),
@@ -323,17 +334,19 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             response_message, response_errors = self.prompt_formatter.parse_response_message(response_message_raw)
 
             cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=response_message_raw)
+            if self.config.return_completions_object:
+                response_message_raw = response_body
 
         # TODO: check other result types.
         else:
             response_errors = [f"Request {result_type}"]
 
-        # TODO: Add finish reason in gemini
         return GenericResponse(
             response_message=response_message,
             response_errors=response_errors,
             raw_response=raw_response,
             raw_request=None,
+            finish_reason=finish_reason,
             generic_request=generic_request,
             created_at=batch.created_at,
             finished_at=raw_response["processed_time"],
