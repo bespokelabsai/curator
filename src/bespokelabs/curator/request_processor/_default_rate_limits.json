@@ -3,6 +3,7 @@
     "providers": {
       "klusterai": {
         "cost": {
+
           "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": {
             "max_tokens": 1048576,
             "input_cost_per_million": {
@@ -95,6 +96,21 @@
           },
           "klusterai/Meta-Llama-3.1-8B-Instruct-Turbo": {
             "max_tokens": 131000,
+            "input_cost_per_million": {
+              "*": 0.35,
+              "24h": 0.30,
+              "48h": 0.25,
+              "72h": 0.20
+            },
+            "output_cost_per_million": {
+              "*": 0.35,
+              "24h": 0.30,
+              "48h": 0.25,
+              "72h": 0.20
+            }
+          },
+          "klusterai/Meta-Llama-3.1-8B-Instruct-Turbo": {
+            "max_tokens": 131072,
             "input_cost_per_million": {
               "*": 0.18,
               "24h": 0.05,
