@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 import aiofiles
 import pyarrow
+from datasets import Dataset
 from pydantic import BaseModel, ValidationError
 
 from bespokelabs.curator.constants import _CACHE_MSG, _INTERNAL_PROMPT_KEY
@@ -462,10 +463,9 @@ class BaseRequestProcessor(ABC):
             # Read the arrow dataset file to get all successful request indices
             successful_indices = set()
             try:
-                table = pyarrow.parquet.read_table(dataset_file)
-                if "__original_row_idx" in table.column_names:
-                    # Extract all the original row indices that were successfully processed
-                    successful_indices = set(table["__original_row_idx"].to_pylist())
+                dataset = Dataset.from_file(dataset_file)
+                # Extract all the original row indices that were successfully processed
+                successful_indices = set(dataset["__original_row_idx"])
             except Exception as e:
                 logger.warning(f"Error reading dataset file to extract successful indices: {e}")
 

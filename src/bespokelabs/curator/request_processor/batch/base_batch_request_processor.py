@@ -620,8 +620,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                         await self._tag_batch_as_retry(batch)
 
     async def _tag_batch_as_retry(self, batch: GenericBatch) -> None:
-        logger.warning(f"Batch {batch.id} has failed requests. Tagging for resubmission.")
         if batch.attempts_left > 0:
+            logger.warning(f"Batch {batch.id} has failed requests. Tagging for resubmission.")
             batch.attempts_left -= 1
             logger.warning(f"Batch {batch.id} failed during attempt " f"{self.config.max_retries - batch.attempts_left} of {self.config.max_retries} ")
             self.tracker.append_to_resubmit(batch)

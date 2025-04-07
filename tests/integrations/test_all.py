@@ -2,6 +2,7 @@ import datetime
 import gc
 import hashlib
 import importlib
+import json
 import logging
 import signal
 from io import StringIO
@@ -262,7 +263,7 @@ def test_invalid_failed_reason(caplog, temp_working_dir, mock_dataset):
         logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
         REASON_MSG = f"Encountered 'ValueError: finish_reason was {reason}' during attempt 1 of 10 while processing request 0"
         if backend == "openai":
-            patcher = patch("bespokelabs.curator.request_processor.online.openai_online_request_processor.OpenAIOnlineRequestProcessor.call_single_request")
+            patcher = patch("bespokelabs.curator.request_processor.online.openai_online_eequest_processor.OpenAIOnlineRequestProcessor.call_single_request")
         else:
             patcher = patch("bespokelabs.curator.request_processor.online.litellm_online_request_processor.LiteLLMOnlineRequestProcessor.call_single_request")
 
@@ -453,6 +454,22 @@ def test_batch_resubmission(caplog, temp_working_dir, mock_dataset):
         assert "Total Requests             │ 3" in captured, captured
         assert "Successful                 │ 3" in captured, captured
         assert "Failed                     │ 0" in captured, captured
+
+
+@pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)
+def test_failed_requests_file_in_cache(temp_working_dir, mock_dataset):
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    with vcr_config.use_cassette("resubmission_batch_completion.yaml"):
+        output = StringIO()
+        console = Console(file=output, width=300)
+        helper.create_basic(
+            temp_working_dir, mock_dataset, batch=True, backend=backend, tracker_console=console, llm_params={"max_retries": 0, "require_all_responses": False}
+        )
+        with open("tests/integrations/openai/fixtures/.test_cache/testing_hash_123/failed_requests.jsonl", "r") as f:
+            lines = f.readlines()
+            assert len(lines) == 1
+            data = json.loads(lines[0])
+            assert data["original_row_idx"] == 2
 
 
 ##############################
