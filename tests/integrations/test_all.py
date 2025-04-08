@@ -263,7 +263,7 @@ def test_invalid_failed_reason(caplog, temp_working_dir, mock_dataset):
         logger = "bespokelabs.curator.request_processor.online.base_online_request_processor"
         REASON_MSG = f"Encountered 'ValueError: finish_reason was {reason}' during attempt 1 of 10 while processing request 0"
         if backend == "openai":
-            patcher = patch("bespokelabs.curator.request_processor.online.openai_online_eequest_processor.OpenAIOnlineRequestProcessor.call_single_request")
+            patcher = patch("bespokelabs.curator.request_processor.online.openai_online_request_processor.OpenAIOnlineRequestProcessor.call_single_request")
         else:
             patcher = patch("bespokelabs.curator.request_processor.online.litellm_online_request_processor.LiteLLMOnlineRequestProcessor.call_single_request")
 
