@@ -36,7 +36,7 @@ llm = Reasoner(
     backend_params={
         "base_url": "https://api.together.ai",
         "api_key": os.environ.get("TOGETHER_API_KEY"),
-        "max_requests_per_minute": 100,
+        "max_requests_per_minute": 30,
         "max_tokens_per_minute": 2_000_000,
     },
 )
