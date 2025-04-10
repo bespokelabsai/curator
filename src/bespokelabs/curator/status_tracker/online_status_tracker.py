@@ -606,12 +606,13 @@ class OnlineStatusTracker:
         else:
             has_capacity = self._check_seperate_capacity(token_estimate)
 
-        if not has_capacity:
-            logger.debug(
-                f"No capacity for request with {token_estimate} tokens."
-                f"Available capacity: {self.available_token_capacity} tokens, "
-                f"{int(self.available_request_capacity)} requests."
-            )
+        # This is a very loud log, enable only when needed
+        # if not has_capacity:
+        #     logger.debug(
+        #         f"No capacity for request with {token_estimate} tokens."
+        #         f"Available capacity: {self.available_token_capacity} tokens, "
+        #         f"{int(self.available_request_capacity)} requests."
+        #     )
         return has_capacity
 
     def _check_combined_capacity(self, token_estimate: _TokenUsage):
