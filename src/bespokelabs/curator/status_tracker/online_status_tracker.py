@@ -723,3 +723,12 @@ class OnlineStatusTracker:
                 self.projected_remaining_cost = estimated_cost * remaining_requests
 
         self.update_display()
+
+    def cost_info(self):
+        """Get cost information for the current request."""
+        return {
+            "total_requests": self.total_requests,
+            "total_input_tokens": self.total_prompt_tokens,
+            "total_output_tokens": self.total_completion_tokens,
+            "total_cost_milli_dollars": self.total_cost * 1000,
+        }
