@@ -17,6 +17,7 @@ from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.log import add_file_handler, logger
 from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
 from bespokelabs.curator.request_processor.config import BackendParamsType
+from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
 if TYPE_CHECKING:
     from dataset import Dataset
@@ -169,6 +170,7 @@ class LLM:
         dataset: Optional[Iterable] = None,
         working_dir: str = None,
         batch_cancel: bool = False,
+        batch_cancel_auto_confirm: bool = False,
     ) -> "Dataset":
         """Apply structured completions in parallel to a dataset using specified model and prompts.
 
@@ -176,12 +178,16 @@ class LLM:
             dataset (Iterable): A dataset consisting of a list of items to apply completions
             working_dir (str): The working directory to save the requests.jsonl, responses.jsonl, and dataset.arrow files.
             batch_cancel (bool): Whether to cancel the batch if it is running
+            batch_cancel_auto_confirm (bool): Whether we should automatically run batch cancellation without explicit user confirmation (for testing)
+
         Returns:
             Iterable: A list of structured outputs from the completions
         """
         # We convert from iterable to Dataset because Dataset has random access via row_idx
         if dataset:
             dataset = _convert_to_dataset(dataset)
+
+        dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
 
         if working_dir is None:
             curator_cache_dir = os.environ.get(
@@ -191,10 +197,23 @@ class LLM:
         else:
             curator_cache_dir = working_dir
 
-        dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
-
         disable_cache = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
         fingerprint = self._hash_fingerprint(dataset_hash, disable_cache)
+
+        run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
+        os.makedirs(run_cache_dir, exist_ok=True)
+        add_file_handler(run_cache_dir)
+
+        if batch_cancel:
+            if not hasattr(self._request_processor, "cancel_batches"):
+                raise ValueError("batch_cancel can only be used with batch mode")
+
+            run_in_event_loop(
+                self._request_processor.cancel_batches(
+                    working_dir=run_cache_dir, dataset=dataset, prompt_formatter=self.prompt_formatter, auto_confirm=batch_cancel_auto_confirm
+                )
+            )
+            return dataset
 
         metadata_db_path = os.path.join(curator_cache_dir, "metadata.db")
         metadata_db = MetadataDB(metadata_db_path)
@@ -218,10 +237,6 @@ class LLM:
             "batch_mode": self.batch_mode,
         }
 
-        run_cache_dir = os.path.join(curator_cache_dir, fingerprint)
-        os.makedirs(run_cache_dir, exist_ok=True)
-        add_file_handler(run_cache_dir)
-
         existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
         existing_viewer_sync = metadata_db.check_existing_hosted_sync(metadata_dict["run_hash"])
         if not existing_viewer_sync and existing_session_id:
@@ -233,23 +248,13 @@ class LLM:
         metadata_dict["is_hosted_viewer_synced"] = False
         metadata_db.store_metadata(metadata_dict)
 
-        if batch_cancel:
-            from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
-
-            if not isinstance(self._request_processor, OpenAIBatchRequestProcessor):
-                raise ValueError("batch_cancel can only be used with batch mode")
-
-            dataset = self._request_processor.cancel_batches(
-                working_dir=run_cache_dir,
-            )
-        else:
-            parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
-            dataset = self._request_processor.run(
-                dataset=dataset,
-                working_dir=run_cache_dir,
-                parse_func_hash=parse_func_hash,
-                prompt_formatter=self.prompt_formatter,
-            )
+        parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
+        dataset = self._request_processor.run(
+            dataset=dataset,
+            working_dir=run_cache_dir,
+            parse_func_hash=parse_func_hash,
+            prompt_formatter=self.prompt_formatter,
+        )
 
         if existing_session_id is not None and existing_viewer_sync is False:
             msg = (

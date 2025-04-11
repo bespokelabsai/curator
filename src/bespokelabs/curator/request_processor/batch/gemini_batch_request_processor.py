@@ -479,18 +479,17 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             Cannot cancel already ended batches.
         """
         async with self.semaphore:
-            request_file = self.tracker.submitted_batches[batch.id].request_file
             batch_object = await self.retrieve_batch(batch)
             if batch_object.status == "ended":
                 logger.warning(f"Batch {batch.id} is already ended, cannot cancel")
-                return self.parse_api_specific_batch_object(batch_object, request_file=request_file)
+                return batch_object
             try:
                 job = self._get_batch_job_object(batch.id)
                 # TODO: check if delete or cancel
                 job.cancel()
                 logger.info(f"Successfully cancelled batch: {batch.id}")
-                return self.parse_api_specific_batch_object(batch_object, request_file=request_file)
+                return batch_object
             except Exception as e:
                 error_msg = str(e)
                 logger.error(f"Failed to cancel batch {batch.id}: {error_msg}")
-                return self.parse_api_specific_batch_object(batch_object, request_file=request_file)
+                return batch_object

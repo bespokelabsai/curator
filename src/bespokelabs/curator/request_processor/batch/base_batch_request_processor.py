@@ -90,6 +90,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         self.batch_objects_file = os.path.join(self.working_dir, "batch_objects.jsonl")
 
         self._attempt_loading_batch_status_tracker(generic_request_files)
+        self.set_model_cost()
 
         run_in_event_loop(self.submit_batches_from_request_files(generic_request_files))
         run_in_event_loop(self.poll_and_process_batches())
@@ -310,7 +311,6 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         self.tracker.model = self.prompt_formatter.model_name
         self.tracker.n_total_requests = self.total_requests
-        self.set_model_cost()
 
     def set_model_cost(self):
         """Set cost information for the current model."""
@@ -632,7 +632,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         if batch.attempts_left > 0:
             logger.warning(f"Batch {batch.id} has failed requests. Tagging for resubmission.")
             batch.attempts_left -= 1
-            logger.warning(f"Batch {batch.id} failed during attempt " f"{self.config.max_retries - batch.attempts_left} of {self.config.max_retries} ")
+            logger.warning(f"Batch {batch.id} failed during attempt {self.config.max_retries - batch.attempts_left} of {self.config.max_retries} ")
             self.tracker.append_to_resubmit(batch)
 
         else:
@@ -736,19 +736,44 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         return response_file
 
-    async def cancel_batches(self):
+    async def cancel_batches(self, working_dir, dataset, prompt_formatter, auto_confirm=False):
         """Cancel all currently submitted batches.
 
         Attempts to cancel all batches that are currently in submitted state.
         Handles cases where no batches are submitted.
+
+        Args:
+            working_dir: Directory containing batch files
+            dataset: Dataset containing requests
+            prompt_formatter: Formatter for prompts
+            auto_confirm: Whether to automatically confirm cancellation (for testing)
 
         Side Effects:
             - Attempts to cancel all submitted batches concurrently
             - Logs warning if no batches to cancel
             - Updates batch status through cancel_batch calls
         """
+        self.prompt_formatter = prompt_formatter
+        self.working_dir = working_dir
+        self.total_requests = len(dataset) if dataset is not None else 1
+
+        self.semaphore = asyncio.Semaphore(self.max_concurrent_batch_operations)
+        self.batch_objects_file = os.path.join(working_dir, "batch_objects.jsonl")
+
+        generic_request_files = self.create_request_files(dataset)
+
+        self._attempt_loading_batch_status_tracker(generic_request_files)
+
         if self.tracker.n_submitted_batches == 0:
             logger.warning("No batches to be cancelled, but cancel_batches=True.")
             return
+
+        if not auto_confirm:
+            confirmation = input("Are you sure you want to cancel all submitted batches? (y/n): ").lower()
+            if confirmation != "y":
+                logger.info("Batch cancellation aborted by user.")
+                return
+
+        logger.info("You set cancel_batches=True. Cancelling batches and returning the original dataset without responses.")
         tasks = [self.cancel_batch(batch) for batch in self.tracker.submitted_batches.values()]
         await asyncio.gather(*tasks)

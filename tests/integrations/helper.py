@@ -224,9 +224,9 @@ def create_basic(
     if batch:
         prompter._hash_fingerprint = lambda x, y: "testing_hash_123"
     if mock_dataset:
-        dataset = prompter(mock_dataset, working_dir=temp_working_dir, batch_cancel=batch_cancel)
+        dataset = prompter(mock_dataset, working_dir=temp_working_dir, batch_cancel=batch_cancel, batch_cancel_auto_confirm=True)
     else:
-        dataset = prompter(working_dir=temp_working_dir, batch_cancel=batch_cancel)
+        dataset = prompter(working_dir=temp_working_dir, batch_cancel=batch_cancel, batch_cancel_auto_confirm=True)
     if return_prompter:
         return dataset, prompter
     return dataset

@@ -1,10 +1,13 @@
 import datetime
 import hashlib
+import importlib
+import logging
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from bespokelabs.curator.request_processor.batch.gemini_batch_request_processor import GeminiBatchRequestProcessor  # noqa
+from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from tests.integrations.helper import BasicLLM
 
 
@@ -48,6 +51,12 @@ def _create_mock_batch_job():
     mock_batch_job_class = MagicMock()
     mock_batch_job_class.side_effect = _mock_job_side_effect
     return mock_batch_job_class
+
+
+def _reload_batch_patch_deps():
+    from bespokelabs.curator.request_processor.batch import base_batch_request_processor
+
+    importlib.reload(base_batch_request_processor)
 
 
 class _BlobObject:
@@ -158,3 +167,53 @@ def test_polled_batch_gemini(temp_working_dir, mock_dataset):
                     recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
                     assert _hash_string(recipes) == "2131be1c57623eb8e27bc4437476990bfd4b0c954a274ed3af6d46dc26138d1e"
                     assert len(dataset) == 3
+
+
+@pytest.mark.parametrize("temp_working_dir", ([{"integration": "gemini"}]), indirect=True)
+def test_batch_cancel(caplog, temp_working_dir, mock_dataset):
+    temp_working_dir, _, _ = temp_working_dir
+
+    with patch("vertexai.batch_prediction.BatchPredictionJob.submit") as mocked_batch_job:
+        with patch("google.cloud.aiplatform.BatchPredictionJob", new=_create_mock_batch_job()):
+            with patch(
+                "bespokelabs.curator.request_processor.batch.gemini_batch_request_processor.GeminiBatchRequestProcessor.parse_api_specific_batch_object"
+            ) as parse:
+                with patch("bespokelabs.curator.request_processor.batch.gemini_batch_request_processor.GeminiBatchRequestProcessor._initialize_cloud") as init:
+                    with patch("bespokelabs.curator.request_processor.event_loop.run_in_event_loop") as mocked_run_loop:
+                        with patch("google.cloud.aiplatform.BatchPredictionJob.cancel") as batch_cancel:
+
+                            def _batch_cancel():
+                                return
+
+                            batch_cancel.side_effect = _batch_cancel
+
+                            def _run_loop(func):
+                                if "poll_and_process_batches" in str(func):
+                                    return
+                                return run_in_event_loop(func)
+
+                            mocked_run_loop.side_effect = _run_loop
+                            init.return_value = None
+                            parse.side_effect = MockedParse._parse
+                            job = MagicMock()
+                            job.name = "mocked_job"
+                            mocked_batch_job.return_value = job
+                            prompter = BasicLLM(model_name="gemini-1.5-flash-002", backend="gemini", batch=True, backend_params={"batch_check_interval": 1})
+                            prompter._request_processor._location = "mocked_location"
+                            prompter._request_processor._project_id = "mocked_id"
+                            prompter._request_processor._bucket_name = "mocked_bucket"
+                            prompter._request_processor._bucket = _MockedGoogleBucket()
+                            with pytest.raises(ValueError):
+                                _reload_batch_patch_deps()
+                                prompter(
+                                    mock_dataset,
+                                    working_dir=temp_working_dir,
+                                )
+
+                            patch.stopall()
+                            _reload_batch_patch_deps()
+                            logger = "bespokelabs.curator.request_processor.batch.base_batch_request_processor"
+                            with caplog.at_level(logging.INFO, logger=logger):
+                                prompter(mock_dataset, working_dir=temp_working_dir, batch_cancel=True, batch_cancel_auto_confirm=True)
+                                resume_msg = "Cancelling batches"
+                                assert resume_msg in caplog.text

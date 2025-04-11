@@ -334,6 +334,43 @@ def test_batch_resume(temp_working_dir, mock_dataset):
         assert len(tracker.downloaded_batches) == 1
 
 
+@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
+def test_batch_cancel(
+    caplog,
+    temp_working_dir,
+    mock_dataset,
+):
+    temp_working_dir, backend, vcr_config = temp_working_dir
+    with vcr_config.use_cassette("batch_cancel.yaml"):
+        with patch("bespokelabs.curator.request_processor.event_loop.run_in_event_loop") as mocked_run_loop:
+
+            def _run_loop(func):
+                if "poll_and_process_batches" in str(func):
+                    return
+                return run_in_event_loop(func)
+
+            mocked_run_loop.side_effect = _run_loop
+            with pytest.raises(ValueError):
+                _reload_batch_patch_deps()
+                helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend)
+        from bespokelabs.curator.status_tracker.batch_status_tracker import BatchStatusTracker
+
+        tracker_batch_file_path = temp_working_dir + "/testing_hash_123/batch_objects.jsonl"
+        with open(tracker_batch_file_path, "r") as f:
+            tracker = BatchStatusTracker.model_validate_json(f.read())
+        assert tracker.n_total_requests == 3
+        assert len(tracker.submitted_batches) == 1
+        assert len(tracker.downloaded_batches) == 0
+
+        patch.stopall()
+        _reload_batch_patch_deps()
+        logger = "bespokelabs.curator.request_processor.batch.base_batch_request_processor"
+        with caplog.at_level(logging.INFO, logger=logger):
+            helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend, batch_cancel=True)
+            resume_msg = "Cancelling batches"
+            assert resume_msg in caplog.text
+
+
 @pytest.mark.parametrize("temp_working_dir", (_ONLINE_REASONING_BACKENDS), indirect=True)
 def test_batch_reasoning(temp_working_dir, mock_reasoning_dataset):
     temp_working_dir, backend, vcr_config = temp_working_dir

@@ -4,7 +4,6 @@ import instructor
 import litellm
 from anthropic import AsyncAnthropic
 from anthropic.types.messages import MessageBatch, MessageBatchRequestCounts
-from anthropic.types.shared.not_found_error import NotFoundError
 from litellm.litellm_core_utils.core_helpers import map_finish_reason
 
 from bespokelabs.curator.log import logger
@@ -309,8 +308,8 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
         async with self.semaphore:
             try:
                 batch = await self.client.messages.batches.retrieve(batch.id)
-            except NotFoundError:
-                logger.warning(f"batch object {batch.id} not found. Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
+            except Exception as e:
+                logger.warning(f"{e} batch object {batch.id} not found. Your API key (***{self.client.api_key[-4:]}) might not have access to this batch.")
                 return None
             request_file = self.tracker.submitted_batches[batch.id].request_file
             return self.parse_api_specific_batch_object(batch, request_file=request_file)
@@ -355,16 +354,16 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
             Cannot cancel already ended batches.
         """
         async with self.semaphore:
-            request_file = self.tracker.submitted_batches[batch.id].request_file
             batch_object = await self.retrieve_batch(batch)
+
             if batch_object.status == "ended":
                 logger.warning(f"Batch {batch.id} is already ended, cannot cancel")
-                return self.parse_api_specific_batch_object(batch_object, request_file=request_file)
+                return batch_object
             try:
                 await self.client.messages.batches.cancel(batch.id)
                 logger.info(f"Successfully cancelled batch: {batch.id}")
-                return self.parse_api_specific_batch_object(batch_object, request_file=request_file)
+                return batch_object
             except Exception as e:
                 error_msg = str(e)
                 logger.error(f"Failed to cancel batch {batch.id}: {error_msg}")
-                return self.parse_api_specific_batch_object(batch_object, request_file=request_file)
+                return batch_object
