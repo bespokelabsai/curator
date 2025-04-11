@@ -734,6 +734,9 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         self.tracker.mark_as_downloaded(batch)
         await self.update_batch_objects_file()
 
+        # Log cost projection to viewer
+        await self._viewer_client.log_cost_projection(self.tracker, force_log=True)
+
         return response_file
 
     async def cancel_batches(self, working_dir, dataset, prompt_formatter, auto_confirm=False):

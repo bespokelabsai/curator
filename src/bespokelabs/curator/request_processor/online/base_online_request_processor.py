@@ -449,6 +449,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         status_tracker.stop_tracker()
         await self.viewer_client.session_completed()
 
+        # Log cost projection to viewer
+        await self.viewer_client.log_cost_projection(status_tracker, force_log=True)
+
         # Log final status
         logger.info(f"Processing complete. Results saved to {response_file}")
         logger.info(f"Status tracker: {status_tracker}")

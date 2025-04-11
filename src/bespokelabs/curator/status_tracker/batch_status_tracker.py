@@ -741,3 +741,12 @@ class BatchStatusTracker(BaseModel):
             self._stats_task_id,
             description=stats_text,
         )
+
+    def cost_info(self):
+        """Get cost information."""
+        return {
+            "total_requests": self.n_total_requests,
+            "total_input_tokens": self.total_prompt_tokens,
+            "total_output_tokens": self.total_completion_tokens,
+            "total_cost_milli_dollars": self.total_cost * 1000,
+        }
