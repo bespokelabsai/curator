@@ -107,7 +107,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             self.api_key = self.config.api_key or os.getenv("DEEPSEEK_API_KEY")
             self._longlived_response = True
             self.config.request_timeout = 60 * 30  # 30 minutes
-            self.manual_max_concurrent_requests = 10_000
+            self.manual_max_concurrent_requests = config.max_concurrent_requests or 10_000
+            self.default_max_tokens_per_minute = None
         else:
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
             self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
