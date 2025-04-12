@@ -218,13 +218,27 @@ class OnlineStatusTracker:
         # Log initial stats
         self._log_stats()
 
+    def _update_tqdm_description(self):
+        """Update the tqdm description."""
+        if not USE_RICH_DISPLAY and self.pbar:
+            self.pbar.set_description(
+                f"Processing {MODEL}{self.model}{END} "
+                f"[{SUCCESS}{self.num_tasks_succeeded} succeeded{END} • "
+                f"{WARNING}{self.num_tasks_in_progress} in progress{END} • "
+                f"{ERROR}{self.num_tasks_failed} failed{END} • "
+                f"{COST}${self.total_cost:.3f} spent{END} • "
+                f"{METRIC}{self.num_tasks_started / max(0.001, (time.time() - self.start_time) / 60):.1f} req/min{END} • "
+                f"{METRIC}{self.num_tasks_succeeded / max(0.001, (time.time() - self.start_time) / 60):.1f} res/min{END}]"
+            )
+
     def _log_stats(self):
         """Log current statistics when using tqdm mode."""
         if not USE_RICH_DISPLAY:
             elapsed_minutes = (time.time() - self.start_time) / 60
-            current_rpm = (self.num_tasks_succeeded - self.num_tasks_already_completed) / max(0.001, elapsed_minutes)
             input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
             output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
+            req_per_min = self.num_tasks_started / max(0.001, elapsed_minutes)
+            res_per_min = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
 
             # Calculate averages based on completed tasks or in-progress tasks
             total_tasks = max(1, self.num_tasks_succeeded + self.num_tasks_in_progress)
@@ -233,13 +247,8 @@ class OnlineStatusTracker:
             projected_total = self.total_cost + self.projected_remaining_cost
             cost_per_minute = self.total_cost / max(0.01, elapsed_minutes)
 
-            # Update TQDM description with colored metrics
-            self.pbar.set_description(
-                f"Processing {MODEL}{self.model}{END} "
-                f"[{WARNING}{self.num_tasks_in_progress} running{END} • "
-                f"{COST}${self.total_cost:.3f} spent{END} • "
-                f"{METRIC}{current_rpm:.1f} RPM{END}]"
-            )
+            # Update TQDM description
+            self._update_tqdm_description()
 
             # Add curator viewer link if available
             viewer_msg = ""
@@ -255,7 +264,8 @@ class OnlineStatusTracker:
                 f"Success: {SUCCESS}{self.num_tasks_succeeded}✓{END} • "
                 f"Failed: {ERROR}{self.num_tasks_failed}✗{END} • "
                 f"In Progress: {WARNING}{self.num_tasks_in_progress}⋯{END} • "
-                f"RPM: {METRIC}{current_rpm:.1f}{END}\n"
+                f"Req/min: {METRIC}{req_per_min:.1f}{END} • "
+                f"Res/min: {METRIC}{res_per_min:.1f}{END}\n"
                 f"{HEADER}Tokens:{END} Avg Input: {METRIC}{avg_prompt:.0f}{END} • "
                 f"Input TPM: {METRIC}{input_tpm:.0f}{END} • "
                 f"Avg Output: {METRIC}{avg_completion:.0f}{END} • "
@@ -285,6 +295,7 @@ class OnlineStatusTracker:
                 # Always update progress bar position
                 self.pbar.n = self.num_tasks_succeeded + self.num_tasks_already_completed
                 self.pbar.refresh()
+                self._update_tqdm_description()
 
                 # Update stats in any of these conditions:
                 # 1. When tasks change state (in_progress, succeeded, failed)
@@ -315,7 +326,8 @@ class OnlineStatusTracker:
         """Refresh the console display with latest stats."""
         # Calculate stats
         elapsed_minutes = (time.time() - self.start_time) / 60
-        current_rpm = (self.num_tasks_succeeded - self.num_tasks_already_completed) / max(0.001, elapsed_minutes)
+        req_per_min = self.num_tasks_started / max(0.001, elapsed_minutes)
+        res_per_min = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
         input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
         output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
         avg_prompt = self.total_prompt_tokens / max(1, self.num_tasks_succeeded)
@@ -340,7 +352,9 @@ class OnlineStatusTracker:
             f"[white]•[/white] "
             f"[white]In Progress:[/white] [yellow]{self.num_tasks_in_progress}⋯[/yellow] "
             f"[white]•[/white] "
-            f"[white]RPM:[/white] [blue]{current_rpm:.1f}[/blue]\n"
+            f"[white]Req/min:[/white] [blue]{req_per_min:.1f}[/blue] "
+            f"[white]•[/white] "
+            f"[white]Res/min:[/white] [blue]{res_per_min:.1f}[/blue]\n"
             f"[bold white]Tokens:[/bold white] "
             f"[white]Avg Input:[/white] [blue]{avg_prompt:.0f}[/blue] "
             f"[white]•[/white] "
@@ -495,7 +509,6 @@ class OnlineStatusTracker:
             "Average Cost per Request",
             f"[red]${self.total_cost / max(1, self.num_tasks_succeeded):.3f}[/red]",
         )
-
         table.add_row("Input Cost per 1M Tokens", self.input_cost_str)
         table.add_row("Output Cost per 1M Tokens", self.output_cost_str)
 
@@ -503,7 +516,8 @@ class OnlineStatusTracker:
         table.add_row("Performance", "", style="bold magenta")
         elapsed_time = time.time() - self.start_time
         elapsed_minutes = elapsed_time / 60
-        rpm = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
+        req_per_min = self.num_tasks_started / max(0.001, elapsed_minutes)
+        res_per_min = self.num_tasks_succeeded / max(0.001, elapsed_minutes)
         input_tpm = self.total_prompt_tokens / max(0.001, elapsed_minutes)
         output_tpm = self.total_completion_tokens / max(0.001, elapsed_minutes)
 
@@ -512,7 +526,8 @@ class OnlineStatusTracker:
             "Average Time per Request",
             f"{elapsed_time / max(1, self.num_tasks_succeeded):.2f}s",
         )
-        table.add_row("Requests per Minute", f"{rpm:.1f}")
+        table.add_row("Requests per Minute", f"{req_per_min:.1f}")
+        table.add_row("Responses per Minute", f"{res_per_min:.1f}")
         table.add_row("Max Concurrent Requests", str(self.max_concurrent_requests_seen))
         table.add_row("Input Tokens per Minute", f"{input_tpm:.1f}")
         table.add_row("Output Tokens per Minute", f"{output_tpm:.1f}")
