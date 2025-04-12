@@ -88,7 +88,8 @@ from pydantic import BaseModel, Field
 from typing import Literal
 
 class Sentiment(BaseModel):
-  sentiment: Literal["positive", "negative", "neutral"] = Field(description="Sentiment of the review")
+  sentiment: Literal["positive", "negative", "neutral"] = Field(
+    description="Sentiment of the review")
 
 class SentimentAnalyzer(curator.LLM):
 
@@ -98,8 +99,9 @@ class SentimentAnalyzer(curator.LLM):
   def parse(self, product: Dict, response: Sentiment):
     return [{"name": product["name"], "sentiment": response.sentiment}]
 
-# You can easily have a million rows here. Curator takes care of parallelism, retries, and caches responses.
-dataset = [{"name": "Curator", "review": "Installed this library yesterday and it has already changed my life."},
+# You can easily have a million rows here. 
+# Curator takes care of parallelism, retries, and caches responses.
+dataset = [{"name": "Curator", "review": "Already saved hours in one day of use."},
            {"name": "Bespoke MiniCheck", "review": "Hallucination rates dropped by 90%."}]
 
 # You can set batch=True, and instantly uses batch mode to save 50% of the costs.
@@ -108,12 +110,18 @@ analyzer = SentimentAnalyzer(
 reviews = analyzer(dataset)
 print(reviews.to_pandas())
 ```
-
-Instead of a list, you can pass a HuggingFace Dataset object as well (see below for more details).
+Output:
+```
+                name sentiment
+0            Curator  positive
+1  Bespoke MiniCheck  positive
+```
 
 In the `SentimentAnalyzer` class:
 * `prompt` takes the input (`product`) and returns the prompt for the LLM.
 * `parse` takes the input (`product`) and the structured output (`response`) and converts it to a list of dictionaries. This is so that we can easily convert the output to a HuggingFace Dataset object.
+
+Instead of a list, you can pass a HuggingFace Dataset object as well (see below for more details).
 
 ### Using `curator.LLM` for data generation
 
