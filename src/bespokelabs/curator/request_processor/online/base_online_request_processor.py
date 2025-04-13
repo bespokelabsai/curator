@@ -352,6 +352,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                     generic_request = GenericRequest.model_validate_json(line)
 
                     if generic_request.original_row_idx in completed_request_ids:
+                        if self._semaphore:
+                            self._semaphore.release()
                         continue
 
                     # Unpack multimodal prompts
