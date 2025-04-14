@@ -88,13 +88,19 @@ class BatchStatusTracker(BaseModel):
     # Number of parsed responses i.e output from `parse` method.
     num_parsed_responses: int = Field(default=0)
 
-    # Add client field
+    # Curator Viewer Client field
     viewer_client: Optional[Client] = Field(default=None)
 
     # Add fields for cost projections
     projected_remaining_cost: float = Field(default=0.0)
     estimated_cost_average: float = Field(default=0.0)
     num_estimates: int = Field(default=0)
+
+    # Request counts
+    n_in_progress_requests: int = Field(default=0)
+    n_succeeded_requests: int = Field(default=0)
+    n_failed_requests: int = Field(default=0)
+    n_finished_requests: int = Field(default=0)
 
     def model_post_init(self, __context__) -> None:
         """Post init processing after model initialization."""
@@ -212,7 +218,7 @@ class BatchStatusTracker(BaseModel):
         """Start the tqdm progress tracker."""
         self.pbar = tqdm.tqdm(
             total=self.n_total_requests,
-            initial=self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests,
+            initial=self.n_finished_requests,
             desc=f"Processing {self.model}",
             unit="req",
         )
@@ -223,7 +229,6 @@ class BatchStatusTracker(BaseModel):
     def _log_stats(self):
         """Log current statistics when using tqdm mode."""
         if not USE_RICH_DISPLAY:
-            n_submitted_requests = self.n_total_requests - (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests)
             avg_prompt = self.total_prompt_tokens / max(1, self.n_finished_or_downloaded_succeeded_requests)
             avg_completion = self.total_completion_tokens / max(1, self.n_finished_or_downloaded_succeeded_requests)
             avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
@@ -249,7 +254,7 @@ class BatchStatusTracker(BaseModel):
                 f"Submitted: {WARNING}{self.n_submitted_batches}⋯{END} • "
                 f"Downloaded: {SUCCESS}{self.n_downloaded_batches}✓{END}\n"
                 f"{HEADER}Requests:{END} Total: {METRIC}{self.n_total_requests}{END} • "
-                f"Submitted: {WARNING}{n_submitted_requests}⋯{END} • "
+                f"In Progress: {WARNING}{self.n_in_progress_requests}⋯{END} • "
                 f"Succeeded: {SUCCESS}{self.n_succeeded_requests}✓{END} • "
                 f"Failed: {ERROR}{self.n_failed_requests}✗{END}\n"
                 f"{HEADER}Tokens:{END} Avg Input: {METRIC}{avg_prompt:.0f}{END} • "
@@ -274,7 +279,7 @@ class BatchStatusTracker(BaseModel):
         )
         self.n_succeeded_requests = self.n_downloaded_succeeded_requests + sum(b.request_counts.succeeded for b in self.submitted_batches.values())
         self.n_failed_requests = self.n_downloaded_failed_requests + sum(b.request_counts.failed for b in self.submitted_batches.values())
-        self.n_submitted_requests = sum(
+        self.n_in_progress_requests = sum(
             b.request_counts.total - b.request_counts.succeeded - b.request_counts.failed for b in self.submitted_batches.values()
         )  # Each submitted batch's submitted (in progress) requests
 
@@ -282,8 +287,7 @@ class BatchStatusTracker(BaseModel):
         """Update the display based on current mode."""
         current_time = time.time()
 
-        # FIXME: The pbar n not correct. Need to update based on both downloaded and downloaded batches.
-        self._update_n_finished_requests()
+        self._update_requests_stats()
         if USE_RICH_DISPLAY:
             self._refresh_console()
         else:
@@ -690,7 +694,6 @@ class BatchStatusTracker(BaseModel):
     def _refresh_console(self):
         """Refresh the console display with latest stats."""
         # Calculate stats
-        n_submitted_requests = max(0, self.n_total_requests - (self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests))
         avg_prompt = self.total_prompt_tokens / max(1, self.n_finished_or_downloaded_succeeded_requests)
         avg_completion = self.total_completion_tokens / max(1, self.n_finished_or_downloaded_succeeded_requests)
         avg_cost = self.total_cost / max(1, self.n_downloaded_succeeded_requests)
@@ -707,7 +710,7 @@ class BatchStatusTracker(BaseModel):
             f"[bold white]Requests:[/bold white] "
             f"[white]Total:[/white] [blue]{self.n_total_requests}[/blue] "
             f"[white]•[/white] "
-            f"[white]Submitted:[/white] [yellow]{n_submitted_requests}⋯[/yellow] "
+            f"[white]In Progress:[/white] [yellow]{self.n_in_progress_requests}⋯[/yellow] "
             f"[white]•[/white] "
             f"[white]Succeeded:[/white] [green]{self.n_succeeded_requests}✓[/green] "
             f"[white]•[/white] "
