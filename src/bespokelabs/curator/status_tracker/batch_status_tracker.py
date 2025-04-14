@@ -250,8 +250,8 @@ class BatchStatusTracker(BaseModel):
                 f"Downloaded: {SUCCESS}{self.n_downloaded_batches}✓{END}\n"
                 f"{HEADER}Requests:{END} Total: {METRIC}{self.n_total_requests}{END} • "
                 f"Submitted: {WARNING}{n_submitted_requests}⋯{END} • "
-                f"Succeeded: {SUCCESS}{self.n_downloaded_succeeded_requests}✓{END} • "
-                f"Failed: {ERROR}{self.n_downloaded_failed_requests}✗{END}\n"
+                f"Succeeded: {SUCCESS}{self.n_succeeded_requests}✓{END} • "
+                f"Failed: {ERROR}{self.n_failed_requests}✗{END}\n"
                 f"{HEADER}Tokens:{END} Avg Input: {METRIC}{avg_prompt:.0f}{END} • "
                 f"Avg Output: {METRIC}{avg_completion:.0f}{END}\n"
                 f"{HEADER}Cost:{END} Current: {COST}${self.total_cost:.3f}{END} • "
@@ -264,16 +264,32 @@ class BatchStatusTracker(BaseModel):
             )
             logger.info(stats_msg)
 
+    def _update_requests_stats(self):
+        """Update the number of finished requests."""
+        self.n_finished_requests = (
+            self.n_downloaded_succeeded_requests
+            + self.n_downloaded_failed_requests
+            + sum(b.request_counts.succeeded for b in self.submitted_batches.values())
+            + sum(b.request_counts.failed for b in self.submitted_batches.values())
+        )
+        self.n_succeeded_requests = self.n_downloaded_succeeded_requests + sum(b.request_counts.succeeded for b in self.submitted_batches.values())
+        self.n_failed_requests = self.n_downloaded_failed_requests + sum(b.request_counts.failed for b in self.submitted_batches.values())
+        self.n_submitted_requests = sum(
+            b.request_counts.total - b.request_counts.succeeded - b.request_counts.failed for b in self.submitted_batches.values()
+        )  # Each submitted batch's submitted (in progress) requests
+
     def update_display(self):
         """Update the display based on current mode."""
         current_time = time.time()
 
+        # FIXME: The pbar n not correct. Need to update based on both downloaded and downloaded batches.
+        self._update_n_finished_requests()
         if USE_RICH_DISPLAY:
             self._refresh_console()
         else:
             if self.pbar:
                 # Always update progress bar position
-                self.pbar.n = self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests
+                self.pbar.n = self.n_finished_requests
                 self.pbar.refresh()
 
                 # Update stats in any of these conditions:
@@ -693,9 +709,9 @@ class BatchStatusTracker(BaseModel):
             f"[white]•[/white] "
             f"[white]Submitted:[/white] [yellow]{n_submitted_requests}⋯[/yellow] "
             f"[white]•[/white] "
-            f"[white]Succeeded:[/white] [green]{self.n_downloaded_succeeded_requests}✓[/green] "
+            f"[white]Succeeded:[/white] [green]{self.n_succeeded_requests}✓[/green] "
             f"[white]•[/white] "
-            f"[white]Failed:[/white] [red]{self.n_downloaded_failed_requests}✗[/red]\n"
+            f"[white]Failed:[/white] [red]{self.n_failed_requests}✗[/red]\n"
             f"[bold white]Tokens:[/bold white] "
             f"[white]Avg Input:[/white] [blue]{avg_prompt:.0f}[/blue] "
             f"[white]•[/white] "
@@ -733,7 +749,7 @@ class BatchStatusTracker(BaseModel):
         # Update main progress bar
         self._progress.update(
             self._task_id,
-            completed=self.n_downloaded_succeeded_requests + self.n_downloaded_failed_requests,
+            completed=self.n_finished_requests,
         )
 
         # Update stats display
