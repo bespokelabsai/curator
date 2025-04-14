@@ -17,7 +17,7 @@ from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
 from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
-from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
+from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, DIM, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_response import _TokenUsage
 
@@ -271,8 +271,7 @@ class OnlineStatusTracker:
                 f"Avg Output: {METRIC}{avg_completion:.0f}{END} • "
                 f"Output TPM: {METRIC}{output_tpm:.0f}{END}\n"
                 f"{HEADER}Cost:{END} Current: {COST}${self.total_cost:.3f}{END} • "
-                f"Projected Remaining: {COST}${self.projected_remaining_cost:.3f}{END} • "
-                f"Projected Total: {COST}${projected_total:.3f}{END} • "
+                f"Est. Total: {COST}${projected_total:.3f}{END} {DIM}(${self.projected_remaining_cost:.3f} remaining){DIM}{END} • "
                 f"Rate: {COST}${cost_per_minute:.3f}/min{END}\n"
                 f"{HEADER}Rate Limits:{END} RPM: {METRIC}{self.max_requests_per_minute}{END} • "
                 f"TPM: {METRIC}{self.max_tokens_per_minute}{END} • "
@@ -366,9 +365,7 @@ class OnlineStatusTracker:
             f"[bold white]Cost:[/bold white] "
             f"[white]Current:[/white] [magenta]${self.total_cost:.3f}[/magenta] "
             f"[white]•[/white] "
-            f"[white]Projected Remaining:[/white] [magenta]${self.projected_remaining_cost:.3f}[/magenta] "
-            f"[white]•[/white] "
-            f"[white]Projected Total:[/white] [magenta]${projected_total:.3f}[/magenta] "
+            f"[white]Est. Total:[/white] [magenta]${projected_total:.3f}[/magenta] [dim](${self.projected_remaining_cost:.3f} remaining)[/dim] "
             f"[white]•[/white] "
             f"[white]Rate:[/white] [magenta]${self.total_cost / max(0.01, elapsed_minutes):.3f}/min[/magenta]\n"
             f"[bold white]Rate Limits:[/bold white] "
