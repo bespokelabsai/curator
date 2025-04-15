@@ -256,10 +256,14 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             if base_date >= datetime.datetime(2025, 1, 31):  # Support o3-mini dated versions from 2025-01-31
                 return True
 
-        # Check deepseek support.
-        if model_name == "deepseek-reasoner" and "api.deepseek.com" in self.url:
+        # Source: https://platform.openai.com/docs/models/gpt-4.1, https://platform.openai.com/docs/models/gpt-4.1-mini, https://platform.openai.com/docs/models/gpt-4.1-nano
+        if "gpt-4.1-" in model_name:
             return True
-
+             
+        # Check deepseek support.
+        if model_name in ["deepseek-reasoner", "deepseek-chat"] and "api.deepseek.com" in self.url:
+            return True
+         
         return False
 
     def file_upload_limit_check(self, base64_image: str) -> None:

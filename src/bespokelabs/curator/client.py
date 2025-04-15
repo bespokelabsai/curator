@@ -131,3 +131,18 @@ class Client:
         """Close the client."""
         if self._async_client:
             await self._async_client.aclose()
+
+    async def log_cost_projection(self, status_tracker):
+        """Log the cost projection to the server."""
+        if not self._hosted and not self.session:
+            return
+        if self._async_client is None:
+            self._async_client = httpx.AsyncClient()
+
+        info = status_tracker.cost_info()
+
+        async with self.semaphore:
+            response = await self._async_client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json=info, headers=self._headers)
+
+        if response.status_code != 200:
+            logger.debug(f"Failed to log cost projection: {response.status_code}, {response.text}")

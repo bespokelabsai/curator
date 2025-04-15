@@ -509,6 +509,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
 
+            # Log cost projection to viewer
+            await self._viewer_client.log_cost_projection(status_tracker)
+
         except Exception as e:
             status_tracker.num_other_errors += 1
             request.result.append(e)
