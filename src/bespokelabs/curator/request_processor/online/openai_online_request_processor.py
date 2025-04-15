@@ -255,7 +255,9 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             base_date = datetime.datetime.strptime(model_name.split("o3-mini-")[1], "%Y-%m-%d")
             if base_date >= datetime.datetime(2025, 1, 31):  # Support o3-mini dated versions from 2025-01-31
                 return True
-
+        # Source: https://platform.openai.com/docs/models/gpt-4.1, https://platform.openai.com/docs/models/gpt-4.1-mini, https://platform.openai.com/docs/models/gpt-4.1-nano
+        if "gpt-4.1-" in model_name:
+            return True
         return False
 
     def file_upload_limit_check(self, base64_image: str) -> None:
