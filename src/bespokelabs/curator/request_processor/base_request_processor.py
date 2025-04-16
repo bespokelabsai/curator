@@ -54,6 +54,7 @@ class BaseRequestProcessor(ABC):
         self._viewer_client = None
         self.config = config
         self._cost_processor = cost_processor_factory(config=self.config, backend=self.backend)
+        self._is_cached_dataset = False
 
     @property
     @abstractmethod
@@ -127,6 +128,7 @@ class BaseRequestProcessor(ABC):
         # load from already completed dataset
         output_dataset = self.attempt_loading_cached_dataset(parse_func_hash)
         if output_dataset is not None:
+            self._is_cached_dataset = True
             return output_dataset
         logger.info(f"Running {self.__class__.__name__} completions with model: {self.config.model}")
 
@@ -311,6 +313,7 @@ class BaseRequestProcessor(ABC):
             await f.write(json.dumps(metadata_dict, indent=4) + "\n")
 
         logger.info(f"Wrote {num_requests} requests to {request_file}.")
+    
 
     def attempt_loading_cached_dataset(self, parse_func_hash: str) -> Optional["Dataset"]:
         """Attempt to load a cached dataset file.
