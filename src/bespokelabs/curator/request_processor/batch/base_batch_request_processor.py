@@ -518,6 +518,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 if generic_response.token_usage:
                     total_token_usage.input += generic_response.token_usage.input
                     total_token_usage.output += generic_response.token_usage.output
+                    total_token_usage.total = total_token_usage.input + total_token_usage.output
                 if generic_response.response_cost:
                     total_cost += generic_response.response_cost
 

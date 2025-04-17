@@ -394,14 +394,6 @@ class BatchStatusTracker(BaseModel):
         # Cost Statistics
         table.add_row("Costs", "", style="bold magenta")
         table.add_row("Total Cost", f"[red]${self.total_cost:.3f}[/red]")
-        table.add_row(
-            "Projected Remaining Cost",
-            f"[red]${self.projected_remaining_cost:.3f}[/red]",
-        )
-        table.add_row(
-            "Projected Total Cost",
-            f"[red]${(self.total_cost + self.projected_remaining_cost):.3f}[/red]",
-        )
         if self.n_finished_or_downloaded_succeeded_requests > 0:
             table.add_row(
                 "Average Cost per Request",
@@ -463,8 +455,6 @@ class BatchStatusTracker(BaseModel):
             "",
             f"{HEADER}Cost Statistics:{END}",
             f"  Total Cost: {COST}${self.total_cost:.3f}{END}",
-            f"  Projected Remaining Cost: {COST}${self.projected_remaining_cost:.3f}{END}",
-            f"  Projected Total Cost: {COST}${(self.total_cost + self.projected_remaining_cost):.3f}{END}",
             f"  Average Cost per Request: {COST}${self.total_cost / max(1, self.n_downloaded_succeeded_requests):.3f}{END}",
             f"  Input Cost per 1M Tokens: {COST}{self.input_cost_str}{END}",
             f"  Output Cost per 1M Tokens: {COST}{self.output_cost_str}{END}",
