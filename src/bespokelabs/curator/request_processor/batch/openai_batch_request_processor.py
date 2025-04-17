@@ -34,6 +34,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
     def __init__(self, config: BatchRequestProcessorConfig, compatible_provider=None) -> None:
         """Initialize the OpenAIBatchRequestProcessor."""
         super().__init__(config)
+        # Override the cost processor to use the batch cost processor after base class init
         self._cost_processor = cost_processor_factory(config=config, backend=compatible_provider or self.backend, batch=True)
         self._compatible_provider = compatible_provider or self.backend
 

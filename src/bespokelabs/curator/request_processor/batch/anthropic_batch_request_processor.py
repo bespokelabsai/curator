@@ -6,6 +6,7 @@ from anthropic import AsyncAnthropic
 from anthropic.types.messages import MessageBatch, MessageBatchRequestCounts
 from litellm.litellm_core_utils.core_helpers import map_finish_reason
 
+from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.misc import safe_model_dump
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
@@ -35,6 +36,8 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         """Initialize the AnthropicBatchRequestProcessor."""
         super().__init__(config)
+        # Override the cost processor to use the batch cost processor after base class init
+        self._cost_processor = cost_processor_factory(config=config, backend=self.backend, batch=True)
         if self.config.base_url is None:
             self.client = AsyncAnthropic(max_retries=self.config.max_retries)
         else:
@@ -249,7 +252,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                 all_text_response += msg.get("thinking") or ""  # in case this is None
 
             # TODO we should directly use the token counts returned by anthropic in the response...
-            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response, batch=True)
+            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response)
 
         elif result_type == "errored":
             error = raw_response["result"]["error"]
