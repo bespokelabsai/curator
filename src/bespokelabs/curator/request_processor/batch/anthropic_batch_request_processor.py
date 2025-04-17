@@ -249,7 +249,7 @@ class AnthropicBatchRequestProcessor(BaseBatchRequestProcessor):
                 all_text_response += msg.get("thinking") or ""  # in case this is None
 
             # TODO we should directly use the token counts returned by anthropic in the response...
-            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response)
+            cost = self._cost_processor.cost(model=self.config.model, prompt=str(generic_request.messages), completion=all_text_response, batch=True)
 
         elif result_type == "errored":
             error = raw_response["result"]["error"]

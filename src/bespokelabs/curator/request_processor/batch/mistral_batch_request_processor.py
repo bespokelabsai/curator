@@ -190,7 +190,9 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             print("[DEBUG] self.tracker.input_cost_per_million:", self.tracker.input_cost_per_million)
             print("[DEBUG] self.tracker.output_cost_per_million:", self.tracker.output_cost_per_million)
 
-            cost = self._cost_processor.cost(model="mistral/" + self.config.model, prompt=str(generic_request.messages), completion=response_message)
+            cost = self._cost_processor.cost(
+                model="mistral/" + self.config.model, prompt=str(generic_request.messages), completion=response_message, batch=True
+            )
 
         generic_response = GenericResponse(
             response_message=response_message,
