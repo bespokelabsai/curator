@@ -244,7 +244,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                 return True
 
         # Check gpt-4o, o1, o3-mini, gpt-4.1 support.
-        if model_name in ["gpt-4o", "o1", "gpt-4.1"]:  # Latest version
+        if model_name in ["gpt-4o", "o1"]:  # Latest version
             return True
         if "gpt-4o-" in model_name:
             base_date = datetime.datetime.strptime(model_name.split("gpt-4o-")[1], "%Y-%m-%d")
@@ -259,7 +259,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             if base_date >= datetime.datetime(2025, 1, 31):  # Support o3-mini dated versions from 2025-01-31
                 return True
         # Source: https://platform.openai.com/docs/models/gpt-4.1, https://platform.openai.com/docs/models/gpt-4.1-mini, https://platform.openai.com/docs/models/gpt-4.1-nano
-        if "gpt-4.1-" in model_name:
+        if "gpt-4.1" in model_name:
             return True
         return False
 
