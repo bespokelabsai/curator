@@ -334,7 +334,7 @@ def generate_hierarchical_math_content(num_subjects=20, topics_per_subject=5, qu
 
     # Step 5: Save the final dataset
     # push to hub
-    subjects_dataset.push_to_hub(output_dataset_name, private=True)
+    scripts_dataset.push_to_hub(output_dataset_name, private=True)
 
     # Return the path to the dataset
     return dataset_path

@@ -261,6 +261,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         # Source: https://platform.openai.com/docs/models/gpt-4.1, https://platform.openai.com/docs/models/gpt-4.1-mini, https://platform.openai.com/docs/models/gpt-4.1-nano
         if "gpt-4.1" in model_name:
             return True
+        if model_name in ["deepseek-reasoner", "deepseek-chat"] and "api.deepseek.com" in self.url:
+            return True
         return False
 
     def file_upload_limit_check(self, base64_image: str) -> None:
