@@ -11,7 +11,6 @@ from pydantic import BaseModel
 from vertexai.batch_prediction import BatchPredictionJob
 
 from bespokelabs.curator import constants
-from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
@@ -87,8 +86,6 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         """Initialize the GeminiBatchRequestProcessor."""
         super().__init__(config)
-        # Override the cost processor to use the batch cost processor after base class init
-        self._cost_processor = cost_processor_factory(config=config, backend=self.backend, batch=True)
         self._initialize_cloud()
 
     def _initialize_cloud(self):

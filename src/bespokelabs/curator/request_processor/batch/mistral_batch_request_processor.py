@@ -8,7 +8,6 @@ from litellm import model_cost
 from mistralai import Mistral
 from mistralai.models import BatchJobOut, UploadFileOutTypedDict
 
-from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.batch.base_batch_request_processor import BaseBatchRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
@@ -51,8 +50,6 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
     def __init__(self, config: BatchRequestProcessorConfig) -> None:
         """Initialize the MistralBatchRequestProcessor."""
         super().__init__(config)
-        # Override the cost processor to use the batch cost processor after base class init
-        self._cost_processor = cost_processor_factory(config=config, backend=self.backend, batch=True)
         self.api_key = config.api_key
         self.client = Mistral(api_key=config.api_key)
 
