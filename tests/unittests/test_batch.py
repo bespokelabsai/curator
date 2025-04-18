@@ -22,7 +22,7 @@ def batch_call(model_name, prompts):
         batch_size=2,
         parse_func=lambda row, response: [{"input": row["prompt"], "answer": response.answer}],
     )
-    response = llm(dataset)
+    response = llm(dataset).dataset
     return response
 
 
@@ -94,7 +94,7 @@ def test_anthropic_batch_structured_output() -> None:
         },
     )
 
-    result = llm(dataset)
+    result = llm(dataset).dataset
 
     # Verify the results
     assert len(result) == len(test_prompts), "Number of results should match number of prompts"

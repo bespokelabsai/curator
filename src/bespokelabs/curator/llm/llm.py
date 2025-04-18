@@ -4,9 +4,8 @@ import inspect
 import os
 from datetime import datetime
 from io import BytesIO
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar, Union
-import time
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar, Union
 
 from datasets import Dataset
 from pydantic import BaseModel
@@ -20,7 +19,7 @@ from bespokelabs.curator.log import add_file_handler, logger
 from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
 from bespokelabs.curator.request_processor.config import BackendParamsType
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
-from bespokelabs.curator.types.curator_response import CuratorResponse, TokenUsage, CostInfo, RequestStats, PerformanceStats
+from bespokelabs.curator.types.curator_response import CuratorResponse
 
 if TYPE_CHECKING:
     from dataset import Dataset
@@ -168,13 +167,13 @@ class LLM:
 
         return fingerprint
 
-    def _get_cached_response(self, cache_dir: Path, dataset: Dataset) -> Optional[CuratorResponse]:
+    def _get_cached_response(self, cache_dir: str, dataset: Dataset) -> Optional[CuratorResponse]:
         """Check if a cached response exists and return it if valid.
-        
+
         Args:
             cache_dir: Directory to check for cached response
             dataset: Dataset to use for the response
-            
+
         Returns:
             Optional[CuratorResponse]: Cached response if it exists and is valid, None otherwise
         """
@@ -186,7 +185,7 @@ class LLM:
 
     def __call__(
         self,
-        dataset: Optional[Iterable] = None,
+        dataset: Optional[Iterable | CuratorResponse] = None,
         working_dir: str = None,
         batch_cancel: bool = False,
         batch_cancel_auto_confirm: bool = False,
@@ -234,7 +233,7 @@ class LLM:
                     working_dir=run_cache_dir, dataset=dataset, prompt_formatter=self.prompt_formatter, auto_confirm=batch_cancel_auto_confirm
                 )
             )
-            return CuratorResponse(dataset=dataset)
+            return CuratorResponse(dataset=dataset, batch_mode=self.batch_mode, cache_dir=run_cache_dir)
 
         elif batch_cancel:
             logger.warning("You set batch_cancel=True but you're not in batch mode. Ignoring batch_cancel.")
@@ -300,52 +299,36 @@ class LLM:
             # Create response object with tracker info
             tracker = self._request_processor.tracker
             response = CuratorResponse(
+                cache_dir=run_cache_dir,
                 dataset=dataset,
-                failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl")) if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl")) else None,
+                batch_mode=self.batch_mode,
+                viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+                failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl"))
+                if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl"))
+                else None,
                 model_name=self.prompt_formatter.model_name,
-                max_requests_per_minute=tracker.max_requests_per_minute,
-                max_tokens_per_minute=tracker.max_tokens_per_minute,
-                token_usage=TokenUsage(
-                    input=tracker.total_prompt_tokens,
-                    output=tracker.total_completion_tokens,
-                    total=tracker.total_tokens
-                ),
-                cost_info=CostInfo(
-                    total_cost=tracker.total_cost,
-                    input_cost_per_million=tracker.input_cost_per_million,
-                    output_cost_per_million=tracker.output_cost_per_million,
-                    projected_remaining_cost=tracker.projected_remaining_cost
-                ),
-                request_stats=RequestStats(
-                    total=tracker.total_requests,
-                    succeeded=tracker.num_tasks_succeeded,
-                    failed=tracker.num_tasks_failed,
-                    in_progress=tracker.num_tasks_in_progress,
-                    cached=tracker.num_tasks_already_completed
-                ),
-                performance_stats=PerformanceStats(
-                    total_time=time.time() - tracker.start_time,
-                    requests_per_minute=tracker.num_tasks_succeeded / max(0.001, (time.time() - tracker.start_time) / 60),
-                    input_tokens_per_minute=tracker.total_prompt_tokens / max(0.001, (time.time() - tracker.start_time) / 60),
-                    output_tokens_per_minute=tracker.total_completion_tokens / max(0.001, (time.time() - tracker.start_time) / 60),
-                    max_concurrent_requests=tracker.max_concurrent_requests_seen
-                ),
-                metadata=metadata_dict
+                metadata=metadata_dict,
             )
+            response.update_tracker_stats(tracker)
         else:
             # Create minimal response object if no tracker
             response = self._get_cached_response(run_cache_dir, dataset)
             if response is None:
                 response = CuratorResponse(
                     dataset=dataset,
-                failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl")) if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl")) else None,
-                model_name=self.prompt_formatter.model_name,
-                metadata=metadata_dict
-            )
-        
+                    cache_dir=run_cache_dir,
+                    viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+                    batch_mode=self.batch_mode,
+                    failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl"))
+                    if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl"))
+                    else None,
+                    model_name=self.prompt_formatter.model_name,
+                    metadata=metadata_dict,
+                )
+
         # Save the response if cache directory is specified
         response.save(run_cache_dir)
-        
+
         return response
 
 
@@ -407,12 +390,15 @@ def _is_message_list(list: list) -> bool:
     return all(isinstance(item, dict) and "role" in item and "content" in item for item in list)
 
 
-def _convert_to_dataset(iterable: Iterable) -> "Dataset":
+def _convert_to_dataset(iterable: Iterable | CuratorResponse) -> "Dataset":
     """Convert an iterable to a Dataset.
 
     The prompt is expected to be a prompt string or a list of messages.
     It will be stored with the key '__internal_prompt' internally.
     """
+    if isinstance(iterable, CuratorResponse):
+        return iterable.dataset
+
     if isinstance(iterable, str) or _is_message_list(iterable):
         # A single string or list of messages is converted to a dataset with a single row
         dataset = Dataset.from_list([{_INTERNAL_PROMPT_KEY: iterable}])

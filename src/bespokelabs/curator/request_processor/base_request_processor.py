@@ -313,7 +313,6 @@ class BaseRequestProcessor(ABC):
             await f.write(json.dumps(metadata_dict, indent=4) + "\n")
 
         logger.info(f"Wrote {num_requests} requests to {request_file}.")
-    
 
     def attempt_loading_cached_dataset(self, parse_func_hash: str) -> Optional["Dataset"]:
         """Attempt to load a cached dataset file.

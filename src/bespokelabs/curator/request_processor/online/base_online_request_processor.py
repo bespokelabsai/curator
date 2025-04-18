@@ -87,7 +87,6 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self._output_tokens_window = deque(maxlen=_MAX_OUTPUT_MVA_WINDOW)
         self._semaphore = None
 
-
     @property
     def backend(self) -> str:
         """Backend property."""
@@ -326,6 +325,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         Args:
             generic_request_filepath: Path to file containing requests
             response_file: Path where the response data will be saved
+            status_tracker: Tracker containing rate limit status
         """
         # Initialize trackers
         queue_of_requests_to_retry: asyncio.Queue[APIRequest] = asyncio.Queue()
