@@ -122,6 +122,7 @@ class OfflineRequestProcessorConfig(RequestProcessorConfig):
     tensor_parallel_size: int = Field(default=1, gt=0)
     batch_size: int = Field(default=256, gt=0)
     gpu_memory_utilization: float = Field(default=0.95, gt=0, le=1)
+    dtype: str = Field(default="auto")
 
     def __post_init__(self):
         """Post-initialization hook to validate generation parameters.

@@ -49,6 +49,7 @@ class VLLMOfflineRequestProcessor(BaseOfflineRequestProcessor):
             max_num_seqs=self.batch_size,
             gpu_memory_utilization=self.gpu_memory_utilization,
             disable_custom_all_reduce=self.tensor_parallel_size > 1,
+            dtype=self.dtype,
         )
 
     def format_prompts(self, prompts: list) -> list:
