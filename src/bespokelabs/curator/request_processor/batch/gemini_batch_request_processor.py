@@ -453,12 +453,19 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
 
             responses = []
             job = self._get_batch_job_object(batch.id)
-            for result in job.iter_outputs():
-                content = result.download_as_string().decode("utf-8")
-                if not content:
-                    continue
-                for line in content.splitlines():
-                    responses.append(json.loads(line))
+            if not job.done():
+                logger.warning(f"Batch {batch.id} is not finished yet. Cannot download results.")
+                return None
+            try:
+                for result in job.iter_outputs():
+                    content = result.download_as_string().decode("utf-8")
+                    if not content:
+                        continue
+                    for line in content.splitlines():
+                        responses.append(json.loads(line))
+            except Exception as e:
+                logger.error(f"Failed to download or partially downloaded batch {batch.id} : {e}")
+                return responses
             return responses
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:
