@@ -219,7 +219,7 @@ class Raft:
             chunks = datasets.Dataset.from_list([{"chunk_id": i, "content": t} for i, t in enumerate(text)])
 
         question_gen = _RaftQuestion(model_name=self.model, backend=self.backend, backend_params=self.backend_params, generation_params=self.generation_params)
-        questions = question_gen(chunks)
+        questions = question_gen(chunks).dataset
 
         generator = self.answer_generator_cls or _RaftAnswer
         answer_gen = generator(

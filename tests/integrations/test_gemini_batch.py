@@ -98,7 +98,7 @@ def test_basic_batch_gemini(temp_working_dir, mock_dataset):
                 prompter._request_processor._bucket_name = "mocked_bucket"
                 prompter._request_processor._bucket = _MockedGoogleBucket()
 
-                dataset = prompter(mock_dataset, working_dir=temp_working_dir)
+                dataset = prompter(mock_dataset, working_dir=temp_working_dir).dataset
                 recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
                 assert _hash_string(recipes) == "2131be1c57623eb8e27bc4437476990bfd4b0c954a274ed3af6d46dc26138d1e"
                 assert len(dataset) == 3
@@ -163,7 +163,7 @@ def test_polled_batch_gemini(temp_working_dir, mock_dataset):
                     dataset = prompter(
                         mock_dataset,
                         working_dir=temp_working_dir,
-                    )
+                    ).dataset
                     recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
                     assert _hash_string(recipes) == "2131be1c57623eb8e27bc4437476990bfd4b0c954a274ed3af6d46dc26138d1e"
                     assert len(dataset) == 3

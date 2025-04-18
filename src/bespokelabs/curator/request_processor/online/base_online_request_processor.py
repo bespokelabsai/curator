@@ -273,12 +273,22 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         Args:
             generic_request_files: List of request files to process
         """
+        self.tracker = OnlineStatusTracker(
+            token_limit_strategy=self.token_limit_strategy,
+            max_requests_per_minute=self.max_requests_per_minute,
+            max_tokens_per_minute=self.max_tokens_per_minute,
+            compatible_provider=self.compatible_provider,
+            viewer_client=self._viewer_client,
+            model=self.prompt_formatter.model_name,
+            total_requests=self.total_requests,
+        )
         for request_file in generic_request_files:
             response_file = request_file.replace("requests_", "responses_")
             run_in_event_loop(
                 self.process_requests_from_file(
                     generic_request_filepath=request_file,
                     response_file=response_file,
+                    status_tracker=self.tracker,
                 )
             )
 
@@ -308,24 +318,17 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self,
         generic_request_filepath: str,
         response_file: str,
+        status_tracker: OnlineStatusTracker,
     ) -> None:
         """Processes API requests in parallel, throttling to stay under rate limits.
 
         Args:
             generic_request_filepath: Path to file containing requests
             response_file: Path where the response data will be saved
+            status_tracker: Tracker containing rate limit status
         """
         # Initialize trackers
         queue_of_requests_to_retry: asyncio.Queue[APIRequest] = asyncio.Queue()
-        status_tracker = OnlineStatusTracker(
-            token_limit_strategy=self.token_limit_strategy,
-            max_requests_per_minute=self.max_requests_per_minute,
-            max_tokens_per_minute=self.max_tokens_per_minute,
-            compatible_provider=self.compatible_provider,
-            viewer_client=self._viewer_client,
-            model=self.prompt_formatter.model_name,
-            total_requests=self.total_requests,
-        )
         if self.max_concurrent_requests is not None:
             self._semaphore = asyncio.Semaphore(t.cast(int, self.max_concurrent_requests))
 

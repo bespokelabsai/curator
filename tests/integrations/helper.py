@@ -228,8 +228,8 @@ def create_basic(
     else:
         dataset = prompter(working_dir=temp_working_dir, batch_cancel=batch_cancel, batch_cancel_auto_confirm=True)
     if return_prompter:
-        return dataset, prompter
-    return dataset
+        return dataset.dataset, prompter
+    return dataset.dataset
 
 
 def create_llm(batch=False, batch_check_interval=1):

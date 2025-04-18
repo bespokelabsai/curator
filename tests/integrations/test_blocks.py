@@ -29,7 +29,7 @@ def test_basic_raft(temp_working_dir):
         with open("tests/integrations/common_fixtures/raft.txt", "rb") as file:
             text = file.read().decode("utf-8")
         raft = Raft(model="gpt-4o-mini", distractors=2, n_questions=1, chunk_size=1024, p=0.95)
-        dataset = raft(text)
+        dataset = raft(text).dataset
 
         qas = [qa[0] for qa in dataset.to_pandas().values.tolist()]
         qas.sort()
@@ -47,7 +47,7 @@ def test_basic_simplestrat(temp_working_dir):
     with vcr_config.use_cassette("basic_block_simplestrat.yaml"):
         questions = Dataset.from_dict({"question": [f"{i}. Name a periodic element" for i in range(10)]})
         generate = StratifiedGenerator(model_name="gpt-4o-mini")
-        qas = generate(questions, working_dir=temp_working_dir)
+        qas = generate(questions, working_dir=temp_working_dir).dataset
         qas = [qa[0] for qa in qas.to_pandas().values.tolist()]
         qas.sort()
         qas = "".join(qas)

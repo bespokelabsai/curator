@@ -33,7 +33,7 @@ def test_basic_multimodal(temp_working_dir):
 
     with vcr_config.use_cassette("basic_multimodal_completion.yaml"):
         prompter = helper.create_multimodal_llm()
-        dataset = prompter(dataset=dataset, working_dir=temp_working_dir)
+        dataset = prompter(dataset=dataset, working_dir=temp_working_dir).dataset
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
 
@@ -50,7 +50,7 @@ def test_basic_multimodal_image_url(temp_working_dir):
 
     with vcr_config.use_cassette("basic_multimodal_image_url_completion.yaml"):
         prompter = helper.create_multimodal_llm(model="gpt-4o-mini", backend=backend)
-        dataset = prompter(dataset=dataset, working_dir=temp_working_dir)
+        dataset = prompter(dataset=dataset, working_dir=temp_working_dir).dataset
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
 
@@ -68,7 +68,7 @@ def test_basic_multimodal_file_url(temp_working_dir):
     with vcr_config.use_cassette("basic_multimodal_file_url_completion.yaml"):
         model_name = "anthropic/claude-3-5-sonnet-20241022"
         prompter = helper.create_multimodal_llm(model=model_name, backend=backend, input_type="file")
-        dataset = prompter(dataset=dataset, working_dir=temp_working_dir)
+        dataset = prompter(dataset=dataset, working_dir=temp_working_dir).dataset
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
 
@@ -89,7 +89,7 @@ def test_basic_multimodal_image_url_local(temp_working_dir):
         dataset = Dataset.from_dict({"image": [local_path], "text": ["Describe the image"]})
 
         prompter = helper.create_multimodal_llm()
-        dataset = prompter(dataset=dataset, working_dir=temp_working_dir)
+        dataset = prompter(dataset=dataset, working_dir=temp_working_dir).dataset
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]
 
@@ -108,6 +108,6 @@ def test_basic_multimodal_file_local_url(temp_working_dir):
     with vcr_config.use_cassette("basic_multimodal_file_local_url_completion.yaml"):
         model_name = "gemini/gemini-2.0-flash"
         prompter = helper.create_multimodal_llm(model=model_name, backend=backend, input_type="file")
-        dataset = prompter(dataset=dataset, working_dir=temp_working_dir)
+        dataset = prompter(dataset=dataset, working_dir=temp_working_dir).dataset
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
         assert _hash_string(recipes) == hash_book[backend]

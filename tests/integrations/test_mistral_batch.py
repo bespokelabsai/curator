@@ -22,7 +22,7 @@ def test_mistral_batch_response():
     llm = curator.LLM(model_name="mistral-tiny", batch=True)  # Enable batch processing
 
     prompts = generate_test_prompts()
-    responses = llm(prompts)  # Send batch request
+    responses = llm(prompts).dataset  # Send batch request
 
     df_responses = responses.to_pandas()
 
