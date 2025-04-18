@@ -53,14 +53,15 @@ def main():
     #############################################
 
     recipe_generator = RecipeGenerator(
-        model_name="gpt-4o-mini",
+        model_name="gemini/gemini-1.5-flash",
+        backend="litellm",  # Optional
+        backend_params={"max_requests_per_minute": 2_000, "max_tokens_per_minute": 4_000_000},
     )
 
     # Generate recipes for all cuisines
     recipes = recipe_generator(cuisines)
 
     # Print results
-    breakpoint()
     print(recipes.dataset.to_pandas())
 
 
