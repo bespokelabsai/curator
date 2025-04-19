@@ -130,7 +130,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Returns:
             int: Estimated number of output tokens
         """
-        return self._output_tokens_moving_average() or self._get_max_tokens() // 4
+        return int(self._output_tokens_moving_average()) or self._get_max_tokens() // 4
 
     def _get_max_tokens(self):
         if self.config.generation_params.get("max_tokens"):
