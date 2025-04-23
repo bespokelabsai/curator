@@ -414,14 +414,6 @@ class BatchStatusTracker(BaseModel):
         # Cost Statistics
         table.add_row("Costs", "", style="bold magenta")
         table.add_row("Total Cost", f"[red]${self.total_cost:.3f}[/red]")
-        table.add_row(
-            "Projected Remaining Cost",
-            f"[red]${self.projected_remaining_cost:.3f}[/red]",
-        )
-        table.add_row(
-            "Projected Total Cost",
-            f"[red]${(self.total_cost + self.projected_remaining_cost):.3f}[/red]",
-        )
         if self.n_finished_or_downloaded_succeeded_requests > 0:
             table.add_row(
                 "Average Cost per Request",
@@ -483,8 +475,6 @@ class BatchStatusTracker(BaseModel):
             "",
             f"{HEADER}Cost Statistics:{END}",
             f"  Total Cost: {COST}${self.total_cost:.3f}{END}",
-            f"  Projected Remaining Cost: {COST}${self.projected_remaining_cost:.3f}{END}",
-            f"  Projected Total Cost: {COST}${(self.total_cost + self.projected_remaining_cost):.3f}{END}",
             f"  Average Cost per Request: {COST}${self.total_cost / max(1, self.n_downloaded_succeeded_requests):.3f}{END}",
             f"  Input Cost per 1M Tokens: {COST}{self.input_cost_str}{END}",
             f"  Output Cost per 1M Tokens: {COST}{self.output_cost_str}{END}",
@@ -760,3 +750,12 @@ class BatchStatusTracker(BaseModel):
             self._stats_task_id,
             description=stats_text,
         )
+
+    def cost_info(self):
+        """Get cost information."""
+        return {
+            "total_requests": self.n_total_requests,
+            "total_input_tokens": self.total_prompt_tokens,
+            "total_output_tokens": self.total_completion_tokens,
+            "total_cost_milli_dollars": self.total_cost * 1000,
+        }

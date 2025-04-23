@@ -8,6 +8,7 @@ from typing import Optional
 import aiofiles
 from litellm import model_cost
 
+from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.base_request_processor import BaseRequestProcessor
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
@@ -53,6 +54,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         """
         super().__init__(config)
         self._tracker_console = None
+        # Override the cost processor to use the batch cost processor after base class init
+        self._cost_processor = cost_processor_factory(config=config, backend=self.backend, batch=True)
 
     @property
     def backend(self) -> str:
@@ -518,6 +521,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 if generic_response.token_usage:
                     total_token_usage.input += generic_response.token_usage.input
                     total_token_usage.output += generic_response.token_usage.output
+                    total_token_usage.total = total_token_usage.input + total_token_usage.output
                 if generic_response.response_cost:
                     total_cost += generic_response.response_cost
 
@@ -733,6 +737,9 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         # Update tracker with downloaded batch
         self.tracker.mark_as_downloaded(batch)
         await self.update_batch_objects_file()
+
+        # Log cost projection to viewer
+        await self._viewer_client.log_cost_projection(self.tracker, force_log=True)
 
         return response_file
 

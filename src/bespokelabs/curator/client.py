@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import time
 import typing as t
 import uuid
 
@@ -29,6 +30,7 @@ class Client:
         """Initialize the client."""
         self._session = None
         self._state = None
+        self._last_cost_projection_time = 0
 
         # Check for deprecated environment variable
         if os.environ.get("HOSTED_CURATOR_VIEWER"):
@@ -131,3 +133,27 @@ class Client:
         """Close the client."""
         if self._async_client:
             await self._async_client.aclose()
+
+    async def log_cost_projection(self, status_tracker, force_log: bool = False):
+        """Log the cost projection to the server."""
+        if not self._hosted and not self.session:
+            return
+        # Track the last time we sent a cost projection
+        current_time = time.time()
+
+        if (current_time - self._last_cost_projection_time) < 10 and not force_log:
+            return
+
+        if self._async_client is None:
+            self._async_client = httpx.AsyncClient()
+
+        info = status_tracker.cost_info()
+
+        async with self.semaphore:
+            response = await self._async_client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json=info, headers=self._headers)
+
+        if response.status_code != 200:
+            logger.debug(f"Failed to log cost projection: {response.status_code}, {response.text}")
+
+        # Update the last projection time
+        self._last_cost_projection_time = current_time
