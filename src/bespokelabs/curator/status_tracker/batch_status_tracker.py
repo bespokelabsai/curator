@@ -237,8 +237,9 @@ class BatchStatusTracker(BaseModel):
             # Update TQDM description with key metrics
             self.pbar.set_description(
                 f"Processing {MODEL}{self.model}{END} "
-                f"[{WARNING}{self.n_submitted_batches} batches running{END} • "
-                f"{COST}${self.total_cost:.3f} spent{END}]"
+                f"[Batches: {SUCCESS}{self.n_downloaded_batches}✓{END}/{WARNING}{self.n_submitted_batches}⋯{END} • "
+                f"Reqs: {SUCCESS}{self.n_succeeded_requests}✓{END}/{WARNING}{self.n_in_progress_requests}⋯{END}/{ERROR}{self.n_failed_requests}✗{END} • "
+                f"{COST}${self.total_cost:.3f}{END}]"
             )
 
             # Add curator viewer link if available
@@ -310,6 +311,10 @@ class BatchStatusTracker(BaseModel):
                         or self.n_downloaded_failed_requests != getattr(self, "_last_failed_requests", -1)
                         or self.total_tokens != getattr(self, "_last_total_tokens", -1)  # Token/cost changes
                         or self.total_cost != getattr(self, "_last_total_cost", -1)
+                        or self.n_finished_requests != getattr(self, "_last_n_finished_requests", -1)
+                        or self.n_in_progress_requests != getattr(self, "_last_n_in_progress_requests", -1)
+                        or self.n_succeeded_requests != getattr(self, "_last_n_succeeded_requests", -1)
+                        or self.n_failed_requests != getattr(self, "_last_n_failed_requests", -1)
                     )
                 )
 
@@ -324,6 +329,10 @@ class BatchStatusTracker(BaseModel):
                     self._last_failed_requests = self.n_downloaded_failed_requests
                     self._last_total_tokens = self.total_tokens
                     self._last_total_cost = self.total_cost
+                    self._last_n_finished_requests = self.n_finished_requests
+                    self._last_n_in_progress_requests = self.n_in_progress_requests
+                    self._last_n_succeeded_requests = self.n_succeeded_requests
+                    self._last_n_failed_requests = self.n_failed_requests
 
     def stop_tracker(self):
         """Stop the tracker and display final statistics."""
