@@ -451,7 +451,7 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         # Verify status tracker output
         captured = output.getvalue()
         assert "Batches: Total: 1 • Submitted: 0⋯ • Downloaded: 1✓" in captured, captured
-        assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 3✓ • Failed: 0✗" in captured, captured
+        assert "Requests: Total: 3 • In Progress: 0⋯ • Succeeded: 3✓ • Failed: 0✗" in captured, captured
         assert "Final Curator Statistics" in captured, captured
         assert "Total Requests             │ 3" in captured, captured
         assert "Successful                 │ 3" in captured, captured
@@ -492,7 +492,7 @@ def test_batch_resubmission(caplog, temp_working_dir, mock_dataset):
         assert "Invalid finish responses: {'length': 1}" in caplog.text
 
         assert "Batches: Total: 3 • Submitted: 0⋯ • Downloaded: 3✓" in captured, captured
-        assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 4✓ • Failed: 1✗" in captured, captured
+        assert "Requests: Total: 3 • In Progress: 0⋯ • Succeeded: 4✓ • Failed: 1✗" in captured, captured
         assert "Final Curator Statistics" in captured, captured
         assert "Total Requests             │ 3" in captured, captured
         assert "Successful                 │ 4" in captured, captured
