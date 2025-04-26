@@ -15,7 +15,7 @@ class Finetune(ABC):
             raise ValueError(f"Invalid backend: {backend}")
 
     def create_job(self, *args, **kwargs):
-        self._backend.create_job(*args, **kwargs)
+        return self._backend.create_job(*args, **kwargs)
 
     def list_jobs(self, *args, **kwargs):
         return self._backend.list_jobs(*args, **kwargs)
