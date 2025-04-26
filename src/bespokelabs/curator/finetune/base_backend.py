@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-class BaseFinetuneBackend(ABC):
 
+class BaseFinetuneBackend(ABC):
     def __init__(self, backend_params: dict):
         self.backend_params = backend_params
 
@@ -24,7 +24,6 @@ class BaseFinetuneBackend(ABC):
     # @abstractmethod
     # def list_job_metrics(self, job_id: str):
     #     pass
-    
 
     @abstractmethod
     def get_job_details(self, job_id: str):
