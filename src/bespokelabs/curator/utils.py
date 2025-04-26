@@ -92,4 +92,5 @@ def push_to_viewer(
             await client.session_completed()
 
     run_in_event_loop(send_responses())
+
     return view_url
