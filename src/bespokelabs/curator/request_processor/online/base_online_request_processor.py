@@ -131,35 +131,35 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """Check if the image size is within the allowed limit."""
         pass
 
+    def _format_multimodal(self, data, mime_type="image/png"):
+        """Format multimodal prompt data for API request."""
+        mime_type = mime_type or "image/png"
+        if data.url and not data.is_local:
+            return {"type": "image_url", "image_url": {"url": data.url}}
+        else:
+            base64_content = data.serialize()
+            self.file_upload_limit_check(base64_content)
+
+            content = {
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:{mime_type};base64,{base64_content}",
+                },
+            }
+            if "image" in mime_type:
+                content["image_url"].update({"detail": data.detail})
+            return content
+
     def _handle_multi_modal_prompt(self, message):
         content = []
         texts = message.texts
 
-        def _format_multimodal(data, mime_type="image/png"):
-            """Format multimodal prompt data for API request."""
-            mime_type = mime_type or "image/png"
-            if data.url and not data.is_local:
-                return {"type": "image_url", "image_url": {"url": data.url}}
-            else:
-                base64_content = data.serialize()
-                self.file_upload_limit_check(base64_content)
-
-                content = {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:{mime_type};base64,{base64_content}",
-                    },
-                }
-                if "image" in mime_type:
-                    content["image_url"].update({"detail": data.detail})
-                return content
-
         for text in texts:
             content.append({"type": "text", "text": text})
         for image in message.images:
-            content.append(_format_multimodal(image, mime_type=image.mime_type))
+            content.append(self._format_multimodal(image, mime_type=image.mime_type))
         for file in message.files:
-            content.append(_format_multimodal(file, mime_type=file.mime_type))
+            content.append(self._format_multimodal(file, mime_type=file.mime_type))
 
         return content
 
