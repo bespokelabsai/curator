@@ -433,14 +433,14 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             request_file = self.tracker.submitted_batches[batch.id].request_file
             return self.parse_api_specific_batch_object(job, request_file=request_file)
 
-    async def download_batch(self, batch: GenericBatch) -> list[dict] | None:
+    async def download_batch(self, batch: GenericBatch) -> t.Iterable[dict] | None:
         """Downloads the results of a completed batch.
 
         Args:
             batch: The batch object to download results for.
 
         Returns:
-            list[dict]: List of response dictionaries.
+            t.Iterable[dict]: Iterable of response dictionaries.
             None: If download fails.
 
         Side Effects:
@@ -449,23 +449,20 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         """
         async with self.semaphore:
             # TODO: validate batch (check if it even makes sense)
-
-            responses = []
             job = self._get_batch_job_object(batch.id)
             if not job.done():
                 logger.warning(f"Batch {batch.id} is not finished yet. Cannot download results.")
                 return None
-            try:
+
+            async def response_generator():
                 for result in job.iter_outputs():
                     content = result.download_as_string().decode("utf-8")
                     if not content:
                         continue
                     for line in content.splitlines():
-                        responses.append(json.loads(line))
-            except Exception as e:
-                logger.error(f"Failed to download or partially downloaded batch {batch.id} : {e}")
-                return responses
-            return responses
+                        yield json.loads(line)
+
+            return response_generator()
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:
         """Cancels a running batch job.
