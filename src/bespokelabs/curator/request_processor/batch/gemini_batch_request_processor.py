@@ -356,9 +356,10 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
     def _upload_batch_file(self, requests: list, metadata: dict):
         path = metadata["request_file"]
         filename = os.path.basename(path)
-        gcs_path = f"gs://{self._bucket_name}/batch_requests/{filename}"
+        cache_dir = os.path.basename(self.working_dir)
+        gcs_path = f"gs://{self._bucket_name}/batch_requests/{cache_dir}/{filename}"
         try:
-            blob_name = f"batch_requests/{filename}"
+            blob_name = f"batch_requests/{cache_dir}/{filename}"
             blob = self._bucket.blob(blob_name)
             jsonl_data = "\n".join(json.dumps(item, ensure_ascii=False) for item in requests)
             blob.upload_from_string(jsonl_data, content_type="application/jsonl+json")
@@ -370,7 +371,8 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         return gcs_path
 
     def _create_batch(self, input_dataset: str):
-        output_bucket = f"gs://{self._bucket_name}"
+        cache_dir = os.path.basename(self.working_dir)
+        output_bucket = f"gs://{self._bucket_name}/batch_requests/{cache_dir}"
         try:
             job = BatchPredictionJob.submit(source_model=self.config.model, input_dataset=input_dataset, output_uri_prefix=output_bucket)
         except Exception as e:
