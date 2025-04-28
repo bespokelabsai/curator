@@ -456,7 +456,8 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             return None
 
         # Write responses to file and update stats
-        response_file = await self.generic_response_file_from_responses(responses, batch)
+        async with self.semaphore:
+            response_file = await self.generic_response_file_from_responses(responses, batch)
 
         logger.debug(f"Batch {batch.id} written to {response_file}")
 
@@ -516,6 +517,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         stream_response_tasks = []
         invalid_finish_responses = []
         failed_processed_responses = []
+
         async with aiofiles.open(response_file, "a") as f:
             async for raw_response in responses:
                 request_idx = int(raw_response["custom_id"])
@@ -553,7 +555,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 # Stream responses to viewer client
                 idx = self.tracker.num_parsed_responses
                 self.tracker.num_parsed_responses = idx + len(processed_responses)
-                stream_response_tasks.append(self.viewer_client.stream_response(json.dumps(response_dump), idx))
+                # stream_response_tasks.append(self.viewer_client.stream_response(json.dumps(response_dump), idx))
 
         await asyncio.gather(*stream_response_tasks)
         if failed_processed_responses:

@@ -462,7 +462,11 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
                     if not content:
                         continue
                     for line in content.splitlines():
-                        yield json.loads(line)
+                        try:
+                            yield json.loads(line)
+                        except Exception as e:
+                            logger.warning(f"Could not parse line {line} :: reason {e}, skipping")
+                            continue
 
             return response_generator()
 
