@@ -12,6 +12,7 @@ class FinetuneRequest(BaseModel):
     model_name: str
     seed: int
     suffix: str
+    num_gpus: int
     method: FinetuneMethod
 
 

@@ -32,6 +32,7 @@ class BespokeFinetuneBackend(BaseFinetuneBackend):
             "suffix": kwargs["suffix"],
             "method": kwargs["method"],
             "job_name": kwargs["job_name"],
+            "num_gpus": kwargs["num_gpus"],
             "secrets": {
                 "HF_TOKEN": os.environ.get("HF_TOKEN", None),
             },
