@@ -31,9 +31,8 @@ class BespokeModelsBackend(BaseModelsBackend):
         
         try:
             response = requests.get(url, headers=self.headers)
-            print(response.json())
             if response.status_code == 200:
-                return response.json().get("models", [])
+                return response.json()
             else:
                 logger.error(f"Failed to list models: {response.status_code}, {response.text}")
                 return []
