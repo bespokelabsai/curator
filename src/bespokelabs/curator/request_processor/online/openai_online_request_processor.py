@@ -230,6 +230,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             - o1 with date >= 2024-12-17 or latest
             - o3-mini with date >= 2025-01-31 or latest
         """
+        return True
         model_name = self.config.model.lower()
 
         # Check gpt-4o-mini support.
