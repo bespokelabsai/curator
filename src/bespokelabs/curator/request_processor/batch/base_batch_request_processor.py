@@ -19,6 +19,8 @@ from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import _TokenUsage
 
+_STREAM_CHUNK_SIZE = 1000
+
 
 class BaseBatchRequestProcessor(BaseRequestProcessor):
     """Abstract base class for processing batched API requests.
@@ -512,11 +514,9 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         total_token_usage = _TokenUsage(input=0, output=0)
         total_cost = 0.0
 
-        # appending allows for the resubmitted resumed batch
-
-        stream_response_tasks = []
         invalid_finish_responses = []
         failed_processed_responses = []
+        streaming_tasks = []
 
         async with aiofiles.open(response_file, "a") as f:
             async for raw_response in responses:
@@ -544,6 +544,16 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 r = json.dumps(response_dump, default=str)
                 await f.write(r + "\n")
 
+                # Stream response immediately with correct index
+                idx = self.tracker.num_parsed_responses
+                self.tracker.num_parsed_responses = idx + len(processed_responses)
+                streaming_tasks.append(self.viewer_client.stream_response(r, idx))
+
+                # Process streaming tasks in chunks to manage memory
+                if len(streaming_tasks) >= _STREAM_CHUNK_SIZE:
+                    await asyncio.gather(*streaming_tasks)
+                    streaming_tasks = []
+
                 # Update token and cost totals
                 if generic_response.token_usage:
                     total_token_usage.input += generic_response.token_usage.input
@@ -552,12 +562,10 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 if generic_response.response_cost:
                     total_cost += generic_response.response_cost
 
-                # Stream responses to viewer client
-                idx = self.tracker.num_parsed_responses
-                self.tracker.num_parsed_responses = idx + len(processed_responses)
-                # stream_response_tasks.append(self.viewer_client.stream_response(json.dumps(response_dump), idx))
+            # Process any remaining streaming tasks
+            if streaming_tasks:
+                await asyncio.gather(*streaming_tasks)
 
-        await asyncio.gather(*stream_response_tasks)
         if failed_processed_responses:
             logger.warning(f"Batch {batch.id} has {len(failed_processed_responses)} failed responses due to parse function errors.")
 
