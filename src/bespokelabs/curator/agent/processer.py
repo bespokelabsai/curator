@@ -21,14 +21,17 @@ class MultiTurnAgenticProcessor:
         self.partner = partner
         self.total_steps = total_steps
         self.seed_message = seed_message
+        self.conversation_history = []
 
     async def run(self, working_dir: str):
         request_file = os.path.join(working_dir, "responses_0.jsonl")
         async with aiohttp.ClientSession() as session:
             async with aiofiles.open(request_file, "a") as f:
-                partener_request = self.partner.prompt_formatter.create_generic_request({"text": self.seed_message}, 0)
+                self.conversation_history.append({"role": self.seeder.name, "content": self.seed_message})
+
                 for step in tqdm(range(self.total_steps), desc="Running MultiTurnAgenticProcessor"):
                     if step % 2 == 0:
+                        partener_request = self._transform_conversation_history(self.partner)
                         partener_request = APIRequest(
                             task_id=step,
                             generic_request=partener_request,
@@ -38,8 +41,9 @@ class MultiTurnAgenticProcessor:
                         )
                         partener_response = await self.partner._request_processor.call_single_request(partener_request, session, status_tracker=None)
                         await self.append_response(self.partner.name, f, partener_response)
-                        seeder_request = await self._unwrap_response_to_generic_resquest(partener_response, self.seeder, step)
+                        self.conversation_history.append({"role": self.partner.name, "content": partener_response.response_message})
                     else:
+                        seeder_request = self._transform_conversation_history(self.seeder)
                         seeder_request = APIRequest(
                             task_id=step,
                             generic_request=seeder_request,
@@ -49,9 +53,9 @@ class MultiTurnAgenticProcessor:
                         )
                         seeder_response = await self.seeder._request_processor.call_single_request(seeder_request, session, status_tracker=None)
                         await self.append_response(self.seeder.name, f, seeder_response)
-                        partener_request = await self._unwrap_response_to_generic_resquest(seeder_response, self.partner, step)
-        dataset_file = self.create_dataset_file(working_dir)
+                        self.conversation_history.append({"role": self.seeder.name, "content": seeder_response.response_message})
 
+        dataset_file = self.create_dataset_file(working_dir)
         return Dataset.from_file(dataset_file)
 
     async def append_response(self, name: str, f, response: GenericResponse):
@@ -59,8 +63,23 @@ class MultiTurnAgenticProcessor:
         response["name"] = name
         await f.write(json.dumps(response, default=str) + "\n")
 
-    async def _unwrap_response_to_generic_resquest(self, response: GenericResponse, agent: "Agent", step: int):
-        return agent.prompt_formatter.create_generic_request({"text": response.response_message}, step)
+
+    def _transform_conversation_history(self, target_agent: "Agent"):
+        transformed_conversation_history = []
+        if len(self.conversation_history) == 1:
+            transformed_conversation_history.append({"role": "user", "content": self.conversation_history[0]["content"]})
+        else:
+            for message in self.conversation_history:
+                if message["role"] == target_agent.name:
+                    transformed_conversation_history.append({"role": "assistant", "content": message["content"]})
+                else:
+                    transformed_conversation_history.append({"role": "user", "content": message["content"]})
+
+        request = target_agent.prompt_formatter.create_generic_request({"prompt": transformed_conversation_history[-1]['content']}, 0)
+        breakpoint()
+        transformed_conversation_history[-1] = request.messages
+        request.messages = transformed_conversation_history
+        return request
 
     def create_dataset_file(self, working_dir: str):
         response_file = os.path.join(working_dir, "responses_0.jsonl")
