@@ -24,7 +24,6 @@ T = TypeVar("T")
 
 _DEFAULT_OPENAI_URL: str = "https://api.openai.com/v1/chat/completions"
 
-_OPENAI_MULTIMODAL_SUPPORTED_MODELS = {"gpt-4o", "gpt-4o-mini", "gpt-4o-vision"}
 _OPENAI_ALLOWED_IMAGE_SIZE_MB = 20
 
 
@@ -271,7 +270,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
     @property
     def _multimodal_prompt_supported(self) -> bool:
-        return any(self.config.model.startswith(k) for k in _OPENAI_MULTIMODAL_SUPPORTED_MODELS)
+        return True
 
     def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
         """Create an OpenAI-specific request from a generic request.
