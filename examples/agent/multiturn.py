@@ -1,12 +1,29 @@
-from bespokelabs.curator.agent.agent import MultiTurnAgents, Agent
+from bespokelabs.curator.agent.agent import Agent, MultiTurnAgents
+
 
 class Doctor(Agent):
     def prompt(self, text: str):
-        return [{'role': 'system', 'content': 'You are a doctor. You are in conversation with a patient. You need to ask and answer questions to help the patient. You are an agent for generating synthetic converations data.'}, {'role': 'user', 'content': f"Talk to the patient given the following text: {text}"}]
+        return [
+            {
+                "role": "system",
+                "content": "You are a doctor. You are in conversation with a patient. You need to ask and answer questions to help the patient. You are an agent for generating synthetic converations data.",
+            },
+            {"role": "user", "content": f"Talk to the patient given the following text: {text}"},
+        ]
+
 
 class Patient(Agent):
     def prompt(self, text: str):
-        return [{'role': 'system', 'content': 'You are a patient. You are in conversation with a doctor. You need to answer the questions to help the doctor. You are an agent for generating synthetic converations data.'}, {'role': 'user', 'content': f"Talk to the doctor given the following text: {text}, Note: dont response by saying how can I assit you etc, try to generate your query"}]
+        return [
+            {
+                "role": "system",
+                "content": "You are a patient. You are in conversation with a doctor. You need to answer the questions to help the doctor. You are an agent for generating synthetic converations data.",
+            },
+            {
+                "role": "user",
+                "content": f"Talk to the doctor given the following text: {text}, Note: dont response by saying how can I assit you etc, try to generate your query",
+            },
+        ]
 
 
 doctor = Doctor(name="Doctor", model_name="gpt-4o-mini")
