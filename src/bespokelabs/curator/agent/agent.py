@@ -1,9 +1,11 @@
+import os
+import typing as t
+
 from bespokelabs import curator
 from bespokelabs.curator.agent.processer import MultiTurnAgenticProcessor
-from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.llm.llm import _CURATOR_DEFAULT_CACHE_DIR
-import typing as t
-import os
+from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+
 
 class Agent(curator.LLM):
     def __init__(self, name: str, *args, **kwargs):
@@ -12,10 +14,10 @@ class Agent(curator.LLM):
 
     def __str__(self):
         return f"Agent(name={self.name})"
-    
+
     def __repr__(self):
         return self.__str__()
-    
+
 
 class MultiTurnAgents:
     def __init__(self, seeder: Agent, partner: Agent, total_steps: int, seed_message: str):
@@ -27,7 +29,7 @@ class MultiTurnAgents:
 
     def __call__(self, working_dir: t.Optional[str] = None):
         if working_dir is None:
-            working_dir= os.environ.get(
+            working_dir = os.environ.get(
                 "CURATOR_CACHE_DIR",
                 os.path.expanduser(_CURATOR_DEFAULT_CACHE_DIR),
             )
