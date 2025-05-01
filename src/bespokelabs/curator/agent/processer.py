@@ -1,14 +1,13 @@
-import typing as t
-import aiofiles
-import os
-
-import aiohttp
 import json
-from tqdm import tqdm
+import os
+import typing as t
+
+import aiofiles
+import aiohttp
 from datasets import Dataset
 from datasets.arrow_writer import ArrowWriter
+from tqdm import tqdm
 
-from bespokelabs.curator.request_processor.online.base_online_request_processor import GenericRequest
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 
@@ -17,17 +16,17 @@ if t.TYPE_CHECKING:
 
 
 class MultiTurnAgenticProcessor:
-    def __init__(self, seeder: 'Agent', partner: 'Agent', total_steps: int, seed_message: str):
+    def __init__(self, seeder: "Agent", partner: "Agent", total_steps: int, seed_message: str):
         self.seeder = seeder
         self.partner = partner
         self.total_steps = total_steps
         self.seed_message = seed_message
 
     async def run(self, working_dir: str):
-        request_file = os.path.join(working_dir, 'responses_0.jsonl')
+        request_file = os.path.join(working_dir, "responses_0.jsonl")
         async with aiohttp.ClientSession() as session:
             async with aiofiles.open(request_file, "a") as f:
-                partener_request = self.partner.prompt_formatter.create_generic_request({'text': self.seed_message}, 0)
+                partener_request = self.partner.prompt_formatter.create_generic_request({"text": self.seed_message}, 0)
                 for step in tqdm(range(self.total_steps), desc="Running MultiTurnAgenticProcessor"):
                     if step % 2 == 0:
                         partener_request = APIRequest(
@@ -57,16 +56,16 @@ class MultiTurnAgenticProcessor:
 
     async def append_response(self, name: str, f, response: GenericResponse):
         response = response.model_dump()
-        response['name'] = name
+        response["name"] = name
         await f.write(json.dumps(response, default=str) + "\n")
-            
-    async def _unwrap_response_to_generic_resquest(self, response: GenericResponse, agent: 'Agent', step: int):
-        return agent.prompt_formatter.create_generic_request({'text': response.response_message}, step)
-    
+
+    async def _unwrap_response_to_generic_resquest(self, response: GenericResponse, agent: "Agent", step: int):
+        return agent.prompt_formatter.create_generic_request({"text": response.response_message}, step)
+
     def create_dataset_file(self, working_dir: str):
-        response_file = os.path.join(working_dir, 'responses_0.jsonl')
-        dataset_file = os.path.join(working_dir, 'dataset.arrow')
-        
+        response_file = os.path.join(working_dir, "responses_0.jsonl")
+        dataset_file = os.path.join(working_dir, "dataset.arrow")
+
         with ArrowWriter(path=dataset_file) as writer:
             with open(response_file, "r") as f_in:
                 for line in f_in:
@@ -74,10 +73,8 @@ class MultiTurnAgenticProcessor:
                     row = response.model_dump()
                     # Write the row to the arrow file
                     writer.write(row)
-            
+
             # Finalize the writer
             writer.finalize()
-        
+
         return dataset_file
-
-
