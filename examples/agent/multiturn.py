@@ -3,25 +3,27 @@ from bespokelabs.curator.agent.agent import Agent, MultiTurnAgents
 
 class Doctor(Agent):
     def prompt(self, text: str):
+        text = text['prompt']
         return [
             {
                 "role": "system",
-                "content": "You are a doctor. You are in conversation with a patient. You need to ask and answer questions to help the patient. You are an agent for generating synthetic converations data.",
+                "content": "You are a doctor. You are in conversation with a patient. Respond in a way that is helpful to the patient.",
             },
-            {"role": "user", "content": f"Talk to the patient given the following text: {text}"},
+            {"role": "user", "content": text},
         ]
 
 
 class Patient(Agent):
     def prompt(self, text: str):
+        text = text['prompt']
         return [
             {
                 "role": "system",
-                "content": "You are a patient. You are in conversation with a doctor. You need to answer the questions to help the doctor. You are an agent for generating synthetic converations data.",
+                "content": "You are a Patient. You are in conversation with a doctor. Respond by asking questions to the doctor.",
             },
             {
                 "role": "user",
-                "content": f"Talk to the doctor given the following text: {text}, Note: dont response by saying how can I assit you etc, try to generate your query",
+                "content": text,
             },
         ]
 
