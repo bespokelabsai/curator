@@ -59,6 +59,7 @@ class PromptFormatter:
     parse_func: Optional[Callable[[_DictOrBaseModel, _DictOrBaseModel], T]] = None
     response_format: Optional[Type[BaseModel]] = None
     generation_params: dict = field(default_factory=dict)
+    system_prompt: str | None = None
 
     def get_prompts(self, row: _DictOrBaseModel) -> str | list[str]:
         """Get the prompts for the given row."""
@@ -83,6 +84,13 @@ class PromptFormatter:
             return [{"role": "user", "content": _MultiModalPrompt.load(prompts)}]
         raise ValueError(f"The return value of the `prompt` method {type(prompts)} did not match the expected format.")
 
+    def _put_system_prompt(self, messages: list[dict]) -> list[dict]:
+        if self.system_prompt:
+            if any(msg["role"] == "system" for msg in messages):
+                raise ValueError("System prompt already exists in the messages")
+            messages.insert(0, {"role": "system", "content": self.system_prompt})
+        return messages
+
     def create_generic_request(self, row: _DictOrBaseModel, idx: int, generation_params_per_row: bool = False) -> GenericRequest:
         """Format the request object based off of `LLM` attributes.
 
@@ -101,6 +109,7 @@ class PromptFormatter:
             row = row.model_dump()
         prompts = self.get_prompts(row)
         messages = self.get_messages(prompts)
+        messages = self._put_system_prompt(messages)
         multimodal_prompt = isinstance(prompts, tuple)
 
         row_generation_params = copy.deepcopy(self.generation_params)

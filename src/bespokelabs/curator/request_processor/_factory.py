@@ -153,7 +153,7 @@ class _RequestProcessorFactory:
         elif backend == "litellm" and batch:
             raise ValueError("Batch mode is not supported with LiteLLM backend")
         elif backend == "litellm":
-            from bespokelabs.curator.request_processor.online.litellm_online_request_processor import LiteLLMOnlineRequestProcessor
+            from bespokelabs.curator.request_processor.online.n import LiteLLMOnlineRequestProcessor
 
             _request_processor = LiteLLMOnlineRequestProcessor(config)
         elif backend == "vllm":
