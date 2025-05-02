@@ -1,5 +1,6 @@
 import json
 import time
+import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Union
@@ -85,6 +86,11 @@ class CuratorResponse:
         """Post-initialization hook."""
         if self.metadata is None:
             self.metadata = {}
+
+    def __getattr__(self, name):
+        """Get an attribute from the response."""
+        warnings.warn("Warning: Huggingface response from the curator LLM api is deprecated, please check out the `CuratorResponse`", stacklevel=2)
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def update_tracker_stats(self, tracker) -> None:
         """Update the response with statistics from a tracker.
