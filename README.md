@@ -313,7 +313,7 @@ os.environ["CURATOR_VIEWER"]="1"
 
 With this enabled, as curator generates data, it gets uploaded and you can see the responses streaming in the viewer. The URL for the viewer is displayed right next to the rich progress.
 
-### Authenticate with Bespoke Labs API key
+### Authenticate with a Bespoke Labs API key
 
 By default, the dataset viewer will be open to anyone who has access to the link. You can keep your datasets private by associating it with a Bespoke Labs account.
 This will also allow you to:
