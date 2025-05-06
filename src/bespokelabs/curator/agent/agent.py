@@ -1,6 +1,8 @@
 import os
 import typing as t
 
+from xxhash import xxh64
+
 from bespokelabs import curator
 from bespokelabs.curator.agent.processor import MultiTurnAgenticProcessor
 from bespokelabs.curator.llm.llm import _CURATOR_DEFAULT_CACHE_DIR
@@ -67,6 +69,7 @@ class MultiTurnAgents:
             partner (Agent): The agent that responds to the seeder.
             max_length (int): The maximum number of turns in the conversation.
             seed_message (str): The initial message to start the conversation.
+                                Note: This message is send to partner agent.
 
         Raises:
             AssertionError: If seeder and partner have the same name.
@@ -100,6 +103,7 @@ class MultiTurnAgents:
             )
         disable_cache = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
         fingerprint = self.seeder._hash_fingerprint(disable_cache=disable_cache)
+        fingerprint += xxh64(self.seed_message).hexdigest()
         fingerprint += self.partner._hash_fingerprint(disable_cache=disable_cache)
         working_dir = os.path.join(working_dir, fingerprint)
         os.makedirs(working_dir, exist_ok=True)
