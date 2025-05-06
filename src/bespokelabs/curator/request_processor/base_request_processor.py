@@ -134,9 +134,9 @@ class BaseRequestProcessor(ABC):
 
         self.validate_config()
         self.prompt_formatter = prompt_formatter
-        # if self.prompt_formatter.response_format:
-        #     if not self.check_structured_output_support():
-        #         raise ValueError(f"Model {self.config.model} does not support structured output, response_format: {self.prompt_formatter.response_format}")
+        if self.prompt_formatter.response_format:
+            if not self.check_structured_output_support():
+                raise ValueError(f"Model {self.config.model} does not support structured output, response_format: {self.prompt_formatter.response_format}")
         generic_request_files = self.create_request_files(dataset)
 
         self.requests_to_responses(generic_request_files)

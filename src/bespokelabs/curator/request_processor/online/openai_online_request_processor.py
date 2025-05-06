@@ -232,7 +232,6 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             - gpt-4.1-mini latest
             - gpt-4.1-nano latest
         """
-        return True
         model_name = self.config.model.lower()
 
         # Check gpt-4o-mini support.
