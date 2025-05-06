@@ -1,15 +1,18 @@
 import os
-import requests
 import typing as t
+
+import requests
+
 from ..log import logger
 from .base_backend import BaseModelsBackend
+
 
 class BespokeModelsBackend(BaseModelsBackend):
     """Client for interacting with Bespoke models API."""
 
     def __init__(self, base_url: str = None, api_key: str = None):
         """Initialize the Bespoke models client.
-        
+
         Args:
             base_url: Base URL for the API
             api_key: API key for authentication (optional)
@@ -20,15 +23,15 @@ class BespokeModelsBackend(BaseModelsBackend):
 
     def list_models(self, job_id: str = None) -> t.List[dict]:
         """List available models or models related to a specific job.
-        
+
         Args:
             job_id: Optional job ID to filter models by
-            
+
         Returns:
             A list of model information dictionaries
         """
         url = f"{self.base_url}/v0/models/{job_id}"
-        
+
         try:
             response = requests.get(url, headers=self.headers)
             if response.status_code == 200:
@@ -42,15 +45,15 @@ class BespokeModelsBackend(BaseModelsBackend):
 
     def deploy_model(self, model_id: str) -> bool:
         """Deploy a model to make it available for inference.
-        
+
         Args:
             model_id: ID of the model to deploy
-            
+
         Returns:
             True if deployment was successful, False otherwise
         """
         url = f"{self.base_url}/v0/models/{model_id}/deploy"
-        
+
         try:
             response = requests.post(url, headers=self.headers)
             if response.status_code in [200, 201, 202]:
@@ -64,15 +67,15 @@ class BespokeModelsBackend(BaseModelsBackend):
 
     def undeploy_model(self, model_id: str) -> bool:
         """Undeploy a model to free up resources.
-        
+
         Args:
             model_id: ID of the model to undeploy
-            
+
         Returns:
             True if undeployment was successful, False otherwise
         """
         url = f"{self.base_url}/v0/models/{model_id}/undeploy"
-        
+
         try:
             response = requests.post(url, headers=self.headers)
             if response.status_code in [200, 202, 204]:

@@ -11,6 +11,16 @@ logger = logging.getLogger(__name__)
 
 
 def upload(path: str, split: str = "train"):
+    """Uploads a dataset file to the Hugging Face Hub.
+
+    Args:
+        path: The local path to the dataset file.
+        split: The name of the split to upload (e.g., "train", "test").
+
+    Raises:
+        FileNotFoundError: If the specified file does not exist.
+        ValueError: If the file type is not supported.
+    """
     # load file into a huggingface dataset
 
     # it could be a huggingface dataset or a local file
@@ -21,10 +31,10 @@ def upload(path: str, split: str = "train"):
     except Exception:
         path = Path(path)
         if not path.exists():
-            raise FileNotFoundError(f"File {path} does not exist")
+            raise FileNotFoundError(f"File {path} does not exist") from None
 
         if path.suffix not in [".jsonl", ".json", ".csv", ".parquet"]:
-            raise ValueError("Only jsonl, json, csv, and parquet files are supported currently")
+            raise ValueError("Only jsonl, json, csv, and parquet files are supported currently") from None
 
         try:
             if path.suffix == ".jsonl" or path.suffix == ".json":

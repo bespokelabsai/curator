@@ -1,6 +1,7 @@
 import typing as t
 from abc import ABC, abstractmethod
 
+
 class BaseModelsBackend(ABC):
     """Base interface for model operations."""
 
@@ -18,4 +19,3 @@ class BaseModelsBackend(ABC):
     def undeploy_model(self, model_id: str) -> bool:
         """Undeploy a model to free up resources."""
         pass
-
