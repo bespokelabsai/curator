@@ -24,7 +24,6 @@ T = TypeVar("T")
 
 _DEFAULT_OPENAI_URL: str = "https://api.openai.com/v1/chat/completions"
 
-_OPENAI_MULTIMODAL_SUPPORTED_MODELS = {"gpt-4o", "gpt-4o-mini", "gpt-4o-vision"}
 _OPENAI_ALLOWED_IMAGE_SIZE_MB = 20
 
 
@@ -229,6 +228,9 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             - gpt-4o with date >= 2024-08-06 or latest
             - o1 with date >= 2024-12-17 or latest
             - o3-mini with date >= 2025-01-31 or latest
+            - gpt-4.1 latest
+            - gpt-4.1-mini latest
+            - gpt-4.1-nano latest
         """
         return True
         model_name = self.config.model.lower()
@@ -241,7 +243,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             if mini_date >= datetime(2024, 7, 18):
                 return True
 
-        # Check gpt-4o, o1, o3-mini support.
+        # Check gpt-4o, o1, o3-mini, gpt-4.1 support.
         if model_name in ["gpt-4o", "o1"]:  # Latest version
             return True
         if "gpt-4o-" in model_name:
@@ -256,7 +258,9 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             base_date = datetime.datetime.strptime(model_name.split("o3-mini-")[1], "%Y-%m-%d")
             if base_date >= datetime.datetime(2025, 1, 31):  # Support o3-mini dated versions from 2025-01-31
                 return True
-
+        # Source: https://platform.openai.com/docs/models/gpt-4.1, https://platform.openai.com/docs/models/gpt-4.1-mini, https://platform.openai.com/docs/models/gpt-4.1-nano
+        if "gpt-4.1" in model_name:
+            return True
         return False
 
     def file_upload_limit_check(self, base64_image: str) -> None:
@@ -267,7 +271,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
     @property
     def _multimodal_prompt_supported(self) -> bool:
-        return any(self.config.model.startswith(k) for k in _OPENAI_MULTIMODAL_SUPPORTED_MODELS)
+        return True
 
     def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
         """Create an OpenAI-specific request from a generic request.

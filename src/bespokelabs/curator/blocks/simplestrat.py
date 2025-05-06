@@ -198,9 +198,9 @@ class StratifiedGenerator:
 
     def __call__(self, questions: Dataset, working_dir: str | None = None) -> Dataset:
         """Generate questions for a given input."""
-        autostrat_df = self.autostrat(questions, working_dir=working_dir)
-        heuristic_estimation_df = self.heuristic(autostrat_df, working_dir=working_dir)
+        autostrat_df = self.autostrat(questions, working_dir=working_dir).dataset
+        heuristic_estimation_df = self.heuristic(autostrat_df, working_dir=working_dir).dataset
         heuristic_estimation_df = self.heuristic.collate(heuristic_estimation_df)
-        resampling_df = self.heuristic_negation(heuristic_estimation_df, working_dir=working_dir)
+        resampling_df = self.heuristic_negation(heuristic_estimation_df, working_dir=working_dir).dataset
         qas = self.qa(resampling_df, working_dir=working_dir)
         return qas

@@ -4,7 +4,8 @@ import inspect
 import os
 from datetime import datetime
 from io import BytesIO
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar, Union
 
 from datasets import Dataset
 from pydantic import BaseModel
@@ -18,6 +19,7 @@ from bespokelabs.curator.log import add_file_handler, logger
 from bespokelabs.curator.request_processor._factory import _RequestProcessorFactory
 from bespokelabs.curator.request_processor.config import BackendParamsType
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
+from bespokelabs.curator.types.curator_response import CuratorResponse
 
 if TYPE_CHECKING:
     from dataset import Dataset
@@ -165,13 +167,30 @@ class LLM:
 
         return fingerprint
 
+    def _get_cached_response(self, cache_dir: str, dataset: Dataset) -> Optional[CuratorResponse]:
+        """Check if a cached response exists and return it if valid.
+
+        Args:
+            cache_dir: Directory to check for cached response
+            dataset: Dataset to use for the response
+
+        Returns:
+            Optional[CuratorResponse]: Cached response if it exists and is valid, None otherwise
+        """
+        try:
+            return CuratorResponse.load(cache_dir, dataset)
+        except Exception as e:
+            logger.warning(f"Failed to load curator cached response: {e}")
+            return None
+
     def __call__(
         self,
-        dataset: Optional[Iterable] = None,
+        dataset: Optional[Iterable | CuratorResponse] = None,
         working_dir: str = None,
         batch_cancel: bool = False,
         batch_cancel_auto_confirm: bool = False,
-    ) -> "Dataset":
+        cache_dir: Optional[Union[str, Path]] = None,
+    ) -> CuratorResponse:
         """Apply structured completions in parallel to a dataset using specified model and prompts.
 
         Args:
@@ -179,9 +198,10 @@ class LLM:
             working_dir (str): The working directory to save the requests.jsonl, responses.jsonl, and dataset.arrow files.
             batch_cancel (bool): Whether to cancel the batch if it is running
             batch_cancel_auto_confirm (bool): Whether we should automatically run batch cancellation without explicit user confirmation (for testing)
+            cache_dir: Directory to cache results
 
         Returns:
-            Iterable: A list of structured outputs from the completions
+            CuratorResponse: A response object containing the dataset, failed requests, and various statistics
         """
         # We convert from iterable to Dataset because Dataset has random access via row_idx
         if dataset:
@@ -213,7 +233,8 @@ class LLM:
                     working_dir=run_cache_dir, dataset=dataset, prompt_formatter=self.prompt_formatter, auto_confirm=batch_cancel_auto_confirm
                 )
             )
-            return dataset
+            return CuratorResponse(dataset=dataset, batch_mode=self.batch_mode, cache_dir=run_cache_dir)
+
         elif batch_cancel:
             logger.warning("You set batch_cancel=True but you're not in batch mode. Ignoring batch_cancel.")
 
@@ -272,7 +293,43 @@ class LLM:
 
         if self._request_processor.viewer_client.hosted:
             metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
-        return dataset
+
+        # Get tracker information
+        if not self._request_processor._is_cached_dataset:
+            # Create response object with tracker info
+            tracker = self._request_processor.tracker
+            response = CuratorResponse(
+                cache_dir=run_cache_dir,
+                dataset=dataset,
+                batch_mode=self.batch_mode,
+                viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+                failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl"))
+                if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl"))
+                else None,
+                model_name=self.prompt_formatter.model_name,
+                metadata=metadata_dict,
+            )
+            response.update_tracker_stats(tracker)
+        else:
+            # Create minimal response object if no tracker
+            response = self._get_cached_response(run_cache_dir, dataset)
+            if response is None:
+                response = CuratorResponse(
+                    dataset=dataset,
+                    cache_dir=run_cache_dir,
+                    viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+                    batch_mode=self.batch_mode,
+                    failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl"))
+                    if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl"))
+                    else None,
+                    model_name=self.prompt_formatter.model_name,
+                    metadata=metadata_dict,
+                )
+
+        # Save the response if cache directory is specified
+        response.save(run_cache_dir)
+
+        return response
 
 
 def _get_function_hash(func) -> str:
@@ -333,12 +390,15 @@ def _is_message_list(list: list) -> bool:
     return all(isinstance(item, dict) and "role" in item and "content" in item for item in list)
 
 
-def _convert_to_dataset(iterable: Iterable) -> "Dataset":
+def _convert_to_dataset(iterable: Iterable | CuratorResponse) -> "Dataset":
     """Convert an iterable to a Dataset.
 
     The prompt is expected to be a prompt string or a list of messages.
     It will be stored with the key '__internal_prompt' internally.
     """
+    if isinstance(iterable, CuratorResponse):
+        return iterable.dataset
+
     if isinstance(iterable, str) or _is_message_list(iterable):
         # A single string or list of messages is converted to a dataset with a single row
         dataset = Dataset.from_list([{_INTERNAL_PROMPT_KEY: iterable}])

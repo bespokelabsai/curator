@@ -46,6 +46,11 @@ class MetadataDB:
             "created_time",
             "last_edited_time",
             "is_hosted_viewer_synced",
+            # Cost management columns
+            "total_cost_milli_dollars",
+            "total_requests",
+            "total_prompt_tokens",
+            "total_completion_tokens",
         ]
         current_info = self._get_current_schema()
         current_columns = [col[1] for col in current_info]  # col[1] = column name
@@ -89,7 +94,12 @@ class MetadataDB:
                     batch_mode BOOLEAN,
                     created_time TEXT,
                     last_edited_time TEXT,
-                    is_hosted_viewer_synced BOOLEAN
+                    is_hosted_viewer_synced BOOLEAN,
+
+                    total_cost_milli_dollars TEXT,
+                    total_requests TEXT,
+                    total_prompt_tokens TEXT,
+                    total_completion_tokens TEXT
                 )
                 """
             )
@@ -118,7 +128,7 @@ class MetadataDB:
                     """
                     INSERT INTO runs (
                         run_hash, session_id, dataset_hash, prompt_func, model_name,
-                        response_format, batch_mode, created_time, is_hosted_viewer_synced, last_edited_time
+                        response_format, batch_mode, created_time, last_edited_time, is_hosted_viewer_synced
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
@@ -130,8 +140,8 @@ class MetadataDB:
                         metadata["response_format"],
                         metadata["batch_mode"],
                         metadata["timestamp"],
+                        metadata["timestamp"],  # last_edited_time same as created_time initially
                         metadata["is_hosted_viewer_synced"],
-                        "-",
                     ),
                 )
             conn.commit()

@@ -66,6 +66,7 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         self.min_tokens: int = config.min_tokens
         self.batch_size: int = config.batch_size
         self.generation_params = config.generation_params
+        self.dtype: str = config.dtype
 
     @property
     def backend(self):
@@ -117,6 +118,9 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         Args:
             generic_request_files: List of paths to request files to process
         """
+        from bespokelabs.curator.status_tracker.offline_status_tracker import OfflineStatusTracker
+
+        self.tracker = OfflineStatusTracker()
         for request_file in generic_request_files:
             response_file = request_file.replace("requests_", "responses_")
             self.process_requests_from_file(
@@ -137,21 +141,14 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
         Args:
             generic_request_filepath: Path to file containing requests
             save_filepath: Path to save response file
-            resume: Whether to resume processing from previous state
-            resume_no_retry: Whether to skip retrying failed requests when resuming
 
         Side Effects:
             - Creates/updates response file with model outputs
             - Logs progress and completion status
-            - May prompt user for confirmation on file overwrite
         """
-        from bespokelabs.curator.status_tracker.offline_status_tracker import OfflineStatusTracker
-
-        status_tracker = OfflineStatusTracker()
-
         # Track completed requests for resume functionality
         completed_request_ids, completed_parsed_responses = self.validate_existing_response_file(save_filepath)
-        status_tracker.num_parsed_responses = completed_parsed_responses
+        self.tracker.num_parsed_responses = completed_parsed_responses
 
         if not hasattr(self, "model_class"):
             self.load_offline_model()  # Load the offline model if it hasn't been loaded yet
@@ -175,7 +172,7 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
                     )
         responses = self.process_requests(
             requests=requests,
-            status_tracker=status_tracker,
+            status_tracker=self.tracker,
         )
 
         # Save responses
@@ -187,10 +184,10 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
                 f.write(json_string + "\n")
 
                 # Stream responses to viewer client
-                idx = status_tracker.num_parsed_responses
-                status_tracker.num_parsed_responses = idx + len(responses)
+                idx = self.tracker.num_parsed_responses
+                self.tracker.num_parsed_responses = idx + len(responses)
                 run_in_event_loop(self.viewer_client.stream_response(json_string, idx))
 
         # Log final status
         logger.info(f"Processing complete. Results saved to {save_filepath}")
-        logger.info(f"Status tracker: {status_tracker}")
+        logger.info(f"Status tracker: {self.tracker}")

@@ -1,7 +1,7 @@
 import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.token_usage import _TokenUsage
@@ -43,3 +43,10 @@ class GenericResponse(BaseModel):
     model_config = {
         "json_encoders": {datetime.datetime: lambda dt: dt.isoformat()},
     }
+
+    @field_serializer("response_message")
+    def serialize_response_message(self, value):
+        """Serializes the response message."""
+        if isinstance(value, BaseModel):
+            return value.model_dump(mode="json", exclude_unset=False)
+        return value

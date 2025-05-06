@@ -131,35 +131,35 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """Check if the image size is within the allowed limit."""
         pass
 
+    def _format_multimodal(self, data, mime_type="image/png"):
+        """Format multimodal prompt data for API request."""
+        mime_type = mime_type or "image/png"
+        if data.url and not data.is_local:
+            return {"type": "image_url", "image_url": {"url": data.url}}
+        else:
+            base64_content = data.serialize()
+            self.file_upload_limit_check(base64_content)
+
+            content = {
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:{mime_type};base64,{base64_content}",
+                },
+            }
+            if "image" in mime_type:
+                content["image_url"].update({"detail": data.detail})
+            return content
+
     def _handle_multi_modal_prompt(self, message):
         content = []
         texts = message.texts
 
-        def _format_multimodal(data, mime_type="image/png"):
-            """Format multimodal prompt data for API request."""
-            mime_type = mime_type or "image/png"
-            if data.url and not data.is_local:
-                return {"type": "image_url", "image_url": {"url": data.url}}
-            else:
-                base64_content = data.serialize()
-                self.file_upload_limit_check(base64_content)
-
-                content = {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:{mime_type};base64,{base64_content}",
-                    },
-                }
-                if "image" in mime_type:
-                    content["image_url"].update({"detail": data.detail})
-                return content
-
         for text in texts:
             content.append({"type": "text", "text": text})
         for image in message.images:
-            content.append(_format_multimodal(image, mime_type=image.mime_type))
+            content.append(self._format_multimodal(image, mime_type=image.mime_type))
         for file in message.files:
-            content.append(_format_multimodal(file, mime_type=file.mime_type))
+            content.append(self._format_multimodal(file, mime_type=file.mime_type))
 
         return content
 
@@ -273,12 +273,22 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         Args:
             generic_request_files: List of request files to process
         """
+        self.tracker = OnlineStatusTracker(
+            token_limit_strategy=self.token_limit_strategy,
+            max_requests_per_minute=self.max_requests_per_minute,
+            max_tokens_per_minute=self.max_tokens_per_minute,
+            compatible_provider=self.compatible_provider,
+            viewer_client=self._viewer_client,
+            model=self.prompt_formatter.model_name,
+            total_requests=self.total_requests,
+        )
         for request_file in generic_request_files:
             response_file = request_file.replace("requests_", "responses_")
             run_in_event_loop(
                 self.process_requests_from_file(
                     generic_request_filepath=request_file,
                     response_file=response_file,
+                    status_tracker=self.tracker,
                 )
             )
 
@@ -308,24 +318,17 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self,
         generic_request_filepath: str,
         response_file: str,
+        status_tracker: OnlineStatusTracker,
     ) -> None:
         """Processes API requests in parallel, throttling to stay under rate limits.
 
         Args:
             generic_request_filepath: Path to file containing requests
             response_file: Path where the response data will be saved
+            status_tracker: Tracker containing rate limit status
         """
         # Initialize trackers
         queue_of_requests_to_retry: asyncio.Queue[APIRequest] = asyncio.Queue()
-        status_tracker = OnlineStatusTracker(
-            token_limit_strategy=self.token_limit_strategy,
-            max_requests_per_minute=self.max_requests_per_minute,
-            max_tokens_per_minute=self.max_tokens_per_minute,
-            compatible_provider=self.compatible_provider,
-            viewer_client=self._viewer_client,
-            model=self.prompt_formatter.model_name,
-            total_requests=self.total_requests,
-        )
         if self.max_concurrent_requests is not None:
             self._semaphore = asyncio.Semaphore(t.cast(int, self.max_concurrent_requests))
 
@@ -449,6 +452,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         status_tracker.stop_tracker()
         await self.viewer_client.session_completed()
 
+        # Log cost projection to viewer
+        await self.viewer_client.log_cost_projection(status_tracker, force_log=True)
+
         # Log final status
         logger.info(f"Processing complete. Results saved to {response_file}")
         logger.info(f"Status tracker: {status_tracker}")
@@ -508,6 +514,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
             # Allows us to retry on responses that don't match the response format
             self.prompt_formatter.response_to_response_format(generic_response.response_message)
+
+            # Log cost projection to viewer
+            await self._viewer_client.log_cost_projection(status_tracker)
 
         except Exception as e:
             status_tracker.num_other_errors += 1

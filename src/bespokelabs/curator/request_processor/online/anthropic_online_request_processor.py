@@ -63,6 +63,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         # Attempt to get rate limits from headers
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
         self.token_encoding = self.get_token_encoding()
+        self._multimodal_key_map = {"image": "image"}
 
     def _set_manual_tpm(self, config):
         """Set token per minute limits based on config values.
@@ -101,6 +102,25 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
         return response.headers
 
+    def _format_multimodal(self, data, mime_type="image/png"):
+        """Format multimodal prompt data for API request."""
+        mime_type = mime_type or "image/png"
+        if data.url and not data.is_local:
+            return {"type": "image", "source": {"type": "url", "url": data.url}}
+        else:
+            base64_content = data.serialize()
+            self.file_upload_limit_check(base64_content)
+
+            content = {
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": mime_type,
+                    "data": base64_content,
+                },
+            }
+            return content
+
     def get_header_based_rate_limits(self) -> tuple[int, _TokenUsage]:
         """Get rate limits from Anthropic API headers.
 
@@ -130,7 +150,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Returns:
             int: Estimated number of output tokens
         """
-        return self._output_tokens_moving_average() or self._get_max_tokens() // 4
+        return int(self._output_tokens_moving_average()) or self._get_max_tokens() // 4
 
     def _get_max_tokens(self):
         if self.config.generation_params.get("max_tokens"):
