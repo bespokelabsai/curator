@@ -315,19 +315,17 @@ With this enabled, as curator generates data, it gets uploaded and you can see t
 
 ### Authenticate with a Bespoke Labs API key
 
-By default, the dataset viewer will be open to anyone who has access to the link. You can keep your datasets private by associating it with a Bespoke Labs account.
-This will also allow you to:
+By default, datasets are accessible to anyone with the link. To keep your datasets private, you can associate them with a Bespoke Labs account. Doing so also allows you to:
 
 1. Track all datasets associated with your account
-2. Share the dataset with collaborators
-3. Analyze data generation cost over a period of time
+2. Share datasets with collaborators
+3. Analyze data generation costs over time
 
 You can enable authentication as follows;
 
 1. [Sign up](https://curator.bespokelabs.ai/auth/signup) for a Bespoke Labs account.
-2. [Create](https://curator.bespokelabs.ai/home/keys) an API key.
-3. Set the `BESPOKE_API_KEY` environment variable with your newly created key and
-   also enable uploading to the hosted viewer:
+2. Create an API key from the [API Key](https://curator.bespokelabs.ai/home/keys) tab.
+3. Set the `BESPOKE_API_KEY` and `CURATOR_VIEWER` environment variables:
 
 ```shell
 export BESPOKE_API_KEY=<YOUR_API_KEY>
@@ -335,8 +333,7 @@ export CURATOR_VIEWER=1
 ```
 
 With the environment variables set, all your datasets will be streamed to the hosted viewer. You
-can navigate to the [Datasets](https://curator.bespokelabs.ai/home/datasets) page to see all
-the datasets associated with your account, and to the [Cost Report](https://curator.bespokelabs.ai/home/costs)
+can visit the [Datasets](https://curator.bespokelabs.ai/home/datasets) page to see datasets generated with your API keys or shared with you by others, and to the [Cost Report](https://curator.bespokelabs.ai/home/costs)
 to see the data generation costs for a given period.
 
 ## Environment Variables
