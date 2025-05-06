@@ -1,15 +1,15 @@
+import concurrent.futures
+import os
+from typing import Dict, List
+
+import pandas as pd
+
 from bespokelabs.curator.agent.agent import Agent, MultiTurnAgents
 
-
-class Doctor(Agent):
-    def prompt(self, text: str):
-        text = text["prompt"]
-        return [
-            {"role": "user", "content": text},
-        ]
+os.environ["CURATOR_DISABLE_RICH_DISPLAY"] = "t"
 
 
-class Patient(Agent):
+class Client(Agent):
     def prompt(self, text: str):
         text = text["prompt"]
         return [
@@ -20,33 +20,69 @@ class Patient(Agent):
         ]
 
 
-# TODO:
-# 1. Converstaion history support
-# 3. Cache support
-# 2. Stop condition support
-# 4. Dataset support
-# 5. Ratelimiting support
-# 6. Status tracker support for cost tracking
+class Advisor(Client):
+    pass
 
-doctor = Doctor(
-    name="Doctor",
+
+with open("./advisor-prompt.txt", "r") as f:
+    adisor_sys_prompt = f.read()
+
+with open("./client-prompt.txt", "r") as f:
+    client_sys_prompt = f.read()
+
+client = Client(
+    name="client",
     model_name="gpt-4o-mini",
-    system_prompt="You are a doctor. You are in conversation with a patient. Respond in a way that is helpful to the patient.",
+    system_prompt=client_sys_prompt,
 )
-patient = Patient(
-    name="Patient",
+advisor = Advisor(
+    name="advisor",
     model_name="gpt-4o-mini",
-    system_prompt="You are a Patient. You are visiting a doctor because you have fever. Doctor will ask you questions as user role.",
+    system_prompt=adisor_sys_prompt,
 )
-simulator = MultiTurnAgents(doctor, patient, max_length=5, seed_message="Hello, how are you?")
-ds = simulator()
-for i in ds:
-    print(i)
+
+
+def read_seed_messages(csv_path: str) -> List[str]:
+    df = pd.read_csv(csv_path)
+    seed_messages = df["scenario"].tolist() + df["scenario"].tolist()
+    return seed_messages
+
+
+def simulate_conversation(seed_message: str, client: Agent, advisor: Agent, max_length: int = 5) -> Dict:
+    simulator = MultiTurnAgents(client, advisor, max_length=max_length, seed_message=seed_message)
+    return simulator()
+
+
+def run_simulations(seed_messages: List[str], client: Agent, advisor: Agent, max_workers: int = 50, max_length: int = 20):
+    all_datasets = []
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_seed = {executor.submit(simulate_conversation, msg, client, advisor, max_length): msg for msg in seed_messages}
+
+        for future in concurrent.futures.as_completed(future_to_seed):
+            seed = future_to_seed[future]
+            try:
+                dataset = future.result()
+                all_datasets.append(dataset)
+                print(f"Completed simulation for seed: {seed[:30]}...")
+            except Exception as exc:
+                print(f"Simulation for seed {seed[:30]}... generated an exception: {exc}")
+
+    if all_datasets:
+        combined_data = []
+        for scenario, dataset in zip(seed_messages, all_datasets):
+            conversation = {}
+            conversation["conversation"] = dataset.to_list()
+            conversation["scenario"] = scenario
+            combined_data.append(conversation)
+
+        combined_dataset = pd.DataFrame(combined_data)
+        return combined_dataset
+    return None
+
+
+csv_path = "scenarios.csv"
+seed_messages = read_seed_messages(csv_path)
+
+combined_dataset = run_simulations(seed_messages=seed_messages, client=client, advisor=advisor, max_workers=50, max_length=20)
 breakpoint()
-
-
-"""
-# 
-#
-
-"""
