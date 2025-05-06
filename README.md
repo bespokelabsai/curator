@@ -324,7 +324,7 @@ By default, datasets are accessible to anyone with the link. To keep your datase
 You can enable authentication as follows;
 
 1. [Sign up](https://curator.bespokelabs.ai/auth/signup) for a Bespoke Labs account.
-2. Create an API key from the [API Key](https://curator.bespokelabs.ai/home/keys) tab.
+2. Create an API key from the [API Key](https://curator.bespokelabs.ai/home/keys) pagegit.
 3. Set the `BESPOKE_API_KEY` and `CURATOR_VIEWER` environment variables:
 
 ```shell
@@ -332,9 +332,8 @@ export BESPOKE_API_KEY=<YOUR_API_KEY>
 export CURATOR_VIEWER=1
 ```
 
-With the environment variables set, all your datasets will be streamed to the hosted viewer. You
-can visit the [Datasets](https://curator.bespokelabs.ai/home/datasets) page to see datasets generated with your API keys or shared with you by others, and to the [Cost Report](https://curator.bespokelabs.ai/home/costs)
-to see the data generation costs for a given period.
+With the environment variables set, all your datasets will be streamed to the hosted viewer and linked to your Bespoke Labs account. You can visit the [Datasets](https://curator.bespokelabs.ai/home/datasets) page to see datasets generated with your API keys or shared with you by others, and the [Cost Report](https://curator.bespokelabs.ai/home/costs)
+page to see the data generation costs for a given period.
 
 ## Environment Variables
 
