@@ -1,12 +1,13 @@
+import asyncio
 import concurrent.futures
 import os
 from typing import Dict, List
 
+os.environ["CURATOR_DISABLE_RICH_DISPLAY"] = "1"
+
 import pandas as pd
 
 from bespokelabs.curator.agent.agent import Agent, MultiTurnAgents
-
-os.environ["CURATOR_DISABLE_RICH_DISPLAY"] = "t"
 
 
 class Client(Agent):
@@ -32,12 +33,14 @@ with open("./client-prompt.txt", "r") as f:
 
 client = Client(
     name="client",
-    model_name="gpt-4o-mini",
+    model_name="gemini/gemini-2.0-flash",
+    backend="litellm",
     system_prompt=client_sys_prompt,
 )
 advisor = Advisor(
     name="advisor",
-    model_name="gpt-4o-mini",
+    model_name="gemini/gemini-2.0-flash",
+    backend="litellm",
     system_prompt=adisor_sys_prompt,
 )
 
@@ -49,8 +52,10 @@ def read_seed_messages(csv_path: str) -> List[str]:
 
 
 def simulate_conversation(seed_message: str, client: Agent, advisor: Agent, max_length: int = 5) -> Dict:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     simulator = MultiTurnAgents(client, advisor, max_length=max_length, seed_message=seed_message)
-    return simulator()
+    return loop.run_until_complete(simulator())
 
 
 def run_simulations(seed_messages: List[str], client: Agent, advisor: Agent, max_workers: int = 50, max_length: int = 20):
@@ -83,6 +88,7 @@ def run_simulations(seed_messages: List[str], client: Agent, advisor: Agent, max
 
 csv_path = "scenarios.csv"
 seed_messages = read_seed_messages(csv_path)
-
 combined_dataset = run_simulations(seed_messages=seed_messages, client=client, advisor=advisor, max_workers=50, max_length=20)
-breakpoint()
+
+combined_dataset.to_csv("scenarios-conversations.csv")
+print("Saved to scenarios-conversations.csv")
