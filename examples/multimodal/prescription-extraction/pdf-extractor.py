@@ -1,5 +1,7 @@
 """Extract text from a prescription PDF."""
 
+import glob
+
 from datasets import Dataset
 from pydantic import BaseModel
 
@@ -36,8 +38,7 @@ class PrescriptionExtractor(curator.LLM):
 def main():
     """Extract text from a prescription PDF."""
     prescriptions = [
-        {"pdf_path": "./examples/multimodal/prescription-extraction/prescription.pdf"},
-        {"pdf_path": "./examples/multimodal/prescription-extraction/prescription2.pdf"},
+        {"pdf_path": f"./examples/multimodal/prescription-extraction/{path}"} for path in glob.glob("./examples/multimodal/prescription-extraction/data/*")
     ]
     prescriptions = Dataset.from_list(prescriptions)
     prescription_extractor = PrescriptionExtractor(
