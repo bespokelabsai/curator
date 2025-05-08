@@ -1,3 +1,5 @@
+import os
+import requests
 import asyncio
 import json
 import logging
@@ -7,6 +9,7 @@ import uuid
 from datasets import Dataset, DatasetDict, load_dataset
 from rich.progress import Progress
 
+from bespokelabs.curator.constants import _CURATOR_DEFAULT_CACHE_DIR
 from bespokelabs.curator import _CONSOLE, constants
 from bespokelabs.curator.client import Client, _SessionStatus
 from bespokelabs.curator.log import USE_RICH_DISPLAY
@@ -93,3 +96,37 @@ def push_to_viewer(
 
     run_in_event_loop(send_responses())
     return view_url
+
+
+def load_dataset(dataset_id: str):
+    """Load a dataset from a curator dataset id."""
+    url = f"http://localhost:8080/v0/viewer/sessions/{dataset_id}/fetch_data"
+
+    curator_cache_dir = os.environ.get(
+        "CURATOR_CACHE_DIR",
+        os.path.expanduser(_CURATOR_DEFAULT_CACHE_DIR),
+    )
+    
+    # Create cache directory if it doesn't exist
+    os.makedirs(curator_cache_dir, exist_ok=True)
+    
+    # Define cache file path
+    cache_file = os.path.join(curator_cache_dir, f"dataset_{dataset_id}.arrow")
+    
+    # Check if dataset is already cached
+    if os.path.exists(cache_file):
+        logger.debug(f"Loading dataset {dataset_id} from cache")
+        return Dataset.from_file(cache_file)
+    
+    # If not cached, download it
+    logger.debug(f"Downloading dataset {dataset_id}")
+    # url = f"{constants.PUBLIC_CURATOR_VIEWER_DATASET_URL}/{dataset_id}/fetch_data"
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(cache_file, "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+    
+    # Return the dataset
+    return Dataset.from_file(cache_file)
