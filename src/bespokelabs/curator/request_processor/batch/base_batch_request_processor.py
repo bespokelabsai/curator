@@ -19,6 +19,8 @@ from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import _TokenUsage
 
+_STREAM_CHUNK_SIZE = 1000
+
 
 class BaseBatchRequestProcessor(BaseRequestProcessor):
     """Abstract base class for processing batched API requests.
@@ -448,7 +450,33 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         return api_specific_requests
 
-    async def generic_response_file_from_responses(self, responses: list[dict], batch: GenericBatch) -> str | None:
+    async def download_batch_to_response_file(self, batch: GenericBatch) -> str | None:
+        """Download and process completed batch results."""
+        responses = await self.download_batch(batch)
+
+        if responses is None:
+            return None
+
+        # Write responses to file and update stats
+        async with self.semaphore:
+            response_file = await self.generic_response_file_from_responses(responses, batch)
+
+        logger.debug(f"Batch {batch.id} written to {response_file}")
+
+        if self.config.delete_successful_batch_files:
+            await self.delete_file(batch.input_file_id, self.semaphore)
+            await self.delete_file(batch.output_file_id, self.semaphore)
+
+        # Update tracker with downloaded batch
+        self.tracker.mark_as_downloaded(batch)
+        await self.update_batch_objects_file()
+
+        # Log cost projection to viewer
+        await self._viewer_client.log_cost_projection(self.tracker, force_log=True)
+
+        return response_file
+
+    async def generic_response_file_from_responses(self, responses, batch: GenericBatch) -> str | None:
         """Process API responses and create generic response file.
 
         Converts API-specific responses to GenericResponse objects and writes them
@@ -456,7 +484,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         token usage tracking and cost calculation.
 
         Args:
-            responses: List of raw API response dictionaries.
+            responses: Either a list of response dictionaries or an async iterator of responses.
             batch: Batch object containing request metadata.
 
         Returns:
@@ -486,13 +514,12 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         total_token_usage = _TokenUsage(input=0, output=0)
         total_cost = 0.0
 
-        # appending allows for the resubmitted resumed batch
-
-        stream_response_tasks = []
         invalid_finish_responses = []
         failed_processed_responses = []
+        streaming_tasks = []
+
         async with aiofiles.open(response_file, "a") as f:
-            for raw_response in responses:
+            async for raw_response in responses:
                 request_idx = int(raw_response["custom_id"])
                 generic_request = generic_request_map[request_idx]
                 generic_response = self.parse_api_specific_response(raw_response, generic_request, batch)
@@ -517,6 +544,16 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 r = json.dumps(response_dump, default=str)
                 await f.write(r + "\n")
 
+                # Stream response immediately with correct index
+                idx = self.tracker.num_parsed_responses
+                self.tracker.num_parsed_responses = idx + len(processed_responses)
+                streaming_tasks.append(self.viewer_client.stream_response(r, idx))
+
+                # Process streaming tasks in chunks to manage memory
+                if len(streaming_tasks) >= _STREAM_CHUNK_SIZE:
+                    await asyncio.gather(*streaming_tasks)
+                    streaming_tasks = []
+
                 # Update token and cost totals
                 if generic_response.token_usage:
                     total_token_usage.input += generic_response.token_usage.input
@@ -525,12 +562,10 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 if generic_response.response_cost:
                     total_cost += generic_response.response_cost
 
-                # Stream responses to viewer client
-                idx = self.tracker.num_parsed_responses
-                self.tracker.num_parsed_responses = idx + len(processed_responses)
-                stream_response_tasks.append(self.viewer_client.stream_response(json.dumps(response_dump), idx))
+            # Process any remaining streaming tasks
+            if streaming_tasks:
+                await asyncio.gather(*streaming_tasks)
 
-        await asyncio.gather(*stream_response_tasks)
         if failed_processed_responses:
             logger.warning(f"Batch {batch.id} has {len(failed_processed_responses)} failed responses due to parse function errors.")
 
@@ -717,31 +752,6 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
                 sucessful_responses += sum(1 for _ in f)
         self.tracker.n_final_failed_requests = self.tracker.n_total_requests - sucessful_responses
         self.tracker.n_final_success_requests = sucessful_responses
-
-    async def download_batch_to_response_file(self, batch: GenericBatch) -> str | None:
-        """Download and process completed batch results."""
-        file_content = await self.download_batch(batch)
-
-        if file_content is None:
-            return None
-
-        # Write responses to file and update stats
-        response_file = await self.generic_response_file_from_responses(file_content, batch)
-
-        logger.debug(f"Batch {batch.id} written to {response_file}")
-
-        if self.config.delete_successful_batch_files:
-            await self.delete_file(batch.input_file_id, self.semaphore)
-            await self.delete_file(batch.output_file_id, self.semaphore)
-
-        # Update tracker with downloaded batch
-        self.tracker.mark_as_downloaded(batch)
-        await self.update_batch_objects_file()
-
-        # Log cost projection to viewer
-        await self._viewer_client.log_cost_projection(self.tracker, force_log=True)
-
-        return response_file
 
     async def cancel_batches(self, working_dir, dataset, prompt_formatter, auto_confirm=False):
         """Cancel all currently submitted batches.
