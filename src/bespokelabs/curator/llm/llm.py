@@ -77,6 +77,7 @@ class LLM:
         backend: Optional[str] = None,
         generation_params: dict | None = None,
         backend_params: BackendParamsType | None = None,
+        system_prompt: str | None = None,
     ):
         """Initialize a LLM.
 
@@ -127,6 +128,7 @@ class LLM:
             parse_func=self.parse,
             response_format=self.response_format,
             generation_params=_remove_none_values(generation_params),
+            system_prompt=system_prompt,
         )
         self.batch_mode = batch
 
@@ -140,7 +142,7 @@ class LLM:
             return_completions_object=self.return_completions_object,
         )
 
-    def _hash_fingerprint(self, dataset_hash, disable_cache):
+    def _hash_fingerprint(self, dataset_hash: str = "", disable_cache: bool = False):
         if disable_cache:
             fingerprint = xxh64(os.urandom(8)).hexdigest()
         else:

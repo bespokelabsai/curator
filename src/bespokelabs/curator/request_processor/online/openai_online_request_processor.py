@@ -330,9 +330,9 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         finish_reason = response["choices"][0].get("finish_reason", "unknown")
         usage = response["usage"]
         token_usage = _TokenUsage(
-            prompt_tokens=usage["prompt_tokens"],
-            completion_tokens=usage["completion_tokens"],
-            total_tokens=usage["total_tokens"],
+            input=usage["prompt_tokens"],
+            output=usage["completion_tokens"],
+            total=usage["total_tokens"],
         )
 
         cost = self.completion_cost(response)
