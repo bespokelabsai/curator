@@ -6,6 +6,7 @@ from xxhash import xxh64
 from bespokelabs import curator
 from bespokelabs.curator.agent.processor import MultiTurnAgenticProcessor
 from bespokelabs.curator.llm.llm import _CURATOR_DEFAULT_CACHE_DIR
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
 
@@ -107,5 +108,5 @@ class MultiTurnAgents:
         fingerprint += self.partner._hash_fingerprint(disable_cache=disable_cache)
         working_dir = os.path.join(working_dir, fingerprint)
         os.makedirs(working_dir, exist_ok=True)
-        print(f"Running multi turn simulation, find results in {working_dir}")
+        logger.info(f"Running multi turn simulation, find results in {working_dir}")
         return run_in_event_loop(self._processor.run(working_dir=working_dir))
