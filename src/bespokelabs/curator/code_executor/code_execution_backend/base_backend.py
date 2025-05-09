@@ -642,7 +642,7 @@ class BaseCodeExecutionBackend:
         seconds_since_rate_limit_error = time.time() - status_tracker.time_of_last_rate_limit_error
         remaining_seconds_to_pause = seconds_to_pause_on_rate_limit - seconds_since_rate_limit_error
         if remaining_seconds_to_pause > 0:
-            logger.warn(f"Pausing for {int(remaining_seconds_to_pause)} seconds")
+            logger.warning(f"Pausing for {int(remaining_seconds_to_pause)} seconds")
             await asyncio.sleep(remaining_seconds_to_pause)
 
     async def append_execution_response(self, data: dict, filename: str) -> None:
