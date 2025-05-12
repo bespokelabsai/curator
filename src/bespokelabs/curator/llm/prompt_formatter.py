@@ -52,6 +52,7 @@ class PromptFormatter:
         parse_func: Optional function to parse model responses
         response_format: Optional Pydantic model defining expected response format
         generation_params: Dictionary of parameters for generation
+        system_prompt: Optional system prompt to use for the LLM
     """
 
     model_name: str
