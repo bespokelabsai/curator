@@ -1,0 +1,375 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-BZd9SAQ6xnaVfXoeonVb4buAG27EY\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1747831678,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"Creating a successful investment strategy
+        depends on several factors, including your financial goals, risk tolerance,
+        time horizon, and personal circumstances. Here are some steps to guide you
+        through the process:\\n\\n1. **Define Your Financial Goals**: \\n   - Are
+        you investing for retirement, a major purchase, or to build wealth over time?\\n
+        \  - Set specific, measurable, achievable, relevant, and time-bound (SMART)
+        goals.\\n\\n2. **Assess Your Risk Tolerance**: \\n   - Understand how much
+        risk you are willing and able to take. \\n   - Consider your financial situation,
+        investment knowledge, and emotional response to market fluctuations.\\n\\n3.
+        **Determine Your Time Horizon**: \\n   - Short-term investments (less than
+        5 years) may favor safer, more liquid assets.\\n   - Long-term investments
+        (5 years or more) can tolerate more volatility and may include stocks and
+        real estate.\\n\\n4. **Diversify Your Portfolio**: \\n   - Spread investments
+        across various asset classes (stocks, bonds, real estate, etc.) to reduce
+        risk.\\n   - Diversification can help protect your portfolio against market
+        volatility.\\n\\n5. **Choose Your Investment Vehicles**: \\n   - Consider
+        stocks, bonds, mutual funds, exchange-traded funds (ETFs), and real estate.\\n
+        \  - Research how each investment fits into your overall strategy.\\n\\n6.
+        **Stay Informed**: \\n   - Follow market trends, economic indicators, and
+        industry developments that may impact your investments.\\n   - Educate yourself
+        on investment principles and products.\\n\\n7. **Regularly Review and Rebalance
+        Your Portfolio**: \\n   - Periodically check your investments to ensure they
+        align with your goals and risk tolerance.\\n   - Adjust your portfolio as
+        needed to maintain your desired asset allocation.\\n\\n8. **Consider Tax Implications**:
+        \\n   - Be aware of how taxes affect your investment income and capital gains.\\n
+        \  - Use tax-advantaged accounts (like IRAs or 401(k)s) when appropriate.\\n\\n9.
+        **Consult a Financial Advisor**: \\n   - If you're uncertain about building
+        a strategy, consider seeking professional advice.\\n   - A financial advisor
+        can provide personalized guidance based on your unique situation.\\n\\n10.
+        **Stay Disciplined**: \\n    - Avoid making impulsive decisions based on market
+        fluctuations.\\n    - Stick to your strategy and adjust only as needed based
+        on your goals and market conditions.\\n\\nRemember, investing is a long-term
+        activity, and patience and consistency are key to building wealth over time.
+        If you have specific questions or need help with particular investments, feel
+        free to ask!\",\n        \"refusal\": null,\n        \"annotations\": []\n
+        \     },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n    }\n
+        \ ],\n  \"usage\": {\n    \"prompt_tokens\": 38,\n    \"completion_tokens\":
+        518,\n    \"total_tokens\": 556,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_54eb4bd693\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-RAY:
+      - 94342f709bfa7256-AKL
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 May 2025 12:48:07 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=PCo9zf7iGbU68XW1mxHN2rOjdKcJ8tEwJs2y0sTdNdg-1747831687-1.0.1.1-2re5SF2sA1R86VnCSR6c.jBpQiJSz0s0Lx5SB.Tg9n7WTiLmKej0IYlZ8cjeYAXPoLl__ZumBOmJb28YxmrXZ6WSx0KhI84BcSYTqPoilUM;
+        path=/; expires=Wed, 21-May-25 13:18:07 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=ybk31vFraBrBnJr6lh_m.y_P_GVrzSlO0ytQdl_NdUA-1747831687535-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - bespoke-labs
+      openai-processing-ms:
+      - '9319'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '9322'
+      x-ratelimit-limit-requests:
+      - '30000'
+      x-ratelimit-limit-tokens:
+      - '150000000'
+      x-ratelimit-remaining-requests:
+      - '29999'
+      x-ratelimit-remaining-tokens:
+      - '149999963'
+      x-ratelimit-reset-requests:
+      - 2ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_f74ff72a5e9f98044dd68c9c1ca6cdc7
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=PCo9zf7iGbU68XW1mxHN2rOjdKcJ8tEwJs2y0sTdNdg-1747831687-1.0.1.1-2re5SF2sA1R86VnCSR6c.jBpQiJSz0s0Lx5SB.Tg9n7WTiLmKej0IYlZ8cjeYAXPoLl__ZumBOmJb28YxmrXZ6WSx0KhI84BcSYTqPoilUM;
+        _cfuvid=ybk31vFraBrBnJr6lh_m.y_P_GVrzSlO0ytQdl_NdUA-1747831687535-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-BZd9bX4fBpRcXuDsrakHrTuH7HmwX\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1747831687,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"What specific factors should I consider
+        when deciding my risk tolerance?\",\n        \"refusal\": null,\n        \"annotations\":
+        []\n      },\n      \"logprobs\": null,\n      \"finish_reason\": \"stop\"\n
+        \   }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 557,\n    \"completion_tokens\":
+        12,\n    \"total_tokens\": 569,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_54eb4bd693\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-RAY:
+      - 94342faf88417256-AKL
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 May 2025 12:48:08 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - bespoke-labs
+      openai-processing-ms:
+      - '480'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '482'
+      x-ratelimit-limit-requests:
+      - '30000'
+      x-ratelimit-limit-tokens:
+      - '150000000'
+      x-ratelimit-remaining-requests:
+      - '29999'
+      x-ratelimit-remaining-tokens:
+      - '149999338'
+      x-ratelimit-reset-requests:
+      - 2ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_ab96e4ec266f552b4ac893003884f64d
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer 
+      Cookie:
+      - __cf_bm=PCo9zf7iGbU68XW1mxHN2rOjdKcJ8tEwJs2y0sTdNdg-1747831687-1.0.1.1-2re5SF2sA1R86VnCSR6c.jBpQiJSz0s0Lx5SB.Tg9n7WTiLmKej0IYlZ8cjeYAXPoLl__ZumBOmJb28YxmrXZ6WSx0KhI84BcSYTqPoilUM;
+        _cfuvid=ybk31vFraBrBnJr6lh_m.y_P_GVrzSlO0ytQdl_NdUA-1747831687535-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-BZd9cvwnF8xKWjdTCjlpyRVgWPhxc\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1747831688,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"Determining your risk tolerance is
+        a crucial step in building your investment strategy. Here are specific factors
+        to consider when assessing your risk tolerance:\\n\\n1. **Investment Goals**:\\n
+        \  - Define what you are investing for (e.g., retirement, buying a house,
+        funding education).\\n   - The timeline for these goals will influence your
+        risk tolerance; longer timeframes may allow for higher risk.\\n\\n2. **Time
+        Horizon**:\\n   - How long do you plan to keep your investments? Longer time
+        horizons can typically accommodate more risk since you have time to recover
+        from downturns.\\n\\n3. **Financial Situation**:\\n   - Assess your current
+        financial status, including income, expenses, savings, and debts.\\n   - A
+        stable income and sufficient emergency savings can afford you a higher risk
+        tolerance.\\n\\n4. **Investment Knowledge and Experience**:\\n   - Consider
+        your familiarity with different investment types and your experience in the
+        markets.\\n   - Investors who are more knowledgeable may feel more comfortable
+        with higher-risk investments.\\n\\n5. **Emotional Factors**:\\n   - Reflect
+        on how you react to market volatility. Are you calm during downturns, or do
+        you panic and want to sell?\\n   - Understanding your emotional response to
+        financial loss can help gauge your true risk tolerance.\\n\\n6. **Market Conditions**:\\n
+        \  - Current market conditions can affect your appetite for risk. For example,
+        during bull markets, you might feel more optimistic and willing to take on
+        more risk, while bear markets may instill caution.\\n\\n7. **Age**:\\n   -
+        Younger investors often have a higher risk tolerance since they have more
+        time to recover from losses. Conversely, older investors nearing retirement
+        typically favor more conservative investments.\\n\\n8. **Diversification Capacity**:
+        \\n   - Consider how diversified your current investments are and whether
+        you have the ability to diversify further. A well-diversified portfolio might
+        allow you to take on more risk overall.\\n\\n9. **Income Stability**:\\n   -
+        Evaluate the stability of your income (e.g., salaried position vs. self-employed).
+        Stable income can provide more comfort when taking investment risks.\\n\\n10.
+        **Financial Obligations**:\\n    - Identify any significant financial obligations
+        (mortgages, tuition, etc.). Higher obligations may necessitate a conservative
+        approach to ensure you can meet these commitments.\\n\\n11. **Personal Values
+        and Beliefs**:\\n    - Your values, including ethical investing principles,
+        can play a role. For instance, some individuals may avoid certain riskier
+        sectors in favor of socially responsible investments.\\n\\n12. **Risk Capacity
+        vs. Risk Tolerance**:\\n    - **Risk Capacity** refers to the amount of risk
+        you can afford to take based on your financial situation, while **Risk Tolerance**
+        is your psychological ability to handle investment risk. Both should align
+        to create an effective strategy.\\n\\nTaking the time to evaluate these factors
+        can help you develop a more accurate understanding of your risk tolerance,
+        ensuring that your investments align with your financial goals and personal
+        comfort level. Consider using questionnaires or assessments from financial
+        advisors or investment platforms for additional guidance.\",\n        \"refusal\":
+        null,\n        \"annotations\": []\n      },\n      \"logprobs\": null,\n
+        \     \"finish_reason\": \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\":
+        576,\n    \"completion_tokens\": 606,\n    \"total_tokens\": 1182,\n    \"prompt_tokens_details\":
+        {\n      \"cached_tokens\": 0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_92e0377081\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-RAY:
+      - 94342fb4e9e77256-AKL
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 May 2025 12:48:21 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - bespoke-labs
+      openai-processing-ms:
+      - '12849'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '12870'
+      x-ratelimit-limit-requests:
+      - '30000'
+      x-ratelimit-limit-tokens:
+      - '150000000'
+      x-ratelimit-remaining-requests:
+      - '29999'
+      x-ratelimit-remaining-tokens:
+      - '149999315'
+      x-ratelimit-reset-requests:
+      - 2ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_75991186a6778aa4af7761c0f2438ae7
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Authorization:
+      - Bearer
+      Cookie:
+      - __cf_bm=PCo9zf7iGbU68XW1mxHN2rOjdKcJ8tEwJs2y0sTdNdg-1747831687-1.0.1.1-2re5SF2sA1R86VnCSR6c.jBpQiJSz0s0Lx5SB.Tg9n7WTiLmKej0IYlZ8cjeYAXPoLl__ZumBOmJb28YxmrXZ6WSx0KhI84BcSYTqPoilUM;
+        _cfuvid=ybk31vFraBrBnJr6lh_m.y_P_GVrzSlO0ytQdl_NdUA-1747831687535-0.0.1.1-604800000
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n  \"id\": \"chatcmpl-BZd9pXuknKoeFiSu8wJXYRgp6irzO\",\n  \"object\":
+        \"chat.completion\",\n  \"created\": 1747831701,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n
+        \ \"choices\": [\n    {\n      \"index\": 0,\n      \"message\": {\n        \"role\":
+        \"assistant\",\n        \"content\": \"What are some different types of investment
+        vehicles I should consider for my portfolio?\",\n        \"refusal\": null,\n
+        \       \"annotations\": []\n      },\n      \"logprobs\": null,\n      \"finish_reason\":
+        \"stop\"\n    }\n  ],\n  \"usage\": {\n    \"prompt_tokens\": 1183,\n    \"completion_tokens\":
+        15,\n    \"total_tokens\": 1198,\n    \"prompt_tokens_details\": {\n      \"cached_tokens\":
+        0,\n      \"audio_tokens\": 0\n    },\n    \"completion_tokens_details\":
+        {\n      \"reasoning_tokens\": 0,\n      \"audio_tokens\": 0,\n      \"accepted_prediction_tokens\":
+        0,\n      \"rejected_prediction_tokens\": 0\n    }\n  },\n  \"service_tier\":
+        \"default\",\n  \"system_fingerprint\": \"fp_54eb4bd693\"\n}\n"
+    headers:
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      CF-RAY:
+      - 943430073bec7256-AKL
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 May 2025 12:48:23 GMT
+      Server:
+      - cloudflare
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-organization:
+      - bespoke-labs
+      openai-processing-ms:
+      - '1466'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-envoy-upstream-service-time:
+      - '1478'
+      x-ratelimit-limit-requests:
+      - '30000'
+      x-ratelimit-limit-tokens:
+      - '150000000'
+      x-ratelimit-remaining-requests:
+      - '29999'
+      x-ratelimit-remaining-tokens:
+      - '149998522'
+      x-ratelimit-reset-requests:
+      - 2ms
+      x-ratelimit-reset-tokens:
+      - 0s
+      x-request-id:
+      - req_1ce3640e5076678d23987ec46822c6e4
+    status:
+      code: 200
+      message: OK
+version: 1

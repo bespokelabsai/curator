@@ -116,6 +116,7 @@ class LLM:
                     - min_tokens: The minimum tokens to use for the VLLM backend
                     - gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
                     - batch_size: The size of the batch to use, only used if batch is True
+            system_prompt: The system prompt to use for the LLM
         """
         generation_params = generation_params or {}
 

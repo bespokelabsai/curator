@@ -6,7 +6,6 @@ import aiofiles
 import aiohttp
 from datasets import Dataset
 from datasets.arrow_writer import ArrowWriter
-from tqdm import tqdm
 
 from bespokelabs.curator.agent.agent_response import AgentResponse
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest
