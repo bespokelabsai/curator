@@ -519,48 +519,33 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         streaming_tasks = []
 
         async with aiofiles.open(response_file, "a") as f:
-            async for raw_response in responses:
-                request_idx = int(raw_response["custom_id"])
-                generic_request = generic_request_map[request_idx]
-                generic_response = self.parse_api_specific_response(raw_response, generic_request, batch)
-
-                if generic_response.finish_reason in self.config.invalid_finish_reasons:
-                    invalid_finish_responses.append(
-                        {
-                            "request_id": request_idx,
-                            "finish_reason": generic_response.finish_reason,
-                        }
+            # Handle both async iterable and list responses
+            if hasattr(responses, "__aiter__"):
+                async for raw_response in responses:
+                    await self._process_single_response(
+                        raw_response,
+                        generic_request_map,
+                        batch,
+                        f,
+                        invalid_finish_responses,
+                        failed_processed_responses,
+                        streaming_tasks,
+                        total_token_usage,
+                        total_cost,
                     )
-                    continue
-
-                processed_responses = self._process_response(generic_response)
-                generic_response.parsed_response_message = processed_responses
-                if processed_responses is None:
-                    failed_processed_responses.append(request_idx)
-                    continue
-
-                # Write response to file
-                response_dump = generic_response.model_dump(mode="json")
-                r = json.dumps(response_dump, default=str)
-                await f.write(r + "\n")
-
-                # Stream response immediately with correct index
-                idx = self.tracker.num_parsed_responses
-                self.tracker.num_parsed_responses = idx + len(processed_responses)
-                streaming_tasks.append(self.viewer_client.stream_response(r, idx))
-
-                # Process streaming tasks in chunks to manage memory
-                if len(streaming_tasks) >= _STREAM_CHUNK_SIZE:
-                    await asyncio.gather(*streaming_tasks)
-                    streaming_tasks = []
-
-                # Update token and cost totals
-                if generic_response.token_usage:
-                    total_token_usage.input += generic_response.token_usage.input
-                    total_token_usage.output += generic_response.token_usage.output
-                    total_token_usage.total = total_token_usage.input + total_token_usage.output
-                if generic_response.response_cost:
-                    total_cost += generic_response.response_cost
+            else:
+                for raw_response in responses:
+                    await self._process_single_response(
+                        raw_response,
+                        generic_request_map,
+                        batch,
+                        f,
+                        invalid_finish_responses,
+                        failed_processed_responses,
+                        streaming_tasks,
+                        total_token_usage,
+                        total_cost,
+                    )
 
             # Process any remaining streaming tasks
             if streaming_tasks:
@@ -580,6 +565,73 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         self.tracker.update_token_and_cost(total_token_usage, total_cost)
         await self.viewer_client.session_completed()
         return response_file
+
+    async def _process_single_response(
+        self,
+        raw_response: dict,
+        generic_request_map: dict,
+        batch: GenericBatch,
+        f: aiofiles.threadpool.AsyncTextIOWrapper,
+        invalid_finish_responses: list,
+        failed_processed_responses: list,
+        streaming_tasks: list,
+        total_token_usage: _TokenUsage,
+        total_cost: float,
+    ) -> None:
+        """Process a single response from the batch.
+
+        Args:
+            raw_response: The raw response dictionary from the API.
+            generic_request_map: Map of request indices to GenericRequest objects.
+            batch: The batch object containing metadata.
+            f: The file handle to write responses to.
+            invalid_finish_responses: List to collect invalid finish responses.
+            failed_processed_responses: List to collect failed processed responses.
+            streaming_tasks: List of streaming tasks to execute.
+            total_token_usage: Running total of token usage.
+            total_cost: Running total of cost.
+        """
+        request_idx = int(raw_response["custom_id"])
+        generic_request = generic_request_map[request_idx]
+        generic_response = self.parse_api_specific_response(raw_response, generic_request, batch)
+
+        if generic_response.finish_reason in self.config.invalid_finish_reasons:
+            invalid_finish_responses.append(
+                {
+                    "request_id": request_idx,
+                    "finish_reason": generic_response.finish_reason,
+                }
+            )
+            return
+
+        processed_responses = self._process_response(generic_response)
+        generic_response.parsed_response_message = processed_responses
+        if processed_responses is None:
+            failed_processed_responses.append(request_idx)
+            return
+
+        # Write response to file
+        response_dump = generic_response.model_dump(mode="json")
+        r = json.dumps(response_dump, default=str)
+        await f.write(r + "\n")
+
+        # Stream response immediately with correct index
+        idx = self.tracker.num_parsed_responses
+        self.tracker.num_parsed_responses = idx + len(processed_responses)
+        streaming_tasks.append(self.viewer_client.stream_response(r, idx))
+
+        # Process streaming tasks in chunks to manage memory
+        if len(streaming_tasks) >= _STREAM_CHUNK_SIZE:
+            await asyncio.gather(*streaming_tasks)
+            streaming_tasks.clear()
+
+        # Update token and cost totals
+        if generic_response.token_usage:
+            total_token_usage.input += generic_response.token_usage.input
+            total_token_usage.output += generic_response.token_usage.output
+            total_token_usage.total = total_token_usage.input + total_token_usage.output
+        if generic_response.response_cost:
+            total_cost += generic_response.response_cost
 
     async def submit_batches_from_request_files(
         self,
