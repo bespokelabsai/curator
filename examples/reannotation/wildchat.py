@@ -30,5 +30,5 @@ class WildChatReannotator(curator.LLM):
 distiller = WildChatReannotator(model_name="gpt-4o-mini", batch=True, backend_params={"batch_size": 1_000})
 
 distilled_dataset = distiller(dataset)
-print(distilled_dataset)
-print(distilled_dataset[0])
+print(distilled_dataset.dataset)
+print(distilled_dataset.dataset[0])

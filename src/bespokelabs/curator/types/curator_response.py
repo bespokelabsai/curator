@@ -10,6 +10,7 @@ from pydantic import BaseModel
 
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.status_tracker.offline_status_tracker import OfflineStatusTracker
+from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS
 
 
 @dataclass
@@ -20,6 +21,19 @@ class TokenUsage:
     output: int = 0
     total: int = 0
 
+    def add(self, other: "TokenUsage"):
+        """Add token usage statistics from another TokenUsage instance.
+
+        This method adds the input, output, and total token counts from another
+        TokenUsage instance to this one.
+
+        Args:
+            other (TokenUsage): Another TokenUsage instance whose values will be added.
+        """
+        self.input += other.input
+        self.output += other.output
+        self.total += other.total
+
 
 @dataclass
 class CostInfo:
@@ -29,6 +43,24 @@ class CostInfo:
     input_cost_per_million: Optional[float] = None
     output_cost_per_million: Optional[float] = None
     projected_remaining_cost: float = 0.0
+
+    def add(self, other: "CostInfo"):
+        """Add cost information from another CostInfo instance.
+
+        This method adds the total cost and projected remaining cost from another
+        CostInfo instance to this one. If both instances have input/output costs
+        per million tokens, those are also added.
+
+        Args:
+            other (CostInfo): Another CostInfo instance whose values will be added.
+        """
+        self.total_cost += other.total_cost
+        if self.input_cost_per_million and other.input_cost_per_million:
+            self.input_cost_per_million += other.input_cost_per_million
+        if self.output_cost_per_million and other.output_cost_per_million:
+            self.output_cost_per_million += other.output_cost_per_million
+
+        self.projected_remaining_cost += other.projected_remaining_cost
 
 
 @dataclass
@@ -41,6 +73,21 @@ class RequestStats:
     in_progress: int = 0
     cached: int = 0
 
+    def add(self, other: "RequestStats"):
+        """Add request statistics from another RequestStats instance.
+
+        This method adds all request counts (total, succeeded, failed, in_progress,
+        and cached) from another RequestStats instance to this one.
+
+        Args:
+            other (RequestStats): Another RequestStats instance whose values will be added.
+        """
+        self.total += other.total
+        self.succeeded += other.succeeded
+        self.failed += other.failed
+        self.in_progress += other.in_progress
+        self.cached += other.cached
+
 
 @dataclass
 class PerformanceStats:
@@ -51,6 +98,22 @@ class PerformanceStats:
     input_tokens_per_minute: float = 0.0
     output_tokens_per_minute: float = 0.0
     max_concurrent_requests: int = 0
+
+    def add(self, other: "PerformanceStats"):
+        """Add performance statistics from another PerformanceStats instance.
+
+        This method adds all performance metrics (total time, requests per minute,
+        input/output tokens per minute, and max concurrent requests) from another
+        PerformanceStats instance to this one.
+
+        Args:
+            other (PerformanceStats): Another PerformanceStats instance whose values will be added.
+        """
+        self.total_time += other.total_time
+        self.requests_per_minute += other.requests_per_minute
+        self.input_tokens_per_minute += other.input_tokens_per_minute
+        self.output_tokens_per_minute += other.output_tokens_per_minute
+        self.max_concurrent_requests += other.max_concurrent_requests
 
 
 @dataclass
@@ -88,15 +151,31 @@ class CuratorResponse:
             self.metadata = {}
 
     def __getattr__(self, name):
-        """Get an attribute from the response."""
+        """Get an attribute from the response.
+
+        This method is called when an attribute is not found in the normal way.
+        It raises a deprecation warning and AttributeError to indicate that the
+        Huggingface response API is deprecated.
+
+        Args:
+            name (str): The name of the attribute being accessed.
+
+        Raises:
+            AttributeError: Always raises this error with a deprecation warning.
+        """
         warnings.warn("Warning: Huggingface response from the curator LLM api is deprecated, please check out the `CuratorResponse`", stacklevel=2)
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def update_tracker_stats(self, tracker) -> None:
         """Update the response with statistics from a tracker.
 
+        This method updates various statistics in the response object based on
+        the provided tracker's data, including token usage, costs, request stats,
+        and performance metrics.
+
         Args:
             tracker: The tracker object containing statistics about the processing run.
+                    Can be either an OfflineStatusTracker or None.
         """
         if isinstance(tracker, OfflineStatusTracker) or tracker is None:
             logger.warning("Tracker is offline or None, skipping stats update")
@@ -149,8 +228,13 @@ class CuratorResponse:
     def get_failed_requests(self) -> Iterable[Dict[str, Any]]:
         """Get an iterator over failed requests.
 
+        This method reads the failed requests from a JSONL file and yields
+        each request as a dictionary. If no failed requests file exists,
+        returns an empty iterator.
+
         Returns:
-            Iterable[Dict[str, Any]]: Iterator over failed requests
+            Iterable[Dict[str, Any]]: An iterator that yields dictionaries
+                                     containing failed request data.
         """
         if self.failed_requests_path is None or not self.failed_requests_path.exists():
             return iter([])
@@ -163,7 +247,16 @@ class CuratorResponse:
         return _iter_failed_requests()
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert the response to a dictionary."""
+        """Convert the response to a dictionary.
+
+        This method creates a dictionary representation of the CuratorResponse
+        object, including dataset information, model details, statistics,
+        and metadata.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing all the response data
+                           in a serializable format.
+        """
         return {
             "dataset": {
                 "fingerprint": self.dataset._fingerprint,
@@ -205,8 +298,11 @@ class CuratorResponse:
     def save(self, cache_dir: Union[str, Path]) -> None:
         """Save the response to a cache directory.
 
+        This method saves the response data to a JSON file in the specified
+        cache directory. The directory will be created if it doesn't exist.
+
         Args:
-            cache_dir: Directory to save the response to
+            cache_dir (Union[str, Path]): Directory where the response will be saved.
         """
         cache_dir = Path(cache_dir)
         cache_dir.mkdir(parents=True, exist_ok=True)
@@ -219,12 +315,16 @@ class CuratorResponse:
     def load(cls, cache_dir: Union[str, Path], dataset: Dataset) -> "CuratorResponse":
         """Load a response from a cache directory.
 
+        This class method creates a new CuratorResponse instance from saved
+        data in the cache directory. It requires a dataset to be provided
+        as the dataset itself is not cached.
+
         Args:
-            cache_dir: Directory to load the response from
-            dataset: Dataset to use for the response
+            cache_dir (Union[str, Path]): Directory containing the cached response data.
+            dataset (Dataset): The dataset to use for the response.
 
         Returns:
-            CuratorResponse: Loaded response
+            CuratorResponse: A new CuratorResponse instance loaded from cache.
         """
         cache_dir = Path(cache_dir)
 
@@ -247,3 +347,73 @@ class CuratorResponse:
         )
 
         return response
+
+    def append(self, other: "CuratorResponse"):
+        """Appends another CuratorResponse to this one.
+
+        This method combines the statistics from another CuratorResponse
+        with this one. It adds up token usage, costs, request stats,
+        and performance metrics.
+
+        Args:
+            other (CuratorResponse): Another CuratorResponse to append.
+
+        Raises:
+            AssertionError: If the model names of the two responses don't match.
+        """
+        assert self.model_name == other.model_name
+
+        self.token_usage.add(other.token_usage)
+        self.cost_info.add(other.cost_info)
+        self.request_stats.add(other.request_stats)
+        self.performance_stats.add(other.performance_stats)
+
+    def display_stats(self):
+        """Display final statistics in plain text format.
+
+        This method prints a formatted summary of all statistics including
+        model information, request statistics, token usage, costs, and
+        performance metrics. The output is color-coded for better readability.
+        """
+        elapsed_time = time.time() - self.start_time
+        elapsed_minutes = elapsed_time / 60
+        rpm = self.request_stats.num_tasks_succeeded / max(0.001, elapsed_minutes)
+        input_tpm = self.token_usage.prompt_tokens / max(0.001, elapsed_minutes)
+        output_tpm = self.token_usage.completion_tokens / max(0.001, elapsed_minutes)
+
+        stats = [
+            f"\n{HEADER}Final Statistics:{END}",
+            f"{HEADER}Model Information:{END}",
+            f"  Model: {MODEL}{self.model_name}{END}",
+            f"  Rate Limit (RPM): {METRIC}{self.max_requests_per_minute}{END}",
+            f"  Rate Limit (TPM): {METRIC}{self.max_tokens_per_minute}{END}",
+            "",
+            f"{HEADER}Request Statistics:{END}",
+            f"  Total Requests: {METRIC}{self.request_stats.total_requests}{END}",
+            f"  Cached: {SUCCESS}{self.request_stats.num_tasks_already_completed}{END}",
+            f"  Successful: {SUCCESS}{self.request_stats.num_tasks_succeeded}{END}",
+            f"  Failed: {ERROR}{self.request_stats.num_tasks_failed}{END}",
+            "",
+            f"{HEADER}Token Statistics:{END}",
+            f"  Total Tokens Used: {METRIC}{self.token_usage.total_tokens:,}{END}",
+            f"  Total Input Tokens: {METRIC}{self.token_usage.prompt_tokens:,}{END}",
+            f"  Total Output Tokens: {METRIC}{self.token_usage.completion_tokens:,}{END}",
+            f"  Average Tokens per Request: {METRIC}{int(self.token_usage.total_tokens / max(1, self.request_stats.num_tasks_succeeded))}{END}",
+            f"  Average Input Tokens: {METRIC}{int(self.token_usage.prompt_tokens / max(1, self.request_stats.num_tasks_succeeded))}{END}",
+            f"  Average Output Tokens: {METRIC}{int(self.token_usage.completion_tokens / max(1, self.request_stats.num_tasks_succeeded))}{END}",
+            "",
+            f"{HEADER}Cost Statistics:{END}",
+            f"  Total Cost: {COST}${self.cost_info.total_cost:.3f}{END}",
+            f"  Average Cost per Request: {COST}${self.cost_info.total_cost / max(1, self.request_stats.num_tasks_succeeded):.3f}{END}",
+            f"  Input Cost per 1M Tokens: {COST}${self.cost_info.input_cost_per_million:.3f}{END}",
+            f"  Output Cost per 1M Tokens: {COST}${self.cost_info.output_cost_per_million:.3f}{END}",
+            "",
+            f"{HEADER}Performance Statistics:{END}",
+            f"  Total Time: {METRIC}{elapsed_time:.2f}s{END}",
+            f"  Average Time per Request: {METRIC}{elapsed_time / max(1, self.request_stats.num_tasks_succeeded):.2f}s{END}",
+            f"  Requests per Minute: {METRIC}{rpm:.1f}{END}",
+            f"  Max Concurrent Requests: {METRIC}{self.performance_stats.max_concurrent_requests}{END}",
+            f"  Input Tokens per Minute: {METRIC}{input_tpm:.1f}{END}",
+            f"  Output Tokens per Minute: {METRIC}{output_tpm:.1f}{END}",
+        ]
+        logger.info("\n".join(stats))

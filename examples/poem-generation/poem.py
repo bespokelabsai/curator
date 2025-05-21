@@ -37,7 +37,7 @@ class TopicGenerator(curator.LLM):
 # We instantiate the topic generator and call it to generate topics
 topic_generator = TopicGenerator(model_name="gpt-4o-mini")
 topics: Dataset = topic_generator()
-print(topics["topic"])
+print(topics.dataset["topic"])
 
 
 # Define a list of poems.
@@ -65,7 +65,7 @@ class Poet(curator.LLM):
 # We instantiate the poet and apply it to the topics dataset
 poet = Poet(model_name="gpt-4o-mini")
 poems = poet(topics)
-print(poems.to_pandas())
+print(poems.dataset.to_pandas())
 
 # Expected output:
 #                                           topic                                               poem

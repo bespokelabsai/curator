@@ -22,4 +22,4 @@ questions = [
 ]
 ds = llm(questions)
 # Check the first response
-print(ds[0])
+print(ds.dataset[0])
