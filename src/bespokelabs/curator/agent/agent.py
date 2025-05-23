@@ -4,6 +4,7 @@ import typing as t
 from xxhash import xxh64
 
 from bespokelabs import curator
+from bespokelabs.curator.agent.agent_response import MultiTurnResponse
 from bespokelabs.curator.agent.processor import MultiTurnAgenticProcessor
 from bespokelabs.curator.llm.llm import _CURATOR_DEFAULT_CACHE_DIR
 from bespokelabs.curator.log import logger
@@ -83,7 +84,7 @@ class MultiTurnAgents:
         assert self.seeder.name != self.partner.name, "Seeder and partner must have different names"
         self._processor = MultiTurnAgenticProcessor(self.seeder, self.partner, self.max_length, self.seed_message)
 
-    def __call__(self, working_dir: t.Optional[str] = None):
+    def __call__(self, working_dir: t.Optional[str] = None) -> MultiTurnResponse:
         """Execute the multi-turn conversation between the agents.
 
         This method runs the conversation simulation and saves the results
@@ -95,7 +96,7 @@ class MultiTurnAgents:
                 will be stored. If None, uses environment variable or default.
 
         Returns:
-            Any: The result of the conversation simulation.
+            MultiTurnResponse: A response object containing the conversation results and statistics.
         """
         if working_dir is None:
             working_dir = os.environ.get(
@@ -109,4 +110,21 @@ class MultiTurnAgents:
         working_dir = os.path.join(working_dir, fingerprint)
         os.makedirs(working_dir, exist_ok=True)
         logger.info(f"Running multi turn simulation, find results in {working_dir}")
-        return run_in_event_loop(self._processor.run(working_dir=working_dir))
+
+        # Run the conversation and get the dataset
+        dataset = run_in_event_loop(self._processor.run(working_dir=working_dir))
+
+        # Create and populate the response object
+        response = MultiTurnResponse(
+            dataset=dataset,
+            cache_dir=working_dir,
+            conversation_history=self._processor.conversation_history,
+            seeder_model=self.seeder.prompt_formatter.model_name,
+            partner_model=self.partner.prompt_formatter.model_name,
+            metadata={"max_length": self.max_length, "seeder_name": self.seeder.name, "partner_name": self.partner.name, "seed_message": self.seed_message},
+        )
+
+        # Update statistics from the processor's status tracker
+        response.update_tracker_stats(self._processor.status_tracker)
+
+        return response

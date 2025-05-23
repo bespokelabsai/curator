@@ -68,7 +68,7 @@ def main():
     # Print the conversation
     print("\nConversation History:")
     print("====================")
-    for message in result.to_list():
+    for message in result.dataset.to_list():
         role = message["name"].capitalize()
         content = message["response"]
         print(f"\n{role}: {content}")
