@@ -58,5 +58,5 @@ def test_basic_conversation(temp_working_dir):
         convo = "".join([recipe[0] for recipe in df.values.tolist()])
         hash_convo = hashlib.sha256(convo.encode("utf-8")).hexdigest()
         assert hash_convo == "072b0624b1c4f74ad2d2da9952ca14580edbc150a569f59e4d5c5b451568dd27"
-        assert "response" in df.columns
-        assert "name" in df.columns
+        assert "content" in df.columns
+        assert "role" in df.columns
