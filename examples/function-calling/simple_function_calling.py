@@ -86,7 +86,7 @@ dataset = Dataset.from_dict(
 
 function_calls = llm(dataset)
 # The model is expected to return a function call for each row
-print(function_calls.to_pandas())
+print(function_calls.dataset.to_pandas())
 
 dataset_2 = Dataset.from_dict(
     {
@@ -97,7 +97,7 @@ dataset_2 = Dataset.from_dict(
 
 function_calls = llm(dataset_2)
 # Since the tools are specified in the wrong order, the model will return a message instead of a function call
-print(function_calls.to_pandas())
+print(function_calls.dataset.to_pandas())
 
 llm_2 = FunctionCallGenerator(
     model_name="gpt-4o-mini",
@@ -111,4 +111,4 @@ llm_2 = FunctionCallGenerator(
 # Uncomment the following line to see the error
 
 # function_calls = llm_2(dataset_2)
-# print(function_calls.to_pandas())
+# print(function_calls.dataset.to_pandas())
