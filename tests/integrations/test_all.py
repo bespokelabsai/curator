@@ -342,7 +342,6 @@ def test_batch_cancel(
     mock_dataset,
 ):
     os.environ["CURATOR_VIEWER"] = "false"
-    os.environ["HOSTED_CURATOR_VIEWER"] = "false"
 
     temp_working_dir, backend, vcr_config = temp_working_dir
     with vcr_config.use_cassette("batch_cancel.yaml") as cassette:
