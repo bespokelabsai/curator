@@ -197,7 +197,7 @@ class MultiTurnAgenticProcessor:
                 for line in f_in:
                     response = AgentResponse.model_validate_json(line)
                     row = response.model_dump()
-                    response = {"response": row["response_message"], "name": row["name"]}
+                    response = {"content": row["response_message"], "role": row["name"]}
                     # Write the row to the arrow file
                     writer.write(response)
 
