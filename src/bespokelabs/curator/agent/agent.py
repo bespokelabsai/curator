@@ -89,6 +89,76 @@ class MultiTurnAgents:
         assert self.seeder.name != self.partner.name, "Seeder and partner must have different names"
         self._processor = MultiTurnAgenticProcessor(self.seeder, self.partner, self.max_length, self.seed_message)
 
+    def _setup_viewer_metadata(self, fingerprint: str) -> dict:
+        """Set up metadata for the curator viewer.
+
+        Args:
+            fingerprint (str): The unique fingerprint for this run.
+
+        Returns:
+            dict: Metadata dictionary for the viewer.
+        """
+        # Get the source code of both agents' prompt functions
+        seeder_prompt_func = _get_function_source(self.seeder.prompt_formatter.prompt_func)
+        partner_prompt_func = _get_function_source(self.partner.prompt_formatter.prompt_func)
+        seeder_parse_func = _get_function_source(self.seeder.prompt_formatter.parse_func)
+        partner_parse_func = _get_function_source(self.partner.prompt_formatter.parse_func)
+
+        return {
+            "run_hash": fingerprint,
+            "dataset_hash": fingerprint,
+            "prompt_func": f"Seeder ({self.seeder.name}):\n{seeder_prompt_func}\n\nPartner ({self.partner.name}):\n{partner_prompt_func}",
+            "parse_func": f"Seeder ({self.seeder.name}):\n{seeder_parse_func}\n\nPartner ({self.partner.name}):\n{partner_parse_func}",
+            "model_name": f"{self.seeder.prompt_formatter.model_name} + {self.partner.prompt_formatter.model_name}",
+            "response_format": "N/A",
+            "batch_mode": False,
+            "status": "COMPLETED",
+            "timestamp": datetime.now().isoformat(),
+        }
+
+    def _handle_viewer_push(self, viewer_client: Client, dataset, metadata_dict: dict, working_dir: str) -> str | None:
+        """Handle pushing the dataset to the curator viewer.
+
+        Args:
+            viewer_client (Client): The curator viewer client.
+            dataset: The dataset to push.
+            metadata_dict (dict): Metadata for the viewer.
+            working_dir (str): The working directory for this run.
+
+        Returns:
+            str | None: The viewer URL if successful, None otherwise.
+        """
+        # Create or get existing session
+        metadata_db_path = os.path.join(working_dir, "metadata.db")
+        metadata_db = MetadataDB(metadata_db_path)
+        existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
+        existing_viewer_sync = metadata_db.check_existing_hosted_sync(metadata_dict["run_hash"])
+
+        if not existing_viewer_sync and existing_session_id:
+            session_id = viewer_client.create_session(metadata_dict)
+        else:
+            session_id = viewer_client.create_session(metadata_dict, session_id=existing_session_id)
+
+        metadata_dict["session_id"] = session_id
+        metadata_dict["is_hosted_viewer_synced"] = False
+        metadata_db.store_metadata(metadata_dict)
+
+        # Push dataset to viewer
+        if existing_session_id is None:
+            # No existing session, push the dataset
+            push_to_viewer(dataset, session_id=session_id)
+        else:
+            # Warn about existing session
+            msg = (
+                f"Found existing session with run hash {metadata_dict['run_hash']}. "
+                "The dataset has already been pushed to the Curator Viewer. "
+                "If you want to push a new version, please use a different run hash."
+            )
+            logger.warning(msg)
+
+        metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
+        return viewer_client.curator_viewer_url
+
     def __call__(self, working_dir: t.Optional[str] = None) -> MultiTurnResponse:
         """Execute the multi-turn conversation between the agents.
 
@@ -116,11 +186,8 @@ class MultiTurnAgents:
         os.makedirs(working_dir, exist_ok=True)
         logger.info(f"Running multi turn simulation, find results in {working_dir}")
 
-        # Set up viewer client if CURATOR_VIEWER is enabled
-        viewer_client = None
-        if os.getenv("HOSTED_CURATOR_VIEWER", "").lower() in ["true", "1"]:
-            viewer_client = Client(hosted=True)
-            self._processor.viewer_client = viewer_client
+        viewer_client = Client()
+        self._processor.viewer_client = viewer_client
 
         # Run the conversation and get the dataset
         dataset = run_in_event_loop(self._processor.run(working_dir=working_dir))
@@ -145,62 +212,14 @@ class MultiTurnAgents:
         # Update statistics from the processor's status tracker
         response.update_tracker_stats(self._processor.status_tracker)
 
-        # Push to viewer if enabled
-        if viewer_client is not None:
-            # Get the source code of both agents' prompt functions
-            seeder_prompt_func = _get_function_source(self.seeder.prompt_formatter.prompt_func)
-            partner_prompt_func = _get_function_source(self.partner.prompt_formatter.prompt_func)
-            seeder_parse_func = _get_function_source(self.seeder.prompt_formatter.parse_func)
-            partner_parse_func = _get_function_source(self.partner.prompt_formatter.parse_func)
-
-            metadata_dict = {
-                "run_hash": fingerprint,
-                "dataset_hash": fingerprint,
-                "prompt_func": f"Seeder ({self.seeder.name}):\n{seeder_prompt_func}\n\nPartner ({self.partner.name}):\n{partner_prompt_func}",
-                "parse_func": f"Seeder ({self.seeder.name}):\n{seeder_parse_func}\n\nPartner ({self.partner.name}):\n{partner_parse_func}",
-                "model_name": f"{self.seeder.prompt_formatter.model_name} + {self.partner.prompt_formatter.model_name}",
-                "response_format": "N/A",
-                "batch_mode": False,
-                "status": "COMPLETED",
-                "timestamp": datetime.now().isoformat(),
-            }
-
-            # Create or get existing session
-            metadata_db_path = os.path.join(working_dir, "metadata.db")
-            metadata_db = MetadataDB(metadata_db_path)
-            existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
-            existing_viewer_sync = metadata_db.check_existing_hosted_sync(metadata_dict["run_hash"])
-
-            if not existing_viewer_sync and existing_session_id:
-                session_id = viewer_client.create_session(metadata_dict)
-            else:
-                session_id = viewer_client.create_session(metadata_dict, session_id=existing_session_id)
-
-            metadata_dict["session_id"] = session_id
-            metadata_dict["is_hosted_viewer_synced"] = False
-            metadata_db.store_metadata(metadata_dict)
-
-            # Push dataset to viewer
-            if existing_session_id is None:
-                # No existing session, push the dataset
-                if viewer_client.hosted:
-                    push_to_viewer(dataset, session_id=session_id)
-            else:
-                # Warn about existing session
-                msg = (
-                    f"Found existing session with run hash {metadata_dict['run_hash']}. "
-                    "The dataset has already been pushed to the Curator Viewer. "
-                    "If you want to push a new version, please use a different run hash."
-                )
-                logger.warning(msg)
-
-            if viewer_client.hosted:
-                metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
-                # Add viewer URL to response and log it
-                response.viewer_url = viewer_client.curator_viewer_url
-                if response.viewer_url:
-                    logger.info(f"Curator Viewer: {response.viewer_url}")
-                else:
-                    logger.info(f"Curator Viewer: Disabled (Set CURATOR_VIEWER=1 to view at {PUBLIC_CURATOR_VIEWER_HOME_URL})")
+        # Handle viewer push if enabled
+        if viewer_client.hosted:
+            metadata_dict = self._setup_viewer_metadata(fingerprint)
+            viewer_url = self._handle_viewer_push(viewer_client, dataset, metadata_dict, working_dir)
+            response.viewer_url = viewer_url
+            if viewer_url:
+                logger.info(f"Curator Viewer: {viewer_url}")
+        else:
+            logger.info(f"Curator Viewer: Disabled (Set CURATOR_VIEWER=1 to view at {PUBLIC_CURATOR_VIEWER_HOME_URL})")
 
         return response
