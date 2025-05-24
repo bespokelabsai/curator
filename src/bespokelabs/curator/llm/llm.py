@@ -78,6 +78,7 @@ class LLM:
         generation_params: dict | None = None,
         backend_params: BackendParamsType | None = None,
         system_prompt: str | None = None,
+        default_app_id: Optional[str] = None,
     ):
         """Initialize a LLM.
 
@@ -117,6 +118,7 @@ class LLM:
                     - gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
                     - batch_size: The size of the batch to use, only used if batch is True
             system_prompt: The system prompt to use for the LLM
+            default_app_id: The default application ID to use when opening datasets in Curator Viewer
         """
         generation_params = generation_params or {}
 
@@ -142,6 +144,8 @@ class LLM:
             generation_params=generation_params,
             return_completions_object=self.return_completions_object,
         )
+
+        self.default_app_id = default_app_id
 
     def _hash_fingerprint(self, dataset_hash: str = "", disable_cache: bool = False):
         if disable_cache:
@@ -261,6 +265,7 @@ class LLM:
             "response_format": (str(self.prompt_formatter.response_format.model_json_schema()) if self.prompt_formatter.response_format else "text"),
             "run_hash": fingerprint,
             "batch_mode": self.batch_mode,
+            "default_app_id": self.default_app_id,
         }
 
         existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
