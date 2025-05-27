@@ -265,8 +265,11 @@ class LLM:
             "response_format": (str(self.prompt_formatter.response_format.model_json_schema()) if self.prompt_formatter.response_format else "text"),
             "run_hash": fingerprint,
             "batch_mode": self.batch_mode,
-            "default_app_id": self.default_app_id,
         }
+        
+        # Only include default_app_id in metadata dictionary if it's not None
+        if self.default_app_id is not None:
+            metadata_dict["default_app_id"] = self.default_app_id
 
         existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
         existing_viewer_sync = metadata_db.check_existing_hosted_sync(metadata_dict["run_hash"])
