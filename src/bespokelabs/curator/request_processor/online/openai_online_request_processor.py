@@ -227,6 +227,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             - gpt-4o-mini with date >= 2024-07-18 or latest
             - gpt-4o with date >= 2024-08-06 or latest
             - o1 with date >= 2024-12-17 or latest
+            - o3 with date >= 2025-04-16 or latest
             - o3-mini with date >= 2025-01-31 or latest
             - gpt-4.1 latest
             - gpt-4.1-mini latest
@@ -242,8 +243,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             if mini_date >= datetime(2024, 7, 18):
                 return True
 
-        # Check gpt-4o, o1, o3-mini, gpt-4.1 support.
-        if model_name in ["gpt-4o", "o1"]:  # Latest version
+        # Check gpt-4o, o1, o3, o3-mini, gpt-4.1 support.
+        if model_name in ["gpt-4o", "o1", "o3"]:  # Latest version
             return True
         if "gpt-4o-" in model_name:
             base_date = datetime.datetime.strptime(model_name.split("gpt-4o-")[1], "%Y-%m-%d")
@@ -252,6 +253,10 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         if "o1-" in model_name:
             base_date = datetime.datetime.strptime(model_name.split("o1-")[1], "%Y-%m-%d")
             if base_date >= datetime.datetime(2024, 12, 17):  # Support o1 dated versions from 2024-12-17
+                return True
+        if "o3-" in model_name and not model_name.startswith("o3-mini"):
+            base_date = datetime.datetime.strptime(model_name.split("o3-")[1], "%Y-%m-%d")
+            if base_date >= datetime.datetime(2025, 4, 16):  # Support o3 dated versions from 2025-01-31
                 return True
         if "o3-mini-" in model_name:
             base_date = datetime.datetime.strptime(model_name.split("o3-mini-")[1], "%Y-%m-%d")
