@@ -256,7 +256,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                 return True
         if "o3-" in model_name and not model_name.startswith("o3-mini"):
             base_date = datetime.datetime.strptime(model_name.split("o3-")[1], "%Y-%m-%d")
-            if base_date >= datetime.datetime(2025, 4, 16):  # Support o3 dated versions from 2025-01-31
+            if base_date >= datetime.datetime(2025, 4, 16):  # Support o3 dated versions from 2025-04-16
                 return True
         if "o3-mini-" in model_name:
             base_date = datetime.datetime.strptime(model_name.split("o3-mini-")[1], "%Y-%m-%d")
