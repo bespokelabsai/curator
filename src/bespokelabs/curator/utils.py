@@ -5,16 +5,17 @@ import os
 import typing as t
 import uuid
 
+import pandas as pd
 import requests
 from datasets import Dataset, DatasetDict
 from datasets import load_dataset as hf_load_dataset
 from requests.models import CONTENT_CHUNK_SIZE
 from rich.progress import Progress
 
-from bespokelabs.curator import _CONSOLE, constants
+from bespokelabs.curator import constants
 from bespokelabs.curator.client import Client, _SessionStatus
 from bespokelabs.curator.constants import _CURATOR_DEFAULT_CACHE_DIR
-from bespokelabs.curator.log import USE_RICH_DISPLAY
+from bespokelabs.curator.log import _CONSOLE, USE_RICH_DISPLAY
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
 logger = logging.getLogger(__name__)
@@ -119,7 +120,18 @@ def load_dataset(dataset_id: str):
     if os.path.exists(cache_file):
         logger.debug(f"Loading dataset {dataset_id} from cache")
         try:
-            return hf_load_dataset("parquet", cache_file)
+            df = pd.read_parquet(cache_file)
+
+            # Convert serialized data to dictionaries
+            df["data"] = df["data"].apply(lambda x: json.loads(x) if isinstance(x, str) else x)
+
+            # Create a new DataFrame with unpacked columns
+            unpacked_data = pd.json_normalize(df["data"])
+
+            # Combine with the original DataFrame, excluding the serialized data column
+            df = pd.concat([df.drop("data", axis=1), unpacked_data], axis=1)
+
+            return Dataset.from_pandas(df)
         except Exception as e:
             logger.warning(f"Failed to load dataset from cache: {e}")
             logger.warning(f"Removing corrupted cache file: {cache_file}, redownload the dataset")
@@ -134,5 +146,13 @@ def load_dataset(dataset_id: str):
                 if chunk:
                     f.write(chunk)
 
-    # Return the dataset
-    return hf_load_dataset("parquet", cache_file)
+    # Read and process the dataset
+    df = pd.read_parquet(cache_file)
+
+    df["data"] = df["data"].apply(lambda x: json.loads(x) if isinstance(x, str) else x)
+    unpacked_data = pd.json_normalize(df["data"])
+
+    df = pd.concat([df.drop("data", axis=1), unpacked_data], axis=1)
+
+    df.to_parquet(cache_file)
+    return Dataset.from_pandas(df)
