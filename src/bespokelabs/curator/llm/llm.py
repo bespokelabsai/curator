@@ -281,6 +281,7 @@ class LLM:
             parse_func_hash=parse_func_hash,
             prompt_formatter=self.prompt_formatter,
         )
+        viewer_url = self._request_processor.viewer_client.curator_viewer_url
 
         if existing_session_id is not None and existing_viewer_sync is False:
             msg = (
@@ -292,7 +293,7 @@ class LLM:
                 logger.warning(msg)
                 from bespokelabs.curator.utils import push_to_viewer
 
-                push_to_viewer(dataset, session_id=session_id)
+                viewer_url = push_to_viewer(dataset, session_id=session_id)
 
         if self._request_processor.viewer_client.hosted:
             metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
@@ -305,7 +306,7 @@ class LLM:
                 cache_dir=run_cache_dir,
                 dataset=dataset,
                 batch_mode=self.batch_mode,
-                viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+                viewer_url=viewer_url,
                 failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl"))
                 if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl"))
                 else None,
@@ -320,7 +321,7 @@ class LLM:
                 response = CuratorResponse(
                     dataset=dataset,
                     cache_dir=run_cache_dir,
-                    viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+                    viewer_url=viewer_url,
                     batch_mode=self.batch_mode,
                     failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl"))
                     if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl"))
