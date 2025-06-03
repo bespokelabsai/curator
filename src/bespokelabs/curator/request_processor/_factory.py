@@ -51,7 +51,7 @@ class _RequestProcessorFactory:
 
         from litellm.litellm_core_utils.get_llm_provider_logic import get_llm_provider
 
-        _, provider, _ = get_llm_provider(model_name)
+        _, provider, _, _ = get_llm_provider(model_name)
         if provider == "openai":
             logger.info(f"Requesting output from {model_name}, using OpenAI backend")
             return "openai"

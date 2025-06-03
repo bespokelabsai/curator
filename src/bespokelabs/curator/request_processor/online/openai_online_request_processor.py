@@ -228,7 +228,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         if model_name in ["deepseek-reasoner", "deepseek-chat"] and "api.deepseek.com" in self.url:
             return True
-        if self.url is not None:
+        if self.config.base_url is not None:
             return self._check_structured_output_support_via_api()
         from litellm import supports_response_schema
 
@@ -241,16 +241,16 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             age: int
 
         try:
-            client = openai.OpenAI(api_key=self.api_key, base_url=self.url)
-            client.responses.parse(
+            client = openai.OpenAI(api_key=self.api_key, base_url=self.config.base_url)
+            client.beta.chat.completions.parse(
                 model=self.config.model,
-                input=[
+                messages=[
                     {
                         "role": "user",
                         "content": "Jason is 25 years old.",
                     },
                 ],
-                text_format=User,
+                response_format=User,
             )
             logger.info(f"Model {self.config.model} supports structured output via OpenAI functions")
             return True
