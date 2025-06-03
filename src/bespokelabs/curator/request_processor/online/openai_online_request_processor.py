@@ -6,8 +6,10 @@ from typing import TypeVar
 
 import aiohttp
 import litellm
+import openai
 import requests
 import tiktoken
+from pydantic import BaseModel
 
 from bespokelabs.curator.cost import cost_processor_factory
 from bespokelabs.curator.file_utilities import get_base64_size
@@ -226,10 +228,35 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
 
         if model_name in ["deepseek-reasoner", "deepseek-chat"] and "api.deepseek.com" in self.url:
             return True
+        if self.url is not None:
+            return self._check_structured_output_support_via_api()
         from litellm import supports_response_schema
 
         # Check if model supports Pydantic models / json_schema
-        return supports_response_schema(model_name=model_name)
+        return supports_response_schema(model=model_name)
+
+    def _check_structured_output_support_via_api(self) -> bool:
+        class User(BaseModel):
+            name: str
+            age: int
+
+        try:
+            client = openai.OpenAI(api_key=self.api_key, base_url=self.url)
+            client.responses.parse(
+                model=self.config.model,
+                input=[
+                    {
+                        "role": "user",
+                        "content": "Jason is 25 years old.",
+                    },
+                ],
+                text_format=User,
+            )
+            logger.info(f"Model {self.config.model} supports structured output via OpenAI functions")
+            return True
+        except Exception as e:
+            logger.warning(f"Model {self.config.model} does not support structured output via OpenAI functions: {e}")
+            return False
 
     def file_upload_limit_check(self, base64_image: str) -> None:
         """Check if the image size is within the allowed limit."""

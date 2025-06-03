@@ -49,17 +49,12 @@ class _RequestProcessorFactory:
     ) -> str:
         model_name = model_name.lower()
 
-        # TODO: Move the following logic to corresponding client implementation
-        # GPT-4o models with response format should use OpenAI
-        if response_format and _RequestProcessorFactory._check_openai_structured_output_support(config_params):
-            logger.info(f"Requesting structured output from {model_name}, using OpenAI backend")
-            return "openai"
+        from litellm.litellm_core_utils.get_llm_provider_logic import get_llm_provider
 
-        # GPT models and O1 models and DeepSeek without response format should use OpenAI
-        if not response_format and any(x in model_name for x in ["gpt-", "o1-preview", "o1-mini"]):
-            logger.info(f"Requesting text output from {model_name}, using OpenAI backend")
+        _, provider, _ = get_llm_provider(model_name)
+        if provider == "openai":
+            logger.info(f"Requesting output from {model_name}, using OpenAI backend")
             return "openai"
-
         if "claude" in model_name:
             logger.info(f"Requesting output from {model_name}, using Anthropic backend")
             return "anthropic"
