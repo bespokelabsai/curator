@@ -109,7 +109,10 @@ def test_online_status_tracker_external_model_cost_error():
 def test_online_status_tracker_external_model_cost_missing_keys():
     """Test that missing keys in external_model_cost result don't cause KeyError."""
     with patch("bespokelabs.curator.status_tracker.online_status_tracker.model_cost", {}):
-        with patch("bespokelabs.curator.status_tracker.online_status_tracker.external_model_cost", return_value={}):
+        with patch(
+            "bespokelabs.curator.status_tracker.online_status_tracker.external_model_cost",
+            return_value={"input_cost_per_token": None, "output_cost_per_token": None},
+        ):
             tracker = OnlineStatusTracker()
             tracker.model = "unknown-model"
             # Should not raise KeyError and should set costs to None
