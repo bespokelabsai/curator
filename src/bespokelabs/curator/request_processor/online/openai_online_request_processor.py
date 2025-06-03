@@ -217,57 +217,19 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         return _TokenUsage(input=num_tokens, output=output_tokens)
 
     def check_structured_output_support(self) -> bool:
-        """Check if the model supports structured output based on model name and date.
+        """Check if the model supports structured output based on model name via litellm.
 
         Returns:
             bool: True if model supports structured output, False otherwise
-
-        Note:
-            Supports:
-            - gpt-4o-mini with date >= 2024-07-18 or latest
-            - gpt-4o with date >= 2024-08-06 or latest
-            - o1 with date >= 2024-12-17 or latest
-            - o3 with date >= 2025-04-16 or latest
-            - o3-mini with date >= 2025-01-31 or latest
-            - gpt-4.1 latest
-            - gpt-4.1-mini latest
-            - gpt-4.1-nano latest
         """
         model_name = self.config.model.lower()
 
-        # Check gpt-4o-mini support.
-        if model_name == "gpt-4o-mini":  # Latest version
-            return True
-        if "gpt-4o-mini-" in model_name:
-            mini_date = datetime.datetime.strptime(model_name.split("gpt-4o-mini-")[1], "%Y-%m-%d")
-            if mini_date >= datetime(2024, 7, 18):
-                return True
-
-        # Check gpt-4o, o1, o3, o3-mini, gpt-4.1 support.
-        if model_name in ["gpt-4o", "o1", "o3"]:  # Latest version
-            return True
-        if "gpt-4o-" in model_name:
-            base_date = datetime.datetime.strptime(model_name.split("gpt-4o-")[1], "%Y-%m-%d")
-            if base_date >= datetime.datetime(2024, 8, 6):
-                return True
-        if "o1-" in model_name:
-            base_date = datetime.datetime.strptime(model_name.split("o1-")[1], "%Y-%m-%d")
-            if base_date >= datetime.datetime(2024, 12, 17):  # Support o1 dated versions from 2024-12-17
-                return True
-        if "o3-" in model_name and not model_name.startswith("o3-mini"):
-            base_date = datetime.datetime.strptime(model_name.split("o3-")[1], "%Y-%m-%d")
-            if base_date >= datetime.datetime(2025, 4, 16):  # Support o3 dated versions from 2025-04-16
-                return True
-        if "o3-mini-" in model_name:
-            base_date = datetime.datetime.strptime(model_name.split("o3-mini-")[1], "%Y-%m-%d")
-            if base_date >= datetime.datetime(2025, 1, 31):  # Support o3-mini dated versions from 2025-01-31
-                return True
-        # Source: https://platform.openai.com/docs/models/gpt-4.1, https://platform.openai.com/docs/models/gpt-4.1-mini, https://platform.openai.com/docs/models/gpt-4.1-nano
-        if "gpt-4.1" in model_name:
-            return True
         if model_name in ["deepseek-reasoner", "deepseek-chat"] and "api.deepseek.com" in self.url:
             return True
-        return False
+        from litellm import supports_response_schema
+
+        # Check if model supports Pydantic models / json_schema
+        return supports_response_schema(model_name=model_name)
 
     def file_upload_limit_check(self, base64_image: str) -> None:
         """Check if the image size is within the allowed limit."""
