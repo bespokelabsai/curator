@@ -92,12 +92,12 @@ def main():
     subject_dataset = subject_generator()
 
     subsubject_generator = SubsubjectGenerator(model_name="gpt-4o-mini")
-    subsubject_dataset = subsubject_generator(subject_dataset)
+    subsubject_dataset = subsubject_generator(subject_dataset.dataset)
 
     qa_generator = QAGenerator(model_name="gpt-4o-mini")
-    qa_dataset = qa_generator(subsubject_dataset)
+    qa_dataset = qa_generator(subsubject_dataset.dataset)
     qa_dataset = qa_dataset.map(lambda row: {"answer": row["answer"].strip()}, num_proc=2)
-    print(qa_dataset.to_pandas())
+    print(qa_dataset.dataset.to_pandas())
 
 
 if __name__ == "__main__":

@@ -65,13 +65,13 @@ def _get_litellm_cost_map(model, completion_window="*", provider="default"):
 def external_model_cost(model, completion_window="*", provider="default"):
     """Get the cost of the model from the external providers registered."""
     if provider not in _DEFAULT_COST_MAP["external"]["providers"]:
-        return {"input_cost_per_token": 0.0, "output_cost_per_token": 0.0}
+        return {"input_cost_per_token": None, "output_cost_per_token": None}
     provider_cost = _DEFAULT_COST_MAP["external"]["providers"][provider]["cost"]
     if model not in provider_cost:
-        raise ValueError(f"Model {model} is not supported by {provider}.")
+        raise KeyError(f"Model {model} is not supported by {provider}.")
 
     if completion_window not in provider_cost[model]["input_cost_per_million"]:
-        raise ValueError(f"Completion window {completion_window} is not supported for {model} by {provider}.")
+        raise KeyError(f"Completion window {completion_window} is not supported for {model} by {provider}.")
 
     cost = provider_cost[model]["input_cost_per_million"][completion_window]
     return {"input_cost_per_token": cost / 1e6, "output_cost_per_token": cost / 1e6}

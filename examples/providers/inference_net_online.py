@@ -9,4 +9,4 @@ llm = LLM(
 )
 
 response = llm("Write a short story about a dog and a cat.")
-print(response[0]["response"])
+print(response.dataset[0]["response"])

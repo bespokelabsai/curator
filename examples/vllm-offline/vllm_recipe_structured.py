@@ -91,7 +91,7 @@ def main():
     recipes = recipe_generator(cuisines)
 
     # Print results
-    print(recipes.to_pandas())
+    print(recipes.dataset.to_pandas())
 
 
 if __name__ == "__main__":

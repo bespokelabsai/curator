@@ -356,9 +356,10 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
     def _upload_batch_file(self, requests: list, metadata: dict):
         path = metadata["request_file"]
         filename = os.path.basename(path)
-        gcs_path = f"gs://{self._bucket_name}/batch_requests/{filename}"
+        cache_dir = os.path.basename(self.working_dir)
+        gcs_path = f"gs://{self._bucket_name}/batch_requests/{cache_dir}/{filename}"
         try:
-            blob_name = f"batch_requests/{filename}"
+            blob_name = f"batch_requests/{cache_dir}/{filename}"
             blob = self._bucket.blob(blob_name)
             jsonl_data = "\n".join(json.dumps(item, ensure_ascii=False) for item in requests)
             blob.upload_from_string(jsonl_data, content_type="application/jsonl+json")
@@ -370,7 +371,8 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         return gcs_path
 
     def _create_batch(self, input_dataset: str):
-        output_bucket = f"gs://{self._bucket_name}"
+        cache_dir = os.path.basename(self.working_dir)
+        output_bucket = f"gs://{self._bucket_name}/batch_requests/{cache_dir}"
         try:
             job = BatchPredictionJob.submit(source_model=self.config.model, input_dataset=input_dataset, output_uri_prefix=output_bucket)
         except Exception as e:
@@ -433,14 +435,14 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
             request_file = self.tracker.submitted_batches[batch.id].request_file
             return self.parse_api_specific_batch_object(job, request_file=request_file)
 
-    async def download_batch(self, batch: GenericBatch) -> list[dict] | None:
+    async def download_batch(self, batch: GenericBatch) -> t.Iterable[dict] | None:
         """Downloads the results of a completed batch.
 
         Args:
             batch: The batch object to download results for.
 
         Returns:
-            list[dict]: List of response dictionaries.
+            t.Iterable[dict]: Iterable of response dictionaries.
             None: If download fails.
 
         Side Effects:
@@ -449,23 +451,24 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         """
         async with self.semaphore:
             # TODO: validate batch (check if it even makes sense)
-
-            responses = []
             job = self._get_batch_job_object(batch.id)
             if not job.done():
                 logger.warning(f"Batch {batch.id} is not finished yet. Cannot download results.")
                 return None
-            try:
+
+            async def response_generator():
                 for result in job.iter_outputs():
                     content = result.download_as_string().decode("utf-8")
                     if not content:
                         continue
                     for line in content.splitlines():
-                        responses.append(json.loads(line))
-            except Exception as e:
-                logger.error(f"Failed to download or partially downloaded batch {batch.id} : {e}")
-                return responses
-            return responses
+                        try:
+                            yield json.loads(line)
+                        except Exception as e:
+                            logger.warning(f"Could not parse line {line} :: reason {e}, skipping")
+                            continue
+
+            return response_generator()
 
     async def cancel_batch(self, batch: GenericBatch) -> GenericBatch:
         """Cancels a running batch job.

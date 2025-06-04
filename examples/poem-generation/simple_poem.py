@@ -22,4 +22,4 @@ poems = llm(
         "Write a haiku about the importance of data in AI.",
     ]
 )
-print(poems.to_pandas()["response"].tolist())
+print(poems.dataset.to_pandas()["response"].tolist())

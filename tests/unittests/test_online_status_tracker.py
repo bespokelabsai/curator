@@ -1,4 +1,5 @@
 from io import StringIO
+from unittest.mock import patch
 
 from rich.console import Console
 
@@ -78,3 +79,44 @@ def test_online_status_tracker_final_stats():
     assert "1,000" in captured  # Input tokens
     assert "2,000" in captured  # Output tokens
     assert "$0.123" in captured  # Cost
+
+
+def test_online_status_tracker_missing_cost_keys():
+    """Test that missing cost keys in model pricing don't cause KeyError."""
+    with patch("bespokelabs.curator.status_tracker.online_status_tracker.model_cost", {"test-model": {}}):
+        tracker = OnlineStatusTracker()
+        tracker.model = "test-model"
+        # Should not raise KeyError and should set costs to None
+        assert tracker.input_cost_per_million is None
+        assert tracker.output_cost_per_million is None
+        assert "N/A" in tracker.input_cost_str
+        assert "N/A" in tracker.output_cost_str
+
+
+def test_online_status_tracker_external_model_cost_error():
+    """Test that external_model_cost errors are handled gracefully."""
+    with patch("bespokelabs.curator.status_tracker.online_status_tracker.model_cost", {}):
+        with patch("bespokelabs.curator.status_tracker.online_status_tracker.external_model_cost", side_effect=KeyError("Missing key")):
+            tracker = OnlineStatusTracker()
+            tracker.model = "unknown-model"
+            # Should not raise KeyError and should set costs to None
+            assert tracker.input_cost_per_million is None
+            assert tracker.output_cost_per_million is None
+            assert "N/A" in tracker.input_cost_str
+            assert "N/A" in tracker.output_cost_str
+
+
+def test_online_status_tracker_external_model_cost_missing_keys():
+    """Test that missing keys in external_model_cost result don't cause KeyError."""
+    with patch("bespokelabs.curator.status_tracker.online_status_tracker.model_cost", {}):
+        with patch(
+            "bespokelabs.curator.status_tracker.online_status_tracker.external_model_cost",
+            return_value={"input_cost_per_token": None, "output_cost_per_token": None},
+        ):
+            tracker = OnlineStatusTracker()
+            tracker.model = "unknown-model"
+            # Should not raise KeyError and should set costs to None
+            assert tracker.input_cost_per_million is None
+            assert tracker.output_cost_per_million is None
+            assert "N/A" in tracker.input_cost_str
+            assert "N/A" in tracker.output_cost_str

@@ -51,5 +51,5 @@ llm = Reasoner(
 dataset = Dataset.from_dict({"problem": ["Find the sum of all integer bases $b > 9$ for which $17_b$ is a divisor of $97_b$."]})  # The answer is 70 (AIME25)
 
 response = llm(dataset)
-print("REASONING: ", response["deepseek_reasoning"])
-print("\n\nSOLUTION: ", response["deepseek_solution"])
+print("REASONING: ", response.dataset["deepseek_reasoning"])
+print("\n\nSOLUTION: ", response.dataset["deepseek_solution"])

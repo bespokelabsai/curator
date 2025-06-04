@@ -5,9 +5,9 @@ llm = curator.LLM(
 )
 
 response = llm("What is the capital of Italy?")
-print(response["response"])
+print(response.dataset["response"])
 
 llm = curator.LLM(model_name="deepseek-ai/DeepSeek-R1", backend="klusterai", batch=True, backend_params={"max_retries": 1, "completion_window": "1h"})
 
 response = llm("What is the capital of Italy?")
-print(response["response"])
+print(response.dataset["response"])

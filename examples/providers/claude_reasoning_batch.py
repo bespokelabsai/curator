@@ -54,4 +54,4 @@ ds = ds.remove_columns(["thinking_trajectories", "cot", "attempt"])
 ds = llm(ds.take(10))
 
 # Change this to your organization and dataset name
-ds.push_to_hub("bespokelabs/test-s1K-claude-3-7-sonnet")
+ds.dataset.push_to_hub("bespokelabs/test-s1K-claude-3-7-sonnet")
