@@ -73,6 +73,7 @@ def main():
 
     # Run the conversation
     result = simulator()
+    breakpoint()
 
     # Print the conversation
     print("\nConversation History:")

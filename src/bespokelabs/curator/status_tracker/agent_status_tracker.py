@@ -48,8 +48,6 @@ class AgentStatusTracker:
         pbar (Optional[tqdm.tqdm]): Progress bar for tracking progress.
         total_tokens (_TokenUsage): Total tokens used in the conversation.
         total_cost (float): Total cost of the conversation.
-        input_cost_per_million (Optional[float]): Cost per million input tokens.
-        output_cost_per_million (Optional[float]): Cost per million output tokens.
     """
 
     seeder_name: str
@@ -66,10 +64,6 @@ class AgentStatusTracker:
     # Token and cost tracking
     total_tokens: _TokenUsage = field(default_factory=_TokenUsage)
     total_cost: float = 0.0
-    input_cost_per_million: t.Optional[float] = None
-    output_cost_per_million: t.Optional[float] = None
-    input_cost_str: str = "[dim]N/A[/dim]"
-    output_cost_str: str = "[dim]N/A[/dim]"
 
     def __post_init__(self):
         """Initialize the tracker."""
