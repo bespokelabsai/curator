@@ -342,7 +342,6 @@ def test_batch_cancel(
     mock_dataset,
 ):
     os.environ["CURATOR_VIEWER"] = "false"
-    os.environ["HOSTED_CURATOR_VIEWER"] = "false"
 
     temp_working_dir, backend, vcr_config = temp_working_dir
     with vcr_config.use_cassette("batch_cancel.yaml") as cassette:
@@ -451,7 +450,7 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         # Verify status tracker output
         captured = output.getvalue()
         assert "Batches: Total: 1 • Submitted: 0⋯ • Downloaded: 1✓" in captured, captured
-        assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 3✓ • Failed: 0✗" in captured, captured
+        assert "Requests: Total: 3 • In Progress: 0⋯ • Succeeded: 3✓ • Failed: 0✗" in captured, captured
         assert "Final Curator Statistics" in captured, captured
         assert "Total Requests             │ 3" in captured, captured
         assert "Successful                 │ 3" in captured, captured
@@ -492,7 +491,7 @@ def test_batch_resubmission(caplog, temp_working_dir, mock_dataset):
         assert "Invalid finish responses: {'length': 1}" in caplog.text
 
         assert "Batches: Total: 3 • Submitted: 0⋯ • Downloaded: 3✓" in captured, captured
-        assert "Requests: Total: 3 • Submitted: 0⋯ • Succeeded: 4✓ • Failed: 1✗" in captured, captured
+        assert "Requests: Total: 3 • In Progress: 0⋯ • Succeeded: 4✓ • Failed: 1✗" in captured, captured
         assert "Final Curator Statistics" in captured, captured
         assert "Total Requests             │ 3" in captured, captured
         assert "Successful                 │ 4" in captured, captured
@@ -589,6 +588,7 @@ def test_basic_offline(temp_working_dir, mock_dataset):
             "is_available": lambda: True,
             "get_device_name": lambda device: "Mock GPU",
             "device_count": lambda: 1,
+            "current_device": lambda: 0,
         },
     )
 
@@ -597,6 +597,7 @@ def test_basic_offline(temp_working_dir, mock_dataset):
         patch("torch.cuda", mock_cuda),
         patch("torch.cuda.synchronize"),
         patch("torch.cuda.empty_cache"),
+        patch("torch.cuda.current_device", lambda: 0),
     ):
         mock_llm.return_value.generate = mock_generate
         mock_llm.return_value.get_tokenizer.return_value.apply_chat_template = mock_apply_chat_template

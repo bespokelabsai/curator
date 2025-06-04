@@ -16,6 +16,7 @@ from rich.table import Table
 from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
+from bespokelabs.curator.cost import external_model_cost
 from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
 from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, DIM, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
@@ -104,13 +105,27 @@ class OnlineStatusTracker:
 
         # Initialize cost strings
         if self.model in model_cost:
-            self.input_cost_per_million = model_cost[self.model]["input_cost_per_token"] * 1_000_000
-            self.output_cost_per_million = model_cost[self.model]["output_cost_per_token"] * 1_000_000
+            model_pricing = model_cost[self.model]
+            if model_pricing.get("input_cost_per_token") is not None:
+                self.input_cost_per_million = model_pricing.get("input_cost_per_token", 0) * 1_000_000
+            else:
+                self.input_cost_per_million = None
+            if model_pricing.get("output_cost_per_token") is not None:
+                self.output_cost_per_million = model_pricing.get("output_cost_per_token", 0) * 1_000_000
+            else:
+                self.output_cost_per_million = None
         else:
-            from bespokelabs.curator.cost import external_model_cost
-
-            self.input_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["input_cost_per_token"] * 1_000_000
-            self.output_cost_per_million = external_model_cost(self.model, provider=self.compatible_provider)["output_cost_per_token"] * 1_000_000
+            try:
+                external_pricing = external_model_cost(self.model, provider=self.compatible_provider)
+                self.input_cost_per_million = (
+                    external_pricing.get("input_cost_per_token", 0) * 1_000_000 if external_pricing.get("input_cost_per_token") is not None else None
+                )
+                self.output_cost_per_million = (
+                    external_pricing.get("output_cost_per_token", 0) * 1_000_000 if external_pricing.get("output_cost_per_token") is not None else None
+                )
+            except (KeyError, TypeError):
+                self.input_cost_per_million = None
+                self.output_cost_per_million = None
 
         # Handle None values for cost per million tokens
         self.input_cost_str = f"[red]${self.input_cost_per_million:.3f}[/red]" if self.input_cost_per_million is not None else "[dim]N/A[/dim]"

@@ -86,7 +86,7 @@ def main(args):
     output = generator(persona_dataset)
     # You can now view this via the curator-viewer (use `curator-viewer` command) or store directly to hf hub.
     # Store the hf dataset to jsonl file.
-    output.to_json(args.output_path)
+    output.dataset.to_json(args.output_path)
 
 
 if __name__ == "__main__":

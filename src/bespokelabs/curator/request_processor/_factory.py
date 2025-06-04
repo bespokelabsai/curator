@@ -105,76 +105,81 @@ class _RequestProcessorFactory:
                 raise ValueError("KLUSTERAI_API_KEY is not set")
             from bespokelabs.curator.request_processor.online.openai_online_request_processor import OpenAIOnlineRequestProcessor
 
-            _request_processor = OpenAIOnlineRequestProcessor(config, compatible_provider="klusterai")
-        elif backend == "klusterai" and batch:
+            return OpenAIOnlineRequestProcessor(config, compatible_provider="klusterai")
+
+        if backend == "klusterai" and batch:
             config.base_url = "https://api.kluster.ai/v1"
             config.api_key = config.api_key or os.getenv("KLUSTERAI_API_KEY")
             if not config.api_key:
-                raise ValueError("KLUSTERAI_API_KEY is not set")
+                raise ValueError("KLUSTERAI_API_KEY is not set.")
             from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
 
-            _request_processor = OpenAIBatchRequestProcessor(config, compatible_provider="klusterai")
-        elif backend == "inference.net" and not batch:
+            return OpenAIBatchRequestProcessor(config, compatible_provider="klusterai")
+
+        if backend == "inference.net" and not batch:
             config.base_url = "https://api.inference.net/v1"
             config.api_key = config.api_key or os.getenv("INFERENCE_API_KEY")
             if not config.api_key:
-                raise ValueError("INFERENCE_API_KEY is not set")
+                raise ValueError("INFERENCE_API_KEY is not set.")
             from bespokelabs.curator.request_processor.online.openai_online_request_processor import OpenAIOnlineRequestProcessor
 
-            _request_processor = OpenAIOnlineRequestProcessor(config, compatible_provider="inference.net")
-        elif backend == "inference.net" and batch:
+            return OpenAIOnlineRequestProcessor(config, compatible_provider="inference.net")
+
+        if backend == "inference.net" and batch:
             config.base_url = "https://batch.inference.net/v1"
             config.api_key = config.api_key or os.getenv("INFERENCE_API_KEY")
             if not config.api_key:
-                raise ValueError("INFERENCE_API_KEY is not set")
+                raise ValueError("INFERENCE_API_KEY is not set.")
             from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
 
-            _request_processor = OpenAIBatchRequestProcessor(config, compatible_provider="inference.net")
-        elif backend == "openai" and not batch:
+            return OpenAIBatchRequestProcessor(config, compatible_provider="inference.net")
+
+        if backend == "openai" and not batch:
             from bespokelabs.curator.request_processor.online.openai_online_request_processor import OpenAIOnlineRequestProcessor
 
-            _request_processor = OpenAIOnlineRequestProcessor(config)
-        elif backend == "openai" and batch:
+            return OpenAIOnlineRequestProcessor(config)
+
+        if backend == "openai" and batch:
             from bespokelabs.curator.request_processor.batch.openai_batch_request_processor import OpenAIBatchRequestProcessor
 
-            _request_processor = OpenAIBatchRequestProcessor(config)
-        elif backend == "anthropic" and batch:
+            return OpenAIBatchRequestProcessor(config)
+
+        if backend == "anthropic" and batch:
             from bespokelabs.curator.request_processor.batch.anthropic_batch_request_processor import AnthropicBatchRequestProcessor
 
-            _request_processor = AnthropicBatchRequestProcessor(config)
-        elif backend == "gemini" and batch:
+            return AnthropicBatchRequestProcessor(config)
+
+        if backend == "gemini" and batch:
             from bespokelabs.curator.request_processor.batch.gemini_batch_request_processor import GeminiBatchRequestProcessor
 
-            _request_processor = GeminiBatchRequestProcessor(config)
-        elif backend == "anthropic" and not batch:
+            return GeminiBatchRequestProcessor(config)
+
+        if backend == "anthropic" and not batch:
             from bespokelabs.curator.request_processor.online.anthropic_online_request_processor import AnthropicOnlineRequestProcessor
 
-            _request_processor = AnthropicOnlineRequestProcessor(config)
-        elif backend == "litellm" and batch:
-            raise ValueError("Batch mode is not supported with LiteLLM backend")
-        elif backend == "litellm":
+            return AnthropicOnlineRequestProcessor(config)
+
+        if backend == "litellm" and batch:
+            raise ValueError("Batch mode is not supported with LiteLLM backend.")
+
+        if backend == "litellm":
             from bespokelabs.curator.request_processor.online.litellm_online_request_processor import LiteLLMOnlineRequestProcessor
 
-            _request_processor = LiteLLMOnlineRequestProcessor(config)
-        elif backend == "vllm":
+            return LiteLLMOnlineRequestProcessor(config)
+
+        if backend == "vllm":
             from bespokelabs.curator.request_processor.offline.vllm_offline_request_processor import VLLMOfflineRequestProcessor
 
-            _request_processor = VLLMOfflineRequestProcessor(config)
+            return VLLMOfflineRequestProcessor(config)
 
-        elif backend == "mistral" and not batch:
+        if backend == "mistral":
             config.api_key = config.api_key or os.getenv("MISTRAL_API_KEY")
             if not config.api_key:
-                raise ValueError("MISTRAL_API_KEY is not set")
-            raise ValueError("Only batch mode is supported with Mistral backend")
-        elif backend == "mistral" and batch:
-            config.api_key = config.api_key or os.getenv("MISTRAL_API_KEY")
-            if not config.api_key:
-                raise ValueError("MISTRAL_API_KEY is not set")
+                raise ValueError("MISTRAL_API_KEY is not set.")
+            if not batch:
+                raise ValueError("Only batch mode is supported with Mistral backend")
             from bespokelabs.curator.request_processor.batch.mistral_batch_request_processor import MistralBatchRequestProcessor
 
-            _request_processor = MistralBatchRequestProcessor(config)
+            return MistralBatchRequestProcessor(config)
 
-        else:
-            raise ValueError(f"Unknown backend: {backend}")
-
-        return _request_processor
+        raise ValueError(f"Unknown backend: {backend}")

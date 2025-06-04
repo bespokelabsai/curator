@@ -1,0 +1,1503 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - identity
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 9f4a7cb8-efa5-47d3-848f-705746bce12b
+      user-agent:
+      - datasets/3.2.0; hf_hub/0.28.1; python/3.11.11; torch/2.5.1; huggingface_hub/0.28.1;
+        pyarrow/19.0.0
+    method: HEAD
+    uri: https://huggingface.co/datasets/zed-industries/zeta/resolve/main/README.md
+  response:
+    body:
+      string: ''
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Connection:
+      - keep-alive
+      Content-Disposition:
+      - inline; filename*=UTF-8''README.md; filename="README.md";
+      Content-Length:
+      - '2234'
+      Content-Security-Policy:
+      - default-src 'none'; sandbox
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sun, 01 Jun 2025 08:39:24 GMT
+      ETag:
+      - '"b0031a40cf1708a5744ab1999189ce06ff85d68a"'
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 8c63e5cafd0d30b723e10da0d044059e.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - -4GUEGcaYA43cLqT4THk81mKDSeOB_aj2BByHAgFpuHMNr5z-9JULw==
+      X-Amz-Cf-Pop:
+      - BOM78-P11
+      X-Cache:
+      - Miss from cloudfront
+      X-Hub-Cache:
+      - MISS
+      X-Powered-By:
+      - huggingface-moon
+      X-Repo-Commit:
+      - 0f41422bc56fa0f9a5b3096e7e6f42905497d793
+      X-Request-Id:
+      - Root=1-683c11ba-7c339b7722c97bde66a1c48b;9f4a7cb8-efa5-47d3-848f-705746bce12b
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - identity
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - ed9d13ce-7da0-47cf-b3ac-7695d8b04185
+      user-agent:
+      - datasets/3.2.0; hf_hub/0.28.1; python/3.11.11; torch/2.5.1; huggingface_hub/0.28.1;
+        pyarrow/19.0.0
+    method: HEAD
+    uri: https://huggingface.co/datasets/zed-industries/zeta/resolve/0f41422bc56fa0f9a5b3096e7e6f42905497d793/zeta.py
+  response:
+    body:
+      string: ''
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '15'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sun, 01 Jun 2025 08:39:24 GMT
+      ETag:
+      - W/"f-mY2VvLxuxB7KhsoOdQTlMTccuAQ"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 2efdf2f907b6378e5a3313db8e0fd188.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - DU8736_nlaRITs7VIaAQtXe8KJYOIldsixliZvyp_9ay61aw_UjqHQ==
+      X-Amz-Cf-Pop:
+      - BOM78-P11
+      X-Cache:
+      - Error from cloudfront
+      X-Error-Code:
+      - EntryNotFound
+      X-Error-Message:
+      - Entry not found
+      X-Hub-Cache:
+      - MISS
+      X-Powered-By:
+      - huggingface-moon
+      X-Repo-Commit:
+      - 0f41422bc56fa0f9a5b3096e7e6f42905497d793
+      X-Request-Id:
+      - Root=1-683c11bc-3838cc03442127895a3399b8;ed9d13ce-7da0-47cf-b3ac-7695d8b04185
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - datasets/3.2.0; python/3.11.11; huggingface_hub/0.28.1; pyarrow/19.0.0; torch/2.5.1
+      X-Amzn-Trace-Id:
+      - 528405d8-94a1-4b7a-ab8f-f40315db944c
+    method: HEAD
+    uri: https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/zed-industries/zeta/zed-industries/zeta.py
+  response:
+    body:
+      string: ''
+    headers:
+      Content-Type:
+      - application/xml
+      Date:
+      - Sun, 01 Jun 2025 08:39:24 GMT
+      Server:
+      - AmazonS3
+      Transfer-Encoding:
+      - chunked
+      x-amz-id-2:
+      - DTKNw5GRatJTxn0iYkSG81Hq8EE/xuNZVqALfGFCvoUdc9Mqg2bNEjwFbNLtCJQuoXEUFhxp/kUrhMYXOla421tQ/5hnOHIf
+      x-amz-request-id:
+      - EZE6VY4CJFSV4V7B
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 93d8f683-e451-40fe-a34d-0ea5f2b5c56d
+      user-agent:
+      - unknown/None; hf_hub/0.28.1; python/3.11.11; torch/2.5.1
+    method: GET
+    uri: https://huggingface.co/api/datasets/zed-industries/zeta/revision/0f41422bc56fa0f9a5b3096e7e6f42905497d793
+  response:
+    body:
+      string: "{\"_id\":\"67474c06bd2f2f20b81faef1\",\"id\":\"zed-industries/zeta\",\"author\":\"zed-industries\",\"sha\":\"0f41422bc56fa0f9a5b3096e7e6f42905497d793\",\"lastModified\":\"2025-02-27T08:47:45.000Z\",\"private\":false,\"gated\":false,\"disabled\":false,\"tags\":[\"license:apache-2.0\",\"size_categories:n<1K\",\"format:json\",\"modality:text\",\"library:datasets\",\"library:pandas\",\"library:mlcroissant\",\"library:polars\",\"region:us\",\"code\"],\"citation\":null,\"description\":\"\\n\\t\\n\\t\\t\\n\\t\\tDataset
+        for Zeta\\n\\t\\n\\nThis is the open dataset used to train Zeta, an edit prediction
+        model that powers Zed's predictive coding feature. Zeta is derived from Qwen2.5-Coder-7B
+        and predicts the developer's next code edit based on their recent programming
+        patterns and cursor position, allowing for intelligent completion with a simple
+        tab press.\\nThis dataset is split into three parts:\\n\\ntrain.jsonl: Contains
+        the training data for supervised fine-tuning.\\ndpo.jsonl: Contains the data
+        for the\u2026 See the full description on the dataset page: https://huggingface.co/datasets/zed-industries/zeta.\",\"downloads\":4341,\"likes\":104,\"cardData\":{\"configs\":[{\"config_name\":\"default\",\"data_files\":[{\"split\":\"train\",\"path\":\"train.jsonl\"},{\"split\":\"eval\",\"path\":\"eval.jsonl\"},{\"split\":\"dpo\",\"path\":\"dpo.jsonl\"}]}],\"license\":\"apache-2.0\",\"tags\":[\"code\"]},\"siblings\":[{\"rfilename\":\".gitignore\"},{\"rfilename\":\".python-version\"},{\"rfilename\":\".zed/settings.json\"},{\"rfilename\":\"README.md\"},{\"rfilename\":\"dpo.jsonl\"},{\"rfilename\":\"dpo/0001.md\"},{\"rfilename\":\"dpo/0002.md\"},{\"rfilename\":\"dpo/0003.md\"},{\"rfilename\":\"dpo/0004.md\"},{\"rfilename\":\"dpo/0005.md\"},{\"rfilename\":\"dpo/0006.md\"},{\"rfilename\":\"dpo/0007.md\"},{\"rfilename\":\"dpo/0008.md\"},{\"rfilename\":\"dpo/0009.md\"},{\"rfilename\":\"dpo/0010.md\"},{\"rfilename\":\"dpo/0011.md\"},{\"rfilename\":\"dpo/0012.md\"},{\"rfilename\":\"dpo/0013.md\"},{\"rfilename\":\"dpo/0014.md\"},{\"rfilename\":\"dpo/0015.md\"},{\"rfilename\":\"dpo/0016.md\"},{\"rfilename\":\"dpo/0017.md\"},{\"rfilename\":\"dpo/0018.md\"},{\"rfilename\":\"dpo/0019.md\"},{\"rfilename\":\"dpo/0020.md\"},{\"rfilename\":\"dpo/0021.md\"},{\"rfilename\":\"dpo/0022.md\"},{\"rfilename\":\"dpo/0023.md\"},{\"rfilename\":\"dpo/0024.md\"},{\"rfilename\":\"dpo/0025.md\"},{\"rfilename\":\"dpo/0026.md\"},{\"rfilename\":\"dpo/0027.md\"},{\"rfilename\":\"dpo/0028.md\"},{\"rfilename\":\"dpo/0029.md\"},{\"rfilename\":\"dpo/0030.md\"},{\"rfilename\":\"dpo/0031.md\"},{\"rfilename\":\"dpo/0032.md\"},{\"rfilename\":\"dpo/0033.md\"},{\"rfilename\":\"dpo/0034.md\"},{\"rfilename\":\"dpo/0035.md\"},{\"rfilename\":\"dpo/0036.md\"},{\"rfilename\":\"dpo/0037.md\"},{\"rfilename\":\"dpo/0038.md\"},{\"rfilename\":\"dpo/0039.md\"},{\"rfilename\":\"dpo/0040.md\"},{\"rfilename\":\"dpo/0041.md\"},{\"rfilename\":\"dpo/0042.md\"},{\"rfilename\":\"dpo/0043.md\"},{\"rfilename\":\"dpo/0044.md\"},{\"rfilename\":\"dpo/0045.md\"},{\"rfilename\":\"dpo/0046.md\"},{\"rfilename\":\"dpo/0047.md\"},{\"rfilename\":\"dpo/0048.md\"},{\"rfilename\":\"dpo/0049.md\"},{\"rfilename\":\"dpo/0050.md\"},{\"rfilename\":\"dpo/0051.md\"},{\"rfilename\":\"dpo/0052.md\"},{\"rfilename\":\"dpo/0053.md\"},{\"rfilename\":\"dpo/0054.md\"},{\"rfilename\":\"dpo/0055.md\"},{\"rfilename\":\"dpo/0056.md\"},{\"rfilename\":\"dpo/0057.md\"},{\"rfilename\":\"dpo/0058.md\"},{\"rfilename\":\"dpo/0059.md\"},{\"rfilename\":\"dpo/0060.md\"},{\"rfilename\":\"dpo/0061.md\"},{\"rfilename\":\"dpo/0062.md\"},{\"rfilename\":\"dpo/0063.md\"},{\"rfilename\":\"dpo/0064.md\"},{\"rfilename\":\"dpo/0065.md\"},{\"rfilename\":\"dpo/0066.md\"},{\"rfilename\":\"dpo/0067.md\"},{\"rfilename\":\"dpo/0068.md\"},{\"rfilename\":\"dpo/0069.md\"},{\"rfilename\":\"dpo/0070.md\"},{\"rfilename\":\"dpo/0071.md\"},{\"rfilename\":\"dpo/0072.md\"},{\"rfilename\":\"dpo/0073.md\"},{\"rfilename\":\"dpo/0074.md\"},{\"rfilename\":\"dpo/0075.md\"},{\"rfilename\":\"dpo/0076.md\"},{\"rfilename\":\"dpo/0077.md\"},{\"rfilename\":\"dpo/0078.md\"},{\"rfilename\":\"dpo/0079.md\"},{\"rfilename\":\"dpo/0080.md\"},{\"rfilename\":\"dpo/0081.md\"},{\"rfilename\":\"dpo/0082.md\"},{\"rfilename\":\"dpo/0083.md\"},{\"rfilename\":\"dpo/0084.md\"},{\"rfilename\":\"dpo/0085.md\"},{\"rfilename\":\"dpo/0086.md\"},{\"rfilename\":\"dpo/0087.md\"},{\"rfilename\":\"dpo/0088.md\"},{\"rfilename\":\"dpo/0089.md\"},{\"rfilename\":\"dpo/0090.md\"},{\"rfilename\":\"dpo/0091.md\"},{\"rfilename\":\"dpo/0092.md\"},{\"rfilename\":\"dpo/0093.md\"},{\"rfilename\":\"dpo/0094.md\"},{\"rfilename\":\"dpo/0095.md\"},{\"rfilename\":\"dpo/0096.md\"},{\"rfilename\":\"dpo/0097.md\"},{\"rfilename\":\"dpo/0098.md\"},{\"rfilename\":\"dpo/0099.md\"},{\"rfilename\":\"dpo/0100.md\"},{\"rfilename\":\"dpo/0101.md\"},{\"rfilename\":\"dpo/0102.md\"},{\"rfilename\":\"dpo/0103.md\"},{\"rfilename\":\"dpo/0104.md\"},{\"rfilename\":\"dpo/0105.md\"},{\"rfilename\":\"dpo/0106.md\"},{\"rfilename\":\"dpo/0107.md\"},{\"rfilename\":\"dpo/0108.md\"},{\"rfilename\":\"dpo/0109.md\"},{\"rfilename\":\"dpo/0110.md\"},{\"rfilename\":\"dpo/0111.md\"},{\"rfilename\":\"dpo/0112.md\"},{\"rfilename\":\"dpo/0113.md\"},{\"rfilename\":\"dpo/0114.md\"},{\"rfilename\":\"dpo/0115.md\"},{\"rfilename\":\"dpo/0116.md\"},{\"rfilename\":\"dpo/0117.md\"},{\"rfilename\":\"dpo/0118.md\"},{\"rfilename\":\"dpo/0119.md\"},{\"rfilename\":\"dpo/0120.md\"},{\"rfilename\":\"dpo/0121.md\"},{\"rfilename\":\"dpo/0122.md\"},{\"rfilename\":\"dpo/0123.md\"},{\"rfilename\":\"dpo/0124.md\"},{\"rfilename\":\"dpo/0125.md\"},{\"rfilename\":\"dpo/0126.md\"},{\"rfilename\":\"dpo/0127.md\"},{\"rfilename\":\"dpo/0128.md\"},{\"rfilename\":\"dpo/0129.md\"},{\"rfilename\":\"dpo/0130.md\"},{\"rfilename\":\"dpo/0131.md\"},{\"rfilename\":\"dpo/0132.md\"},{\"rfilename\":\"eval.jsonl\"},{\"rfilename\":\"eval/0001.md\"},{\"rfilename\":\"eval/0002.md\"},{\"rfilename\":\"eval/0003.md\"},{\"rfilename\":\"eval/0004.md\"},{\"rfilename\":\"eval/0005.md\"},{\"rfilename\":\"eval/0006.md\"},{\"rfilename\":\"eval/0007.md\"},{\"rfilename\":\"eval/0008.md\"},{\"rfilename\":\"eval/0009.md\"},{\"rfilename\":\"eval/0010.md\"},{\"rfilename\":\"eval/0011.md\"},{\"rfilename\":\"eval/0012.md\"},{\"rfilename\":\"eval/0013.md\"},{\"rfilename\":\"eval/0014.md\"},{\"rfilename\":\"eval/0015.md\"},{\"rfilename\":\"eval/0016.md\"},{\"rfilename\":\"eval/0017.md\"},{\"rfilename\":\"eval/0018.md\"},{\"rfilename\":\"eval/0019.md\"},{\"rfilename\":\"eval/0020.md\"},{\"rfilename\":\"eval/0021.md\"},{\"rfilename\":\"eval/0022.md\"},{\"rfilename\":\"eval/0023.md\"},{\"rfilename\":\"eval/0024.md\"},{\"rfilename\":\"eval/0025.md\"},{\"rfilename\":\"eval/0026.md\"},{\"rfilename\":\"eval/0027.md\"},{\"rfilename\":\"eval/0028.md\"},{\"rfilename\":\"eval/0029.md\"},{\"rfilename\":\"eval/0030.md\"},{\"rfilename\":\"eval/0031.md\"},{\"rfilename\":\"eval/0032.md\"},{\"rfilename\":\"eval/0033.md\"},{\"rfilename\":\"package-lock.json\"},{\"rfilename\":\"package.json\"},{\"rfilename\":\"script/big-edits\"},{\"rfilename\":\"script/check-format\"},{\"rfilename\":\"script/diff-generator\"},{\"rfilename\":\"script/diff-generator.html\"},{\"rfilename\":\"script/dpo\"},{\"rfilename\":\"script/dpo.ipynb\"},{\"rfilename\":\"script/files-with-deletions\"},{\"rfilename\":\"script/gen-dataset\"},{\"rfilename\":\"script/get-deployment-secrets\"},{\"rfilename\":\"script/highest\"},{\"rfilename\":\"script/label-data\"},{\"rfilename\":\"script/label-data-prompt.md\"},{\"rfilename\":\"script/last_feedback_pull\"},{\"rfilename\":\"script/last_predictions_pull\"},{\"rfilename\":\"script/prediction-prompt.md\"},{\"rfilename\":\"script/pull-feedback\"},{\"rfilename\":\"script/pull-predictions\"},{\"rfilename\":\"script/randomize-editable-region\"},{\"rfilename\":\"script/see-label-data\"},{\"rfilename\":\"script/sft.ipynb\"},{\"rfilename\":\"script/unrelated-edits\"},{\"rfilename\":\"script/verify\"},{\"rfilename\":\"script/verify.html\"},{\"rfilename\":\"script/verify_server.py\"},{\"rfilename\":\"script/verify_template.html\"},{\"rfilename\":\"train.jsonl\"},{\"rfilename\":\"train/0001.md\"},{\"rfilename\":\"train/0002.md\"},{\"rfilename\":\"train/0003.md\"},{\"rfilename\":\"train/0004.md\"},{\"rfilename\":\"train/0005.md\"},{\"rfilename\":\"train/0006.md\"},{\"rfilename\":\"train/0007.md\"},{\"rfilename\":\"train/0008.md\"},{\"rfilename\":\"train/0009.md\"},{\"rfilename\":\"train/0010.md\"},{\"rfilename\":\"train/0011.md\"},{\"rfilename\":\"train/0012.md\"},{\"rfilename\":\"train/0013.md\"},{\"rfilename\":\"train/0014.md\"},{\"rfilename\":\"train/0015.md\"},{\"rfilename\":\"train/0016.md\"},{\"rfilename\":\"train/0017.md\"},{\"rfilename\":\"train/0018.md\"},{\"rfilename\":\"train/0019.md\"},{\"rfilename\":\"train/0020.md\"},{\"rfilename\":\"train/0021.md\"},{\"rfilename\":\"train/0022.md\"},{\"rfilename\":\"train/0023.md\"},{\"rfilename\":\"train/0024.md\"},{\"rfilename\":\"train/0025.md\"},{\"rfilename\":\"train/0026.md\"},{\"rfilename\":\"train/0027.md\"},{\"rfilename\":\"train/0028.md\"},{\"rfilename\":\"train/0029.md\"},{\"rfilename\":\"train/0030.md\"},{\"rfilename\":\"train/0031.md\"},{\"rfilename\":\"train/0032.md\"},{\"rfilename\":\"train/0033.md\"},{\"rfilename\":\"train/0034.md\"},{\"rfilename\":\"train/0035.md\"},{\"rfilename\":\"train/0036.md\"},{\"rfilename\":\"train/0037.md\"},{\"rfilename\":\"train/0038.md\"},{\"rfilename\":\"train/0039.md\"},{\"rfilename\":\"train/0040.md\"},{\"rfilename\":\"train/0041.md\"},{\"rfilename\":\"train/0042.md\"},{\"rfilename\":\"train/0043.md\"},{\"rfilename\":\"train/0044.md\"},{\"rfilename\":\"train/0045.md\"},{\"rfilename\":\"train/0046.md\"},{\"rfilename\":\"train/0047.md\"},{\"rfilename\":\"train/0048.md\"},{\"rfilename\":\"train/0049.md\"},{\"rfilename\":\"train/0050.md\"},{\"rfilename\":\"train/0051.md\"},{\"rfilename\":\"train/0052.md\"},{\"rfilename\":\"train/0053.md\"},{\"rfilename\":\"train/0054.md\"},{\"rfilename\":\"train/0055.md\"},{\"rfilename\":\"train/0056.md\"},{\"rfilename\":\"train/0057.md\"},{\"rfilename\":\"train/0058.md\"},{\"rfilename\":\"train/0059.md\"},{\"rfilename\":\"train/0060.md\"},{\"rfilename\":\"train/0061.md\"},{\"rfilename\":\"train/0062.md\"},{\"rfilename\":\"train/0063.md\"},{\"rfilename\":\"train/0064.md\"},{\"rfilename\":\"train/0065.md\"},{\"rfilename\":\"train/0066.md\"},{\"rfilename\":\"train/0067.md\"},{\"rfilename\":\"train/0068.md\"},{\"rfilename\":\"train/0069.md\"},{\"rfilename\":\"train/0070.md\"},{\"rfilename\":\"train/0071.md\"},{\"rfilename\":\"train/0072.md\"},{\"rfilename\":\"train/0073.md\"},{\"rfilename\":\"train/0074.md\"},{\"rfilename\":\"train/0075.md\"},{\"rfilename\":\"train/0076.md\"},{\"rfilename\":\"train/0077.md\"},{\"rfilename\":\"train/0078.md\"},{\"rfilename\":\"train/0079.md\"},{\"rfilename\":\"train/0080.md\"},{\"rfilename\":\"train/0081.md\"},{\"rfilename\":\"train/0082.md\"},{\"rfilename\":\"train/0083.md\"},{\"rfilename\":\"train/0084.md\"},{\"rfilename\":\"train/0085.md\"},{\"rfilename\":\"train/0086.md\"},{\"rfilename\":\"train/0087.md\"},{\"rfilename\":\"train/0088.md\"},{\"rfilename\":\"train/0089.md\"},{\"rfilename\":\"train/0090.md\"},{\"rfilename\":\"train/0091.md\"},{\"rfilename\":\"train/0092.md\"},{\"rfilename\":\"train/0093.md\"},{\"rfilename\":\"train/0094.md\"},{\"rfilename\":\"train/0095.md\"},{\"rfilename\":\"train/0096.md\"},{\"rfilename\":\"train/0097.md\"},{\"rfilename\":\"train/0098.md\"},{\"rfilename\":\"train/0099.md\"},{\"rfilename\":\"train/0100.md\"},{\"rfilename\":\"train/0101.md\"},{\"rfilename\":\"train/0102.md\"},{\"rfilename\":\"train/0103.md\"},{\"rfilename\":\"train/0104.md\"},{\"rfilename\":\"train/0105.md\"},{\"rfilename\":\"train/0106.md\"},{\"rfilename\":\"train/0107.md\"},{\"rfilename\":\"train/0108.md\"},{\"rfilename\":\"train/0109.md\"},{\"rfilename\":\"train/0110.md\"},{\"rfilename\":\"train/0111.md\"},{\"rfilename\":\"train/0112.md\"},{\"rfilename\":\"train/0113.md\"},{\"rfilename\":\"train/0114.md\"},{\"rfilename\":\"train/0115.md\"},{\"rfilename\":\"train/0116.md\"},{\"rfilename\":\"train/0117.md\"},{\"rfilename\":\"train/0118.md\"},{\"rfilename\":\"train/0119.md\"},{\"rfilename\":\"train/0120.md\"},{\"rfilename\":\"train/0121.md\"},{\"rfilename\":\"train/0122.md\"},{\"rfilename\":\"train/0123.md\"},{\"rfilename\":\"train/0124.md\"},{\"rfilename\":\"train/0125.md\"},{\"rfilename\":\"train/0126.md\"},{\"rfilename\":\"train/0127.md\"},{\"rfilename\":\"train/0128.md\"},{\"rfilename\":\"train/0129.md\"},{\"rfilename\":\"train/0130.md\"},{\"rfilename\":\"train/0133.md\"},{\"rfilename\":\"train/0134.md\"},{\"rfilename\":\"train/0135.md\"},{\"rfilename\":\"train/0136.md\"},{\"rfilename\":\"train/0137.md\"},{\"rfilename\":\"train/0138.md\"},{\"rfilename\":\"train/0139.md\"},{\"rfilename\":\"train/0140.md\"},{\"rfilename\":\"train/0141.md\"},{\"rfilename\":\"train/0142.md\"},{\"rfilename\":\"train/0143.md\"},{\"rfilename\":\"train/0144.md\"},{\"rfilename\":\"train/0145.md\"},{\"rfilename\":\"train/0146.md\"},{\"rfilename\":\"train/0147.md\"},{\"rfilename\":\"train/0148.md\"},{\"rfilename\":\"train/0149.md\"},{\"rfilename\":\"train/0150.md\"},{\"rfilename\":\"train/0152.md\"},{\"rfilename\":\"train/0153.md\"},{\"rfilename\":\"train/0154.md\"},{\"rfilename\":\"train/0155.md\"},{\"rfilename\":\"train/0156.md\"},{\"rfilename\":\"train/0157.md\"},{\"rfilename\":\"train/0158.md\"},{\"rfilename\":\"train/0159.md\"},{\"rfilename\":\"train/0164.md\"},{\"rfilename\":\"train/0165.md\"},{\"rfilename\":\"train/0166.md\"},{\"rfilename\":\"train/0168.md\"},{\"rfilename\":\"train/0169.md\"},{\"rfilename\":\"train/0170.md\"},{\"rfilename\":\"train/0172.md\"},{\"rfilename\":\"train/0173.md\"},{\"rfilename\":\"train/0174.md\"},{\"rfilename\":\"train/0176.md\"},{\"rfilename\":\"train/0177.md\"},{\"rfilename\":\"train/0179.md\"},{\"rfilename\":\"train/0180.md\"},{\"rfilename\":\"train/0181.md\"},{\"rfilename\":\"train/0182.md\"},{\"rfilename\":\"train/0183.md\"},{\"rfilename\":\"train/0184.md\"},{\"rfilename\":\"train/0185.md\"},{\"rfilename\":\"train/0186.md\"},{\"rfilename\":\"train/0187.md\"},{\"rfilename\":\"train/0188.md\"},{\"rfilename\":\"train/0190.md\"},{\"rfilename\":\"train/0191.md\"},{\"rfilename\":\"train/0194.md\"},{\"rfilename\":\"train/0195.md\"},{\"rfilename\":\"train/0196.md\"},{\"rfilename\":\"train/0197.md\"},{\"rfilename\":\"train/0198.md\"},{\"rfilename\":\"train/0199.md\"},{\"rfilename\":\"train/0200.md\"},{\"rfilename\":\"train/0201.md\"},{\"rfilename\":\"train/0202.md\"},{\"rfilename\":\"train/0203.md\"},{\"rfilename\":\"train/0204.md\"},{\"rfilename\":\"train/0206.md\"},{\"rfilename\":\"train/0207.md\"},{\"rfilename\":\"train/0208.md\"},{\"rfilename\":\"train/0209.md\"},{\"rfilename\":\"train/0210.md\"},{\"rfilename\":\"train/0211.md\"},{\"rfilename\":\"train/0212.md\"},{\"rfilename\":\"train/0213.md\"},{\"rfilename\":\"train/0214.md\"},{\"rfilename\":\"train/0215.md\"},{\"rfilename\":\"train/0216.md\"},{\"rfilename\":\"train/0218.md\"},{\"rfilename\":\"train/0219.md\"},{\"rfilename\":\"train/0220.md\"},{\"rfilename\":\"train/0221.md\"},{\"rfilename\":\"train/0222.md\"},{\"rfilename\":\"train/0224.md\"},{\"rfilename\":\"train/0226.md\"},{\"rfilename\":\"train/0227.md\"},{\"rfilename\":\"train/0229.md\"},{\"rfilename\":\"train/0230.md\"},{\"rfilename\":\"train/0232.md\"},{\"rfilename\":\"train/0233.md\"},{\"rfilename\":\"train/0235.md\"},{\"rfilename\":\"train/0236.md\"},{\"rfilename\":\"train/0237.md\"},{\"rfilename\":\"train/0239.md\"},{\"rfilename\":\"train/0240.md\"},{\"rfilename\":\"train/0241.md\"},{\"rfilename\":\"train/0242.md\"},{\"rfilename\":\"train/0244.md\"},{\"rfilename\":\"train/0245.md\"},{\"rfilename\":\"train/0248.md\"},{\"rfilename\":\"train/0249.md\"},{\"rfilename\":\"train/0250.md\"},{\"rfilename\":\"train/0252.md\"},{\"rfilename\":\"train/0253.md\"},{\"rfilename\":\"train/0254.md\"},{\"rfilename\":\"train/0257.md\"},{\"rfilename\":\"train/0259.md\"},{\"rfilename\":\"train/0261.md\"},{\"rfilename\":\"train/0262.md\"},{\"rfilename\":\"train/0263.md\"},{\"rfilename\":\"train/0264.md\"},{\"rfilename\":\"train/0265.md\"},{\"rfilename\":\"train/0266.md\"},{\"rfilename\":\"train/0267.md\"},{\"rfilename\":\"train/0268.md\"},{\"rfilename\":\"train/0269.md\"},{\"rfilename\":\"train/0270.md\"},{\"rfilename\":\"train/0271.md\"},{\"rfilename\":\"train/0272.md\"},{\"rfilename\":\"train/0273.md\"},{\"rfilename\":\"train/0274.md\"},{\"rfilename\":\"train/0275.md\"},{\"rfilename\":\"train/0276.md\"},{\"rfilename\":\"train/0277.md\"},{\"rfilename\":\"train/0278.md\"},{\"rfilename\":\"train/0279.md\"},{\"rfilename\":\"train/0283.md\"},{\"rfilename\":\"train/0284.md\"},{\"rfilename\":\"train/0286.md\"},{\"rfilename\":\"train/0287.md\"},{\"rfilename\":\"train/0289.md\"},{\"rfilename\":\"train/0293.md\"},{\"rfilename\":\"train/0294.md\"},{\"rfilename\":\"train/0295.md\"},{\"rfilename\":\"train/0296.md\"},{\"rfilename\":\"train/0298.md\"},{\"rfilename\":\"train/0300.md\"},{\"rfilename\":\"train/0301.md\"},{\"rfilename\":\"train/0302.md\"},{\"rfilename\":\"train/0303.md\"},{\"rfilename\":\"train/0305.md\"},{\"rfilename\":\"train/0306.md\"},{\"rfilename\":\"train/0307.md\"},{\"rfilename\":\"train/0308.md\"},{\"rfilename\":\"train/0312.md\"},{\"rfilename\":\"train/0314.md\"},{\"rfilename\":\"train/0315.md\"},{\"rfilename\":\"train/0316.md\"},{\"rfilename\":\"train/0318.md\"},{\"rfilename\":\"train/0319.md\"},{\"rfilename\":\"train/0320.md\"},{\"rfilename\":\"train/0321.md\"},{\"rfilename\":\"train/0322.md\"},{\"rfilename\":\"train/0325.md\"},{\"rfilename\":\"train/0326.md\"},{\"rfilename\":\"train/0327.md\"},{\"rfilename\":\"train/0329.md\"},{\"rfilename\":\"train/0330.md\"},{\"rfilename\":\"train/0332.md\"},{\"rfilename\":\"train/0335.md\"},{\"rfilename\":\"train/0336.md\"},{\"rfilename\":\"train/0337.md\"},{\"rfilename\":\"train/0339.md\"},{\"rfilename\":\"train/0340.md\"},{\"rfilename\":\"train/0343.md\"},{\"rfilename\":\"train/0344.md\"},{\"rfilename\":\"train/0345.md\"},{\"rfilename\":\"train/0346.md\"},{\"rfilename\":\"train/0347.md\"},{\"rfilename\":\"train/0348.md\"},{\"rfilename\":\"train/0350.md\"},{\"rfilename\":\"train/0352.md\"},{\"rfilename\":\"train/0353.md\"},{\"rfilename\":\"train/0354.md\"},{\"rfilename\":\"train/0355.md\"},{\"rfilename\":\"train/0357.md\"},{\"rfilename\":\"train/0358.md\"},{\"rfilename\":\"train/0360.md\"},{\"rfilename\":\"train/0361.md\"},{\"rfilename\":\"train/0362.md\"},{\"rfilename\":\"train/0363.md\"},{\"rfilename\":\"train/0364.md\"},{\"rfilename\":\"train/0365.md\"},{\"rfilename\":\"train/0366.md\"},{\"rfilename\":\"train/0367.md\"},{\"rfilename\":\"train/0368.md\"},{\"rfilename\":\"train/0369.md\"},{\"rfilename\":\"train/0371.md\"},{\"rfilename\":\"train/0372.md\"},{\"rfilename\":\"train/0373.md\"},{\"rfilename\":\"train/0374.md\"},{\"rfilename\":\"train/0376.md\"},{\"rfilename\":\"train/0377.md\"},{\"rfilename\":\"train/0378.md\"},{\"rfilename\":\"train/0379.md\"},{\"rfilename\":\"train/0381.md\"},{\"rfilename\":\"train/0382.md\"},{\"rfilename\":\"train/0384.md\"},{\"rfilename\":\"train/0385.md\"},{\"rfilename\":\"train/0386.md\"},{\"rfilename\":\"train/0389.md\"},{\"rfilename\":\"train/0391.md\"},{\"rfilename\":\"train/0392.md\"},{\"rfilename\":\"train/0393.md\"},{\"rfilename\":\"train/0394.md\"},{\"rfilename\":\"train/0395.md\"},{\"rfilename\":\"train/0396.md\"},{\"rfilename\":\"train/0397.md\"},{\"rfilename\":\"train/0398.md\"},{\"rfilename\":\"train/0399.md\"},{\"rfilename\":\"train/0402.md\"},{\"rfilename\":\"train/0404.md\"},{\"rfilename\":\"train/0405.md\"},{\"rfilename\":\"train/0408.md\"},{\"rfilename\":\"train/0410.md\"},{\"rfilename\":\"train/0411.md\"},{\"rfilename\":\"train/0412.md\"},{\"rfilename\":\"train/0413.md\"},{\"rfilename\":\"train/0414.md\"},{\"rfilename\":\"train/0415.md\"},{\"rfilename\":\"train/0416.md\"},{\"rfilename\":\"train/0420.md\"},{\"rfilename\":\"train/0421.md\"},{\"rfilename\":\"train/0422.md\"},{\"rfilename\":\"train/0423.md\"},{\"rfilename\":\"train/0424.md\"},{\"rfilename\":\"train/0425.md\"},{\"rfilename\":\"train/0426.md\"},{\"rfilename\":\"train/0427.md\"},{\"rfilename\":\"train/0428.md\"},{\"rfilename\":\"train/0431.md\"},{\"rfilename\":\"train/0432.md\"},{\"rfilename\":\"train/0433.md\"},{\"rfilename\":\"train/0434.md\"},{\"rfilename\":\"train/0435.md\"},{\"rfilename\":\"train/0437.md\"},{\"rfilename\":\"train/0438.md\"},{\"rfilename\":\"train/0439.md\"},{\"rfilename\":\"train/0440.md\"},{\"rfilename\":\"train/0441.md\"},{\"rfilename\":\"train/0445.md\"},{\"rfilename\":\"train/0448.md\"},{\"rfilename\":\"train/0449.md\"},{\"rfilename\":\"train/0450.md\"},{\"rfilename\":\"train/0452.md\"},{\"rfilename\":\"train/0453.md\"},{\"rfilename\":\"train/0454.md\"},{\"rfilename\":\"train/0455.md\"},{\"rfilename\":\"train/0456.md\"},{\"rfilename\":\"train/0457.md\"},{\"rfilename\":\"train/0459.md\"},{\"rfilename\":\"train/0460.md\"},{\"rfilename\":\"train/0461.md\"},{\"rfilename\":\"train/0462.md\"},{\"rfilename\":\"train/0463.md\"},{\"rfilename\":\"train/0464.md\"},{\"rfilename\":\"train/0465.md\"},{\"rfilename\":\"train/0466.md\"},{\"rfilename\":\"train/0467.md\"},{\"rfilename\":\"train/0473.md\"},{\"rfilename\":\"train/0474.md\"},{\"rfilename\":\"train/0478.md\"},{\"rfilename\":\"train/0479.md\"},{\"rfilename\":\"train/0480.md\"},{\"rfilename\":\"train/0481.md\"},{\"rfilename\":\"train/0482.md\"},{\"rfilename\":\"train/0483.md\"},{\"rfilename\":\"train/0484.md\"},{\"rfilename\":\"train/0485.md\"},{\"rfilename\":\"train/0486.md\"},{\"rfilename\":\"train/0487.md\"},{\"rfilename\":\"train/0488.md\"},{\"rfilename\":\"train/0489.md\"},{\"rfilename\":\"train/0490.md\"},{\"rfilename\":\"train/0491.md\"},{\"rfilename\":\"train/0492.md\"},{\"rfilename\":\"train/0493.md\"},{\"rfilename\":\"train/0494.md\"},{\"rfilename\":\"train/0495.md\"},{\"rfilename\":\"train/0496.md\"},{\"rfilename\":\"train/0497.md\"},{\"rfilename\":\"train/0498.md\"},{\"rfilename\":\"train/0499.md\"},{\"rfilename\":\"train/0500.md\"},{\"rfilename\":\"train/0501.md\"},{\"rfilename\":\"train/0502.md\"},{\"rfilename\":\"train/0503.md\"},{\"rfilename\":\"train/0504.md\"},{\"rfilename\":\"train/0505.md\"},{\"rfilename\":\"train/0506.md\"},{\"rfilename\":\"train/0507.md\"},{\"rfilename\":\"train/0508.md\"},{\"rfilename\":\"train/0509.md\"},{\"rfilename\":\"train/0510.md\"},{\"rfilename\":\"train/0511.md\"}],\"createdAt\":\"2024-11-27T16:42:46.000Z\",\"usedStorage\":75577629}"
+    headers:
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '19785'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 01 Jun 2025 08:39:26 GMT
+      ETag:
+      - W/"4d49-LXZhNR7s5z5IDbor0VHBkUmyVLk"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 0619c524a034ea5bfb96b53ac504d63a.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - t6X90dzPGh3E2Lspcw0sdchW6Uza_zUlpawkC28oHCw-mHIpN0ucOQ==
+      X-Amz-Cf-Pop:
+      - BOM78-P11
+      X-Cache:
+      - Miss from cloudfront
+      X-Powered-By:
+      - huggingface-moon
+      X-Request-Id:
+      - Root=1-683c11be-474454da47c0c8cb6512aa4e;93d8f683-e451-40fe-a34d-0ea5f2b5c56d
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - identity
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 6448533a-7a82-444c-a480-5bd1f4b12c44
+      user-agent:
+      - datasets/3.2.0; hf_hub/0.28.1; python/3.11.11; torch/2.5.1; huggingface_hub/0.28.1;
+        pyarrow/19.0.0
+    method: HEAD
+    uri: https://huggingface.co/datasets/zed-industries/zeta/resolve/0f41422bc56fa0f9a5b3096e7e6f42905497d793/.huggingface.yaml
+  response:
+    body:
+      string: ''
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '15'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sun, 01 Jun 2025 08:39:26 GMT
+      ETag:
+      - W/"f-mY2VvLxuxB7KhsoOdQTlMTccuAQ"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 5da8836d63b5e625d1d5e30ae7d4e644.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - 7Ng0j7dC22fvFfYZloWYg3KtHGfmRHXdmTbt1O3qSbGe3UkX7nUdzQ==
+      X-Amz-Cf-Pop:
+      - BOM78-P11
+      X-Cache:
+      - Error from cloudfront
+      X-Error-Code:
+      - EntryNotFound
+      X-Error-Message:
+      - Entry not found
+      X-Hub-Cache:
+      - MISS
+      X-Powered-By:
+      - huggingface-moon
+      X-Repo-Commit:
+      - 0f41422bc56fa0f9a5b3096e7e6f42905497d793
+      X-Request-Id:
+      - Root=1-683c11be-61995308064b4397156ce7ec;6448533a-7a82-444c-a480-5bd1f4b12c44
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - c94ff9fc-3068-4059-a2a3-ff1e689ef305
+      user-agent:
+      - datasets/3.2.0; hf_hub/0.28.1; python/3.11.11; torch/2.5.1
+    method: GET
+    uri: https://datasets-server.huggingface.co/info?dataset=zed-industries/zeta
+  response:
+    body:
+      string: '{"dataset_info":{"default":{"description":"","citation":"","homepage":"","license":"","features":{"events":{"dtype":"string","_type":"Value"},"input":{"dtype":"string","_type":"Value"},"output":{"dtype":"string","_type":"Value"},"rejected":{"dtype":"string","_type":"Value"},"assertions":{"dtype":"string","_type":"Value"}},"builder_name":"json","dataset_name":"zeta","config_name":"default","version":{"version_str":"0.0.0","major":0,"minor":0,"patch":0},"splits":{"train":{"name":"train","num_bytes":1360681,"num_examples":418,"dataset_name":"zeta"},"eval":{"name":"eval","num_bytes":175139,"num_examples":33,"dataset_name":"zeta"},"dpo":{"name":"dpo","num_bytes":985436,"num_examples":132,"dataset_name":"zeta"}},"download_checksums":{"hf://datasets/zed-industries/zeta@0f41422bc56fa0f9a5b3096e7e6f42905497d793/train.jsonl":{"num_bytes":1431832,"checksum":null},"hf://datasets/zed-industries/zeta@0f41422bc56fa0f9a5b3096e7e6f42905497d793/eval.jsonl":{"num_bytes":183724,"checksum":null},"hf://datasets/zed-industries/zeta@0f41422bc56fa0f9a5b3096e7e6f42905497d793/dpo.jsonl":{"num_bytes":1030157,"checksum":null}},"download_size":2645713,"dataset_size":2521256,"size_in_bytes":5166969}},"pending":[],"failed":[],"partial":false}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 01 Jun 2025 08:39:27 GMT
+      Transfer-Encoding:
+      - chunked
+      Via:
+      - 1.1 19bc7cd42db5fa07b961148ad64808f4.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - Zoo63bupOQl_dqOWprBmU73Xc8vNc_pkfl5Tms6iDyqKfPL-Jkz-4w==
+      X-Amz-Cf-Pop:
+      - BOM52-C1
+      X-Cache:
+      - Miss from cloudfront
+      cache-control:
+      - max-age=120
+      content-encoding:
+      - gzip
+      server:
+      - uvicorn
+      vary:
+      - Accept-Encoding
+      x-revision:
+      - 0f41422bc56fa0f9a5b3096e7e6f42905497d793
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 886d2f99-046f-44e7-b278-4f93b335c533
+      user-agent:
+      - unknown/None; hf_hub/0.28.1; python/3.11.11; torch/2.5.1
+    method: GET
+    uri: https://huggingface.co/api/datasets/zed-industries/zeta/revision/0f41422bc56fa0f9a5b3096e7e6f42905497d793
+  response:
+    body:
+      string: "{\"_id\":\"67474c06bd2f2f20b81faef1\",\"id\":\"zed-industries/zeta\",\"author\":\"zed-industries\",\"sha\":\"0f41422bc56fa0f9a5b3096e7e6f42905497d793\",\"lastModified\":\"2025-02-27T08:47:45.000Z\",\"private\":false,\"gated\":false,\"disabled\":false,\"tags\":[\"license:apache-2.0\",\"size_categories:n<1K\",\"format:json\",\"modality:text\",\"library:datasets\",\"library:pandas\",\"library:mlcroissant\",\"library:polars\",\"region:us\",\"code\"],\"citation\":null,\"description\":\"\\n\\t\\n\\t\\t\\n\\t\\tDataset
+        for Zeta\\n\\t\\n\\nThis is the open dataset used to train Zeta, an edit prediction
+        model that powers Zed's predictive coding feature. Zeta is derived from Qwen2.5-Coder-7B
+        and predicts the developer's next code edit based on their recent programming
+        patterns and cursor position, allowing for intelligent completion with a simple
+        tab press.\\nThis dataset is split into three parts:\\n\\ntrain.jsonl: Contains
+        the training data for supervised fine-tuning.\\ndpo.jsonl: Contains the data
+        for the\u2026 See the full description on the dataset page: https://huggingface.co/datasets/zed-industries/zeta.\",\"downloads\":4341,\"likes\":104,\"cardData\":{\"configs\":[{\"config_name\":\"default\",\"data_files\":[{\"split\":\"train\",\"path\":\"train.jsonl\"},{\"split\":\"eval\",\"path\":\"eval.jsonl\"},{\"split\":\"dpo\",\"path\":\"dpo.jsonl\"}]}],\"license\":\"apache-2.0\",\"tags\":[\"code\"]},\"siblings\":[{\"rfilename\":\".gitignore\"},{\"rfilename\":\".python-version\"},{\"rfilename\":\".zed/settings.json\"},{\"rfilename\":\"README.md\"},{\"rfilename\":\"dpo.jsonl\"},{\"rfilename\":\"dpo/0001.md\"},{\"rfilename\":\"dpo/0002.md\"},{\"rfilename\":\"dpo/0003.md\"},{\"rfilename\":\"dpo/0004.md\"},{\"rfilename\":\"dpo/0005.md\"},{\"rfilename\":\"dpo/0006.md\"},{\"rfilename\":\"dpo/0007.md\"},{\"rfilename\":\"dpo/0008.md\"},{\"rfilename\":\"dpo/0009.md\"},{\"rfilename\":\"dpo/0010.md\"},{\"rfilename\":\"dpo/0011.md\"},{\"rfilename\":\"dpo/0012.md\"},{\"rfilename\":\"dpo/0013.md\"},{\"rfilename\":\"dpo/0014.md\"},{\"rfilename\":\"dpo/0015.md\"},{\"rfilename\":\"dpo/0016.md\"},{\"rfilename\":\"dpo/0017.md\"},{\"rfilename\":\"dpo/0018.md\"},{\"rfilename\":\"dpo/0019.md\"},{\"rfilename\":\"dpo/0020.md\"},{\"rfilename\":\"dpo/0021.md\"},{\"rfilename\":\"dpo/0022.md\"},{\"rfilename\":\"dpo/0023.md\"},{\"rfilename\":\"dpo/0024.md\"},{\"rfilename\":\"dpo/0025.md\"},{\"rfilename\":\"dpo/0026.md\"},{\"rfilename\":\"dpo/0027.md\"},{\"rfilename\":\"dpo/0028.md\"},{\"rfilename\":\"dpo/0029.md\"},{\"rfilename\":\"dpo/0030.md\"},{\"rfilename\":\"dpo/0031.md\"},{\"rfilename\":\"dpo/0032.md\"},{\"rfilename\":\"dpo/0033.md\"},{\"rfilename\":\"dpo/0034.md\"},{\"rfilename\":\"dpo/0035.md\"},{\"rfilename\":\"dpo/0036.md\"},{\"rfilename\":\"dpo/0037.md\"},{\"rfilename\":\"dpo/0038.md\"},{\"rfilename\":\"dpo/0039.md\"},{\"rfilename\":\"dpo/0040.md\"},{\"rfilename\":\"dpo/0041.md\"},{\"rfilename\":\"dpo/0042.md\"},{\"rfilename\":\"dpo/0043.md\"},{\"rfilename\":\"dpo/0044.md\"},{\"rfilename\":\"dpo/0045.md\"},{\"rfilename\":\"dpo/0046.md\"},{\"rfilename\":\"dpo/0047.md\"},{\"rfilename\":\"dpo/0048.md\"},{\"rfilename\":\"dpo/0049.md\"},{\"rfilename\":\"dpo/0050.md\"},{\"rfilename\":\"dpo/0051.md\"},{\"rfilename\":\"dpo/0052.md\"},{\"rfilename\":\"dpo/0053.md\"},{\"rfilename\":\"dpo/0054.md\"},{\"rfilename\":\"dpo/0055.md\"},{\"rfilename\":\"dpo/0056.md\"},{\"rfilename\":\"dpo/0057.md\"},{\"rfilename\":\"dpo/0058.md\"},{\"rfilename\":\"dpo/0059.md\"},{\"rfilename\":\"dpo/0060.md\"},{\"rfilename\":\"dpo/0061.md\"},{\"rfilename\":\"dpo/0062.md\"},{\"rfilename\":\"dpo/0063.md\"},{\"rfilename\":\"dpo/0064.md\"},{\"rfilename\":\"dpo/0065.md\"},{\"rfilename\":\"dpo/0066.md\"},{\"rfilename\":\"dpo/0067.md\"},{\"rfilename\":\"dpo/0068.md\"},{\"rfilename\":\"dpo/0069.md\"},{\"rfilename\":\"dpo/0070.md\"},{\"rfilename\":\"dpo/0071.md\"},{\"rfilename\":\"dpo/0072.md\"},{\"rfilename\":\"dpo/0073.md\"},{\"rfilename\":\"dpo/0074.md\"},{\"rfilename\":\"dpo/0075.md\"},{\"rfilename\":\"dpo/0076.md\"},{\"rfilename\":\"dpo/0077.md\"},{\"rfilename\":\"dpo/0078.md\"},{\"rfilename\":\"dpo/0079.md\"},{\"rfilename\":\"dpo/0080.md\"},{\"rfilename\":\"dpo/0081.md\"},{\"rfilename\":\"dpo/0082.md\"},{\"rfilename\":\"dpo/0083.md\"},{\"rfilename\":\"dpo/0084.md\"},{\"rfilename\":\"dpo/0085.md\"},{\"rfilename\":\"dpo/0086.md\"},{\"rfilename\":\"dpo/0087.md\"},{\"rfilename\":\"dpo/0088.md\"},{\"rfilename\":\"dpo/0089.md\"},{\"rfilename\":\"dpo/0090.md\"},{\"rfilename\":\"dpo/0091.md\"},{\"rfilename\":\"dpo/0092.md\"},{\"rfilename\":\"dpo/0093.md\"},{\"rfilename\":\"dpo/0094.md\"},{\"rfilename\":\"dpo/0095.md\"},{\"rfilename\":\"dpo/0096.md\"},{\"rfilename\":\"dpo/0097.md\"},{\"rfilename\":\"dpo/0098.md\"},{\"rfilename\":\"dpo/0099.md\"},{\"rfilename\":\"dpo/0100.md\"},{\"rfilename\":\"dpo/0101.md\"},{\"rfilename\":\"dpo/0102.md\"},{\"rfilename\":\"dpo/0103.md\"},{\"rfilename\":\"dpo/0104.md\"},{\"rfilename\":\"dpo/0105.md\"},{\"rfilename\":\"dpo/0106.md\"},{\"rfilename\":\"dpo/0107.md\"},{\"rfilename\":\"dpo/0108.md\"},{\"rfilename\":\"dpo/0109.md\"},{\"rfilename\":\"dpo/0110.md\"},{\"rfilename\":\"dpo/0111.md\"},{\"rfilename\":\"dpo/0112.md\"},{\"rfilename\":\"dpo/0113.md\"},{\"rfilename\":\"dpo/0114.md\"},{\"rfilename\":\"dpo/0115.md\"},{\"rfilename\":\"dpo/0116.md\"},{\"rfilename\":\"dpo/0117.md\"},{\"rfilename\":\"dpo/0118.md\"},{\"rfilename\":\"dpo/0119.md\"},{\"rfilename\":\"dpo/0120.md\"},{\"rfilename\":\"dpo/0121.md\"},{\"rfilename\":\"dpo/0122.md\"},{\"rfilename\":\"dpo/0123.md\"},{\"rfilename\":\"dpo/0124.md\"},{\"rfilename\":\"dpo/0125.md\"},{\"rfilename\":\"dpo/0126.md\"},{\"rfilename\":\"dpo/0127.md\"},{\"rfilename\":\"dpo/0128.md\"},{\"rfilename\":\"dpo/0129.md\"},{\"rfilename\":\"dpo/0130.md\"},{\"rfilename\":\"dpo/0131.md\"},{\"rfilename\":\"dpo/0132.md\"},{\"rfilename\":\"eval.jsonl\"},{\"rfilename\":\"eval/0001.md\"},{\"rfilename\":\"eval/0002.md\"},{\"rfilename\":\"eval/0003.md\"},{\"rfilename\":\"eval/0004.md\"},{\"rfilename\":\"eval/0005.md\"},{\"rfilename\":\"eval/0006.md\"},{\"rfilename\":\"eval/0007.md\"},{\"rfilename\":\"eval/0008.md\"},{\"rfilename\":\"eval/0009.md\"},{\"rfilename\":\"eval/0010.md\"},{\"rfilename\":\"eval/0011.md\"},{\"rfilename\":\"eval/0012.md\"},{\"rfilename\":\"eval/0013.md\"},{\"rfilename\":\"eval/0014.md\"},{\"rfilename\":\"eval/0015.md\"},{\"rfilename\":\"eval/0016.md\"},{\"rfilename\":\"eval/0017.md\"},{\"rfilename\":\"eval/0018.md\"},{\"rfilename\":\"eval/0019.md\"},{\"rfilename\":\"eval/0020.md\"},{\"rfilename\":\"eval/0021.md\"},{\"rfilename\":\"eval/0022.md\"},{\"rfilename\":\"eval/0023.md\"},{\"rfilename\":\"eval/0024.md\"},{\"rfilename\":\"eval/0025.md\"},{\"rfilename\":\"eval/0026.md\"},{\"rfilename\":\"eval/0027.md\"},{\"rfilename\":\"eval/0028.md\"},{\"rfilename\":\"eval/0029.md\"},{\"rfilename\":\"eval/0030.md\"},{\"rfilename\":\"eval/0031.md\"},{\"rfilename\":\"eval/0032.md\"},{\"rfilename\":\"eval/0033.md\"},{\"rfilename\":\"package-lock.json\"},{\"rfilename\":\"package.json\"},{\"rfilename\":\"script/big-edits\"},{\"rfilename\":\"script/check-format\"},{\"rfilename\":\"script/diff-generator\"},{\"rfilename\":\"script/diff-generator.html\"},{\"rfilename\":\"script/dpo\"},{\"rfilename\":\"script/dpo.ipynb\"},{\"rfilename\":\"script/files-with-deletions\"},{\"rfilename\":\"script/gen-dataset\"},{\"rfilename\":\"script/get-deployment-secrets\"},{\"rfilename\":\"script/highest\"},{\"rfilename\":\"script/label-data\"},{\"rfilename\":\"script/label-data-prompt.md\"},{\"rfilename\":\"script/last_feedback_pull\"},{\"rfilename\":\"script/last_predictions_pull\"},{\"rfilename\":\"script/prediction-prompt.md\"},{\"rfilename\":\"script/pull-feedback\"},{\"rfilename\":\"script/pull-predictions\"},{\"rfilename\":\"script/randomize-editable-region\"},{\"rfilename\":\"script/see-label-data\"},{\"rfilename\":\"script/sft.ipynb\"},{\"rfilename\":\"script/unrelated-edits\"},{\"rfilename\":\"script/verify\"},{\"rfilename\":\"script/verify.html\"},{\"rfilename\":\"script/verify_server.py\"},{\"rfilename\":\"script/verify_template.html\"},{\"rfilename\":\"train.jsonl\"},{\"rfilename\":\"train/0001.md\"},{\"rfilename\":\"train/0002.md\"},{\"rfilename\":\"train/0003.md\"},{\"rfilename\":\"train/0004.md\"},{\"rfilename\":\"train/0005.md\"},{\"rfilename\":\"train/0006.md\"},{\"rfilename\":\"train/0007.md\"},{\"rfilename\":\"train/0008.md\"},{\"rfilename\":\"train/0009.md\"},{\"rfilename\":\"train/0010.md\"},{\"rfilename\":\"train/0011.md\"},{\"rfilename\":\"train/0012.md\"},{\"rfilename\":\"train/0013.md\"},{\"rfilename\":\"train/0014.md\"},{\"rfilename\":\"train/0015.md\"},{\"rfilename\":\"train/0016.md\"},{\"rfilename\":\"train/0017.md\"},{\"rfilename\":\"train/0018.md\"},{\"rfilename\":\"train/0019.md\"},{\"rfilename\":\"train/0020.md\"},{\"rfilename\":\"train/0021.md\"},{\"rfilename\":\"train/0022.md\"},{\"rfilename\":\"train/0023.md\"},{\"rfilename\":\"train/0024.md\"},{\"rfilename\":\"train/0025.md\"},{\"rfilename\":\"train/0026.md\"},{\"rfilename\":\"train/0027.md\"},{\"rfilename\":\"train/0028.md\"},{\"rfilename\":\"train/0029.md\"},{\"rfilename\":\"train/0030.md\"},{\"rfilename\":\"train/0031.md\"},{\"rfilename\":\"train/0032.md\"},{\"rfilename\":\"train/0033.md\"},{\"rfilename\":\"train/0034.md\"},{\"rfilename\":\"train/0035.md\"},{\"rfilename\":\"train/0036.md\"},{\"rfilename\":\"train/0037.md\"},{\"rfilename\":\"train/0038.md\"},{\"rfilename\":\"train/0039.md\"},{\"rfilename\":\"train/0040.md\"},{\"rfilename\":\"train/0041.md\"},{\"rfilename\":\"train/0042.md\"},{\"rfilename\":\"train/0043.md\"},{\"rfilename\":\"train/0044.md\"},{\"rfilename\":\"train/0045.md\"},{\"rfilename\":\"train/0046.md\"},{\"rfilename\":\"train/0047.md\"},{\"rfilename\":\"train/0048.md\"},{\"rfilename\":\"train/0049.md\"},{\"rfilename\":\"train/0050.md\"},{\"rfilename\":\"train/0051.md\"},{\"rfilename\":\"train/0052.md\"},{\"rfilename\":\"train/0053.md\"},{\"rfilename\":\"train/0054.md\"},{\"rfilename\":\"train/0055.md\"},{\"rfilename\":\"train/0056.md\"},{\"rfilename\":\"train/0057.md\"},{\"rfilename\":\"train/0058.md\"},{\"rfilename\":\"train/0059.md\"},{\"rfilename\":\"train/0060.md\"},{\"rfilename\":\"train/0061.md\"},{\"rfilename\":\"train/0062.md\"},{\"rfilename\":\"train/0063.md\"},{\"rfilename\":\"train/0064.md\"},{\"rfilename\":\"train/0065.md\"},{\"rfilename\":\"train/0066.md\"},{\"rfilename\":\"train/0067.md\"},{\"rfilename\":\"train/0068.md\"},{\"rfilename\":\"train/0069.md\"},{\"rfilename\":\"train/0070.md\"},{\"rfilename\":\"train/0071.md\"},{\"rfilename\":\"train/0072.md\"},{\"rfilename\":\"train/0073.md\"},{\"rfilename\":\"train/0074.md\"},{\"rfilename\":\"train/0075.md\"},{\"rfilename\":\"train/0076.md\"},{\"rfilename\":\"train/0077.md\"},{\"rfilename\":\"train/0078.md\"},{\"rfilename\":\"train/0079.md\"},{\"rfilename\":\"train/0080.md\"},{\"rfilename\":\"train/0081.md\"},{\"rfilename\":\"train/0082.md\"},{\"rfilename\":\"train/0083.md\"},{\"rfilename\":\"train/0084.md\"},{\"rfilename\":\"train/0085.md\"},{\"rfilename\":\"train/0086.md\"},{\"rfilename\":\"train/0087.md\"},{\"rfilename\":\"train/0088.md\"},{\"rfilename\":\"train/0089.md\"},{\"rfilename\":\"train/0090.md\"},{\"rfilename\":\"train/0091.md\"},{\"rfilename\":\"train/0092.md\"},{\"rfilename\":\"train/0093.md\"},{\"rfilename\":\"train/0094.md\"},{\"rfilename\":\"train/0095.md\"},{\"rfilename\":\"train/0096.md\"},{\"rfilename\":\"train/0097.md\"},{\"rfilename\":\"train/0098.md\"},{\"rfilename\":\"train/0099.md\"},{\"rfilename\":\"train/0100.md\"},{\"rfilename\":\"train/0101.md\"},{\"rfilename\":\"train/0102.md\"},{\"rfilename\":\"train/0103.md\"},{\"rfilename\":\"train/0104.md\"},{\"rfilename\":\"train/0105.md\"},{\"rfilename\":\"train/0106.md\"},{\"rfilename\":\"train/0107.md\"},{\"rfilename\":\"train/0108.md\"},{\"rfilename\":\"train/0109.md\"},{\"rfilename\":\"train/0110.md\"},{\"rfilename\":\"train/0111.md\"},{\"rfilename\":\"train/0112.md\"},{\"rfilename\":\"train/0113.md\"},{\"rfilename\":\"train/0114.md\"},{\"rfilename\":\"train/0115.md\"},{\"rfilename\":\"train/0116.md\"},{\"rfilename\":\"train/0117.md\"},{\"rfilename\":\"train/0118.md\"},{\"rfilename\":\"train/0119.md\"},{\"rfilename\":\"train/0120.md\"},{\"rfilename\":\"train/0121.md\"},{\"rfilename\":\"train/0122.md\"},{\"rfilename\":\"train/0123.md\"},{\"rfilename\":\"train/0124.md\"},{\"rfilename\":\"train/0125.md\"},{\"rfilename\":\"train/0126.md\"},{\"rfilename\":\"train/0127.md\"},{\"rfilename\":\"train/0128.md\"},{\"rfilename\":\"train/0129.md\"},{\"rfilename\":\"train/0130.md\"},{\"rfilename\":\"train/0133.md\"},{\"rfilename\":\"train/0134.md\"},{\"rfilename\":\"train/0135.md\"},{\"rfilename\":\"train/0136.md\"},{\"rfilename\":\"train/0137.md\"},{\"rfilename\":\"train/0138.md\"},{\"rfilename\":\"train/0139.md\"},{\"rfilename\":\"train/0140.md\"},{\"rfilename\":\"train/0141.md\"},{\"rfilename\":\"train/0142.md\"},{\"rfilename\":\"train/0143.md\"},{\"rfilename\":\"train/0144.md\"},{\"rfilename\":\"train/0145.md\"},{\"rfilename\":\"train/0146.md\"},{\"rfilename\":\"train/0147.md\"},{\"rfilename\":\"train/0148.md\"},{\"rfilename\":\"train/0149.md\"},{\"rfilename\":\"train/0150.md\"},{\"rfilename\":\"train/0152.md\"},{\"rfilename\":\"train/0153.md\"},{\"rfilename\":\"train/0154.md\"},{\"rfilename\":\"train/0155.md\"},{\"rfilename\":\"train/0156.md\"},{\"rfilename\":\"train/0157.md\"},{\"rfilename\":\"train/0158.md\"},{\"rfilename\":\"train/0159.md\"},{\"rfilename\":\"train/0164.md\"},{\"rfilename\":\"train/0165.md\"},{\"rfilename\":\"train/0166.md\"},{\"rfilename\":\"train/0168.md\"},{\"rfilename\":\"train/0169.md\"},{\"rfilename\":\"train/0170.md\"},{\"rfilename\":\"train/0172.md\"},{\"rfilename\":\"train/0173.md\"},{\"rfilename\":\"train/0174.md\"},{\"rfilename\":\"train/0176.md\"},{\"rfilename\":\"train/0177.md\"},{\"rfilename\":\"train/0179.md\"},{\"rfilename\":\"train/0180.md\"},{\"rfilename\":\"train/0181.md\"},{\"rfilename\":\"train/0182.md\"},{\"rfilename\":\"train/0183.md\"},{\"rfilename\":\"train/0184.md\"},{\"rfilename\":\"train/0185.md\"},{\"rfilename\":\"train/0186.md\"},{\"rfilename\":\"train/0187.md\"},{\"rfilename\":\"train/0188.md\"},{\"rfilename\":\"train/0190.md\"},{\"rfilename\":\"train/0191.md\"},{\"rfilename\":\"train/0194.md\"},{\"rfilename\":\"train/0195.md\"},{\"rfilename\":\"train/0196.md\"},{\"rfilename\":\"train/0197.md\"},{\"rfilename\":\"train/0198.md\"},{\"rfilename\":\"train/0199.md\"},{\"rfilename\":\"train/0200.md\"},{\"rfilename\":\"train/0201.md\"},{\"rfilename\":\"train/0202.md\"},{\"rfilename\":\"train/0203.md\"},{\"rfilename\":\"train/0204.md\"},{\"rfilename\":\"train/0206.md\"},{\"rfilename\":\"train/0207.md\"},{\"rfilename\":\"train/0208.md\"},{\"rfilename\":\"train/0209.md\"},{\"rfilename\":\"train/0210.md\"},{\"rfilename\":\"train/0211.md\"},{\"rfilename\":\"train/0212.md\"},{\"rfilename\":\"train/0213.md\"},{\"rfilename\":\"train/0214.md\"},{\"rfilename\":\"train/0215.md\"},{\"rfilename\":\"train/0216.md\"},{\"rfilename\":\"train/0218.md\"},{\"rfilename\":\"train/0219.md\"},{\"rfilename\":\"train/0220.md\"},{\"rfilename\":\"train/0221.md\"},{\"rfilename\":\"train/0222.md\"},{\"rfilename\":\"train/0224.md\"},{\"rfilename\":\"train/0226.md\"},{\"rfilename\":\"train/0227.md\"},{\"rfilename\":\"train/0229.md\"},{\"rfilename\":\"train/0230.md\"},{\"rfilename\":\"train/0232.md\"},{\"rfilename\":\"train/0233.md\"},{\"rfilename\":\"train/0235.md\"},{\"rfilename\":\"train/0236.md\"},{\"rfilename\":\"train/0237.md\"},{\"rfilename\":\"train/0239.md\"},{\"rfilename\":\"train/0240.md\"},{\"rfilename\":\"train/0241.md\"},{\"rfilename\":\"train/0242.md\"},{\"rfilename\":\"train/0244.md\"},{\"rfilename\":\"train/0245.md\"},{\"rfilename\":\"train/0248.md\"},{\"rfilename\":\"train/0249.md\"},{\"rfilename\":\"train/0250.md\"},{\"rfilename\":\"train/0252.md\"},{\"rfilename\":\"train/0253.md\"},{\"rfilename\":\"train/0254.md\"},{\"rfilename\":\"train/0257.md\"},{\"rfilename\":\"train/0259.md\"},{\"rfilename\":\"train/0261.md\"},{\"rfilename\":\"train/0262.md\"},{\"rfilename\":\"train/0263.md\"},{\"rfilename\":\"train/0264.md\"},{\"rfilename\":\"train/0265.md\"},{\"rfilename\":\"train/0266.md\"},{\"rfilename\":\"train/0267.md\"},{\"rfilename\":\"train/0268.md\"},{\"rfilename\":\"train/0269.md\"},{\"rfilename\":\"train/0270.md\"},{\"rfilename\":\"train/0271.md\"},{\"rfilename\":\"train/0272.md\"},{\"rfilename\":\"train/0273.md\"},{\"rfilename\":\"train/0274.md\"},{\"rfilename\":\"train/0275.md\"},{\"rfilename\":\"train/0276.md\"},{\"rfilename\":\"train/0277.md\"},{\"rfilename\":\"train/0278.md\"},{\"rfilename\":\"train/0279.md\"},{\"rfilename\":\"train/0283.md\"},{\"rfilename\":\"train/0284.md\"},{\"rfilename\":\"train/0286.md\"},{\"rfilename\":\"train/0287.md\"},{\"rfilename\":\"train/0289.md\"},{\"rfilename\":\"train/0293.md\"},{\"rfilename\":\"train/0294.md\"},{\"rfilename\":\"train/0295.md\"},{\"rfilename\":\"train/0296.md\"},{\"rfilename\":\"train/0298.md\"},{\"rfilename\":\"train/0300.md\"},{\"rfilename\":\"train/0301.md\"},{\"rfilename\":\"train/0302.md\"},{\"rfilename\":\"train/0303.md\"},{\"rfilename\":\"train/0305.md\"},{\"rfilename\":\"train/0306.md\"},{\"rfilename\":\"train/0307.md\"},{\"rfilename\":\"train/0308.md\"},{\"rfilename\":\"train/0312.md\"},{\"rfilename\":\"train/0314.md\"},{\"rfilename\":\"train/0315.md\"},{\"rfilename\":\"train/0316.md\"},{\"rfilename\":\"train/0318.md\"},{\"rfilename\":\"train/0319.md\"},{\"rfilename\":\"train/0320.md\"},{\"rfilename\":\"train/0321.md\"},{\"rfilename\":\"train/0322.md\"},{\"rfilename\":\"train/0325.md\"},{\"rfilename\":\"train/0326.md\"},{\"rfilename\":\"train/0327.md\"},{\"rfilename\":\"train/0329.md\"},{\"rfilename\":\"train/0330.md\"},{\"rfilename\":\"train/0332.md\"},{\"rfilename\":\"train/0335.md\"},{\"rfilename\":\"train/0336.md\"},{\"rfilename\":\"train/0337.md\"},{\"rfilename\":\"train/0339.md\"},{\"rfilename\":\"train/0340.md\"},{\"rfilename\":\"train/0343.md\"},{\"rfilename\":\"train/0344.md\"},{\"rfilename\":\"train/0345.md\"},{\"rfilename\":\"train/0346.md\"},{\"rfilename\":\"train/0347.md\"},{\"rfilename\":\"train/0348.md\"},{\"rfilename\":\"train/0350.md\"},{\"rfilename\":\"train/0352.md\"},{\"rfilename\":\"train/0353.md\"},{\"rfilename\":\"train/0354.md\"},{\"rfilename\":\"train/0355.md\"},{\"rfilename\":\"train/0357.md\"},{\"rfilename\":\"train/0358.md\"},{\"rfilename\":\"train/0360.md\"},{\"rfilename\":\"train/0361.md\"},{\"rfilename\":\"train/0362.md\"},{\"rfilename\":\"train/0363.md\"},{\"rfilename\":\"train/0364.md\"},{\"rfilename\":\"train/0365.md\"},{\"rfilename\":\"train/0366.md\"},{\"rfilename\":\"train/0367.md\"},{\"rfilename\":\"train/0368.md\"},{\"rfilename\":\"train/0369.md\"},{\"rfilename\":\"train/0371.md\"},{\"rfilename\":\"train/0372.md\"},{\"rfilename\":\"train/0373.md\"},{\"rfilename\":\"train/0374.md\"},{\"rfilename\":\"train/0376.md\"},{\"rfilename\":\"train/0377.md\"},{\"rfilename\":\"train/0378.md\"},{\"rfilename\":\"train/0379.md\"},{\"rfilename\":\"train/0381.md\"},{\"rfilename\":\"train/0382.md\"},{\"rfilename\":\"train/0384.md\"},{\"rfilename\":\"train/0385.md\"},{\"rfilename\":\"train/0386.md\"},{\"rfilename\":\"train/0389.md\"},{\"rfilename\":\"train/0391.md\"},{\"rfilename\":\"train/0392.md\"},{\"rfilename\":\"train/0393.md\"},{\"rfilename\":\"train/0394.md\"},{\"rfilename\":\"train/0395.md\"},{\"rfilename\":\"train/0396.md\"},{\"rfilename\":\"train/0397.md\"},{\"rfilename\":\"train/0398.md\"},{\"rfilename\":\"train/0399.md\"},{\"rfilename\":\"train/0402.md\"},{\"rfilename\":\"train/0404.md\"},{\"rfilename\":\"train/0405.md\"},{\"rfilename\":\"train/0408.md\"},{\"rfilename\":\"train/0410.md\"},{\"rfilename\":\"train/0411.md\"},{\"rfilename\":\"train/0412.md\"},{\"rfilename\":\"train/0413.md\"},{\"rfilename\":\"train/0414.md\"},{\"rfilename\":\"train/0415.md\"},{\"rfilename\":\"train/0416.md\"},{\"rfilename\":\"train/0420.md\"},{\"rfilename\":\"train/0421.md\"},{\"rfilename\":\"train/0422.md\"},{\"rfilename\":\"train/0423.md\"},{\"rfilename\":\"train/0424.md\"},{\"rfilename\":\"train/0425.md\"},{\"rfilename\":\"train/0426.md\"},{\"rfilename\":\"train/0427.md\"},{\"rfilename\":\"train/0428.md\"},{\"rfilename\":\"train/0431.md\"},{\"rfilename\":\"train/0432.md\"},{\"rfilename\":\"train/0433.md\"},{\"rfilename\":\"train/0434.md\"},{\"rfilename\":\"train/0435.md\"},{\"rfilename\":\"train/0437.md\"},{\"rfilename\":\"train/0438.md\"},{\"rfilename\":\"train/0439.md\"},{\"rfilename\":\"train/0440.md\"},{\"rfilename\":\"train/0441.md\"},{\"rfilename\":\"train/0445.md\"},{\"rfilename\":\"train/0448.md\"},{\"rfilename\":\"train/0449.md\"},{\"rfilename\":\"train/0450.md\"},{\"rfilename\":\"train/0452.md\"},{\"rfilename\":\"train/0453.md\"},{\"rfilename\":\"train/0454.md\"},{\"rfilename\":\"train/0455.md\"},{\"rfilename\":\"train/0456.md\"},{\"rfilename\":\"train/0457.md\"},{\"rfilename\":\"train/0459.md\"},{\"rfilename\":\"train/0460.md\"},{\"rfilename\":\"train/0461.md\"},{\"rfilename\":\"train/0462.md\"},{\"rfilename\":\"train/0463.md\"},{\"rfilename\":\"train/0464.md\"},{\"rfilename\":\"train/0465.md\"},{\"rfilename\":\"train/0466.md\"},{\"rfilename\":\"train/0467.md\"},{\"rfilename\":\"train/0473.md\"},{\"rfilename\":\"train/0474.md\"},{\"rfilename\":\"train/0478.md\"},{\"rfilename\":\"train/0479.md\"},{\"rfilename\":\"train/0480.md\"},{\"rfilename\":\"train/0481.md\"},{\"rfilename\":\"train/0482.md\"},{\"rfilename\":\"train/0483.md\"},{\"rfilename\":\"train/0484.md\"},{\"rfilename\":\"train/0485.md\"},{\"rfilename\":\"train/0486.md\"},{\"rfilename\":\"train/0487.md\"},{\"rfilename\":\"train/0488.md\"},{\"rfilename\":\"train/0489.md\"},{\"rfilename\":\"train/0490.md\"},{\"rfilename\":\"train/0491.md\"},{\"rfilename\":\"train/0492.md\"},{\"rfilename\":\"train/0493.md\"},{\"rfilename\":\"train/0494.md\"},{\"rfilename\":\"train/0495.md\"},{\"rfilename\":\"train/0496.md\"},{\"rfilename\":\"train/0497.md\"},{\"rfilename\":\"train/0498.md\"},{\"rfilename\":\"train/0499.md\"},{\"rfilename\":\"train/0500.md\"},{\"rfilename\":\"train/0501.md\"},{\"rfilename\":\"train/0502.md\"},{\"rfilename\":\"train/0503.md\"},{\"rfilename\":\"train/0504.md\"},{\"rfilename\":\"train/0505.md\"},{\"rfilename\":\"train/0506.md\"},{\"rfilename\":\"train/0507.md\"},{\"rfilename\":\"train/0508.md\"},{\"rfilename\":\"train/0509.md\"},{\"rfilename\":\"train/0510.md\"},{\"rfilename\":\"train/0511.md\"}],\"createdAt\":\"2024-11-27T16:42:46.000Z\",\"usedStorage\":75577629}"
+    headers:
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '19785'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 01 Jun 2025 08:39:28 GMT
+      ETag:
+      - W/"4d49-LXZhNR7s5z5IDbor0VHBkUmyVLk"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 2efdf2f907b6378e5a3313db8e0fd188.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - cIZZiNyYAUfBBjCvZVFbtc3W0EmAF-03v0P5LD-baVlprUZM4FBOsA==
+      X-Amz-Cf-Pop:
+      - BOM78-P11
+      X-Cache:
+      - Miss from cloudfront
+      X-Powered-By:
+      - huggingface-moon
+      X-Request-Id:
+      - Root=1-683c11c0-3c1b45e72af3210b507ffd3d;886d2f99-046f-44e7-b278-4f93b335c533
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 9ceaf900-51ef-4b62-aa05-a53b776e59b4
+      user-agent:
+      - unknown/None; hf_hub/0.28.1; python/3.11.11; torch/2.5.1
+    method: GET
+    uri: https://huggingface.co/api/datasets/zed-industries/zeta/tree/0f41422bc56fa0f9a5b3096e7e6f42905497d793?recursive=False&expand=False
+  response:
+    body:
+      string: '[{"type":"directory","oid":"6881b62bec831e2a65ade69d8b416d0300cb1c8e","size":0,"path":".zed"},{"type":"directory","oid":"7b42f402db1dc10c8a629a387b0bb6cee8ba58a4","size":0,"path":"dpo"},{"type":"directory","oid":"d9199024dd329d39426d9b7c1deacd8aff66692c","size":0,"path":"eval"},{"type":"directory","oid":"5effec461fe73df34511e68a4602034c125e2432","size":0,"path":"script"},{"type":"directory","oid":"1ddea8aeaedbde80f786eaf2ed1718257975f7e8","size":0,"path":"train"},{"type":"file","oid":"4447412e296d532807edc133a9efb5b7aff8f3dd","size":38,"path":".gitignore"},{"type":"file","oid":"2c0733315e415bfb5e5b353f9996ecd964d395b2","size":5,"path":".python-version"},{"type":"file","oid":"b0031a40cf1708a5744ab1999189ce06ff85d68a","size":2234,"path":"README.md"},{"type":"file","oid":"6999c6d8315afffc7414c28fadd3355afb2a3c2a","size":1030157,"path":"dpo.jsonl"},{"type":"file","oid":"56216302a9d46022faef01711efc326ce1f3dfd4","size":183724,"path":"eval.jsonl"},{"type":"file","oid":"0409615e0edf836eee38333f0028e39e27d11881","size":154471,"path":"package-lock.json"},{"type":"file","oid":"595a5fcc7baa3eecd561bce877953ef61e200a6c","size":159,"path":"package.json"},{"type":"file","oid":"a9d6e8e70abde9f8cab2397eb1bbec3571ad0f61","size":1431832,"path":"train.jsonl"}]'
+    headers:
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1261'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 01 Jun 2025 08:39:28 GMT
+      ETag:
+      - W/"4ed-Set28CzqCRzpY40kpocOUuW7zRY"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 8c0041b3598a539d39642d111544edbe.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - jE5pgMxcvZmTEiXjY8n3K6Wnbqcn_p7djmxS5YHvKprfokmZ0uMq7g==
+      X-Amz-Cf-Pop:
+      - BOM78-P11
+      X-Cache:
+      - Miss from cloudfront
+      X-Powered-By:
+      - huggingface-moon
+      X-Request-Id:
+      - Root=1-683c11c0-0f309696357f48a86c12bbf4;9ceaf900-51ef-4b62-aa05-a53b776e59b4
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 841280f2-2af9-41c4-954b-5e636d502a61
+      user-agent:
+      - unknown/None; hf_hub/0.28.1; python/3.11.11; torch/2.5.1
+    method: GET
+    uri: https://huggingface.co/api/datasets/zed-industries/zeta/revision/0f41422bc56fa0f9a5b3096e7e6f42905497d793
+  response:
+    body:
+      string: "{\"_id\":\"67474c06bd2f2f20b81faef1\",\"id\":\"zed-industries/zeta\",\"author\":\"zed-industries\",\"sha\":\"0f41422bc56fa0f9a5b3096e7e6f42905497d793\",\"lastModified\":\"2025-02-27T08:47:45.000Z\",\"private\":false,\"gated\":false,\"disabled\":false,\"tags\":[\"license:apache-2.0\",\"size_categories:n<1K\",\"format:json\",\"modality:text\",\"library:datasets\",\"library:pandas\",\"library:mlcroissant\",\"library:polars\",\"region:us\",\"code\"],\"citation\":null,\"description\":\"\\n\\t\\n\\t\\t\\n\\t\\tDataset
+        for Zeta\\n\\t\\n\\nThis is the open dataset used to train Zeta, an edit prediction
+        model that powers Zed's predictive coding feature. Zeta is derived from Qwen2.5-Coder-7B
+        and predicts the developer's next code edit based on their recent programming
+        patterns and cursor position, allowing for intelligent completion with a simple
+        tab press.\\nThis dataset is split into three parts:\\n\\ntrain.jsonl: Contains
+        the training data for supervised fine-tuning.\\ndpo.jsonl: Contains the data
+        for the\u2026 See the full description on the dataset page: https://huggingface.co/datasets/zed-industries/zeta.\",\"downloads\":4341,\"likes\":104,\"cardData\":{\"configs\":[{\"config_name\":\"default\",\"data_files\":[{\"split\":\"train\",\"path\":\"train.jsonl\"},{\"split\":\"eval\",\"path\":\"eval.jsonl\"},{\"split\":\"dpo\",\"path\":\"dpo.jsonl\"}]}],\"license\":\"apache-2.0\",\"tags\":[\"code\"]},\"siblings\":[{\"rfilename\":\".gitignore\"},{\"rfilename\":\".python-version\"},{\"rfilename\":\".zed/settings.json\"},{\"rfilename\":\"README.md\"},{\"rfilename\":\"dpo.jsonl\"},{\"rfilename\":\"dpo/0001.md\"},{\"rfilename\":\"dpo/0002.md\"},{\"rfilename\":\"dpo/0003.md\"},{\"rfilename\":\"dpo/0004.md\"},{\"rfilename\":\"dpo/0005.md\"},{\"rfilename\":\"dpo/0006.md\"},{\"rfilename\":\"dpo/0007.md\"},{\"rfilename\":\"dpo/0008.md\"},{\"rfilename\":\"dpo/0009.md\"},{\"rfilename\":\"dpo/0010.md\"},{\"rfilename\":\"dpo/0011.md\"},{\"rfilename\":\"dpo/0012.md\"},{\"rfilename\":\"dpo/0013.md\"},{\"rfilename\":\"dpo/0014.md\"},{\"rfilename\":\"dpo/0015.md\"},{\"rfilename\":\"dpo/0016.md\"},{\"rfilename\":\"dpo/0017.md\"},{\"rfilename\":\"dpo/0018.md\"},{\"rfilename\":\"dpo/0019.md\"},{\"rfilename\":\"dpo/0020.md\"},{\"rfilename\":\"dpo/0021.md\"},{\"rfilename\":\"dpo/0022.md\"},{\"rfilename\":\"dpo/0023.md\"},{\"rfilename\":\"dpo/0024.md\"},{\"rfilename\":\"dpo/0025.md\"},{\"rfilename\":\"dpo/0026.md\"},{\"rfilename\":\"dpo/0027.md\"},{\"rfilename\":\"dpo/0028.md\"},{\"rfilename\":\"dpo/0029.md\"},{\"rfilename\":\"dpo/0030.md\"},{\"rfilename\":\"dpo/0031.md\"},{\"rfilename\":\"dpo/0032.md\"},{\"rfilename\":\"dpo/0033.md\"},{\"rfilename\":\"dpo/0034.md\"},{\"rfilename\":\"dpo/0035.md\"},{\"rfilename\":\"dpo/0036.md\"},{\"rfilename\":\"dpo/0037.md\"},{\"rfilename\":\"dpo/0038.md\"},{\"rfilename\":\"dpo/0039.md\"},{\"rfilename\":\"dpo/0040.md\"},{\"rfilename\":\"dpo/0041.md\"},{\"rfilename\":\"dpo/0042.md\"},{\"rfilename\":\"dpo/0043.md\"},{\"rfilename\":\"dpo/0044.md\"},{\"rfilename\":\"dpo/0045.md\"},{\"rfilename\":\"dpo/0046.md\"},{\"rfilename\":\"dpo/0047.md\"},{\"rfilename\":\"dpo/0048.md\"},{\"rfilename\":\"dpo/0049.md\"},{\"rfilename\":\"dpo/0050.md\"},{\"rfilename\":\"dpo/0051.md\"},{\"rfilename\":\"dpo/0052.md\"},{\"rfilename\":\"dpo/0053.md\"},{\"rfilename\":\"dpo/0054.md\"},{\"rfilename\":\"dpo/0055.md\"},{\"rfilename\":\"dpo/0056.md\"},{\"rfilename\":\"dpo/0057.md\"},{\"rfilename\":\"dpo/0058.md\"},{\"rfilename\":\"dpo/0059.md\"},{\"rfilename\":\"dpo/0060.md\"},{\"rfilename\":\"dpo/0061.md\"},{\"rfilename\":\"dpo/0062.md\"},{\"rfilename\":\"dpo/0063.md\"},{\"rfilename\":\"dpo/0064.md\"},{\"rfilename\":\"dpo/0065.md\"},{\"rfilename\":\"dpo/0066.md\"},{\"rfilename\":\"dpo/0067.md\"},{\"rfilename\":\"dpo/0068.md\"},{\"rfilename\":\"dpo/0069.md\"},{\"rfilename\":\"dpo/0070.md\"},{\"rfilename\":\"dpo/0071.md\"},{\"rfilename\":\"dpo/0072.md\"},{\"rfilename\":\"dpo/0073.md\"},{\"rfilename\":\"dpo/0074.md\"},{\"rfilename\":\"dpo/0075.md\"},{\"rfilename\":\"dpo/0076.md\"},{\"rfilename\":\"dpo/0077.md\"},{\"rfilename\":\"dpo/0078.md\"},{\"rfilename\":\"dpo/0079.md\"},{\"rfilename\":\"dpo/0080.md\"},{\"rfilename\":\"dpo/0081.md\"},{\"rfilename\":\"dpo/0082.md\"},{\"rfilename\":\"dpo/0083.md\"},{\"rfilename\":\"dpo/0084.md\"},{\"rfilename\":\"dpo/0085.md\"},{\"rfilename\":\"dpo/0086.md\"},{\"rfilename\":\"dpo/0087.md\"},{\"rfilename\":\"dpo/0088.md\"},{\"rfilename\":\"dpo/0089.md\"},{\"rfilename\":\"dpo/0090.md\"},{\"rfilename\":\"dpo/0091.md\"},{\"rfilename\":\"dpo/0092.md\"},{\"rfilename\":\"dpo/0093.md\"},{\"rfilename\":\"dpo/0094.md\"},{\"rfilename\":\"dpo/0095.md\"},{\"rfilename\":\"dpo/0096.md\"},{\"rfilename\":\"dpo/0097.md\"},{\"rfilename\":\"dpo/0098.md\"},{\"rfilename\":\"dpo/0099.md\"},{\"rfilename\":\"dpo/0100.md\"},{\"rfilename\":\"dpo/0101.md\"},{\"rfilename\":\"dpo/0102.md\"},{\"rfilename\":\"dpo/0103.md\"},{\"rfilename\":\"dpo/0104.md\"},{\"rfilename\":\"dpo/0105.md\"},{\"rfilename\":\"dpo/0106.md\"},{\"rfilename\":\"dpo/0107.md\"},{\"rfilename\":\"dpo/0108.md\"},{\"rfilename\":\"dpo/0109.md\"},{\"rfilename\":\"dpo/0110.md\"},{\"rfilename\":\"dpo/0111.md\"},{\"rfilename\":\"dpo/0112.md\"},{\"rfilename\":\"dpo/0113.md\"},{\"rfilename\":\"dpo/0114.md\"},{\"rfilename\":\"dpo/0115.md\"},{\"rfilename\":\"dpo/0116.md\"},{\"rfilename\":\"dpo/0117.md\"},{\"rfilename\":\"dpo/0118.md\"},{\"rfilename\":\"dpo/0119.md\"},{\"rfilename\":\"dpo/0120.md\"},{\"rfilename\":\"dpo/0121.md\"},{\"rfilename\":\"dpo/0122.md\"},{\"rfilename\":\"dpo/0123.md\"},{\"rfilename\":\"dpo/0124.md\"},{\"rfilename\":\"dpo/0125.md\"},{\"rfilename\":\"dpo/0126.md\"},{\"rfilename\":\"dpo/0127.md\"},{\"rfilename\":\"dpo/0128.md\"},{\"rfilename\":\"dpo/0129.md\"},{\"rfilename\":\"dpo/0130.md\"},{\"rfilename\":\"dpo/0131.md\"},{\"rfilename\":\"dpo/0132.md\"},{\"rfilename\":\"eval.jsonl\"},{\"rfilename\":\"eval/0001.md\"},{\"rfilename\":\"eval/0002.md\"},{\"rfilename\":\"eval/0003.md\"},{\"rfilename\":\"eval/0004.md\"},{\"rfilename\":\"eval/0005.md\"},{\"rfilename\":\"eval/0006.md\"},{\"rfilename\":\"eval/0007.md\"},{\"rfilename\":\"eval/0008.md\"},{\"rfilename\":\"eval/0009.md\"},{\"rfilename\":\"eval/0010.md\"},{\"rfilename\":\"eval/0011.md\"},{\"rfilename\":\"eval/0012.md\"},{\"rfilename\":\"eval/0013.md\"},{\"rfilename\":\"eval/0014.md\"},{\"rfilename\":\"eval/0015.md\"},{\"rfilename\":\"eval/0016.md\"},{\"rfilename\":\"eval/0017.md\"},{\"rfilename\":\"eval/0018.md\"},{\"rfilename\":\"eval/0019.md\"},{\"rfilename\":\"eval/0020.md\"},{\"rfilename\":\"eval/0021.md\"},{\"rfilename\":\"eval/0022.md\"},{\"rfilename\":\"eval/0023.md\"},{\"rfilename\":\"eval/0024.md\"},{\"rfilename\":\"eval/0025.md\"},{\"rfilename\":\"eval/0026.md\"},{\"rfilename\":\"eval/0027.md\"},{\"rfilename\":\"eval/0028.md\"},{\"rfilename\":\"eval/0029.md\"},{\"rfilename\":\"eval/0030.md\"},{\"rfilename\":\"eval/0031.md\"},{\"rfilename\":\"eval/0032.md\"},{\"rfilename\":\"eval/0033.md\"},{\"rfilename\":\"package-lock.json\"},{\"rfilename\":\"package.json\"},{\"rfilename\":\"script/big-edits\"},{\"rfilename\":\"script/check-format\"},{\"rfilename\":\"script/diff-generator\"},{\"rfilename\":\"script/diff-generator.html\"},{\"rfilename\":\"script/dpo\"},{\"rfilename\":\"script/dpo.ipynb\"},{\"rfilename\":\"script/files-with-deletions\"},{\"rfilename\":\"script/gen-dataset\"},{\"rfilename\":\"script/get-deployment-secrets\"},{\"rfilename\":\"script/highest\"},{\"rfilename\":\"script/label-data\"},{\"rfilename\":\"script/label-data-prompt.md\"},{\"rfilename\":\"script/last_feedback_pull\"},{\"rfilename\":\"script/last_predictions_pull\"},{\"rfilename\":\"script/prediction-prompt.md\"},{\"rfilename\":\"script/pull-feedback\"},{\"rfilename\":\"script/pull-predictions\"},{\"rfilename\":\"script/randomize-editable-region\"},{\"rfilename\":\"script/see-label-data\"},{\"rfilename\":\"script/sft.ipynb\"},{\"rfilename\":\"script/unrelated-edits\"},{\"rfilename\":\"script/verify\"},{\"rfilename\":\"script/verify.html\"},{\"rfilename\":\"script/verify_server.py\"},{\"rfilename\":\"script/verify_template.html\"},{\"rfilename\":\"train.jsonl\"},{\"rfilename\":\"train/0001.md\"},{\"rfilename\":\"train/0002.md\"},{\"rfilename\":\"train/0003.md\"},{\"rfilename\":\"train/0004.md\"},{\"rfilename\":\"train/0005.md\"},{\"rfilename\":\"train/0006.md\"},{\"rfilename\":\"train/0007.md\"},{\"rfilename\":\"train/0008.md\"},{\"rfilename\":\"train/0009.md\"},{\"rfilename\":\"train/0010.md\"},{\"rfilename\":\"train/0011.md\"},{\"rfilename\":\"train/0012.md\"},{\"rfilename\":\"train/0013.md\"},{\"rfilename\":\"train/0014.md\"},{\"rfilename\":\"train/0015.md\"},{\"rfilename\":\"train/0016.md\"},{\"rfilename\":\"train/0017.md\"},{\"rfilename\":\"train/0018.md\"},{\"rfilename\":\"train/0019.md\"},{\"rfilename\":\"train/0020.md\"},{\"rfilename\":\"train/0021.md\"},{\"rfilename\":\"train/0022.md\"},{\"rfilename\":\"train/0023.md\"},{\"rfilename\":\"train/0024.md\"},{\"rfilename\":\"train/0025.md\"},{\"rfilename\":\"train/0026.md\"},{\"rfilename\":\"train/0027.md\"},{\"rfilename\":\"train/0028.md\"},{\"rfilename\":\"train/0029.md\"},{\"rfilename\":\"train/0030.md\"},{\"rfilename\":\"train/0031.md\"},{\"rfilename\":\"train/0032.md\"},{\"rfilename\":\"train/0033.md\"},{\"rfilename\":\"train/0034.md\"},{\"rfilename\":\"train/0035.md\"},{\"rfilename\":\"train/0036.md\"},{\"rfilename\":\"train/0037.md\"},{\"rfilename\":\"train/0038.md\"},{\"rfilename\":\"train/0039.md\"},{\"rfilename\":\"train/0040.md\"},{\"rfilename\":\"train/0041.md\"},{\"rfilename\":\"train/0042.md\"},{\"rfilename\":\"train/0043.md\"},{\"rfilename\":\"train/0044.md\"},{\"rfilename\":\"train/0045.md\"},{\"rfilename\":\"train/0046.md\"},{\"rfilename\":\"train/0047.md\"},{\"rfilename\":\"train/0048.md\"},{\"rfilename\":\"train/0049.md\"},{\"rfilename\":\"train/0050.md\"},{\"rfilename\":\"train/0051.md\"},{\"rfilename\":\"train/0052.md\"},{\"rfilename\":\"train/0053.md\"},{\"rfilename\":\"train/0054.md\"},{\"rfilename\":\"train/0055.md\"},{\"rfilename\":\"train/0056.md\"},{\"rfilename\":\"train/0057.md\"},{\"rfilename\":\"train/0058.md\"},{\"rfilename\":\"train/0059.md\"},{\"rfilename\":\"train/0060.md\"},{\"rfilename\":\"train/0061.md\"},{\"rfilename\":\"train/0062.md\"},{\"rfilename\":\"train/0063.md\"},{\"rfilename\":\"train/0064.md\"},{\"rfilename\":\"train/0065.md\"},{\"rfilename\":\"train/0066.md\"},{\"rfilename\":\"train/0067.md\"},{\"rfilename\":\"train/0068.md\"},{\"rfilename\":\"train/0069.md\"},{\"rfilename\":\"train/0070.md\"},{\"rfilename\":\"train/0071.md\"},{\"rfilename\":\"train/0072.md\"},{\"rfilename\":\"train/0073.md\"},{\"rfilename\":\"train/0074.md\"},{\"rfilename\":\"train/0075.md\"},{\"rfilename\":\"train/0076.md\"},{\"rfilename\":\"train/0077.md\"},{\"rfilename\":\"train/0078.md\"},{\"rfilename\":\"train/0079.md\"},{\"rfilename\":\"train/0080.md\"},{\"rfilename\":\"train/0081.md\"},{\"rfilename\":\"train/0082.md\"},{\"rfilename\":\"train/0083.md\"},{\"rfilename\":\"train/0084.md\"},{\"rfilename\":\"train/0085.md\"},{\"rfilename\":\"train/0086.md\"},{\"rfilename\":\"train/0087.md\"},{\"rfilename\":\"train/0088.md\"},{\"rfilename\":\"train/0089.md\"},{\"rfilename\":\"train/0090.md\"},{\"rfilename\":\"train/0091.md\"},{\"rfilename\":\"train/0092.md\"},{\"rfilename\":\"train/0093.md\"},{\"rfilename\":\"train/0094.md\"},{\"rfilename\":\"train/0095.md\"},{\"rfilename\":\"train/0096.md\"},{\"rfilename\":\"train/0097.md\"},{\"rfilename\":\"train/0098.md\"},{\"rfilename\":\"train/0099.md\"},{\"rfilename\":\"train/0100.md\"},{\"rfilename\":\"train/0101.md\"},{\"rfilename\":\"train/0102.md\"},{\"rfilename\":\"train/0103.md\"},{\"rfilename\":\"train/0104.md\"},{\"rfilename\":\"train/0105.md\"},{\"rfilename\":\"train/0106.md\"},{\"rfilename\":\"train/0107.md\"},{\"rfilename\":\"train/0108.md\"},{\"rfilename\":\"train/0109.md\"},{\"rfilename\":\"train/0110.md\"},{\"rfilename\":\"train/0111.md\"},{\"rfilename\":\"train/0112.md\"},{\"rfilename\":\"train/0113.md\"},{\"rfilename\":\"train/0114.md\"},{\"rfilename\":\"train/0115.md\"},{\"rfilename\":\"train/0116.md\"},{\"rfilename\":\"train/0117.md\"},{\"rfilename\":\"train/0118.md\"},{\"rfilename\":\"train/0119.md\"},{\"rfilename\":\"train/0120.md\"},{\"rfilename\":\"train/0121.md\"},{\"rfilename\":\"train/0122.md\"},{\"rfilename\":\"train/0123.md\"},{\"rfilename\":\"train/0124.md\"},{\"rfilename\":\"train/0125.md\"},{\"rfilename\":\"train/0126.md\"},{\"rfilename\":\"train/0127.md\"},{\"rfilename\":\"train/0128.md\"},{\"rfilename\":\"train/0129.md\"},{\"rfilename\":\"train/0130.md\"},{\"rfilename\":\"train/0133.md\"},{\"rfilename\":\"train/0134.md\"},{\"rfilename\":\"train/0135.md\"},{\"rfilename\":\"train/0136.md\"},{\"rfilename\":\"train/0137.md\"},{\"rfilename\":\"train/0138.md\"},{\"rfilename\":\"train/0139.md\"},{\"rfilename\":\"train/0140.md\"},{\"rfilename\":\"train/0141.md\"},{\"rfilename\":\"train/0142.md\"},{\"rfilename\":\"train/0143.md\"},{\"rfilename\":\"train/0144.md\"},{\"rfilename\":\"train/0145.md\"},{\"rfilename\":\"train/0146.md\"},{\"rfilename\":\"train/0147.md\"},{\"rfilename\":\"train/0148.md\"},{\"rfilename\":\"train/0149.md\"},{\"rfilename\":\"train/0150.md\"},{\"rfilename\":\"train/0152.md\"},{\"rfilename\":\"train/0153.md\"},{\"rfilename\":\"train/0154.md\"},{\"rfilename\":\"train/0155.md\"},{\"rfilename\":\"train/0156.md\"},{\"rfilename\":\"train/0157.md\"},{\"rfilename\":\"train/0158.md\"},{\"rfilename\":\"train/0159.md\"},{\"rfilename\":\"train/0164.md\"},{\"rfilename\":\"train/0165.md\"},{\"rfilename\":\"train/0166.md\"},{\"rfilename\":\"train/0168.md\"},{\"rfilename\":\"train/0169.md\"},{\"rfilename\":\"train/0170.md\"},{\"rfilename\":\"train/0172.md\"},{\"rfilename\":\"train/0173.md\"},{\"rfilename\":\"train/0174.md\"},{\"rfilename\":\"train/0176.md\"},{\"rfilename\":\"train/0177.md\"},{\"rfilename\":\"train/0179.md\"},{\"rfilename\":\"train/0180.md\"},{\"rfilename\":\"train/0181.md\"},{\"rfilename\":\"train/0182.md\"},{\"rfilename\":\"train/0183.md\"},{\"rfilename\":\"train/0184.md\"},{\"rfilename\":\"train/0185.md\"},{\"rfilename\":\"train/0186.md\"},{\"rfilename\":\"train/0187.md\"},{\"rfilename\":\"train/0188.md\"},{\"rfilename\":\"train/0190.md\"},{\"rfilename\":\"train/0191.md\"},{\"rfilename\":\"train/0194.md\"},{\"rfilename\":\"train/0195.md\"},{\"rfilename\":\"train/0196.md\"},{\"rfilename\":\"train/0197.md\"},{\"rfilename\":\"train/0198.md\"},{\"rfilename\":\"train/0199.md\"},{\"rfilename\":\"train/0200.md\"},{\"rfilename\":\"train/0201.md\"},{\"rfilename\":\"train/0202.md\"},{\"rfilename\":\"train/0203.md\"},{\"rfilename\":\"train/0204.md\"},{\"rfilename\":\"train/0206.md\"},{\"rfilename\":\"train/0207.md\"},{\"rfilename\":\"train/0208.md\"},{\"rfilename\":\"train/0209.md\"},{\"rfilename\":\"train/0210.md\"},{\"rfilename\":\"train/0211.md\"},{\"rfilename\":\"train/0212.md\"},{\"rfilename\":\"train/0213.md\"},{\"rfilename\":\"train/0214.md\"},{\"rfilename\":\"train/0215.md\"},{\"rfilename\":\"train/0216.md\"},{\"rfilename\":\"train/0218.md\"},{\"rfilename\":\"train/0219.md\"},{\"rfilename\":\"train/0220.md\"},{\"rfilename\":\"train/0221.md\"},{\"rfilename\":\"train/0222.md\"},{\"rfilename\":\"train/0224.md\"},{\"rfilename\":\"train/0226.md\"},{\"rfilename\":\"train/0227.md\"},{\"rfilename\":\"train/0229.md\"},{\"rfilename\":\"train/0230.md\"},{\"rfilename\":\"train/0232.md\"},{\"rfilename\":\"train/0233.md\"},{\"rfilename\":\"train/0235.md\"},{\"rfilename\":\"train/0236.md\"},{\"rfilename\":\"train/0237.md\"},{\"rfilename\":\"train/0239.md\"},{\"rfilename\":\"train/0240.md\"},{\"rfilename\":\"train/0241.md\"},{\"rfilename\":\"train/0242.md\"},{\"rfilename\":\"train/0244.md\"},{\"rfilename\":\"train/0245.md\"},{\"rfilename\":\"train/0248.md\"},{\"rfilename\":\"train/0249.md\"},{\"rfilename\":\"train/0250.md\"},{\"rfilename\":\"train/0252.md\"},{\"rfilename\":\"train/0253.md\"},{\"rfilename\":\"train/0254.md\"},{\"rfilename\":\"train/0257.md\"},{\"rfilename\":\"train/0259.md\"},{\"rfilename\":\"train/0261.md\"},{\"rfilename\":\"train/0262.md\"},{\"rfilename\":\"train/0263.md\"},{\"rfilename\":\"train/0264.md\"},{\"rfilename\":\"train/0265.md\"},{\"rfilename\":\"train/0266.md\"},{\"rfilename\":\"train/0267.md\"},{\"rfilename\":\"train/0268.md\"},{\"rfilename\":\"train/0269.md\"},{\"rfilename\":\"train/0270.md\"},{\"rfilename\":\"train/0271.md\"},{\"rfilename\":\"train/0272.md\"},{\"rfilename\":\"train/0273.md\"},{\"rfilename\":\"train/0274.md\"},{\"rfilename\":\"train/0275.md\"},{\"rfilename\":\"train/0276.md\"},{\"rfilename\":\"train/0277.md\"},{\"rfilename\":\"train/0278.md\"},{\"rfilename\":\"train/0279.md\"},{\"rfilename\":\"train/0283.md\"},{\"rfilename\":\"train/0284.md\"},{\"rfilename\":\"train/0286.md\"},{\"rfilename\":\"train/0287.md\"},{\"rfilename\":\"train/0289.md\"},{\"rfilename\":\"train/0293.md\"},{\"rfilename\":\"train/0294.md\"},{\"rfilename\":\"train/0295.md\"},{\"rfilename\":\"train/0296.md\"},{\"rfilename\":\"train/0298.md\"},{\"rfilename\":\"train/0300.md\"},{\"rfilename\":\"train/0301.md\"},{\"rfilename\":\"train/0302.md\"},{\"rfilename\":\"train/0303.md\"},{\"rfilename\":\"train/0305.md\"},{\"rfilename\":\"train/0306.md\"},{\"rfilename\":\"train/0307.md\"},{\"rfilename\":\"train/0308.md\"},{\"rfilename\":\"train/0312.md\"},{\"rfilename\":\"train/0314.md\"},{\"rfilename\":\"train/0315.md\"},{\"rfilename\":\"train/0316.md\"},{\"rfilename\":\"train/0318.md\"},{\"rfilename\":\"train/0319.md\"},{\"rfilename\":\"train/0320.md\"},{\"rfilename\":\"train/0321.md\"},{\"rfilename\":\"train/0322.md\"},{\"rfilename\":\"train/0325.md\"},{\"rfilename\":\"train/0326.md\"},{\"rfilename\":\"train/0327.md\"},{\"rfilename\":\"train/0329.md\"},{\"rfilename\":\"train/0330.md\"},{\"rfilename\":\"train/0332.md\"},{\"rfilename\":\"train/0335.md\"},{\"rfilename\":\"train/0336.md\"},{\"rfilename\":\"train/0337.md\"},{\"rfilename\":\"train/0339.md\"},{\"rfilename\":\"train/0340.md\"},{\"rfilename\":\"train/0343.md\"},{\"rfilename\":\"train/0344.md\"},{\"rfilename\":\"train/0345.md\"},{\"rfilename\":\"train/0346.md\"},{\"rfilename\":\"train/0347.md\"},{\"rfilename\":\"train/0348.md\"},{\"rfilename\":\"train/0350.md\"},{\"rfilename\":\"train/0352.md\"},{\"rfilename\":\"train/0353.md\"},{\"rfilename\":\"train/0354.md\"},{\"rfilename\":\"train/0355.md\"},{\"rfilename\":\"train/0357.md\"},{\"rfilename\":\"train/0358.md\"},{\"rfilename\":\"train/0360.md\"},{\"rfilename\":\"train/0361.md\"},{\"rfilename\":\"train/0362.md\"},{\"rfilename\":\"train/0363.md\"},{\"rfilename\":\"train/0364.md\"},{\"rfilename\":\"train/0365.md\"},{\"rfilename\":\"train/0366.md\"},{\"rfilename\":\"train/0367.md\"},{\"rfilename\":\"train/0368.md\"},{\"rfilename\":\"train/0369.md\"},{\"rfilename\":\"train/0371.md\"},{\"rfilename\":\"train/0372.md\"},{\"rfilename\":\"train/0373.md\"},{\"rfilename\":\"train/0374.md\"},{\"rfilename\":\"train/0376.md\"},{\"rfilename\":\"train/0377.md\"},{\"rfilename\":\"train/0378.md\"},{\"rfilename\":\"train/0379.md\"},{\"rfilename\":\"train/0381.md\"},{\"rfilename\":\"train/0382.md\"},{\"rfilename\":\"train/0384.md\"},{\"rfilename\":\"train/0385.md\"},{\"rfilename\":\"train/0386.md\"},{\"rfilename\":\"train/0389.md\"},{\"rfilename\":\"train/0391.md\"},{\"rfilename\":\"train/0392.md\"},{\"rfilename\":\"train/0393.md\"},{\"rfilename\":\"train/0394.md\"},{\"rfilename\":\"train/0395.md\"},{\"rfilename\":\"train/0396.md\"},{\"rfilename\":\"train/0397.md\"},{\"rfilename\":\"train/0398.md\"},{\"rfilename\":\"train/0399.md\"},{\"rfilename\":\"train/0402.md\"},{\"rfilename\":\"train/0404.md\"},{\"rfilename\":\"train/0405.md\"},{\"rfilename\":\"train/0408.md\"},{\"rfilename\":\"train/0410.md\"},{\"rfilename\":\"train/0411.md\"},{\"rfilename\":\"train/0412.md\"},{\"rfilename\":\"train/0413.md\"},{\"rfilename\":\"train/0414.md\"},{\"rfilename\":\"train/0415.md\"},{\"rfilename\":\"train/0416.md\"},{\"rfilename\":\"train/0420.md\"},{\"rfilename\":\"train/0421.md\"},{\"rfilename\":\"train/0422.md\"},{\"rfilename\":\"train/0423.md\"},{\"rfilename\":\"train/0424.md\"},{\"rfilename\":\"train/0425.md\"},{\"rfilename\":\"train/0426.md\"},{\"rfilename\":\"train/0427.md\"},{\"rfilename\":\"train/0428.md\"},{\"rfilename\":\"train/0431.md\"},{\"rfilename\":\"train/0432.md\"},{\"rfilename\":\"train/0433.md\"},{\"rfilename\":\"train/0434.md\"},{\"rfilename\":\"train/0435.md\"},{\"rfilename\":\"train/0437.md\"},{\"rfilename\":\"train/0438.md\"},{\"rfilename\":\"train/0439.md\"},{\"rfilename\":\"train/0440.md\"},{\"rfilename\":\"train/0441.md\"},{\"rfilename\":\"train/0445.md\"},{\"rfilename\":\"train/0448.md\"},{\"rfilename\":\"train/0449.md\"},{\"rfilename\":\"train/0450.md\"},{\"rfilename\":\"train/0452.md\"},{\"rfilename\":\"train/0453.md\"},{\"rfilename\":\"train/0454.md\"},{\"rfilename\":\"train/0455.md\"},{\"rfilename\":\"train/0456.md\"},{\"rfilename\":\"train/0457.md\"},{\"rfilename\":\"train/0459.md\"},{\"rfilename\":\"train/0460.md\"},{\"rfilename\":\"train/0461.md\"},{\"rfilename\":\"train/0462.md\"},{\"rfilename\":\"train/0463.md\"},{\"rfilename\":\"train/0464.md\"},{\"rfilename\":\"train/0465.md\"},{\"rfilename\":\"train/0466.md\"},{\"rfilename\":\"train/0467.md\"},{\"rfilename\":\"train/0473.md\"},{\"rfilename\":\"train/0474.md\"},{\"rfilename\":\"train/0478.md\"},{\"rfilename\":\"train/0479.md\"},{\"rfilename\":\"train/0480.md\"},{\"rfilename\":\"train/0481.md\"},{\"rfilename\":\"train/0482.md\"},{\"rfilename\":\"train/0483.md\"},{\"rfilename\":\"train/0484.md\"},{\"rfilename\":\"train/0485.md\"},{\"rfilename\":\"train/0486.md\"},{\"rfilename\":\"train/0487.md\"},{\"rfilename\":\"train/0488.md\"},{\"rfilename\":\"train/0489.md\"},{\"rfilename\":\"train/0490.md\"},{\"rfilename\":\"train/0491.md\"},{\"rfilename\":\"train/0492.md\"},{\"rfilename\":\"train/0493.md\"},{\"rfilename\":\"train/0494.md\"},{\"rfilename\":\"train/0495.md\"},{\"rfilename\":\"train/0496.md\"},{\"rfilename\":\"train/0497.md\"},{\"rfilename\":\"train/0498.md\"},{\"rfilename\":\"train/0499.md\"},{\"rfilename\":\"train/0500.md\"},{\"rfilename\":\"train/0501.md\"},{\"rfilename\":\"train/0502.md\"},{\"rfilename\":\"train/0503.md\"},{\"rfilename\":\"train/0504.md\"},{\"rfilename\":\"train/0505.md\"},{\"rfilename\":\"train/0506.md\"},{\"rfilename\":\"train/0507.md\"},{\"rfilename\":\"train/0508.md\"},{\"rfilename\":\"train/0509.md\"},{\"rfilename\":\"train/0510.md\"},{\"rfilename\":\"train/0511.md\"}],\"createdAt\":\"2024-11-27T16:42:46.000Z\",\"usedStorage\":75577629}"
+    headers:
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '19785'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Sun, 01 Jun 2025 08:39:29 GMT
+      ETag:
+      - W/"4d49-LXZhNR7s5z5IDbor0VHBkUmyVLk"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 e34024ac6d61f73c33f9c7bc61728660.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - YwiEU2RexJDp59CPbHD31jTnwSuK1RzplpwVKmeDiR8Q1FT1Cw2Khw==
+      X-Amz-Cf-Pop:
+      - BOM78-P11
+      X-Cache:
+      - Miss from cloudfront
+      X-Powered-By:
+      - huggingface-moon
+      X-Request-Id:
+      - Root=1-683c11c1-0d2c57763949c1ed2c20395a;841280f2-2af9-41c4-954b-5e636d502a61
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - identity
+      Connection:
+      - keep-alive
+      X-Amzn-Trace-Id:
+      - 0d91e990-e796-4435-baa5-20a75315db60
+      user-agent:
+      - datasets/3.2.0; hf_hub/0.28.1; python/3.11.11; torch/2.5.1; huggingface_hub/0.28.1;
+        pyarrow/19.0.0
+    method: HEAD
+    uri: https://huggingface.co/datasets/zed-industries/zeta/resolve/0f41422bc56fa0f9a5b3096e7e6f42905497d793/dataset_infos.json
+  response:
+    body:
+      string: ''
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - https://huggingface.co
+      Access-Control-Expose-Headers:
+      - X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '15'
+      Content-Type:
+      - text/plain; charset=utf-8
+      Date:
+      - Sun, 01 Jun 2025 08:39:29 GMT
+      ETag:
+      - W/"f-mY2VvLxuxB7KhsoOdQTlMTccuAQ"
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Origin
+      Via:
+      - 1.1 0619c524a034ea5bfb96b53ac504d63a.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - nnUfAcpIm57wivtIyoh6-CsG3oOzd07ROvZ8szc0kZgUC3x_WgzlMw==
+      X-Amz-Cf-Pop:
+      - BOM78-P11
+      X-Cache:
+      - Error from cloudfront
+      X-Error-Code:
+      - EntryNotFound
+      X-Error-Message:
+      - Entry not found
+      X-Hub-Cache:
+      - MISS
+      X-Powered-By:
+      - huggingface-moon
+      X-Repo-Commit:
+      - 0f41422bc56fa0f9a5b3096e7e6f42905497d793
+      X-Request-Id:
+      - Root=1-683c11c1-0a6e1e9704b430a503d45882;0d91e990-e796-4435-baa5-20a75315db60
+      cross-origin-opener-policy:
+      - same-origin
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"run_hash": "a9d5e1eb-1741-4e30-9527-c1699eabc266", "dataset_hash": "a9d5e1eb-1741-4e30-9527-c1699eabc266",
+      "prompt_func": "N/A", "model_name": "simulated_dataset", "response_format":
+      "N/A", "batch_mode": false, "status": "STARTED"}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '233'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.32.3
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions
+  response:
+    body:
+      string: '{"session_id":"e7cbfa40754a4ba9b62ba592d9a4f27d"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '49'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:29 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"models/customer.rb\\\":\\n\\n```diff\\n@@ -2,5 +2,5 @@\\n   class Customer\\n     def
+      initialize\\n-      @name = name\\n+      @name = name.capitalize\\n       @email
+      = email\\n       @phone = phone\\n```\", \"input\": \"```models/customer.rb\\n    def
+      initialize\\n<|editable_region_start|>\\n      @name = name.capitalize<|user_cursor_is_here|>\\n      @email
+      = email\\n      @phone = phone\\n      @address = address\\n    end\\n\\n    def
+      to_s\\n      @name\\n    end\\n\\n<|editable_region_end|>\\n    private\\n\\n    def
+      validate_email\\n      @email.include?(''@'')\\n```\", \"output\": \"```models/customer.rb\\n    def
+      initialize\\n<|editable_region_start|>\\n      @name = name.capitalize\\n      @email
+      = email.capitalize\\n      @phone = phone.capitalize\\n      @address = address.capitalize\\n    end\\n\\n    def
+      to_s\\n      @name\\n    end\\n\\n<|editable_region_end|>\\n    private\\n\\n    def
+      validate_email\\n      @email.include?(''@'')\\n```\", \"rejected\": \"\", \"assertions\":
+      \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '1092'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/0
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:30 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"src/components/UserProfile.tsx\\\":\\n\\n```diff\\n@@ -15,3 +15,3 @@\\ninterface
+      UserProfileProps {\\n-  name: string;\\n+  name: string | undefined;\\n   email:
+      string\\n```\", \"input\": \"```src/components/UserProfile.tsx\\ninterface UserProfileProps
+      {\\n<|editable_region_start|>\\n  name: string | undefined<|user_cursor_is_here|>;\\n  email:
+      string;\\n  avatar: string;\\n  age: number;\\n<|editable_region_end|>\\n}\\n\\nconst
+      UserProfile: React.FC<UserProfileProps> = ({ name, email, avatar, age }) =>
+      {\\n  const handleClick = () => {\\n    console.log(name);\\n  };\\n```\", \"output\":
+      \"```src/components/UserProfile.tsx\\ninterface UserProfileProps {\\n<|editable_region_start|>\\n  name:
+      string | undefined;\\n  email: string | undefined;\\n  avatar: string | undefined;\\n  age:
+      number | undefined;\\n<|editable_region_end|>\\n}\\n\\nconst UserProfile: React.FC<UserProfileProps>
+      = ({ name, email, avatar, age }) => {\\n  const handleClick = () => {\\n    console.log(name);\\n  };\\n```\",
+      \"rejected\": \"\", \"assertions\": \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '1132'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/1
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:30 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"internal/parser/ast.py\\\":\\n\\n```diff\\n@@ -102,3 +102,3 @@\\nclass BinaryExpr:\\n-    def
+      __init__(self, left, operator, right):\\n+    def __init__(self, left: Expression,
+      operator: Token, right: Expression):\\n         self.left = left\\n```\", \"input\":
+      \"```internal/parser/ast.py\\nclass BinaryExpr:\\n<|editable_region_start|>\\n    def
+      __init__(self, left: Expression, operator: Token, right: Expression<|user_cursor_is_here|>):\\n        self.left
+      = left\\n        self.operator = operator\\n        self.right = right\\n\\nclass
+      UnaryExpr:\\n    def __init__(self, operator, right):\\n        self.operator
+      = operator\\n<|editable_region_end|>\\n        self.right = right\\n\\n    def
+      accept(self, visitor):\\n        return visitor.visit_unary_expr(self)\\n```\",
+      \"output\": \"```internal/parser/ast.py\\nclass BinaryExpr:\\n<|editable_region_start|>\\n    def
+      __init__(self, left: Expression, operator: Token, right: Expression):\\n        self.left
+      = left\\n        self.operator = operator\\n        self.right = right\\n\\nclass
+      UnaryExpr:\\n    def __init__(self, operator: Token, right: Expression):\\n        self.operator
+      = operator\\n<|editable_region_end|>\\n        self.right = right\\n\\n    def
+      accept(self, visitor):\\n        return visitor.visit_unary_expr(self)\\n```\",
+      \"rejected\": \"\", \"assertions\": \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '1432'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/2
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:31 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"pkg/database/models.rs\\\":\\n\\n```diff\\n@@ -88,3 +88,3 @@\\n     struct
+      User {\\n-        id: i32,\\n+        pub id: i32,\\n         username: String,\\n```\",
+      \"input\": \"```pkg/database/models.rs\\n    struct User {\\n<|editable_region_start|>\\n        pub
+      <|user_cursor_is_here|>id: i32,\\n        username: String,\\n        email:
+      String,\\n        created_at: DateTime<Utc>,\\n        updated_at: DateTime<Utc>,\\n<|editable_region_end|>\\n    }\\n\\n    impl
+      User {\\n        pub fn new() -> Self {\\n```\", \"output\": \"```pkg/database/models.rs\\n    struct
+      User {\\n<|editable_region_start|>\\n        pub id: i32,\\n        pub username:
+      String,\\n        pub email: String,\\n        pub created_at: DateTime<Utc>,\\n        pub
+      updated_at: DateTime<Utc>,\\n<|editable_region_end|>\\n    }\\n\\n    impl User
+      {\\n        pub fn new() -> Self {\\n```\", \"rejected\": \"\", \"assertions\":
+      \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '998'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/3
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:31 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"src/compiler/symbol_table.cpp\\\":\\n\\n```diff\\n@@ -156,3 +156,3 @@\\n     class
+      LocalVariable {\\n-      int scope;\\n+      int scope = 0;\\n       std::string
+      name;\\n```\", \"input\": \"```src/compiler/symbol_table.cpp\\n    class LocalVariable
+      {\\n<|editable_region_start|>\\n      int scope = 0<|user_cursor_is_here|>;\\n      std::string
+      name;\\n      Type type;\\n      bool isConst;\\n      bool isUsed;\\n<|editable_region_end|>\\n\\n      LocalVariable(\\n```\",
+      \"output\": \"```src/compiler/symbol_table.cpp\\n    class LocalVariable {\\n<|editable_region_start|>\\n      int
+      scope = 0;\\n      std::string name = \\\"\\\";\\n      Type type = Type::VOID;\\n      bool
+      isConst = false;\\n      bool isUsed = false;\\n<|editable_region_end|>\\n\\n      LocalVariable(\\n```\",
+      \"rejected\": \"\", \"assertions\": \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '917'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/4
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:31 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"app/models/schema.graphql\\\":\\n\\n```diff\\n@@ -23,3 +23,3 @@\\n type
+      Post {\\n-   title: String\\n+   title: String!\\n    content: String\\n```\",
+      \"input\": \"```app/models/schema.graphql\\n  }\\n}\\n\\n<|editable_region_start|>\\ntype
+      Post {\\n  title: String!<|user_cursor_is_here|>\\n  content: String\\n  author:
+      User\\n  comments: [Comment]\\n  createdAt: DateTime\\n  tags: [String]\\n<|editable_region_end|>\\n}\\n\\ntype
+      Comment {\\n```\", \"output\": \"```app/models/schema.graphql\\n  }\\n}\\n\\n<|editable_region_start|>\\ntype
+      Post {\\n  title: String!\\n  content: String!\\n  author: User!\\n  comments:
+      [Comment!]!\\n  createdAt: DateTime!\\n  tags: [String!]!\\n<|editable_region_end|>\\n}\\n\\ntype
+      Comment {\\n```\", \"rejected\": \"\", \"assertions\": \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '866'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/5
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:32 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"lib/collections/LinkedList.java\\\":\\n\\n```diff\\n@@ -167,3 +167,5 @@\\n     }\\n\\n+    public
+      boolean isPalindrome() {}\\n+\\n     private static class Node<T> {\\n```\",
+      \"input\": \"```lib/collections/LinkedList.java\\n    private Node<T> head;\\n    private
+      int size;\\n\\n    public void reverse() {\\n        if (head == null) return;\\n        Node<T>
+      prev = null;\\n        Node<T> current = head;\\n        while (current != null)
+      {\\n            Node<T> next = current.next;\\n            current.next = prev;\\n            prev
+      = current;\\n            current = next;\\n        }\\n        head = prev;\\n<|editable_region_start|>\\n    }\\n\\n    public
+      boolean isPalindrome() {<|user_cursor_is_here|>}\\n\\n    private static class
+      Node<T> {\\n        T data;\\n<|editable_region_end|>\\n        Node<T> next;\\n```\",
+      \"output\": \"```lib/collections/LinkedList.java\\n    private Node<T> head;\\n    private
+      int size;\\n\\n    public void reverse() {\\n        if (head == null) return;\\n        Node<T>
+      prev = null;\\n        Node<T> current = head;\\n        while (current != null)
+      {\\n            Node<T> next = current.next;\\n            current.next = prev;\\n            prev
+      = current;\\n            current = next;\\n        }\\n        head = prev;\\n<|editable_region_start|>\\n    }\\n\\n    public
+      boolean isPalindrome() {\\n        if (head == null || head.next == null) return
+      true;\\n\\n        // Find middle using slow/fast pointer\\n        Node<T>
+      slow = head;\\n        Node<T> fast = head;\\n        Node<T> prev = null;\\n\\n        while
+      (fast != null && fast.next != null) {\\n            fast = fast.next.next;\\n            Node<T>
+      next = slow.next;\\n            slow.next = prev;\\n            prev = slow;\\n            slow
+      = next;\\n        }\\n\\n        // If odd length, skip middle element\\n        Node<T>
+      second = fast == null ? slow : slow.next;\\n        Node<T> first = prev;\\n\\n        //
+      Compare reversed first half with second half\\n        while (first != null
+      && second != null) {\\n            if (!first.data.equals(second.data)) return
+      false;\\n            first = first.next;\\n            second = second.next;\\n        }\\n        return
+      true;\\n    }\\n\\n    private static class Node<T> {\\n        T data;\\n<|editable_region_end|>\\n        Node<T>
+      next;\\n```\", \"rejected\": \"\", \"assertions\": \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '2473'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/6
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:32 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"src/utils/sorting.ts\\\":\\n\\n```diff\\n@@ -45,3 +45,4 @@\\n     }\\n\\n+    function
+      findKthLargest<T>(arr: T[], k: number, compareFn: (a: T, b: T) => number): T
+      {\\n     export function binarySearch<T>(\\n```\", \"input\": \"```src/utils/sorting.ts\\n        const
+      pivot = arr[Math.floor(arr.length / 2)];\\n        const left = arr.filter(x
+      => compareFn(x, pivot) < 0);\\n        const middle = arr.filter(x => compareFn(x,
+      pivot) === 0);\\n        const right = arr.filter(x => compareFn(x, pivot) >
+      0);\\n        return [...quickSort(left, compareFn), ...middle, ...quickSort(right,
+      compareFn)];\\n<|editable_region_start|>\\n    }\\n\\n    function findKthLargest<T>(arr:
+      T[], k: number, compareFn: (a: T, b: T) => number): T {<|user_cursor_is_here|>\\n<|editable_region_end|>\\n    export
+      function binarySearch<T>(\\n```\", \"output\": \"```src/utils/sorting.ts\\n        const
+      pivot = arr[Math.floor(arr.length / 2)];\\n        const left = arr.filter(x
+      => compareFn(x, pivot) < 0);\\n        const middle = arr.filter(x => compareFn(x,
+      pivot) === 0);\\n        const right = arr.filter(x => compareFn(x, pivot) >
+      0);\\n        return [...quickSort(left, compareFn), ...middle, ...quickSort(right,
+      compareFn)];\\n<|editable_region_start|>\\n    }\\n\\n    function findKthLargest<T>(arr:
+      T[], k: number, compareFn: (a: T, b: T) => number): T {\\n        if (k < 1
+      || k > arr.length) throw new Error(''Invalid k'');\\n\\n        const partition
+      = (low: number, high: number): number => {\\n            const pivot = arr[high];\\n            let
+      i = low - 1;\\n\\n            for (let j = low; j < high; j++) {\\n                if
+      (compareFn(arr[j], pivot) > 0) {\\n                    i++;\\n                    [arr[i],
+      arr[j]] = [arr[j], arr[i]];\\n                }\\n            }\\n            [arr[i
+      + 1], arr[high]] = [arr[high], arr[i + 1]];\\n            return i + 1;\\n        };\\n\\n        let
+      left = 0;\\n        let right = arr.length - 1;\\n\\n        while (left <=
+      right) {\\n            const pivotIndex = partition(left, right);\\n            if
+      (pivotIndex === k - 1) return arr[pivotIndex];\\n            if (pivotIndex
+      < k - 1) left = pivotIndex + 1;\\n            else right = pivotIndex - 1;\\n        }\\n\\n        throw
+      new Error(''Unreachable'');\\n    }\\n\\n<|editable_region_end|>\\n    export
+      function binarySearch<T>(\\n```\", \"rejected\": \"\", \"assertions\": \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '2493'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/7
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:32 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User opened
+      file: \\\"pkg/cache/lru.go\\\"\\n\\nUser edited \\\"pkg/cache/lru.go\\\":\\n```diff\\n@@
+      -24,6 +24,8 @@\\n func (c *Cache) Get(key string) (interface{}, bool) {\\n+    c.mu.RLock()\\n+    defer
+      c.mu.RUnlock()\\n     if node, ok := c.items[key]; ok {\\n         return node.value,
+      true\\n     }\\n@@ -35,11 +36,14 @@\\n func (c *Cache) Put(key string, value
+      interface{}) {\\n+    c.mu.Lock()\\n+    defer c.mu.Unlock()\\n     if node,
+      exists := c.items[key]; exists {\\n         node.value = value\\n     }\\n }\\n\\n+    func
+      (c *Cache) Del\\n```\", \"input\": \"```go\\n    items    map[string]*Node\\n    head     *Node\\n    tail     *Node\\n    mu       sync.RWMutex\\n}\\n\\nfunc
+      (c *Cache) Get(key string) (interface{}, bool) {\\n    c.mu.RLock()\\n    defer
+      c.mu.RUnlock()\\n    if node, ok := c.items[key]; ok {\\n        return node.value,
+      true\\n    }\\n<|editable_region_start|>\\n    return nil, false\\n}\\n\\nfunc
+      (c *Cache) Put(key string, value interface{}) {\\n\\t  c.mu.RLock()\\n    defer
+      c.mu.RUnlock()\\n    if node, exists := c.items[key]; exists {\\n        node.value
+      = value\\n    }\\n}\\n\\nfunc (c *Cache) Del<|user_cursor_is_here|>\\n\\n<|editable_region_end|>\\nfunc
+      NewCache(capacity int) *Cache {\\n```\", \"output\": \"```go\\n    items    map[string]*Node\\n    head     *Node\\n    tail     *Node\\n    mu       sync.RWMutex\\n}\\n\\nfunc
+      (c *Cache) Get(key string) (interface{}, bool) {\\n    c.mu.RLock()\\n    defer
+      c.mu.RUnlock()\\n    if node, ok := c.items[key]; ok {\\n        return node.value,
+      true\\n    }\\n<|editable_region_start|>\\n    return nil, false\\n}\\n\\nfunc
+      (c *Cache) Put(key string, value interface{}) {\\n    c.mu.Lock()\\n    defer
+      c.mu.Unlock()\\n    if node, exists := c.items[key]; exists {\\n        node.value
+      = value\\n    }\\n}\\n\\nfunc (c *Cache) Del(key string) {\\n    c.mu.Lock()\\n    defer
+      c.mu.Unlock()\\n    if node, exists := c.items[key]; exists {\\n        delete(c.items,
+      key)\\n        c.removeNode(node)\\n    }\\n}\\n\\n<|editable_region_end|>\\nfunc
+      NewCache(capacity int) *Cache {\\n```\", \"rejected\": \"\", \"assertions\":
+      \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '2199'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/8
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:33 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"response_data": "{\"parsed_response_message\": [{\"events\": \"User edited
+      \\\"src/parser/ast.rs\\\":\\n\\n```diff\\n@@ -45,7 +45,9 @@\\n impl Expression
+      {\\n     fn evaluate(&self, env: &Environment) -> Result<Value, Error> {\\n+        env.with_scope(|scope|
+      {\\n             match self {\\n                 Expression::Number(n) => Ok(Value::Number(*n)),\\n                 Expression::String(s)
+      => Ok(Value::String(s.clone())),\\n             }\\n+        })\\n     }\\n@@
+      -67,10 +69,13 @@\\n impl Statement {\\n     fn execute(&self, env: &mut Environment)
+      -> Result<(), Error> {\\n+        env.with_scope(|scope| {\\n             match
+      self {\\n                 Statement::Let(name, expr) => {\\n                     let
+      value = expr.evaluate(env)?;\\n                 }\\n             }\\n+        })\\n     }\\n
+      }\\n\\n+    fn par\\n```\", \"input\": \"```src/parser/ast.rs\\n        String(String),\\n        Binary(Box<Expression>,
+      Operator, Box<Expression>),\\n        Call(String, Vec<Expression>),\\n    }\\n\\n    impl
+      Expression {\\n        fn evaluate(&self, env: &Environment) -> Result<Value,
+      Error> {\\n            env.with_scope(|scope| {\\n                match self
+      {\\n                    Expression::Number(n) => Ok(Value::Number(*n)),\\n                    Expression::String(s)
+      => Ok(Value::String(s.clone())),\\n                }\\n            })\\n        }\\n    }\\n\\n    impl
+      Statement {\\n<|editable_region_start|>\\n        fn execute(&self, env: &mut
+      Environment) -> Result<(), Error> {\\n            env.with_scope(|scope| {\\n                match
+      self {\\n                    Statement::Let(name, expr) => {\\n                        let
+      value = expr.evaluate(env)?;\\n                    }\\n                }\\n            })\\n        }\\n    }\\n\\n    fn
+      par<|user_cursor_is_here|>\\n\\n<|editable_region_end|>\\n    impl Parser {\\n```\",
+      \"output\": \"```src/parser/ast.rs\\n        String(String),\\n        Binary(Box<Expression>,
+      Operator, Box<Expression>),\\n        Call(String, Vec<Expression>),\\n    }\\n\\n    impl
+      Expression {\\n        fn evaluate(&self, env: &Environment) -> Result<Value,
+      Error> {\\n            env.with_scope(|scope| {\\n                match self
+      {\\n                    Expression::Number(n) => Ok(Value::Number(*n)),\\n                    Expression::String(s)
+      => Ok(Value::String(s.clone())),\\n                }\\n            })\\n        }\\n    }\\n\\n    impl
+      Statement {\\n<|editable_region_start|>\\n        fn execute(&self, env: &mut
+      Environment) -> Result<(), Error> {\\n            env.with_scope(|scope| {\\n                match
+      self {\\n                    Statement::Let(name, expr) => {\\n                        let
+      value = expr.evaluate(env)?;\\n                    }\\n                }\\n            })\\n        }\\n    }\\n\\n    fn
+      parse_expression(input: &str, precedence: u8) -> Result<Expression, Error> {\\n        env.with_scope(|scope|
+      {\\n            let mut lexer = Lexer::new(input);\\n            let token =
+      lexer.next_token()?;\\n\\n            match token {\\n                Token::Number(n)
+      => Ok(Expression::Number(n)),\\n                Token::String(s) => Ok(Expression::String(s)),\\n                Token::LeftParen
+      => parse_grouped_expression(&mut lexer),\\n                _ => Err(Error::UnexpectedToken(token)),\\n            }\\n        })\\n    }\\n\\n<|editable_region_end|>\\n    impl
+      Parser {\\n```\", \"rejected\": \"\", \"assertions\": \"\"}]}"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '3480'
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: POST
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/responses/9
+  response:
+    body:
+      string: '{"message":"Response stored successfully"}'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '42'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:33 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"status": "COMPLETED"}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate, zstd
+      connection:
+      - keep-alive
+      content-length:
+      - '23'
+      content-type:
+      - application/json
+      host:
+      - api.bespokelabs.ai
+      user-agent:
+      - python-httpx/0.27.2
+    method: PUT
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d
+  response:
+    body:
+      string: 'null'
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Content-Length:
+      - '4'
+      content-type:
+      - application/json
+      date:
+      - Sun, 01 Jun 2025 08:39:34 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate, zstd
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.3
+    method: GET
+    uri: https://api.bespokelabs.ai/v0/viewer/sessions/e7cbfa40754a4ba9b62ba592d9a4f27d/fetch_data
+  response:
+    body:
+      string: !!binary |
+        UEFSMRUEFVAVPEwVChUAEgAAKAAADQEAAQ0IAAINCDwGAAAAAAAAAAcAAAAAAAAAFQAVFhUaLBUK
+        FRAVBhUGHBgIBwAAAAAAAAAYCAAAAAAAAAAAFgAoCAcAAAAAAAAAGAgAAAAAAAAAAAAAAAsoAgAA
+        AAoBAwOIRgAm9AEcFQQZNQAGEBkYA2lkeBUCFgoW/AEW7AEmYCYIHBgIBwAAAAAAAAAYCAAAAAAA
+        AAAAFgAoCAcAAAAAAAAAGAgAAAAAAAAAAAAZLBUEFQAVAgAVABUQFQIAAAAVBBXifBXYKEwVChUA
+        EgAAsT7wW8gDAAB7ImV2ZW50cyI6ICJVc2VyIGVkaXRlZCBcIm1vZGVscy9jdXN0b21lci5yYlwi
+        OlxuXG5gYGBkaWZmXG5AQCAtMiw1ICsyLDUgQEBcbiAgIGNsYXNzIEN1CTUAXAETTCAgZGVmIGlu
+        aXRpYWxpemVcbi0gBQEcQG5hbWUgPSABBwhcbisFFDIVABQuY2FwaXQNNQkfJCBAZW1haWwgPSAF
+        CA1hGCAgQHBob24BTQUIBaUgIiwgImlucHV0AdwIYGBgStEABVU+ngAEPHwhBEhhYmxlX3JlZ2lv
+        bl9zdGFydHw+CS9iowBQPHx1c2VyX2N1cnNvcl9pc19oZXJlHTYFsT65AD64AAnmKEBhZGRyZXNz
+        ID0gDQoJfAhlbmQhggElAbYIdG9fDRkNlTImAEbIAAhlbmQRkBhwcml2YXRlLk4AIHZhbGlkYXRl
+        XwWpCUsxcDQuaW5jbHVkZT8oJ0AnKTVfCG91dP5gAaZgATaSADFJSiQCNlQBTiEALVU5X0IlAP5q
+        Af5qAT5qARxyZWplY3RlZEHMQdkgYXNzZXJ0aW9uZboIIn36cswDJHNyYy9jb21wb25h7AAvYeks
+        UHJvZmlsZS50c3hcStgDFDE1LDMgKwUGYdokaW50ZXJmYWNlIB08GFByb3BzIHtl0GHEIDogc3Ry
+        aW5nO2XNLhIAMCB8IHVuZGVmaW5lZDslyEVkETFVUC6vA3q0AHqTAEb9An3FXpsAWsIDBbIysQAF
+        EhRhdmF0YXIRxAkTLGdlOiBudW1iZXI7XEqEAG2BAH1hdxBjb25zdC5PASg6IFJlYWN0LkZDPD5l
+        ARQ+ID0gKHsFuAAsCYoALA1/KCwgYWdlIH0pID0+IYoEICAJVyhoYW5kbGVDbGljawE7GR8JIRxv
+        bGUubG9nKCEJACkFugR9OzWFMtUD/oYByoYBBZAybwFCPwI2ewFGHwA5hzocAEYXAv6TAf6TAZKT
+        AX7+AwQiBW7KB2W9QG5hbC9wYXJzZXIvYXN0LnB5UvYDBDAyZfcFB2H4BGNs4c8oQmluYXJ5RXhw
+        cjpl7enSBF9f4dR8X18oc2VsZiwgbGVmdCwgb3BlcmF0b3IsIHJpZ2h0KTqFDGIxAAQ6IAFWFGVz
+        c2lvbhk9GDogVG9rZW4NRC4kAAFQwf4FAQF4AC4BdwQgPQV+VcIuRwRa/QBO2gBGHQIAcy75B+Fy
+        SvQALp8AjsMAWmUELtoARtkABfAEICAJGjFkBCA9NW+lVAUBBTwlfAQgPSmEhW0lyABVPccBLUrS
+        ABFcLXxClgARIDJ8AEY5AW1WAWUBAVaVAAEaAYMUYWNjZXB0TUcYdmlzaXRvci55ABRyZXR1cm4R
+        GgAuBSIEX3UBzBBfZXhwcgU5WpQI/v4B/v4BQv4BLtgAJRYywAIhEgEBBRpSawEBHgEBBSLu5wEp
+        55ZqAwVtUo8A/voB/voBMvoBfiYFBAcJbiYFJGxpYi9jb2xsZWMSVwk8L0xpbmtlZExpc3QuamF2
+        YVIvBQQ2N6UvBDY3JgENBCAg5d4AKyGliHB1YmxpYyBib29sZWFuIGlzUGFsaW5kcm9tZSgpIHt9
+        XG4rbbkajwsYIHN0YXRpYxpGDRROb2RlPFTl2ARgYELPDH6wAEUrEVgRSwhoZWHpYAAgFRsgaW50
+        IHNpemU7gSgdtih2b2lkIHJldmVycwWuCVEBAQxpZiAoAUkgID09IG51bGwpbaLluQkBEXAMcHJl
+        dg7iDQh1bGxKHgAUY3VycmVugakBTx0hGHdoaWxlICgRIAAhEWgdhQEBEWYIbmV4AUUNLwAuAQ8d
+        TQEBLhsABCA9BZc6IgANqg0pOh0ADRYBygRleC4dAAB9ORYBwxlbRhkDMkwGRSQBmXojAlotBhk/
+        FscNYjgCAWMBARRUIGRhdGFulAoBJgEBLlQBWhQK/noC/noC/noC/noC/noC/noC/noCknoCWdk+
+        7wMIIHx8Re1laD4EBAwgdHJ1mUsBAYAvLyBGaW5kIG1pZGRsZSB1c2luZyBzbG93L2Zhc3QgcG/l
+        pBlvUYEBIwQgPQVqfY4RHgU8Yh4Abc2NdxlcjVgFPY1VCCAmJgVNCc4NFQApPmoEBTIAPQUHBSkF
+        BR2XAQERm4EjBCA9BcBOJwAB2AUYmS0BPhEBDbsBJjpgAAETUoIEGeBULy8gSWYgb2RkIGxlbmd0
+        aCwgc2tpcDF7GGVsZW1lbnQZLxGyEHNlY29ugb0J56luBCA/CXIAOgUHBbIdkRE7DGZpcnMdyhlc
+        JC8vIENvbXBhcmXRRQBkDS0gaGFsZiB3aXRoEXgBERk5MaQFWS2QIaUNpQ0SQqIBQaYAIQU1AC6B
+        6xwuZXF1YWxzKAk2BRMAKdGoECBmYWxzQaUxdAEBBTsh4wF4Pu4AAQEJSiHZJS4+IwDdChqwCm0K
+        ATz+sAXCsAUAcnovEgAycgsJDvUPPHV0aWxzL3NvcnRpbmcudHNOAAkANBIlEhA0NSw0IA4tDgHq
+        CesAKwELCGZ1bhJLCVAgZmluZEt0aExhcmdlc3Q8VD4oYXIOegoQW10sIGseMBEELCAOoRJEYXJl
+        Rm46IChhOiBULCBiOiBUErsQFlMRDCk6IFR1mRRleHBvcnQZZQBiEqQOFFNlYXJjaAFjUg0OUtkA
+        CbgaGhEUdCBwaXZvQQk0YXJyW01hdGguZmxvb3IBswAuaVUUIC8gMildfQwWcxEayQssYXJyLmZp
+        bHRlcih4DpURFdYIKHgsCVwQKSA8IDAWdhEJAQlArSAAPZJCAAg9PT1ORAAeEQyOhQAAPjZBAE21
+        NFsuLi5xdWlja1NvcnQoAdQ9mRQpLCAuLi4JqQULGSoFei4rACEhngUJ/ioCWioCWj0JapkTIZCi
+        WQJCKBNCMwMFUAEBKeL+WgL+WgL+WgL+WgL+WgL+WgL+WgJZWjnawXcQayA8IDEOFgkIayA+ZXuJ
+        KFApIHRocm93IG5ldyBFcnJvcignSW4SZRkIIGsngQAZRk0gDGFydGkOfQ4OsxUIbG93uRsMaGln
+        aBEOACkRCYFeHYoBAQ1IncIBOmGLAR4RARBsZXQgaQ40ExRvdyAtIDEi+Q0RARBmb3IgKAElAGoJ
+        JRA7IGogPAWEEDsgaisrQnsHAQEhCJnroTwEal2V8IFrPqsAEQEIaSsrvUsuAQAAWwFGCGldLCFT
+        FFtqXV0gPQkTAVkJGz7ZAAEB/YgBAToPAAlUDCArIDENWCUgFVsFDglxCSU+YgCtJgUdHbcOPhc5
+        ziE7oToMID0gMB0lARelJ63kSSZCggEAdxb8DgVBADwawxNCPgE96RBJbmRleA5MClE+BTsewBMd
+        gAEBIadFHw02DD09IGsBgiIbCSFZGSE+/wA6PwAAPBE9Ba0APYnhCVoAK0VYAXMRAQxlbHNlNQAZ
+        YwF+HaUiKgkBAUJAAxhVbnJlYWNoDpwdZUIBJQUyRmoGKoIUotIFfjYJFQAVFhUaLBUKFRAVBhUG
+        HDYAKLISeyJldmVudHMiOiAiVXNlciBlZGl0ZWQgXCJzcmMvdXRpbHMvc29ydGluZy50c1wiOlxu
+        XG5gYGBkaWZmXG5AQCAtNDUsMyArNDUsNCBAQFxuICAgICB9XG5cbisgICAgZnVuY3Rpb24gZmlu
+        ZEt0aExhcmdlc3Q8VD4oYXJyOiBUW10sIGs6IG51bWJlciwgY29tcGFyZUZuOiAoYTogVCwgYjog
+        VCkgPT4gbnVtYmVyKTogVCB7XG4gICAgIGV4cG9ydCBmdW5jdGlvbiBiaW5hcnlTZWFyY2g8VD4o
+        XG5gYGAiLCAiaW5wdXQiOiAiYGBgc3JjL3V0aWxzL3NvcnRpbmcudHNcbiAgICAgICAgY29uc3Qg
+        cGl2b3QgPSBhcnJbTWF0aC5mbG9vcihhcnIubGVuZ3RoIC8gMildO1xuICAgICAgICBjb25zdCBs
+        ZWZ0ID0gYXJyLmZpbHRlcih4ID0+IGNvbXBhcmVGbih4LCBwaXZvdCkgPCAwKTtcbiAgICAgICAg
+        Y29uc3QgbWlkZGxlID0gYXJyLmZpbHRlcih4ID0+IGNvbXBhcmVGbih4LCBwaXZvdCkgPT09IDAp
+        O1xuICAgICAgICBjb25zdCByaWdodCA9IGFyci5maWx0ZXIoeCA9PiBjb21wYXJlRm4oeCwgcGl2
+        b3QpID4gMCk7XG4gICAgICAgIHJldHVybiBbLi4ucXVpY2tTb3J0KGxlZnQsIGNvbXBhcmVGbiks
+        IC4uLm1pZGRsZSwgLi4ucXVpY2tTb3J0KHJpZ2h0LCBjb21wYXJlRm4pXTtcbjx8ZWRpdGFibGVf
+        cmVnaW9uX3N0YXJ0fD5cbiAgICB9XG5cbiAgICBmdW5jdGlvbiBmaW5kS3RoTGFyZ2VzdDxUPihh
+        cnI6IFRbXSwgazogbnVtYmVyLCBjb21wYXJlRm46IChhOiBULCBiOiBUKSA9PiBudW1iZXIpOiBU
+        IHs8fHVzZXJfY3Vyc29yX2lzX2hlcmV8PlxuPHxlZGl0YWJsZV9yZWdpb25fZW5kfD5cbiAgICBl
+        eHBvcnQgZnVuY3Rpb24gYmluYXJ5U2VhcmNoPFQ+KFxuYGBgIiwgIm91dHB1dCI6ICJgYGBzcmMv
+        dXRpbHMvc29ydGluZy50c1xuICAgICAgICBjb25zdCBwaXZvdCA9IGFycltNYXRoLmZsb29yKGFy
+        ci5sZW5ndGggLyAyKV07XG4gICAgICAgIGNvbnN0IGxlZnQgPSBhcnIuZmlsdGVyKHggPT4gY29t
+        cGFyZUZuKHgsIHBpdm90KSA8IDApO1xuICAgICAgICBjb25zdCBtaWRkbGUgPSBhcnIuZmlsdGVy
+        KHggPT4gY29tcGFyZUZuKHgsIHBpdm90KSA9PT0gMCk7XG4gICAgICAgIGNvbnN0IHJpZ2h0ID0g
+        YXJyLmZpbHRlcih4ID0+IGNvbXBhcmVGbih4LCBwaXZvdCkgPiAwKTtcbiAgICAgICAgcmV0dXJu
+        IFsuLi5xdWlja1NvcnQobGVmdCwgY29tcGFyZUZuKSwgLi4ubWlkZGxlLCAuLi5xdWlja1NvcnQo
+        cmlnaHQsIGNvbXBhcmVGbildO1xuPHxlZGl0YWJsZV9yZWdpb25fc3RhcnR8PlxuICAgIH1cblxu
+        ICAgIGZ1bmN0aW9uIGZpbmRLdGhMYXJnZXN0PFQ+KGFycjogVFtdLCBrOiBudW1iZXIsIGNvbXBh
+        cmVGbjogKGE6IFQsIGI6IFQpID0+IG51bWJlcik6IFQge1xuICAgICAgICBpZiAoayA8IDEgfHwg
+        ayA+IGFyci5sZW5ndGgpIHRocm93IG5ldyBFcnJvcignSW52YWxpZCBrJyk7XG5cbiAgICAgICAg
+        Y29uc3QgcGFydGl0aW9uID0gKGxvdzogbnVtYmVyLCBoaWdoOiBudW1iZXIpOiBudW1iZXIgPT4g
+        e1xuICAgICAgICAgICAgY29uc3QgcGl2b3QgPSBhcnJbaGlnaF07XG4gICAgICAgICAgICBsZXQg
+        aSA9IGxvdyAtIDE7XG5cbiAgICAgICAgICAgIGZvciAobGV0IGogPSBsb3c7IGogPCBoaWdoOyBq
+        KyspIHtcbiAgICAgICAgICAgICAgICBpZiAoY29tcGFyZUZuKGFycltqXSwgcGl2b3QpID4gMCkg
+        e1xuICAgICAgICAgICAgICAgICAgICBpKys7XG4gICAgICAgICAgICAgICAgICAgIFthcnJbaV0s
+        IGFycltqXV0gPSBbYXJyW2pdLCBhcnJbaV1dO1xuICAgICAgICAgICAgICAgIH1cbiAgICAgICAg
+        ICAgIH1cbiAgICAgICAgICAgIFthcnJbaSArIDFdLCBhcnJbaGlnaF1dID0gW2FycltoaWdoXSwg
+        YXJyW2kgKyAxXV07XG4gICAgICAgICAgICByZXR1cm4gaSArIDE7XG4gICAgICAgIH07XG5cbiAg
+        ICAgICAgbGV0IGxlZnQgPSAwO1xuICAgICAgICBsZXQgcmlnaHQgPSBhcnIubGVuZ3RoIC0gMTtc
+        blxuICAgICAgICB3aGlsZSAobGVmdCA8PSByaWdodCkge1xuICAgICAgICAgICAgY29uc3QgcGl2
+        b3RJbmRleCA9IHBhcnRpdGlvbihsZWZ0LCByaWdodCk7XG4gICAgICAgICAgICBpZiAocGl2b3RJ
+        bmRleCA9PT0gayAtIDEpIHJldHVybiBhcnJbcGl2b3RJbmRleF07XG4gICAgICAgICAgICBpZiAo
+        cGl2b3RJbmRleCA8IGsgLSAxKSBsZWZ0ID0gcGl2b3RJbmRleCArIDE7XG4gICAgICAgICAgICBl
+        bHNlIHJpZ2h0ID0gcGl2b3RJbmRleCAtIDE7XG4gICAgICAgIH1cblxuICAgICAgICB0aHJvdyBu
+        ZXcgRXJyb3IoJ1VucmVhY2hhYmxlJyk7XG4gICAgfVxuXG48fGVkaXRhYmxlX3JlZ2lvbl9lbmR8
+        PlxuICAgIGV4cG9ydCBmdW5jdGlvbiBiaW5hcnlTZWFyY2g8VD4oXG5gYGAiLCAicmVqZWN0ZWQi
+        OiAiIiwgImFzc2VydGlvbnMiOiAiIn0Yogp7ImV2ZW50cyI6ICJVc2VyIGVkaXRlZCBcImludGVy
+        bmFsL3BhcnNlci9hc3QucHlcIjpcblxuYGBgZGlmZlxuQEAgLTEwMiwzICsxMDIsMyBAQFxuY2xh
+        c3MgQmluYXJ5RXhwcjpcbi0gICAgZGVmIF9faW5pdF9fKHNlbGYsIGxlZnQsIG9wZXJhdG9yLCBy
+        aWdodCk6XG4rICAgIGRlZiBfX2luaXRfXyhzZWxmLCBsZWZ0OiBFeHByZXNzaW9uLCBvcGVyYXRv
+        cjogVG9rZW4sIHJpZ2h0OiBFeHByZXNzaW9uKTpcbiAgICAgICAgIHNlbGYubGVmdCA9IGxlZnRc
+        bmBgYCIsICJpbnB1dCI6ICJgYGBpbnRlcm5hbC9wYXJzZXIvYXN0LnB5XG5jbGFzcyBCaW5hcnlF
+        eHByOlxuPHxlZGl0YWJsZV9yZWdpb25fc3RhcnR8PlxuICAgIGRlZiBfX2luaXRfXyhzZWxmLCBs
+        ZWZ0OiBFeHByZXNzaW9uLCBvcGVyYXRvcjogVG9rZW4sIHJpZ2h0OiBFeHByZXNzaW9uPHx1c2Vy
+        X2N1cnNvcl9pc19oZXJlfD4pOlxuICAgICAgICBzZWxmLmxlZnQgPSBsZWZ0XG4gICAgICAgIHNl
+        bGYub3BlcmF0b3IgPSBvcGVyYXRvclxuICAgICAgICBzZWxmLnJpZ2h0ID0gcmlnaHRcblxuY2xh
+        c3MgVW5hcnlFeHByOlxuICAgIGRlZiBfX2luaXRfXyhzZWxmLCBvcGVyYXRvciwgcmlnaHQpOlxu
+        ICAgICAgICBzZWxmLm9wZXJhdG9yID0gb3BlcmF0b3Jcbjx8ZWRpdGFibGVfcmVnaW9uX2VuZHw+
+        XG4gICAgICAgIHNlbGYucmlnaHQgPSByaWdodFxuXG4gICAgZGVmIGFjY2VwdChzZWxmLCB2aXNp
+        dG9yKTpcbiAgICAgICAgcmV0dXJuIHZpc2l0b3IudmlzaXRfdW5hcnlfZXhwcihzZWxmKVxuYGBg
+        IiwgIm91dHB1dCI6ICJgYGBpbnRlcm5hbC9wYXJzZXIvYXN0LnB5XG5jbGFzcyBCaW5hcnlFeHBy
+        OlxuPHxlZGl0YWJsZV9yZWdpb25fc3RhcnR8PlxuICAgIGRlZiBfX2luaXRfXyhzZWxmLCBsZWZ0
+        OiBFeHByZXNzaW9uLCBvcGVyYXRvcjogVG9rZW4sIHJpZ2h0OiBFeHByZXNzaW9uKTpcbiAgICAg
+        ICAgc2VsZi5sZWZ0ID0gbGVmdFxuICAgICAgICBzZWxmLm9wZXJhdG9yID0gb3BlcmF0b3JcbiAg
+        ICAgICAgc2VsZi5yaWdodCA9IHJpZ2h0XG5cbmNsYXNzIFVuYXJ5RXhwcjpcbiAgICBkZWYgX19p
+        bml0X18oc2VsZiwgb3BlcmF0b3I6IFRva2VuLCByaWdodDogRXhwcmVzc2lvbik6XG4gICAgICAg
+        IHNlbGYub3BlcmF0b3IgPSBvcGVyYXRvclxuPHxlZGl0YWJsZV9yZWdpb25fZW5kfD5cbiAgICAg
+        ICAgc2VsZi5yaWdodCA9IHJpZ2h0XG5cbiAgICBkZWYgYWNjZXB0KHNlbGYsIHZpc2l0b3IpOlxu
+        ICAgICAgICByZXR1cm4gdmlzaXRvci52aXNpdF91bmFyeV9leHByKHNlbGYpXG5gYGAiLCAicmVq
+        ZWN0ZWQiOiAiIiwgImFzc2VydGlvbnMiOiAiIn0AAAALKAIAAAAKAQMDiEYAJp5mHBUMGTUABhAZ
+        GARkYXRhFQIWChb2tgEW8GImpiwmrgMcNgAoshJ7ImV2ZW50cyI6ICJVc2VyIGVkaXRlZCBcInNy
+        Yy91dGlscy9zb3J0aW5nLnRzXCI6XG5cbmBgYGRpZmZcbkBAIC00NSwzICs0NSw0IEBAXG4gICAg
+        IH1cblxuKyAgICBmdW5jdGlvbiBmaW5kS3RoTGFyZ2VzdDxUPihhcnI6IFRbXSwgazogbnVtYmVy
+        LCBjb21wYXJlRm46IChhOiBULCBiOiBUKSA9PiBudW1iZXIpOiBUIHtcbiAgICAgZXhwb3J0IGZ1
+        bmN0aW9uIGJpbmFyeVNlYXJjaDxUPihcbmBgYCIsICJpbnB1dCI6ICJgYGBzcmMvdXRpbHMvc29y
+        dGluZy50c1xuICAgICAgICBjb25zdCBwaXZvdCA9IGFycltNYXRoLmZsb29yKGFyci5sZW5ndGgg
+        LyAyKV07XG4gICAgICAgIGNvbnN0IGxlZnQgPSBhcnIuZmlsdGVyKHggPT4gY29tcGFyZUZuKHgs
+        IHBpdm90KSA8IDApO1xuICAgICAgICBjb25zdCBtaWRkbGUgPSBhcnIuZmlsdGVyKHggPT4gY29t
+        cGFyZUZuKHgsIHBpdm90KSA9PT0gMCk7XG4gICAgICAgIGNvbnN0IHJpZ2h0ID0gYXJyLmZpbHRl
+        cih4ID0+IGNvbXBhcmVGbih4LCBwaXZvdCkgPiAwKTtcbiAgICAgICAgcmV0dXJuIFsuLi5xdWlj
+        a1NvcnQobGVmdCwgY29tcGFyZUZuKSwgLi4ubWlkZGxlLCAuLi5xdWlja1NvcnQocmlnaHQsIGNv
+        bXBhcmVGbildO1xuPHxlZGl0YWJsZV9yZWdpb25fc3RhcnR8PlxuICAgIH1cblxuICAgIGZ1bmN0
+        aW9uIGZpbmRLdGhMYXJnZXN0PFQ+KGFycjogVFtdLCBrOiBudW1iZXIsIGNvbXBhcmVGbjogKGE6
+        IFQsIGI6IFQpID0+IG51bWJlcik6IFQgezx8dXNlcl9jdXJzb3JfaXNfaGVyZXw+XG48fGVkaXRh
+        YmxlX3JlZ2lvbl9lbmR8PlxuICAgIGV4cG9ydCBmdW5jdGlvbiBiaW5hcnlTZWFyY2g8VD4oXG5g
+        YGAiLCAib3V0cHV0IjogImBgYHNyYy91dGlscy9zb3J0aW5nLnRzXG4gICAgICAgIGNvbnN0IHBp
+        dm90ID0gYXJyW01hdGguZmxvb3IoYXJyLmxlbmd0aCAvIDIpXTtcbiAgICAgICAgY29uc3QgbGVm
+        dCA9IGFyci5maWx0ZXIoeCA9PiBjb21wYXJlRm4oeCwgcGl2b3QpIDwgMCk7XG4gICAgICAgIGNv
+        bnN0IG1pZGRsZSA9IGFyci5maWx0ZXIoeCA9PiBjb21wYXJlRm4oeCwgcGl2b3QpID09PSAwKTtc
+        biAgICAgICAgY29uc3QgcmlnaHQgPSBhcnIuZmlsdGVyKHggPT4gY29tcGFyZUZuKHgsIHBpdm90
+        KSA+IDApO1xuICAgICAgICByZXR1cm4gWy4uLnF1aWNrU29ydChsZWZ0LCBjb21wYXJlRm4pLCAu
+        Li5taWRkbGUsIC4uLnF1aWNrU29ydChyaWdodCwgY29tcGFyZUZuKV07XG48fGVkaXRhYmxlX3Jl
+        Z2lvbl9zdGFydHw+XG4gICAgfVxuXG4gICAgZnVuY3Rpb24gZmluZEt0aExhcmdlc3Q8VD4oYXJy
+        OiBUW10sIGs6IG51bWJlciwgY29tcGFyZUZuOiAoYTogVCwgYjogVCkgPT4gbnVtYmVyKTogVCB7
+        XG4gICAgICAgIGlmIChrIDwgMSB8fCBrID4gYXJyLmxlbmd0aCkgdGhyb3cgbmV3IEVycm9yKCdJ
+        bnZhbGlkIGsnKTtcblxuICAgICAgICBjb25zdCBwYXJ0aXRpb24gPSAobG93OiBudW1iZXIsIGhp
+        Z2g6IG51bWJlcik6IG51bWJlciA9PiB7XG4gICAgICAgICAgICBjb25zdCBwaXZvdCA9IGFyclto
+        aWdoXTtcbiAgICAgICAgICAgIGxldCBpID0gbG93IC0gMTtcblxuICAgICAgICAgICAgZm9yIChs
+        ZXQgaiA9IGxvdzsgaiA8IGhpZ2g7IGorKykge1xuICAgICAgICAgICAgICAgIGlmIChjb21wYXJl
+        Rm4oYXJyW2pdLCBwaXZvdCkgPiAwKSB7XG4gICAgICAgICAgICAgICAgICAgIGkrKztcbiAgICAg
+        ICAgICAgICAgICAgICAgW2FycltpXSwgYXJyW2pdXSA9IFthcnJbal0sIGFycltpXV07XG4gICAg
+        ICAgICAgICAgICAgfVxuICAgICAgICAgICAgfVxuICAgICAgICAgICAgW2FycltpICsgMV0sIGFy
+        cltoaWdoXV0gPSBbYXJyW2hpZ2hdLCBhcnJbaSArIDFdXTtcbiAgICAgICAgICAgIHJldHVybiBp
+        ICsgMTtcbiAgICAgICAgfTtcblxuICAgICAgICBsZXQgbGVmdCA9IDA7XG4gICAgICAgIGxldCBy
+        aWdodCA9IGFyci5sZW5ndGggLSAxO1xuXG4gICAgICAgIHdoaWxlIChsZWZ0IDw9IHJpZ2h0KSB7
+        XG4gICAgICAgICAgICBjb25zdCBwaXZvdEluZGV4ID0gcGFydGl0aW9uKGxlZnQsIHJpZ2h0KTtc
+        biAgICAgICAgICAgIGlmIChwaXZvdEluZGV4ID09PSBrIC0gMSkgcmV0dXJuIGFycltwaXZvdElu
+        ZGV4XTtcbiAgICAgICAgICAgIGlmIChwaXZvdEluZGV4IDwgayAtIDEpIGxlZnQgPSBwaXZvdElu
+        ZGV4ICsgMTtcbiAgICAgICAgICAgIGVsc2UgcmlnaHQgPSBwaXZvdEluZGV4IC0gMTtcbiAgICAg
+        ICAgfVxuXG4gICAgICAgIHRocm93IG5ldyBFcnJvcignVW5yZWFjaGFibGUnKTtcbiAgICB9XG5c
+        bjx8ZWRpdGFibGVfcmVnaW9uX2VuZHw+XG4gICAgZXhwb3J0IGZ1bmN0aW9uIGJpbmFyeVNlYXJj
+        aDxUPihcbmBgYCIsICJyZWplY3RlZCI6ICIiLCAiYXNzZXJ0aW9ucyI6ICIifRiiCnsiZXZlbnRz
+        IjogIlVzZXIgZWRpdGVkIFwiaW50ZXJuYWwvcGFyc2VyL2FzdC5weVwiOlxuXG5gYGBkaWZmXG5A
+        QCAtMTAyLDMgKzEwMiwzIEBAXG5jbGFzcyBCaW5hcnlFeHByOlxuLSAgICBkZWYgX19pbml0X18o
+        c2VsZiwgbGVmdCwgb3BlcmF0b3IsIHJpZ2h0KTpcbisgICAgZGVmIF9faW5pdF9fKHNlbGYsIGxl
+        ZnQ6IEV4cHJlc3Npb24sIG9wZXJhdG9yOiBUb2tlbiwgcmlnaHQ6IEV4cHJlc3Npb24pOlxuICAg
+        ICAgICAgc2VsZi5sZWZ0ID0gbGVmdFxuYGBgIiwgImlucHV0IjogImBgYGludGVybmFsL3BhcnNl
+        ci9hc3QucHlcbmNsYXNzIEJpbmFyeUV4cHI6XG48fGVkaXRhYmxlX3JlZ2lvbl9zdGFydHw+XG4g
+        ICAgZGVmIF9faW5pdF9fKHNlbGYsIGxlZnQ6IEV4cHJlc3Npb24sIG9wZXJhdG9yOiBUb2tlbiwg
+        cmlnaHQ6IEV4cHJlc3Npb248fHVzZXJfY3Vyc29yX2lzX2hlcmV8Pik6XG4gICAgICAgIHNlbGYu
+        bGVmdCA9IGxlZnRcbiAgICAgICAgc2VsZi5vcGVyYXRvciA9IG9wZXJhdG9yXG4gICAgICAgIHNl
+        bGYucmlnaHQgPSByaWdodFxuXG5jbGFzcyBVbmFyeUV4cHI6XG4gICAgZGVmIF9faW5pdF9fKHNl
+        bGYsIG9wZXJhdG9yLCByaWdodCk6XG4gICAgICAgIHNlbGYub3BlcmF0b3IgPSBvcGVyYXRvclxu
+        PHxlZGl0YWJsZV9yZWdpb25fZW5kfD5cbiAgICAgICAgc2VsZi5yaWdodCA9IHJpZ2h0XG5cbiAg
+        ICBkZWYgYWNjZXB0KHNlbGYsIHZpc2l0b3IpOlxuICAgICAgICByZXR1cm4gdmlzaXRvci52aXNp
+        dF91bmFyeV9leHByKHNlbGYpXG5gYGAiLCAib3V0cHV0IjogImBgYGludGVybmFsL3BhcnNlci9h
+        c3QucHlcbmNsYXNzIEJpbmFyeUV4cHI6XG48fGVkaXRhYmxlX3JlZ2lvbl9zdGFydHw+XG4gICAg
+        ZGVmIF9faW5pdF9fKHNlbGYsIGxlZnQ6IEV4cHJlc3Npb24sIG9wZXJhdG9yOiBUb2tlbiwgcmln
+        aHQ6IEV4cHJlc3Npb24pOlxuICAgICAgICBzZWxmLmxlZnQgPSBsZWZ0XG4gICAgICAgIHNlbGYu
+        b3BlcmF0b3IgPSBvcGVyYXRvclxuICAgICAgICBzZWxmLnJpZ2h0ID0gcmlnaHRcblxuY2xhc3Mg
+        VW5hcnlFeHByOlxuICAgIGRlZiBfX2luaXRfXyhzZWxmLCBvcGVyYXRvcjogVG9rZW4sIHJpZ2h0
+        OiBFeHByZXNzaW9uKTpcbiAgICAgICAgc2VsZi5vcGVyYXRvciA9IG9wZXJhdG9yXG48fGVkaXRh
+        YmxlX3JlZ2lvbl9lbmR8PlxuICAgICAgICBzZWxmLnJpZ2h0ID0gcmlnaHRcblxuICAgIGRlZiBh
+        Y2NlcHQoc2VsZiwgdmlzaXRvcik6XG4gICAgICAgIHJldHVybiB2aXNpdG9yLnZpc2l0X3VuYXJ5
+        X2V4cHIoc2VsZilcbmBgYCIsICJyZWplY3RlZCI6ICIiLCAiYXNzZXJ0aW9ucyI6ICIifQAZLBUE
+        FQAVAgAVABUQFQIAAAAVBBk8NQAYBnNjaGVtYRUEABUEJQIYA2lkeAAVDCUCGARkYXRhJQBMHAAA
+        ABYKGRwZLCb0ARwVBBk1AAYQGRgDaWR4FQIWChb8ARbsASZgJggcGAgHAAAAAAAAABgIAAAAAAAA
+        AAAWACgIBwAAAAAAAAAYCAAAAAAAAAAAABksFQQVABUCABUAFRAVAgAAACaeZhwVDBk1AAYQGRgE
+        ZGF0YRUCFgoW9rYBFvBiJqYsJq4DHDYAKLISeyJldmVudHMiOiAiVXNlciBlZGl0ZWQgXCJzcmMv
+        dXRpbHMvc29ydGluZy50c1wiOlxuXG5gYGBkaWZmXG5AQCAtNDUsMyArNDUsNCBAQFxuICAgICB9
+        XG5cbisgICAgZnVuY3Rpb24gZmluZEt0aExhcmdlc3Q8VD4oYXJyOiBUW10sIGs6IG51bWJlciwg
+        Y29tcGFyZUZuOiAoYTogVCwgYjogVCkgPT4gbnVtYmVyKTogVCB7XG4gICAgIGV4cG9ydCBmdW5j
+        dGlvbiBiaW5hcnlTZWFyY2g8VD4oXG5gYGAiLCAiaW5wdXQiOiAiYGBgc3JjL3V0aWxzL3NvcnRp
+        bmcudHNcbiAgICAgICAgY29uc3QgcGl2b3QgPSBhcnJbTWF0aC5mbG9vcihhcnIubGVuZ3RoIC8g
+        MildO1xuICAgICAgICBjb25zdCBsZWZ0ID0gYXJyLmZpbHRlcih4ID0+IGNvbXBhcmVGbih4LCBw
+        aXZvdCkgPCAwKTtcbiAgICAgICAgY29uc3QgbWlkZGxlID0gYXJyLmZpbHRlcih4ID0+IGNvbXBh
+        cmVGbih4LCBwaXZvdCkgPT09IDApO1xuICAgICAgICBjb25zdCByaWdodCA9IGFyci5maWx0ZXIo
+        eCA9PiBjb21wYXJlRm4oeCwgcGl2b3QpID4gMCk7XG4gICAgICAgIHJldHVybiBbLi4ucXVpY2tT
+        b3J0KGxlZnQsIGNvbXBhcmVGbiksIC4uLm1pZGRsZSwgLi4ucXVpY2tTb3J0KHJpZ2h0LCBjb21w
+        YXJlRm4pXTtcbjx8ZWRpdGFibGVfcmVnaW9uX3N0YXJ0fD5cbiAgICB9XG5cbiAgICBmdW5jdGlv
+        biBmaW5kS3RoTGFyZ2VzdDxUPihhcnI6IFRbXSwgazogbnVtYmVyLCBjb21wYXJlRm46IChhOiBU
+        LCBiOiBUKSA9PiBudW1iZXIpOiBUIHs8fHVzZXJfY3Vyc29yX2lzX2hlcmV8PlxuPHxlZGl0YWJs
+        ZV9yZWdpb25fZW5kfD5cbiAgICBleHBvcnQgZnVuY3Rpb24gYmluYXJ5U2VhcmNoPFQ+KFxuYGBg
+        IiwgIm91dHB1dCI6ICJgYGBzcmMvdXRpbHMvc29ydGluZy50c1xuICAgICAgICBjb25zdCBwaXZv
+        dCA9IGFycltNYXRoLmZsb29yKGFyci5sZW5ndGggLyAyKV07XG4gICAgICAgIGNvbnN0IGxlZnQg
+        PSBhcnIuZmlsdGVyKHggPT4gY29tcGFyZUZuKHgsIHBpdm90KSA8IDApO1xuICAgICAgICBjb25z
+        dCBtaWRkbGUgPSBhcnIuZmlsdGVyKHggPT4gY29tcGFyZUZuKHgsIHBpdm90KSA9PT0gMCk7XG4g
+        ICAgICAgIGNvbnN0IHJpZ2h0ID0gYXJyLmZpbHRlcih4ID0+IGNvbXBhcmVGbih4LCBwaXZvdCkg
+        PiAwKTtcbiAgICAgICAgcmV0dXJuIFsuLi5xdWlja1NvcnQobGVmdCwgY29tcGFyZUZuKSwgLi4u
+        bWlkZGxlLCAuLi5xdWlja1NvcnQocmlnaHQsIGNvbXBhcmVGbildO1xuPHxlZGl0YWJsZV9yZWdp
+        b25fc3RhcnR8PlxuICAgIH1cblxuICAgIGZ1bmN0aW9uIGZpbmRLdGhMYXJnZXN0PFQ+KGFycjog
+        VFtdLCBrOiBudW1iZXIsIGNvbXBhcmVGbjogKGE6IFQsIGI6IFQpID0+IG51bWJlcik6IFQge1xu
+        ICAgICAgICBpZiAoayA8IDEgfHwgayA+IGFyci5sZW5ndGgpIHRocm93IG5ldyBFcnJvcignSW52
+        YWxpZCBrJyk7XG5cbiAgICAgICAgY29uc3QgcGFydGl0aW9uID0gKGxvdzogbnVtYmVyLCBoaWdo
+        OiBudW1iZXIpOiBudW1iZXIgPT4ge1xuICAgICAgICAgICAgY29uc3QgcGl2b3QgPSBhcnJbaGln
+        aF07XG4gICAgICAgICAgICBsZXQgaSA9IGxvdyAtIDE7XG5cbiAgICAgICAgICAgIGZvciAobGV0
+        IGogPSBsb3c7IGogPCBoaWdoOyBqKyspIHtcbiAgICAgICAgICAgICAgICBpZiAoY29tcGFyZUZu
+        KGFycltqXSwgcGl2b3QpID4gMCkge1xuICAgICAgICAgICAgICAgICAgICBpKys7XG4gICAgICAg
+        ICAgICAgICAgICAgIFthcnJbaV0sIGFycltqXV0gPSBbYXJyW2pdLCBhcnJbaV1dO1xuICAgICAg
+        ICAgICAgICAgIH1cbiAgICAgICAgICAgIH1cbiAgICAgICAgICAgIFthcnJbaSArIDFdLCBhcnJb
+        aGlnaF1dID0gW2FycltoaWdoXSwgYXJyW2kgKyAxXV07XG4gICAgICAgICAgICByZXR1cm4gaSAr
+        IDE7XG4gICAgICAgIH07XG5cbiAgICAgICAgbGV0IGxlZnQgPSAwO1xuICAgICAgICBsZXQgcmln
+        aHQgPSBhcnIubGVuZ3RoIC0gMTtcblxuICAgICAgICB3aGlsZSAobGVmdCA8PSByaWdodCkge1xu
+        ICAgICAgICAgICAgY29uc3QgcGl2b3RJbmRleCA9IHBhcnRpdGlvbihsZWZ0LCByaWdodCk7XG4g
+        ICAgICAgICAgICBpZiAocGl2b3RJbmRleCA9PT0gayAtIDEpIHJldHVybiBhcnJbcGl2b3RJbmRl
+        eF07XG4gICAgICAgICAgICBpZiAocGl2b3RJbmRleCA8IGsgLSAxKSBsZWZ0ID0gcGl2b3RJbmRl
+        eCArIDE7XG4gICAgICAgICAgICBlbHNlIHJpZ2h0ID0gcGl2b3RJbmRleCAtIDE7XG4gICAgICAg
+        IH1cblxuICAgICAgICB0aHJvdyBuZXcgRXJyb3IoJ1VucmVhY2hhYmxlJyk7XG4gICAgfVxuXG48
+        fGVkaXRhYmxlX3JlZ2lvbl9lbmR8PlxuICAgIGV4cG9ydCBmdW5jdGlvbiBiaW5hcnlTZWFyY2g8
+        VD4oXG5gYGAiLCAicmVqZWN0ZWQiOiAiIiwgImFzc2VydGlvbnMiOiAiIn0Yogp7ImV2ZW50cyI6
+        ICJVc2VyIGVkaXRlZCBcImludGVybmFsL3BhcnNlci9hc3QucHlcIjpcblxuYGBgZGlmZlxuQEAg
+        LTEwMiwzICsxMDIsMyBAQFxuY2xhc3MgQmluYXJ5RXhwcjpcbi0gICAgZGVmIF9faW5pdF9fKHNl
+        bGYsIGxlZnQsIG9wZXJhdG9yLCByaWdodCk6XG4rICAgIGRlZiBfX2luaXRfXyhzZWxmLCBsZWZ0
+        OiBFeHByZXNzaW9uLCBvcGVyYXRvcjogVG9rZW4sIHJpZ2h0OiBFeHByZXNzaW9uKTpcbiAgICAg
+        ICAgIHNlbGYubGVmdCA9IGxlZnRcbmBgYCIsICJpbnB1dCI6ICJgYGBpbnRlcm5hbC9wYXJzZXIv
+        YXN0LnB5XG5jbGFzcyBCaW5hcnlFeHByOlxuPHxlZGl0YWJsZV9yZWdpb25fc3RhcnR8PlxuICAg
+        IGRlZiBfX2luaXRfXyhzZWxmLCBsZWZ0OiBFeHByZXNzaW9uLCBvcGVyYXRvcjogVG9rZW4sIHJp
+        Z2h0OiBFeHByZXNzaW9uPHx1c2VyX2N1cnNvcl9pc19oZXJlfD4pOlxuICAgICAgICBzZWxmLmxl
+        ZnQgPSBsZWZ0XG4gICAgICAgIHNlbGYub3BlcmF0b3IgPSBvcGVyYXRvclxuICAgICAgICBzZWxm
+        LnJpZ2h0ID0gcmlnaHRcblxuY2xhc3MgVW5hcnlFeHByOlxuICAgIGRlZiBfX2luaXRfXyhzZWxm
+        LCBvcGVyYXRvciwgcmlnaHQpOlxuICAgICAgICBzZWxmLm9wZXJhdG9yID0gb3BlcmF0b3Jcbjx8
+        ZWRpdGFibGVfcmVnaW9uX2VuZHw+XG4gICAgICAgIHNlbGYucmlnaHQgPSByaWdodFxuXG4gICAg
+        ZGVmIGFjY2VwdChzZWxmLCB2aXNpdG9yKTpcbiAgICAgICAgcmV0dXJuIHZpc2l0b3IudmlzaXRf
+        dW5hcnlfZXhwcihzZWxmKVxuYGBgIiwgIm91dHB1dCI6ICJgYGBpbnRlcm5hbC9wYXJzZXIvYXN0
+        LnB5XG5jbGFzcyBCaW5hcnlFeHByOlxuPHxlZGl0YWJsZV9yZWdpb25fc3RhcnR8PlxuICAgIGRl
+        ZiBfX2luaXRfXyhzZWxmLCBsZWZ0OiBFeHByZXNzaW9uLCBvcGVyYXRvcjogVG9rZW4sIHJpZ2h0
+        OiBFeHByZXNzaW9uKTpcbiAgICAgICAgc2VsZi5sZWZ0ID0gbGVmdFxuICAgICAgICBzZWxmLm9w
+        ZXJhdG9yID0gb3BlcmF0b3JcbiAgICAgICAgc2VsZi5yaWdodCA9IHJpZ2h0XG5cbmNsYXNzIFVu
+        YXJ5RXhwcjpcbiAgICBkZWYgX19pbml0X18oc2VsZiwgb3BlcmF0b3I6IFRva2VuLCByaWdodDog
+        RXhwcmVzc2lvbik6XG4gICAgICAgIHNlbGYub3BlcmF0b3IgPSBvcGVyYXRvclxuPHxlZGl0YWJs
+        ZV9yZWdpb25fZW5kfD5cbiAgICAgICAgc2VsZi5yaWdodCA9IHJpZ2h0XG5cbiAgICBkZWYgYWNj
+        ZXB0KHNlbGYsIHZpc2l0b3IpOlxuICAgICAgICByZXR1cm4gdmlzaXRvci52aXNpdF91bmFyeV9l
+        eHByKHNlbGYpXG5gYGAiLCAicmVqZWN0ZWQiOiAiIiwgImFzc2VydGlvbnMiOiAiIn0AGSwVBBUA
+        FQIAFQAVEBUCAAAAFvK4ARYKJggW3GQUAAAZLBgGcGFuZGFzGN4CeyJpbmRleF9jb2x1bW5zIjog
+        W10sICJjb2x1bW5faW5kZXhlcyI6IFtdLCAiY29sdW1ucyI6IFt7Im5hbWUiOiAiaWR4IiwgImZp
+        ZWxkX25hbWUiOiAiaWR4IiwgInBhbmRhc190eXBlIjogImludDY0IiwgIm51bXB5X3R5cGUiOiAi
+        aW50NjQiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogImRhdGEiLCAiZmllbGRfbmFtZSI6
+        ICJkYXRhIiwgInBhbmRhc190eXBlIjogInVuaWNvZGUiLCAibnVtcHlfdHlwZSI6ICJvYmplY3Qi
+        LCAibWV0YWRhdGEiOiBudWxsfV0sICJjcmVhdG9yIjogeyJsaWJyYXJ5IjogInB5YXJyb3ciLCAi
+        dmVyc2lvbiI6ICIxNy4wLjAifSwgInBhbmRhc192ZXJzaW9uIjogIjIuMi4zIn0AGAxBUlJPVzpz
+        Y2hlbWEYjAYvLy8vLzBBQ0FBQVFBQUFBQUFBS0FBNEFCZ0FGQUFnQUNnQUFBQUFCQkFBUUFBQUFB
+        QUFLQUF3QUFBQUVBQWdBQ2dBQUFKUUJBQUFFQUFBQUFRQUFBQXdBQUFBSUFBd0FCQUFJQUFnQUFB
+        QnNBUUFBQkFBQUFGNEJBQUI3SW1sdVpHVjRYMk52YkhWdGJuTWlPaUJiWFN3Z0ltTnZiSFZ0Ymw5
+        cGJtUmxlR1Z6SWpvZ1cxMHNJQ0pqYjJ4MWJXNXpJam9nVzNzaWJtRnRaU0k2SUNKcFpIZ2lMQ0Fp
+        Wm1sbGJHUmZibUZ0WlNJNklDSnBaSGdpTENBaWNHRnVaR0Z6WDNSNWNHVWlPaUFpYVc1ME5qUWlM
+        Q0FpYm5WdGNIbGZkSGx3WlNJNklDSnBiblEyTkNJc0lDSnRaWFJoWkdGMFlTSTZJRzUxYkd4OUxD
+        QjdJbTVoYldVaU9pQWlaR0YwWVNJc0lDSm1hV1ZzWkY5dVlXMWxJam9nSW1SaGRHRWlMQ0FpY0dG
+        dVpHRnpYM1I1Y0dVaU9pQWlkVzVwWTI5a1pTSXNJQ0p1ZFcxd2VWOTBlWEJsSWpvZ0ltOWlhbVZq
+        ZENJc0lDSnRaWFJoWkdGMFlTSTZJRzUxYkd4OVhTd2dJbU55WldGMGIzSWlPaUI3SW14cFluSmhj
+        bmtpT2lBaWNIbGhjbkp2ZHlJc0lDSjJaWEp6YVc5dUlqb2dJakUzTGpBdU1DSjlMQ0FpY0dGdVpH
+        RnpYM1psY25OcGIyNGlPaUFpTWk0eUxqTWlmUUFBQmdBQUFIQmhibVJoY3dBQUFnQUFBRVFBQUFB
+        RUFBQUExUC8vL3dBQUFRVVFBQUFBSEFBQUFBUUFBQUFBQUFBQUJBQUFBR1JoZEdFQUFBQUFCQUFF
+        QUFRQUFBQVFBQlFBQ0FBR0FBY0FEQUFBQUJBQUVBQUFBQUFBQVFJUUFBQUFIQUFBQUFRQUFBQUFB
+        QUFBQXdBQUFHbGtlQUFJQUF3QUNBQUhBQWdBQUFBQUFBQUJRQUFBQUFBQUFBQT0AGCBwYXJxdWV0
+        LWNwcC1hcnJvdyB2ZXJzaW9uIDE3LjAuMBksHAAAHAAAAOUTAABQQVIx
+    headers:
+      Alt-Svc:
+      - h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+      Transfer-Encoding:
+      - chunked
+      content-disposition:
+      - attachment; filename=e7cbfa40754a4ba9b62ba592d9a4f27d.arrow
+      content-type:
+      - application/octet-stream
+      date:
+      - Sun, 01 Jun 2025 08:39:34 GMT
+      server:
+      - uvicorn
+      via:
+      - 1.1 google
+    status:
+      code: 200
+      message: OK
+version: 1

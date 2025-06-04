@@ -77,6 +77,7 @@ class LLM:
         backend: Optional[str] = None,
         generation_params: dict | None = None,
         backend_params: BackendParamsType | None = None,
+        system_prompt: str | None = None,
     ):
         """Initialize a LLM.
 
@@ -115,6 +116,7 @@ class LLM:
                     - min_tokens: The minimum tokens to use for the VLLM backend
                     - gpu_memory_utilization: The GPU memory utilization to use for the VLLM backend
                     - batch_size: The size of the batch to use, only used if batch is True
+            system_prompt: The system prompt to use for the LLM
         """
         generation_params = generation_params or {}
 
@@ -127,6 +129,7 @@ class LLM:
             parse_func=self.parse,
             response_format=self.response_format,
             generation_params=_remove_none_values(generation_params),
+            system_prompt=system_prompt,
         )
         self.batch_mode = batch
 
@@ -140,7 +143,7 @@ class LLM:
             return_completions_object=self.return_completions_object,
         )
 
-    def _hash_fingerprint(self, dataset_hash, disable_cache):
+    def _hash_fingerprint(self, dataset_hash: str = "", disable_cache: bool = False):
         if disable_cache:
             fingerprint = xxh64(os.urandom(8)).hexdigest()
         else:
@@ -278,6 +281,7 @@ class LLM:
             parse_func_hash=parse_func_hash,
             prompt_formatter=self.prompt_formatter,
         )
+        viewer_url = self._request_processor.viewer_client.curator_viewer_url
 
         if existing_session_id is not None and existing_viewer_sync is False:
             msg = (
@@ -289,7 +293,7 @@ class LLM:
                 logger.warning(msg)
                 from bespokelabs.curator.utils import push_to_viewer
 
-                push_to_viewer(dataset, session_id=session_id)
+                viewer_url = push_to_viewer(dataset, session_id=session_id)
 
         if self._request_processor.viewer_client.hosted:
             metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
@@ -302,7 +306,7 @@ class LLM:
                 cache_dir=run_cache_dir,
                 dataset=dataset,
                 batch_mode=self.batch_mode,
-                viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+                viewer_url=viewer_url,
                 failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl"))
                 if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl"))
                 else None,
@@ -317,7 +321,7 @@ class LLM:
                 response = CuratorResponse(
                     dataset=dataset,
                     cache_dir=run_cache_dir,
-                    viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+                    viewer_url=viewer_url,
                     batch_mode=self.batch_mode,
                     failed_requests_path=Path(os.path.join(run_cache_dir, "failed_requests.jsonl"))
                     if os.path.exists(os.path.join(run_cache_dir, "failed_requests.jsonl"))
