@@ -8,6 +8,7 @@ from datasets import Dataset
 from datasets.arrow_writer import ArrowWriter
 
 from bespokelabs.curator.agent.agent_response import AgentResponse
+from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest
 from bespokelabs.curator.status_tracker.agent_status_tracker import AgentStatusTracker, AgentTurn
 from bespokelabs.curator.types.generic_response import GenericResponse
@@ -109,6 +110,8 @@ class MultiTurnAgenticProcessor:
                             await self.append_response(self.partner.name, f, partener_response)
                             self.conversation_history.append({"role": self.partner.name, "content": partener_response.response_message})
                             self.status_tracker.update_turn(AgentTurn.PARTNER, token_usage=partener_response.token_usage, cost=partener_response.response_cost)
+                            if self._check_stop_condition(step, self.partner, partener_response.response_message):
+                                break
                         else:
                             seeder_request = self._transform_conversation_history(self.seeder)
                             seeder_request = APIRequest(
@@ -122,6 +125,8 @@ class MultiTurnAgenticProcessor:
                             await self.append_response(self.seeder.name, f, seeder_response)
                             self.conversation_history.append({"role": self.seeder.name, "content": seeder_response.response_message})
                             self.status_tracker.update_turn(AgentTurn.SEEDER, token_usage=seeder_response.token_usage, cost=seeder_response.response_cost)
+                            if self._check_stop_condition(step, self.seeder, seeder_response.response_message):
+                                break
                     except Exception as e:
                         # Update status tracker with error
                         if step % 2 == 0:
@@ -132,6 +137,12 @@ class MultiTurnAgenticProcessor:
 
         self.status_tracker.stop_tracker()
         return Dataset.from_file(self.create_dataset_file(working_dir))
+
+    def _check_stop_condition(self, step: int, agent: "Agent", response_message: str) -> bool:
+        if agent.is_completed(response_message):
+            logger.info(f"Agent {agent.name} completed conversation at step {step}.")
+            return True
+        return False
 
     async def append_response(self, name: str, f, response: GenericResponse) -> None:
         """Append a response to the conversation history file.

@@ -14,6 +14,10 @@ class Patient(Agent):
         """Convert input text into a patient message."""
         return [{"role": "user", "content": text["prompt"]}]
 
+    def is_completed(self, response: str) -> bool:
+        """Check if the conversation is complete based on the response."""
+        return response.strip().lower() in ["done", "done."]
+
 
 class Doctor(Patient):
     """A doctor agent that provides medical advice."""
@@ -27,14 +31,19 @@ DOCTOR_PROMPT = """You are a knowledgeable and empathetic doctor. Your role is t
 4. Show empathy while maintaining professionalism
 5. Recommend seeing a doctor in person for serious concerns
 
-Remember: You are an AI assistant and cannot provide actual medical diagnosis or treatment."""
+Remember: You are an AI assistant and cannot provide actual medical diagnosis or treatment.
+
+Please reply with "Done" when you are finished with the conversation."""
 
 PATIENT_PROMPT = """You are a patient seeking medical advice. Your role is to:
 1. Describe your symptoms clearly
 2. Answer the doctor's questions honestly
 3. Ask relevant questions about your condition
 4. Express any concerns you have
-5. Be cooperative and respectful"""
+5. Be cooperative and respectful
+
+Important: Please reply with "Done" when you are finished with the conversation.
+"""
 
 
 def main():
@@ -58,7 +67,7 @@ def main():
     simulator = MultiTurnAgents(
         patient,
         doctor,
-        max_length=5,  # Maximum 5 turns in the conversation
+        max_length=10,  # Maximum 10 turns in the conversation
         seed_message="I've been having a persistent headache for the past 3 days.",
     )
 
@@ -68,7 +77,7 @@ def main():
     # Print the conversation
     print("\nConversation History:")
     print("====================")
-    for message in result.to_list():
+    for message in result.dataset.to_list():
         role = message["role"].capitalize()
         content = message["content"]
         print(f"\n{role}: {content}")

@@ -37,6 +37,17 @@ class Agent(curator.LLM):
         self.name = name
         super().__init__(*args, **kwargs)
 
+    def is_completed(self, response: str) -> bool:
+        """Check if the agent's response is signals conversation completion.
+
+        Args:
+            response (str): The response string to check.
+
+        Returns:
+            bool: True if the conversation is completed, False otherwise.
+        """
+        return False
+
     def __str__(self):
         """Return a string representation of the agent.
 
