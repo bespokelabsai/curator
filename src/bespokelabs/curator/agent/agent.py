@@ -205,7 +205,7 @@ class MultiTurnAgents:
         metadata_db = MetadataDB(metadata_db_path)
 
         # Run the conversation and get the dataset
-        dataset = run_in_event_loop(self._processor.run(run_hash=fingerprint, working_dir=working_dir, metadata_db=metadata_db))
+        dataset = run_in_event_loop(self._processor.run(working_dir=working_dir))
 
         # Create and populate the response object
         response = MultiTurnResponse(

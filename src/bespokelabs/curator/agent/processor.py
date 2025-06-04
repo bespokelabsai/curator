@@ -67,8 +67,12 @@ class MultiTurnAgenticProcessor:
                     # Update status tracker for cached responses
                     if response.name == self.seeder.name:
                         self.status_tracker.update_turn(AgentTurn.SEEDER)
+                        if self.seeder.is_completed(response.response_message):
+                            return self.max_length
                     else:
                         self.status_tracker.update_turn(AgentTurn.PARTNER)
+                        if self.partner.is_completed(response.response_message):
+                            return self.max_length
         return len(self.conversation_history)
 
     async def run(self, working_dir: str) -> Dataset:
