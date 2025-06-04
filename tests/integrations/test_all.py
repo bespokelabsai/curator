@@ -588,6 +588,7 @@ def test_basic_offline(temp_working_dir, mock_dataset):
             "is_available": lambda: True,
             "get_device_name": lambda device: "Mock GPU",
             "device_count": lambda: 1,
+            "current_device": lambda: 'cpu',
         },
     )
 
@@ -596,6 +597,7 @@ def test_basic_offline(temp_working_dir, mock_dataset):
         patch("torch.cuda", mock_cuda),
         patch("torch.cuda.synchronize"),
         patch("torch.cuda.empty_cache"),
+        patch("torch.cuda.current_device", lambda: 0),
     ):
         mock_llm.return_value.generate = mock_generate
         mock_llm.return_value.get_tokenizer.return_value.apply_chat_template = mock_apply_chat_template
