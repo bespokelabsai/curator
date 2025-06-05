@@ -15,7 +15,6 @@ from rich.table import Table
 from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.cost import external_model_cost
 from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
-from bespokelabs.curator.status_tracker.cost_mixin import CostMixin
 from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_response import _TokenUsage
@@ -32,7 +31,7 @@ class AgentTurn(str, Enum):
 
 
 @dataclass
-class AgentStatusTracker(CostMixin):
+class AgentStatusTracker:
     """Tracks the status of multi-turn conversations between agents.
 
     This tracker monitors the progress of conversations between two agents,
@@ -86,7 +85,6 @@ class AgentStatusTracker(CostMixin):
 
     def __post_init__(self):
         """Initialize the tracker."""
-        super().__init__()  # Initialize CostMixin
         self.input_cost_per_million = self.input_cost_per_million or {"seeder": None, "partner": None}
         self.output_cost_per_million = self.output_cost_per_million or {"seeder": None, "partner": None}
 
