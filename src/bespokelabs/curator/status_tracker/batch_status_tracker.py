@@ -5,7 +5,6 @@ import time
 from typing import Optional
 
 import tqdm
-from litellm import model_cost
 from pydantic import BaseModel, Field
 from rich import box
 from rich.console import Console, Group
@@ -18,13 +17,14 @@ from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
 from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
+from bespokelabs.curator.status_tracker.cost_mixin import CostMixin
 from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchStatus
 from bespokelabs.curator.types.generic_response import _TokenUsage
 
 
-class BatchStatusTracker(BaseModel):
+class BatchStatusTracker(BaseModel, CostMixin):
     """Class for tracking the status of batches during curation.
 
     Tracks unsubmitted request files, submitted batches, finished batches,
@@ -105,26 +105,10 @@ class BatchStatusTracker(BaseModel):
     def model_post_init(self, __context__) -> None:
         """Post init processing after model initialization."""
         super().model_post_init(__context__)
+        super().__init__()  # Initialize CostMixin
 
-        # Initialize cost strings with appropriate formatting based on display mode
-        try:
-            if self.model in model_cost:
-                self.input_cost_per_million = model_cost[self.model]["input_cost_per_token"] * 1_000_000
-                self.output_cost_per_million = model_cost[self.model]["output_cost_per_token"] * 1_000_000
-            elif self.compatible_provider:
-                from bespokelabs.curator.cost import external_model_cost
-
-                costs = external_model_cost(
-                    self.model,
-                    provider=self.compatible_provider,
-                    completion_window=self.completion_window,
-                )
-                self.input_cost_per_million = costs["input_cost_per_token"] * 1_000_000
-                self.output_cost_per_million = costs["output_cost_per_token"] * 1_000_000
-        except Exception as e:
-            logger.warning(f"Could not determine model costs: {e}")
-            self.input_cost_per_million = None
-            self.output_cost_per_million = None
+        # Initialize model costs
+        self.initialize_model_costs(self.model)
 
     def _format_cost_str(self):
         # Format the cost strings based on the values we got

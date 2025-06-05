@@ -119,6 +119,7 @@ class LLM:
             system_prompt: The system prompt to use for the LLM
         """
         generation_params = generation_params or {}
+        self.model_name = model_name
 
         if response_format is not None:
             self.response_format = response_format

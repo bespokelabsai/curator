@@ -78,8 +78,8 @@ class MultiTurnResponse:
         # Update cost information
         self.cost_info = CostInfo(
             total_cost=tracker.total_cost,
-            input_cost_per_million="N/A",
-            output_cost_per_million="N/A",
+            input_cost_per_million=tracker.input_cost_per_million,
+            output_cost_per_million=tracker.output_cost_per_million,
             projected_remaining_cost=0.0,  # AgentStatusTracker doesn't track this
         )
 

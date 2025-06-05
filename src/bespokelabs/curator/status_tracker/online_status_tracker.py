@@ -5,7 +5,6 @@ from enum import Enum
 from typing import Optional
 
 import tqdm
-from litellm import model_cost
 from rich import box
 from rich.console import Console, Group
 from rich.live import Live
@@ -16,8 +15,8 @@ from rich.table import Table
 from bespokelabs.curator import _CONSOLE
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
-from bespokelabs.curator.cost import external_model_cost
 from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
+from bespokelabs.curator.status_tracker.cost_mixin import CostMixin
 from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, DIM, END, ERROR, HEADER, METRIC, MODEL, SUCCESS, WARNING
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
 from bespokelabs.curator.types.generic_response import _TokenUsage
@@ -43,7 +42,7 @@ class TokenLimitStrategy(str, Enum):
 
 
 @dataclass
-class OnlineStatusTracker:
+class OnlineStatusTracker(CostMixin):
     """Tracks the status of all requests."""
 
     num_tasks_started: int = 0
@@ -95,6 +94,8 @@ class OnlineStatusTracker:
 
     def __post_init__(self):
         """Post init."""
+        super().__init__()  # Initialize CostMixin
+
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             self.available_token_capacity = t.cast(float, self.available_token_capacity)
         else:
@@ -103,38 +104,8 @@ class OnlineStatusTracker:
             if not self.max_tokens_per_minute:
                 self.max_tokens_per_minute = _TokenUsage()
 
-        # Initialize cost strings
-        if self.model in model_cost:
-            model_pricing = model_cost[self.model]
-            if model_pricing.get("input_cost_per_token") is not None:
-                self.input_cost_per_million = model_pricing.get("input_cost_per_token", 0) * 1_000_000
-            else:
-                self.input_cost_per_million = None
-            if model_pricing.get("output_cost_per_token") is not None:
-                self.output_cost_per_million = model_pricing.get("output_cost_per_token", 0) * 1_000_000
-            else:
-                self.output_cost_per_million = None
-        else:
-            try:
-                external_pricing = external_model_cost(self.model, provider=self.compatible_provider)
-                self.input_cost_per_million = (
-                    external_pricing.get("input_cost_per_token", 0) * 1_000_000 if external_pricing.get("input_cost_per_token") is not None else None
-                )
-                self.output_cost_per_million = (
-                    external_pricing.get("output_cost_per_token", 0) * 1_000_000 if external_pricing.get("output_cost_per_token") is not None else None
-                )
-            except (KeyError, TypeError):
-                self.input_cost_per_million = None
-                self.output_cost_per_million = None
-
-        # Handle None values for cost per million tokens
-        self.input_cost_str = f"[red]${self.input_cost_per_million:.3f}[/red]" if self.input_cost_per_million is not None else "[dim]N/A[/dim]"
-        if not USE_RICH_DISPLAY:
-            self.input_cost_str = f"${self.input_cost_per_million:.3f}" if self.input_cost_per_million is not None else "N/A"
-
-        self.output_cost_str = f"[red]${self.output_cost_per_million:.3f}[/red]" if self.output_cost_per_million is not None else "[dim]N/A[/dim]"
-        if not USE_RICH_DISPLAY:
-            self.output_cost_str = f"${self.output_cost_per_million:.3f}" if self.output_cost_per_million is not None else "N/A"
+        # Initialize model costs
+        self.initialize_model_costs(self.model)
 
     def __str__(self):
         """String representation of the token limit strategy."""
