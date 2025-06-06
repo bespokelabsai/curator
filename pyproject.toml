@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bespokelabs-curator"
-version = "0.1.25"
+version = "0.1.26"
 description = "Bespoke Labs Curator"
 authors = ["Bespoke Labs <company@bespokelabs.ai>"]
 readme = "README.md"
