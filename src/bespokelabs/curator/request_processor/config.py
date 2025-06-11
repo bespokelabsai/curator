@@ -184,7 +184,7 @@ def _validate_backend_params(params: BackendParamsType):
     )
     for validator in validators:
         try:
-            validator.validate(params)
+            validator.model_validate(params)
         except ValidationError:
             continue
         else:

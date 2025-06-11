@@ -359,7 +359,7 @@ class BatchStatusTracker(BaseModel):
         telemetry_client.capture(
             TelemetryEvent(
                 event_type="BatchRequest",
-                metadata=json.loads(self.json()),
+                metadata=json.loads(self.model_dump_json()),
             )
         )
 
