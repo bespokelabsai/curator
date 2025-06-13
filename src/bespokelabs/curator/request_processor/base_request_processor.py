@@ -252,7 +252,14 @@ class BaseRequestProcessor(ABC):
             return request_files
 
         if isinstance(self.config, BatchRequestProcessorConfig):
-            num_batches = ceil(len(dataset) / self.config.batch_size)
+            if self.config.batch_size == "auto":
+                # Calculate optimal batch size based on actual request sizes
+                batch_size = self._calculate_optimal_batch_size(dataset)
+                logger.info(f"Auto-calculated batch size: {batch_size:,} requests per batch")
+            else:
+                batch_size = self.config.batch_size
+
+            num_batches = ceil(len(dataset) / batch_size)
             request_files = [os.path.join(self.working_dir, f"requests_{i}.jsonl") for i in range(num_batches)]
             metadata_files = [os.path.join(self.working_dir, f"metadata_{i}.json") for i in range(num_batches)]
 
@@ -262,7 +269,7 @@ class BaseRequestProcessor(ABC):
                         dataset,
                         request_files[i],
                         metadata_files[i],
-                        start_idx=i * self.config.batch_size,
+                        start_idx=i * batch_size,
                     )
                     for i in range(num_batches)
                     if i in incomplete_files
@@ -274,6 +281,43 @@ class BaseRequestProcessor(ABC):
             run_in_event_loop(self.acreate_request_file(dataset, request_file, metadata_file))
 
         return request_files
+
+    def _calculate_optimal_batch_size(self, dataset: "Dataset") -> int:
+        """Calculate optimal batch size based on actual request sizes.
+
+        Args:
+            dataset: The dataset to analyze
+
+        Returns:
+            int: Optimal batch size that respects both request count and byte size limits
+        """
+        if not isinstance(self.config, BatchRequestProcessorConfig):
+            return 1
+
+        # Sample a subset of requests to estimate average size
+        sample_size = min(100, len(dataset))
+        sample_indices = range(0, len(dataset), len(dataset) // sample_size)
+        sample_dataset = dataset.select(sample_indices)
+
+        total_size = 0
+        for row in sample_dataset:
+            request = self.prompt_formatter.create_generic_request(row, 0)
+            request_size = len(json.dumps(request.model_dump(), default=str).encode())
+            total_size += request_size
+
+        avg_request_size = total_size / len(sample_dataset)
+        logger.debug(f"Average request size: {avg_request_size / 1024:.2f} KB")
+
+        # Calculate how many requests would fit within the byte limit
+        max_requests_by_bytes = self.max_bytes_per_batch // avg_request_size
+
+        # Take the minimum of the two limits
+        optimal_size = min(self.max_requests_per_batch, max_requests_by_bytes)
+
+        # Ensure we have a reasonable minimum batch size
+        optimal_size = max(100, optimal_size)
+
+        return optimal_size
 
     async def acreate_request_file(
         self,
@@ -291,8 +335,36 @@ class BaseRequestProcessor(ABC):
             start_idx: Starting index in dataset for this batch
         """
         if isinstance(self.config, BatchRequestProcessorConfig):
-            end_idx = min(start_idx + self.config.batch_size, len(dataset))
-            dataset = dataset.select(range(start_idx, end_idx))
+            if self.config.batch_size == "auto":
+                batch_size = self.max_requests_per_batch
+                while True:
+                    end_idx = min(start_idx + batch_size, len(dataset))
+                    current_dataset = dataset.select(range(start_idx, end_idx))
+
+                    # Check if this batch would exceed size limit
+                    total_size = 0
+                    for idx, dataset_row in enumerate(current_dataset):
+                        dataset_row_idx = idx + start_idx
+                        request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, False)
+                        request_size = len(json.dumps(request.model_dump(), default=str).encode())
+                        total_size += request_size
+
+                    if total_size <= self.max_bytes_per_batch:
+                        break
+
+                    new_batch_size = int(batch_size * 0.8)
+                    if new_batch_size == batch_size:
+                        new_batch_size = max(1, batch_size - 1)
+                    batch_size = new_batch_size
+                    logger.debug(
+                        f"Reducing batch size to {batch_size:,} due to size limit. "
+                        f"Current total size: {total_size:,} bytes ({total_size / (1024 * 1024):.2f} MB), "
+                        f"Max allowed: {self.max_bytes_per_batch:,} bytes ({self.max_bytes_per_batch / (1024 * 1024):.2f} MB)"
+                    )
+            else:
+                batch_size = self.config.batch_size
+                end_idx = min(start_idx + batch_size, len(dataset))
+                current_dataset = dataset.select(range(start_idx, end_idx))
         else:
             end_idx = len(dataset)
 
@@ -301,7 +373,7 @@ class BaseRequestProcessor(ABC):
         if self.prompt_formatter.generation_params and generation_params_per_row:
             logger.warning("Found both default and row-level generation_params. Collided keys will follow values in row-level config.")
         async with aiofiles.open(request_file, "w") as f:
-            for idx, dataset_row in enumerate(dataset):
+            for idx, dataset_row in enumerate(current_dataset):
                 dataset_row_idx = idx + start_idx
                 # Get the generic request from the map function
                 request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, generation_params_per_row)
