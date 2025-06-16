@@ -7,7 +7,7 @@ interactions:
       Accept-Encoding:
       - gzip, deflate
       Authorization:
-      - Bearer 
+      - Bearer
       Connection:
       - keep-alive
       Content-Length:
@@ -488,4 +488,178 @@ interactions:
     status:
       code: 200
       message: OK
+- request:
+    body: '{"messages": [{"role": "user", "content": "Jason is 25 years old."}], "model":
+      "gpt-4o-mini", "response_format": {"type": "json_schema", "json_schema": {"schema":
+      {"properties": {"name": {"title": "Name", "type": "string"}, "age": {"title":
+      "Age", "type": "integer"}}, "required": ["name", "age"], "title": "User", "type":
+      "object", "additionalProperties": false}, "name": "User", "strict": true}},
+      "stream": false}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate, zstd
+      authorization:
+      - Bearer sk-mocked-**
+      connection:
+      - keep-alive
+      content-length:
+      - '415'
+      content-type:
+      - application/json
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.61.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper-method:
+      - beta.chat.completions.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.61.0
+      x-stainless-retry-count:
+      - '0'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions/chat/completions
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2TNywrCMBSE4X2eYjgrBSG4zRsIgqJ1XUJ60EBuJmlBSt9dMNm5/Rj+WQVAnHPM
+        pLAKACDPpegnkwKdwqKdnfC4nbG7Xu4D5HKU5qWrNNEnx9XGUP5gT4eWqp/069jWGTO/Zy51bI99
+        lHTWnhTC7FwnEyfuIoBNbF8AAAD//wMABvF5OKgAAAA=
+    headers:
+      CF-RAY:
+      - 94a0ecce1dd73fbb-BOM
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Tue, 03 Jun 2025 17:31:36 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=E5cs_Ei4ik9E0pui8WniZtNukZ2X4dNDrx.x2yivtqI-1748971896-1.0.1.1-1lsM7WlWx8rTxmBBmc.8XoQGfSc6yjRz218Qa1WskN5njznw91XIln1d_hQB91nW8ck4DfO8926jqR6_rHvqz8W7tKhvIh7FjlBfx0Z2Zr4;
+        path=/; expires=Tue, 03-Jun-25 18:01:36 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=U821n.0W7GvnzZXcvNnPOpoEWp5V4.NKD10N14vzGSs-1748971896371-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      openai-processing-ms:
+      - '0'
+      openai-version:
+      - '2020-10-01'
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      x-request-id:
+      - req_33e190674a67eb7f49916405a2e0ee03
+    status:
+      code: 404
+      message: Not Found
+- request:
+    body: '{"messages": [{"role": "user", "content": "Jason is 25 years old."}], "model":
+      "gpt-4o-mini", "response_format": {"type": "json_schema", "json_schema": {"schema":
+      {"properties": {"name": {"title": "Name", "type": "string"}, "age": {"title":
+      "Age", "type": "integer"}}, "required": ["name", "age"], "title": "User", "type":
+      "object", "additionalProperties": false}, "name": "User", "strict": true}},
+      "stream": false}'
+    headers:
+      accept:
+      - application/json
+      accept-encoding:
+      - gzip, deflate, zstd
+      authorization:
+      - Bearer sk-mocked-**
+      connection:
+      - keep-alive
+      content-length:
+      - '415'
+      content-type:
+      - application/json
+      cookie:
+      - _cfuvid=BpHho7ab4DDOA1MLA2YxgitKwhE_9Emwgg1BoPNjzNI-1737484056883-0.0.1.1-604800000
+      host:
+      - api.openai.com
+      user-agent:
+      - OpenAI/Python 1.61.0
+      x-stainless-arch:
+      - arm64
+      x-stainless-async:
+      - 'false'
+      x-stainless-helper-method:
+      - beta.chat.completions.parse
+      x-stainless-lang:
+      - python
+      x-stainless-os:
+      - MacOS
+      x-stainless-package-version:
+      - 1.61.0
+      x-stainless-retry-count:
+      - '1'
+      x-stainless-runtime:
+      - CPython
+      x-stainless-runtime-version:
+      - 3.11.11
+    method: POST
+    uri: https://api.openai.com/v1/chat/completions
+  response:
+    body:
+      string: "{\n    \"error\": {\n        \"message\": \"Incorrect API key provided:
+        sk-mocked-**. You can find your API key at https://platform.openai.com/account/api-keys.\",\n
+        \       \"type\": \"invalid_request_error\",\n        \"param\": null,\n        \"code\":
+        \"invalid_api_key\"\n    }\n}\n"
+    headers:
+      CF-RAY:
+      - 94a0f6990fe84928-BOM
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '262'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Tue, 03 Jun 2025 17:38:17 GMT
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - __cf_bm=7nSLALIs0Oy6pFH2sfRFNG0rKALE_0KsCAAkIUMcpGg-1748972297-1.0.1.1-Ln4govDf0g96MiGTRCEXtpJPFyMeqZmxwRKMFVq9TbULJ_jFcZvTfeqvZpav49Yi6yOsbVRdxDLjaECR9nCxyeV5.p7UXQLhjngm2KeyC2U;
+        path=/; expires=Tue, 03-Jun-25 18:08:17 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=n5kLB_8KQm4SkfI3U.mbmJUVs9JjhCEdnj.k11P_Rrg-1748972297459-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      X-Content-Type-Options:
+      - nosniff
+      alt-svc:
+      - h3=":443"; ma=86400
+      cf-cache-status:
+      - DYNAMIC
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      vary:
+      - Origin
+      x-request-id:
+      - req_f956ba704559189eaeef9d8fe918970c
+    status:
+      code: 401
+      message: Unauthorized
 version: 1

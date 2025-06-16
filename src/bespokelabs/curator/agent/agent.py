@@ -100,14 +100,14 @@ class MultiTurnAgents:
         assert self.seeder.name != self.partner.name, "Seeder and partner must have different names"
         self._processor = MultiTurnAgenticProcessor(self.seeder, self.partner, self.max_length, self.seed_message)
 
-    def _setup_viewer_metadata(self, fingerprint: str) -> dict:
-        """Set up metadata for the curator viewer.
+    def _setup_metadata(self, fingerprint: str) -> dict:
+        """Set up metadata for the curator.
 
         Args:
             fingerprint (str): The unique fingerprint for this run.
 
         Returns:
-            dict: Metadata dictionary for the viewer.
+            dict: Metadata dictionary.
         """
         # Get the source code of both agents' prompt functions
         seeder_prompt_func = _get_function_source(self.seeder.prompt_formatter.prompt_func)
@@ -200,6 +200,10 @@ class MultiTurnAgents:
         viewer_client = Client()
         self._processor.viewer_client = viewer_client
 
+        # Create metadata database
+        metadata_db_path = os.path.join(working_dir, "metadata.db")
+        metadata_db = MetadataDB(metadata_db_path)
+
         # Run the conversation and get the dataset
         dataset = run_in_event_loop(self._processor.run(working_dir=working_dir))
 
@@ -207,7 +211,6 @@ class MultiTurnAgents:
         response = MultiTurnResponse(
             dataset=dataset,
             cache_dir=working_dir,
-            conversation_history=self._processor.conversation_history,
             seeder_model=self.seeder.prompt_formatter.model_name,
             partner_model=self.partner.prompt_formatter.model_name,
             metadata={
@@ -223,13 +226,27 @@ class MultiTurnAgents:
         # Update statistics from the processor's status tracker
         response.update_tracker_stats(self._processor.status_tracker)
 
+        # Setup metadata for viewer
+        metadata_dict = self._setup_metadata(fingerprint)
+        existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
+        existing_viewer_sync = metadata_db.check_existing_hosted_sync(metadata_dict["run_hash"])
+
+        if not existing_viewer_sync and existing_session_id:
+            session_id = viewer_client.create_session(metadata_dict)
+        else:
+            session_id = viewer_client.create_session(metadata_dict, session_id=existing_session_id)
+
+        metadata_dict["session_id"] = session_id
+        metadata_dict["is_hosted_viewer_synced"] = False
+        metadata_db.store_metadata(metadata_dict)
+
         # Handle viewer push if enabled
         if viewer_client.hosted:
-            metadata_dict = self._setup_viewer_metadata(fingerprint)
             viewer_url = self._handle_viewer_push(viewer_client, dataset, metadata_dict, working_dir)
             response.viewer_url = viewer_url
             if viewer_url:
                 logger.info(f"Curator Viewer: {viewer_url}")
+            metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
         else:
             logger.info(f"Curator Viewer: Disabled (Set CURATOR_VIEWER=1 to view at {PUBLIC_CURATOR_VIEWER_HOME_URL})")
 

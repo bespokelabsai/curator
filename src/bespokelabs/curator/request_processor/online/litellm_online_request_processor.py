@@ -5,12 +5,11 @@ from collections import defaultdict
 import aiohttp
 import instructor
 import litellm
-from pydantic import BaseModel
+from litellm import supports_response_schema
 
 from bespokelabs.curator.file_utilities import get_base64_size
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
-from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
 from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
 from bespokelabs.curator.types.generic_request import GenericRequest
@@ -133,43 +132,13 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         return litellm.supports_vision(self.config.model)
 
     def check_structured_output_support(self):
-        """Verify if the model supports structured output via instructor.
-
-        Tests the model's capability to handle structured output by making a test request
-        with a simple schema.
+        """Verify if the model supports structured output via litellm.
 
         Returns:
             bool: True if structured output is supported, False otherwise
-
-        Note:
-            - Uses a simple User schema as test case
-            - Logs detailed information about support status
-            - Required for models that will use JSON schema responses
         """
-
-        class User(BaseModel):
-            name: str
-            age: int
-
-        try:
-            response = run_in_event_loop(
-                self.client.chat.completions.create(
-                    model=self.config.model,
-                    messages=[{"role": "user", "content": "Jason is 25 years old."}],
-                    response_model=User,
-                )
-            )
-            logger.info(f"Check instructor structure output response: {response}")
-            assert isinstance(response, User)
-            logger.info(f"Model {self.config.model} supports structured output via instructor, response: {response}")
-            return True
-        except instructor.exceptions.InstructorRetryException as e:
-            if "litellm.AuthenticationError" in str(e):
-                logger.warning(f"Please provide a valid API key for model {self.config.model}.")
-                raise e
-            else:
-                logger.warning(f"Model {self.config.model} does not support structured output via instructor: {e} {type(e)} {e.__cause__}")
-                return False
+        # Check if model supports Pydantic models / json_schema
+        return supports_response_schema(model=self.config.model)
 
     def estimate_output_tokens(self) -> int:
         """Estimate the number of tokens in the model's response.

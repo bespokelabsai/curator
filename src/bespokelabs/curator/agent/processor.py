@@ -47,7 +47,15 @@ class MultiTurnAgenticProcessor:
         self.max_length = max_length
         self.seed_message = seed_message
         self.conversation_history = []
-        self.status_tracker = AgentStatusTracker(seeder_name=self.seeder.name, partner_name=self.partner.name, max_turns=self.max_length)
+
+        # Create status tracker with model information
+        self.status_tracker = AgentStatusTracker(
+            seeder_name=self.seeder.name,
+            partner_name=self.partner.name,
+            max_turns=self.max_length,
+            seeder_model=self.seeder.model_name,  # Use seeder's model for cost tracking
+            partner_model=self.partner.model_name,  # Use partner's model for cost tracking
+        )
 
     def load_cache(self, working_dir: str) -> int:
         """Load cached conversation history from a JSONL file.
@@ -67,8 +75,12 @@ class MultiTurnAgenticProcessor:
                     # Update status tracker for cached responses
                     if response.name == self.seeder.name:
                         self.status_tracker.update_turn(AgentTurn.SEEDER)
+                        if self.seeder.is_completed(response.response_message):
+                            return self.max_length
                     else:
                         self.status_tracker.update_turn(AgentTurn.PARTNER)
+                        if self.partner.is_completed(response.response_message):
+                            return self.max_length
         return len(self.conversation_history)
 
     async def run(self, working_dir: str) -> Dataset:

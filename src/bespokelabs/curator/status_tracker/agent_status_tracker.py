@@ -4,6 +4,7 @@ from dataclasses import asdict, dataclass, field
 from enum import Enum
 
 import tqdm
+from litellm import model_cost
 from rich import box
 from rich.console import Group
 from rich.live import Live
@@ -12,6 +13,7 @@ from rich.progress import BarColumn, Progress, TextColumn, TimeElapsedColumn, Ti
 from rich.table import Table
 
 from bespokelabs.curator import _CONSOLE
+from bespokelabs.curator.cost import external_model_cost
 from bespokelabs.curator.log import USE_RICH_DISPLAY, logger
 from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS
 from bespokelabs.curator.telemetry.client import TelemetryEvent, telemetry_client
@@ -48,8 +50,6 @@ class AgentStatusTracker:
         pbar (Optional[tqdm.tqdm]): Progress bar for tracking progress.
         total_tokens (_TokenUsage): Total tokens used in the conversation.
         total_cost (float): Total cost of the conversation.
-        input_cost_per_million (Optional[float]): Cost per million input tokens.
-        output_cost_per_million (Optional[float]): Cost per million output tokens.
     """
 
     seeder_name: str
@@ -66,17 +66,114 @@ class AgentStatusTracker:
     # Token and cost tracking
     total_tokens: _TokenUsage = field(default_factory=_TokenUsage)
     total_cost: float = 0.0
-    input_cost_per_million: t.Optional[float] = None
-    output_cost_per_million: t.Optional[float] = None
-    input_cost_str: str = "[dim]N/A[/dim]"
-    output_cost_str: str = "[dim]N/A[/dim]"
+
+    # Model information for both agents
+    seeder_model: str = ""
+    partner_model: str = ""
+    seeder_compatible_provider: t.Optional[str] = None
+    partner_compatible_provider: t.Optional[str] = None
+
+    # Cost tracking for both models using dictionaries
+    input_cost_per_million: dict[str, t.Optional[float]] = field(default_factory=lambda: {"seeder": None, "partner": None})
+    output_cost_per_million: dict[str, t.Optional[float]] = field(default_factory=lambda: {"seeder": None, "partner": None})
+    input_cost_str: dict[str, str] = field(
+        default_factory=lambda: {"seeder": "[dim]N/A[/dim]" if USE_RICH_DISPLAY else "N/A", "partner": "[dim]N/A[/dim]" if USE_RICH_DISPLAY else "N/A"}
+    )
+    output_cost_str: dict[str, str] = field(
+        default_factory=lambda: {"seeder": "[dim]N/A[/dim]" if USE_RICH_DISPLAY else "N/A", "partner": "[dim]N/A[/dim]" if USE_RICH_DISPLAY else "N/A"}
+    )
 
     def __post_init__(self):
         """Initialize the tracker."""
+        self.input_cost_per_million = self.input_cost_per_million or {"seeder": None, "partner": None}
+        self.output_cost_per_million = self.output_cost_per_million or {"seeder": None, "partner": None}
+
+        # Initialize model costs for both agents
+        if self.seeder_model:
+            self._initialize_model_costs(self.seeder_model, is_seeder=True)
+        if self.partner_model:
+            self._initialize_model_costs(self.partner_model, is_seeder=False)
+
         if USE_RICH_DISPLAY:
             self._start_rich_tracker()
         else:
             self._start_tqdm_tracker()
+
+    def _initialize_model_costs(self, model: str, is_seeder: bool) -> None:
+        """Initialize model costs for a specific agent.
+
+        Args:
+            model: The name of the model to get costs for.
+            is_seeder: Whether this is for the seeder agent (True) or partner agent (False).
+        """
+        agent_type = "seeder" if is_seeder else "partner"
+        try:
+            if model in model_cost:
+                model_pricing = model_cost[model]
+                self.input_cost_per_million[agent_type] = (
+                    model_pricing.get("input_cost_per_token", 0) * 1_000_000 if model_pricing.get("input_cost_per_token") is not None else None
+                )
+                self.output_cost_per_million[agent_type] = (
+                    model_pricing.get("output_cost_per_token", 0) * 1_000_000 if model_pricing.get("output_cost_per_token") is not None else None
+                )
+            else:
+                try:
+                    provider = self.seeder_compatible_provider if is_seeder else self.partner_compatible_provider
+                    external_pricing = external_model_cost(model, provider=provider)
+                    self.input_cost_per_million[agent_type] = (
+                        external_pricing.get("input_cost_per_token", 0) * 1_000_000 if external_pricing.get("input_cost_per_token") is not None else None
+                    )
+                    self.output_cost_per_million[agent_type] = (
+                        external_pricing.get("output_cost_per_token", 0) * 1_000_000 if external_pricing.get("output_cost_per_token") is not None else None
+                    )
+                except (KeyError, TypeError):
+                    self.input_cost_per_million[agent_type] = None
+                    self.output_cost_per_million[agent_type] = None
+
+            self._format_cost_strings(agent_type)
+        except Exception as e:
+            logger.warning(f"Could not determine model costs for {agent_type}: {e}")
+            self.input_cost_per_million[agent_type] = None
+            self.output_cost_per_million[agent_type] = None
+            self._format_cost_strings(agent_type)
+
+    def _format_cost_strings(self, agent_type: str) -> None:
+        """Format the cost strings based on the values.
+
+        Args:
+            agent_type: Either "seeder" or "partner"
+        """
+        if self.input_cost_per_million[agent_type] is not None:
+            if USE_RICH_DISPLAY:
+                self.input_cost_str[agent_type] = f"[red]${self.input_cost_per_million[agent_type]:.3f}[/red]"
+            else:
+                self.input_cost_str[agent_type] = f"${self.input_cost_per_million[agent_type]:.3f}"
+        else:
+            self.input_cost_str[agent_type] = "[dim]N/A[/dim]" if USE_RICH_DISPLAY else "N/A"
+
+        if self.output_cost_per_million[agent_type] is not None:
+            if USE_RICH_DISPLAY:
+                self.output_cost_str[agent_type] = f"[red]${self.output_cost_per_million[agent_type]:.3f}[/red]"
+            else:
+                self.output_cost_str[agent_type] = f"${self.output_cost_per_million[agent_type]:.3f}"
+        else:
+            self.output_cost_str[agent_type] = "[dim]N/A[/dim]" if USE_RICH_DISPLAY else "N/A"
+
+    def estimate_request_cost(self, input_tokens: int, output_tokens: int, is_seeder: bool) -> float:
+        """Estimate cost for a request based on token counts.
+
+        Args:
+            input_tokens: Number of input tokens
+            output_tokens: Number of output tokens
+            is_seeder: Whether this is for the seeder agent (True) or partner agent (False)
+
+        Returns:
+            float: Estimated cost for the request
+        """
+        agent_type = "seeder" if is_seeder else "partner"
+        input_cost = (input_tokens * (self.input_cost_per_million[agent_type] or 0)) / 1_000_000
+        output_cost = (output_tokens * (self.output_cost_per_million[agent_type] or 0)) / 1_000_000
+        return input_cost + output_cost
 
     def _start_rich_tracker(self):
         """Start the rich progress tracker."""
@@ -217,7 +314,16 @@ class AgentStatusTracker:
             f"[bold white]Cost:[/bold white] "
             f"[white]Total:[/white] [red]${self.total_cost:.3f}[/red] "
             f"[white]•[/white] "
-            f"[white]Rate:[/white] [red]${cost_per_minute:.3f}/min[/red]"
+            f"[white]Rate:[/white] [red]${cost_per_minute:.3f}/min[/red]\n"
+            f"[bold white]Model Pricing:[/bold white]\n"
+            f"  [white]Seeder ({self.seeder_model}):[/white] "
+            f"[white]Input:[/white] {self.input_cost_str['seeder']} "
+            f"[white]•[/white] "
+            f"[white]Output:[/white] {self.output_cost_str['seeder']}\n"
+            f"  [white]Partner ({self.partner_model}):[/white] "
+            f"[white]Input:[/white] {self.input_cost_str['partner']} "
+            f"[white]•[/white] "
+            f"[white]Output:[/white] {self.output_cost_str['partner']}"
         )
 
         # Update main progress bar
@@ -302,6 +408,16 @@ class AgentStatusTracker:
         elapsed_minutes = (time.time() - self.start_time) / 60
         table.add_row("Cost per Minute", f"[red]${self.total_cost / max(0.01, elapsed_minutes):.3f}[/red]")
 
+        # Model Pricing
+        table.add_row("", "")  # Empty row for spacing
+        table.add_row("Model Pricing", "", style="bold magenta")
+        table.add_row(f"Seeder ({self.seeder_model})", "")
+        table.add_row("  Input Cost per 1M Tokens", self.input_cost_str["seeder"])
+        table.add_row("  Output Cost per 1M Tokens", self.output_cost_str["seeder"])
+        table.add_row(f"Partner ({self.partner_model})", "")
+        table.add_row("  Input Cost per 1M Tokens", self.input_cost_str["partner"])
+        table.add_row("  Output Cost per 1M Tokens", self.output_cost_str["partner"])
+
         self._console.print(table)
 
     def _display_simple_final_stats(self):
@@ -332,6 +448,14 @@ class AgentStatusTracker:
             f"  Total Cost: {COST}${self.total_cost:.3f}{END}",
             f"  Average Cost per Turn: {COST}${self.total_cost / max(1, self.current_turn):.3f}{END}",
             f"  Cost per Minute: {COST}${cost_per_minute:.3f}{END}",
+            "",
+            f"{HEADER}Model Pricing:{END}",
+            f"  Seeder ({self.seeder_model}):",
+            f"    Input Cost per 1M Tokens: {COST}{self.input_cost_str['seeder']}{END}",
+            f"    Output Cost per 1M Tokens: {COST}{self.output_cost_str['seeder']}{END}",
+            f"  Partner ({self.partner_model}):",
+            f"    Input Cost per 1M Tokens: {COST}{self.input_cost_str['partner']}{END}",
+            f"    Output Cost per 1M Tokens: {COST}{self.output_cost_str['partner']}{END}",
         ]
         logger.info("\n".join(stats))
 
