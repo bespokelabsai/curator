@@ -65,7 +65,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
     @property
     def max_requests_per_batch(self) -> int:
         """The maximum number of requests that can be processed in a batch."""
-        return 2
+        return 50_000
 
     @property
     def max_bytes_per_batch(self) -> int:

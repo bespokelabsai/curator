@@ -29,7 +29,7 @@ _ONLINE_REASONING_BACKENDS = [{"integration": backend} for backend in {"anthropi
 _ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm"}]
 _ONLINE_CONCURRENT_ONLY_BACKENDS = [{"integration": backend} for backend in {"litellm/deepinfra"}]
 _FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"anthropic", "openai"}]
-_BATCH_BACKENDS = [{"integration": backend} for backend in {"openai"}]
+_BATCH_BACKENDS = [{"integration": backend} for backend in {"openai", "anthropic"}]
 
 
 class TimeoutError(Exception):
@@ -457,7 +457,10 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         assert "Failed                     │ 0" in captured, captured
 
 
-@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
+_BATCH_BACKENDS_OPENAI = [{"integration": backend} for backend in {"openai"}]
+
+
+@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS_OPENAI), indirect=True)
 def test_batch_with_auto_batch_size_1(temp_working_dir, mock_dataset):
     temp_working_dir, backend, _ = temp_working_dir
     try:
@@ -477,7 +480,7 @@ def test_batch_with_auto_batch_size_1(temp_working_dir, mock_dataset):
         assert len(requests) == len_map[i]
 
 
-@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
+@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS_OPENAI), indirect=True)
 def test_batch_with_auto_batch_size_2(temp_working_dir, mock_dataset):
     temp_working_dir, backend, _ = temp_working_dir
     try:
