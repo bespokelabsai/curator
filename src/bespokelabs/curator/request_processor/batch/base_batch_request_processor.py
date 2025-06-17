@@ -281,40 +281,12 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         Raises:
             ValueError: If configuration parameters are invalid
         """
-        if self.config.batch_size == "auto":
-            # Calculate optimal batch size based on provider limits
-            self.config.batch_size = self._calculate_optimal_batch_size()
-            logger.info(f"Auto-calculated batch size: {self.config.batch_size:,} requests per batch")
-        elif self.config.batch_size > self.max_requests_per_batch:
+        if self.config.batch_size != "auto" and self.config.batch_size > self.max_requests_per_batch:
             raise ValueError(
                 f"batch_size {self.config.batch_size} is greater than the maximum of "
                 f"{self.max_requests_per_batch:,} requests per batch that {self.__class__.__name__} supports. "
                 f"Please set your batch_size to be less than or equal to {self.max_requests_per_batch:,}."
             )
-
-    def _calculate_optimal_batch_size(self) -> int:
-        """Calculate the optimal batch size based on provider limits.
-
-        This method determines the best batch size by considering:
-        1. Maximum requests per batch allowed by the provider
-        2. Maximum bytes per batch allowed by the provider
-        3. Average request size (estimated)
-
-        Returns:
-            int: The calculated optimal batch size
-        """
-        optimal_size = self.max_requests_per_batch
-
-        # Estimate average request size (in bytes) based on typical request structure
-        # This is a conservative estimate that can be adjusted based on actual usage patterns
-        estimated_avg_request_size = 2000  # 2KB per request
-
-        max_requests_by_bytes = self.max_bytes_per_batch // estimated_avg_request_size
-
-        optimal_size = min(optimal_size, max_requests_by_bytes)
-        optimal_size = max(100, optimal_size)
-
-        return optimal_size
 
     def _attempt_loading_batch_status_tracker(self, request_files: set[str]):
         """Load existing batch status tracker or create new one.

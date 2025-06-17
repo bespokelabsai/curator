@@ -154,7 +154,13 @@ class BaseRequestProcessor(ABC):
             List of indices for request files that need to be regenerated
         """
         if isinstance(self.config, BatchRequestProcessorConfig) and dataset is not None:
-            expected_num_files = ceil(len(dataset) / self.config.batch_size)
+            if self.config.batch_size == "auto":
+                logger.warning("Batch size is set to auto, batch size is dynamically calculated, hence could not verify request files.")
+                expected_num_files = len(glob.glob(os.path.join(self.working_dir, "requests_*.jsonl")))
+                if expected_num_files == 0:
+                    return [1]
+            else:
+                expected_num_files = ceil(len(dataset) / self.config.batch_size)
         else:
             expected_num_files = 1
 
@@ -252,29 +258,70 @@ class BaseRequestProcessor(ABC):
             return request_files
 
         if isinstance(self.config, BatchRequestProcessorConfig):
-            if self.config.batch_size == "auto":
-                # Calculate optimal batch size based on actual request sizes
-                batch_size = self._calculate_optimal_batch_size(dataset)
-                logger.info(f"Auto-calculated batch size: {batch_size:,} requests per batch")
-            else:
-                batch_size = self.config.batch_size
+            batch_size = self.config.batch_size
 
-            num_batches = ceil(len(dataset) / batch_size)
-            request_files = [os.path.join(self.working_dir, f"requests_{i}.jsonl") for i in range(num_batches)]
-            metadata_files = [os.path.join(self.working_dir, f"metadata_{i}.json") for i in range(num_batches)]
+            def _get_optimal_batch_size(start_idx: int) -> int:
+                batch_size = self.max_requests_per_batch
+                while True:
+                    end_idx = min(start_idx + batch_size, len(dataset))
+                    current_dataset = dataset.select(range(start_idx, end_idx))
 
-            async def create_all_request_files():
-                tasks = [
-                    self.acreate_request_file(
-                        dataset,
-                        request_files[i],
-                        metadata_files[i],
-                        start_idx=i * batch_size,
+                    # Check if this batch would exceed size limit
+                    total_size = 0
+                    for idx, dataset_row in enumerate(current_dataset):
+                        dataset_row_idx = idx + start_idx
+                        request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, False)
+                        request_size = len(json.dumps(request.model_dump(), default=str).encode())
+                        total_size += request_size
+
+                    if total_size <= self.max_bytes_per_batch:
+                        break
+
+                    new_batch_size = int(batch_size * 0.8)
+                    if new_batch_size == batch_size:
+                        new_batch_size = max(1, batch_size - 1)
+                    batch_size = new_batch_size
+                    logger.debug(
+                        f"Reducing batch size to {batch_size:,} due to size limit. "
+                        f"Current total size: {total_size:,} bytes ({total_size / (1024 * 1024):.2f} MB), "
+                        f"Max allowed: {self.max_bytes_per_batch:,} bytes ({self.max_bytes_per_batch / (1024 * 1024):.2f} MB)"
                     )
-                    for i in range(num_batches)
-                    if i in incomplete_files
-                ]
-                await asyncio.gather(*tasks)
+                return batch_size
+
+            if batch_size == "auto":
+
+                async def create_all_request_files():
+                    tasks = []
+                    start_idx = 0
+                    idx = 0
+                    while True:
+                        batch_size = _get_optimal_batch_size(start_idx)
+                        request_file = os.path.join(self.working_dir, f"requests_{idx}.jsonl")
+                        metadata_file = os.path.join(self.working_dir, f"metadata_{idx}.json")
+                        tasks.append(self.acreate_request_file(dataset, request_file, metadata_file, start_idx=start_idx, batch_size=batch_size))
+                        start_idx += batch_size
+                        idx += 1
+                        if start_idx >= len(dataset):
+                            break
+                    await asyncio.gather(*tasks)
+
+            else:
+                num_batches = ceil(len(dataset) / batch_size)
+                request_files = [os.path.join(self.working_dir, f"requests_{i}.jsonl") for i in range(num_batches)]
+                metadata_files = [os.path.join(self.working_dir, f"metadata_{i}.json") for i in range(num_batches)]
+
+                async def create_all_request_files():
+                    tasks = [
+                        self.acreate_request_file(
+                            dataset,
+                            request_files[i],
+                            metadata_files[i],
+                            start_idx=i * batch_size,
+                        )
+                        for i in range(num_batches)
+                        if i in incomplete_files
+                    ]
+                    await asyncio.gather(*tasks)
 
             run_in_event_loop(create_all_request_files())
         else:
@@ -325,6 +372,7 @@ class BaseRequestProcessor(ABC):
         request_file: str,
         metadata_file: str,
         start_idx: int = 0,
+        batch_size: int = None,
     ) -> None:
         """Asynchronously create a request file and its metadata.
 
@@ -333,38 +381,12 @@ class BaseRequestProcessor(ABC):
             request_file: Path to save request file
             metadata_file: Path to save metadata file
             start_idx: Starting index in dataset for this batch
+            batch_size: Batch size to use for this request file
         """
         if isinstance(self.config, BatchRequestProcessorConfig):
-            if self.config.batch_size == "auto":
-                batch_size = self.max_requests_per_batch
-                while True:
-                    end_idx = min(start_idx + batch_size, len(dataset))
-                    current_dataset = dataset.select(range(start_idx, end_idx))
-
-                    # Check if this batch would exceed size limit
-                    total_size = 0
-                    for idx, dataset_row in enumerate(current_dataset):
-                        dataset_row_idx = idx + start_idx
-                        request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, False)
-                        request_size = len(json.dumps(request.model_dump(), default=str).encode())
-                        total_size += request_size
-
-                    if total_size <= self.max_bytes_per_batch:
-                        break
-
-                    new_batch_size = int(batch_size * 0.8)
-                    if new_batch_size == batch_size:
-                        new_batch_size = max(1, batch_size - 1)
-                    batch_size = new_batch_size
-                    logger.debug(
-                        f"Reducing batch size to {batch_size:,} due to size limit. "
-                        f"Current total size: {total_size:,} bytes ({total_size / (1024 * 1024):.2f} MB), "
-                        f"Max allowed: {self.max_bytes_per_batch:,} bytes ({self.max_bytes_per_batch / (1024 * 1024):.2f} MB)"
-                    )
-            else:
-                batch_size = self.config.batch_size
-                end_idx = min(start_idx + batch_size, len(dataset))
-                current_dataset = dataset.select(range(start_idx, end_idx))
+            batch_size = batch_size or self.config.batch_size
+            end_idx = min(start_idx + batch_size, len(dataset))
+            current_dataset = dataset.select(range(start_idx, end_idx))
         else:
             end_idx = len(dataset)
 
@@ -385,6 +407,7 @@ class BaseRequestProcessor(ABC):
             await f.write(json.dumps(metadata_dict, indent=4) + "\n")
 
         logger.info(f"Wrote {num_requests} requests to {request_file}.")
+        return batch_size
 
     def attempt_loading_cached_dataset(self, parse_func_hash: str) -> Optional["Dataset"]:
         """Attempt to load a cached dataset file.

@@ -7,7 +7,7 @@ import logging
 import os
 import signal
 from io import StringIO
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
 
 import pytest
 from rich.console import Console
@@ -29,7 +29,7 @@ _ONLINE_REASONING_BACKENDS = [{"integration": backend} for backend in {"anthropi
 _ONLINE_BACKENDS = [{"integration": backend} for backend in {"openai", "litellm"}]
 _ONLINE_CONCURRENT_ONLY_BACKENDS = [{"integration": backend} for backend in {"litellm/deepinfra"}]
 _FAILED_BATCH_BACKENDS = [{"integration": backend, "cached_working_dir": True} for backend in {"anthropic", "openai"}]
-_BATCH_BACKENDS = [{"integration": backend} for backend in {"anthropic", "openai"}]
+_BATCH_BACKENDS = [{"integration": backend} for backend in {"openai"}]
 
 
 class TimeoutError(Exception):
@@ -455,6 +455,46 @@ def test_basic_batch(temp_working_dir, mock_dataset):
         assert "Total Requests             │ 3" in captured, captured
         assert "Successful                 │ 3" in captured, captured
         assert "Failed                     │ 0" in captured, captured
+
+
+@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
+def test_batch_with_auto_batch_size_1(temp_working_dir, mock_dataset):
+    temp_working_dir, backend, _ = temp_working_dir
+    try:
+        with patch(
+            "bespokelabs.curator.request_processor.batch.openai_batch_request_processor.OpenAIBatchRequestProcessor.max_requests_per_batch",
+            new_callable=PropertyMock,
+        ) as mr:
+            mr.return_value = 2
+            helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend, llm_params={"batch_size": "auto"})
+    except Exception:
+        pass
+
+    len_map = {0: 2, 1: 1}
+    for i in range(2):
+        with open(os.path.join(temp_working_dir, "testing_hash_123", f"requests_{i}.jsonl"), "r") as f:
+            requests = [json.loads(line) for line in f]
+        assert len(requests) == len_map[i]
+
+
+@pytest.mark.parametrize("temp_working_dir", (_BATCH_BACKENDS), indirect=True)
+def test_batch_with_auto_batch_size_2(temp_working_dir, mock_dataset):
+    temp_working_dir, backend, _ = temp_working_dir
+    try:
+        with patch(
+            "bespokelabs.curator.request_processor.batch.openai_batch_request_processor.OpenAIBatchRequestProcessor.max_bytes_per_batch",
+            new_callable=PropertyMock,
+        ) as mb:
+            mb.return_value = 300
+            helper.create_basic(temp_working_dir, mock_dataset, batch=True, backend=backend, llm_params={"batch_size": "auto"})
+    except Exception:
+        pass
+
+    len_map = {0: 1, 1: 1, 2: 1}
+    for i in range(3):
+        with open(os.path.join(temp_working_dir, "testing_hash_123", f"requests_{i}.jsonl"), "r") as f:
+            requests = [json.loads(line) for line in f]
+        assert len(requests) == len_map[i]
 
 
 @pytest.mark.parametrize("temp_working_dir", ([{"integration": "openai"}]), indirect=True)

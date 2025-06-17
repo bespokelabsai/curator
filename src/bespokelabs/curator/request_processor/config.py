@@ -72,7 +72,7 @@ class BatchRequestProcessorConfig(RequestProcessorConfig):
         completion_window: Time window to wait for batch completion
     """
 
-    batch_size: t.Union[int, str] = Field(default=10_000, gt=0)
+    batch_size: t.Union[int, str] = Field(default=10_000)
     batch_check_interval: int = Field(default=60, gt=0)
     delete_successful_batch_files: bool = False
     delete_failed_batch_files: bool = False
@@ -161,7 +161,7 @@ class OnlineBackendParams(BaseBackendParams, total=False):
 class BatchBackendParams(BaseBackendParams, total=False):
     """TypedDict for batch processor."""
 
-    batch_size: t.Optional[int]
+    batch_size: t.Optional[t.Union[int, str]]
     batch_check_interval: t.Optional[int]
     delete_successful_batch_files: t.Optional[bool]
     delete_failed_batch_files: t.Optional[bool]
