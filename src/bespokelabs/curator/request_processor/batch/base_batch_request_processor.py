@@ -281,7 +281,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         Raises:
             ValueError: If configuration parameters are invalid
         """
-        if self.config.batch_size > self.max_requests_per_batch:
+        if self.config.batch_size != "auto" and self.config.batch_size > self.max_requests_per_batch:
             raise ValueError(
                 f"batch_size {self.config.batch_size} is greater than the maximum of "
                 f"{self.max_requests_per_batch:,} requests per batch that {self.__class__.__name__} supports. "

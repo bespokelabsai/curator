@@ -64,18 +64,24 @@ class BatchRequestProcessorConfig(RequestProcessorConfig):
     Extends the base RequestProcessorConfig with batch-specific parameters.
 
     Attributes:
-        batch_size: Maximum number of requests to process in a single batch
+        batch_size: Maximum number of requests to process in a single batch. Can be an integer or "auto".
+            If "auto", the batch size will be automatically determined based on the provider's limits.
         batch_check_interval: Time in seconds between batch status checks
         delete_successful_batch_files: Whether to delete batch files after successful processing
         delete_failed_batch_files: Whether to delete batch files after failed processing
         completion_window: Time window to wait for batch completion
     """
 
-    batch_size: int = Field(default=10_000, gt=0)
+    batch_size: t.Union[int, str] = Field(default=10_000)
     batch_check_interval: int = Field(default=60, gt=0)
     delete_successful_batch_files: bool = False
     delete_failed_batch_files: bool = False
     completion_window: str = "24h"
+
+    def __post_init__(self):
+        """Post-initialization hook to validate batch size."""
+        if isinstance(self.batch_size, str) and self.batch_size != "auto":
+            raise ValueError('batch_size must be either an integer or "auto"')
 
 
 class OnlineRequestProcessorConfig(RequestProcessorConfig):
@@ -155,7 +161,7 @@ class OnlineBackendParams(BaseBackendParams, total=False):
 class BatchBackendParams(BaseBackendParams, total=False):
     """TypedDict for batch processor."""
 
-    batch_size: t.Optional[int]
+    batch_size: t.Optional[t.Union[int, str]]
     batch_check_interval: t.Optional[int]
     delete_successful_batch_files: t.Optional[bool]
     delete_failed_batch_files: t.Optional[bool]
