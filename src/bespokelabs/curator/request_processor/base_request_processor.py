@@ -262,18 +262,22 @@ class BaseRequestProcessor(ABC):
 
             def _get_optimal_batch_size(start_idx: int) -> int:
                 batch_size = self.max_requests_per_batch
-                while True:
-                    end_idx = min(start_idx + batch_size, len(dataset))
-                    current_dataset = dataset.select(range(start_idx, end_idx))
+                end_idx = min(start_idx + batch_size, len(dataset))
+                current_dataset = dataset.select(range(start_idx, end_idx))
 
-                    # Check if this batch would exceed size limit
+                batch_sizes = []
+                for idx, dataset_row in enumerate(current_dataset):
+                    dataset_row_idx = idx + start_idx
+                    request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, False)
+                    request_size = len(json.dumps(request.model_dump(), default=str).encode())
+                    batch_sizes.append(request_size)
+
+                while True:
                     total_size = 0
-                    for idx, dataset_row in enumerate(current_dataset):
-                        dataset_row_idx = idx + start_idx
-                        request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, False)
-                        request_size = len(json.dumps(request.model_dump(), default=str).encode())
+                    for request_size in batch_sizes[:batch_size]:
                         total_size += request_size
 
+                    # Check if this batch would exceed size limit
                     if total_size <= self.max_bytes_per_batch:
                         break
 
