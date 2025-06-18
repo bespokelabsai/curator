@@ -264,32 +264,17 @@ class BaseRequestProcessor(ABC):
                 batch_size = self.max_requests_per_batch
                 end_idx = min(start_idx + batch_size, len(dataset))
                 current_dataset = dataset.select(range(start_idx, end_idx))
-
-                batch_sizes = []
+                batch_size_bytes = 0
                 for idx, dataset_row in enumerate(current_dataset):
                     dataset_row_idx = idx + start_idx
                     request = self.prompt_formatter.create_generic_request(dataset_row, dataset_row_idx, False)
                     request_size = len(json.dumps(request.model_dump(), default=str).encode())
-                    batch_sizes.append(request_size)
-
-                while True:
-                    total_size = 0
-                    for request_size in batch_sizes[:batch_size]:
-                        total_size += request_size
-
-                    # Check if this batch would exceed size limit
-                    if total_size <= self.max_bytes_per_batch:
+                    if batch_size_bytes + request_size >= self.max_bytes_per_batch:
+                        batch_size = idx
                         break
+                    else:
+                        batch_size_bytes += request_size
 
-                    new_batch_size = int(batch_size * 0.8)
-                    if new_batch_size == batch_size:
-                        new_batch_size = max(1, batch_size - 1)
-                    batch_size = new_batch_size
-                    logger.debug(
-                        f"Reducing batch size to {batch_size:,} due to size limit. "
-                        f"Current total size: {total_size:,} bytes ({total_size / (1024 * 1024):.2f} MB), "
-                        f"Max allowed: {self.max_bytes_per_batch:,} bytes ({self.max_bytes_per_batch / (1024 * 1024):.2f} MB)"
-                    )
                 return batch_size
 
             if batch_size == "auto":
