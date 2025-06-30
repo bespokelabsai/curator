@@ -96,6 +96,7 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
         max_output_tokens_per_minute: Maximum number of output tokens allowed per minute
         max_concurrent_requests: Maximum number of concurrent requests
         seconds_to_pause_on_rate_limit: Duration to pause when rate limit is hit
+        stream: Whether to stream the response in case of reasoning models (Note: Only supported for `openai` online backend.)
     """
 
     max_requests_per_minute: int | None = Field(default=None, gt=0)
