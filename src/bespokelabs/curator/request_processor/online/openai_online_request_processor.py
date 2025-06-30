@@ -117,7 +117,7 @@ async def fetch_response_streamed(session, *, url, headers, payload, timeout, lo
         "logprobs": None,
         }]
     body["object"] = "chat.completion"
-    body["usage"] = usage
+    body["usage"] = usage or body["usage"]
     return body
 
 
@@ -167,6 +167,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
             self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
         self.token_encoding = self.get_token_encoding()
+        if getattr(self.config, "stream"):
+            logger.info("Stream mode on.")
 
     @property
     def backend(self):
