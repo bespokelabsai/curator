@@ -106,16 +106,18 @@ async def fetch_response_streamed(session, *, url, headers, payload, timeout, lo
                 if parsed["choices"][0].get("finish_reason", None) is not None:
                     finish_reason = parsed["choices"][0]["finish_reason"]
 
-    body["choices"] = [{
-        "message": {
-            "content": content,
-            "reasoning_content": reasoning_content,
-            "role": "assistant",
+    body["choices"] = [
+        {
+            "message": {
+                "content": content,
+                "reasoning_content": reasoning_content,
+                "role": "assistant",
             },
-        "finish_reason": finish_reason,
-        "index": 0,
-        "logprobs": None,
-        }]
+            "finish_reason": finish_reason,
+            "index": 0,
+            "logprobs": None,
+        }
+    ]
     body["object"] = "chat.completion"
     body["usage"] = usage or body["usage"]
     return body
@@ -167,7 +169,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
             self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
         self.token_encoding = self.get_token_encoding()
-        if getattr(self.config, "stream"):
+        if self.config.stream:
             logger.info("Stream mode on.")
 
     @property
