@@ -312,7 +312,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     def aiohttp_connector(self, tcp_limit: int) -> aiohttp.ClientSession:
         """Create an aiohttp connector with rate limiting."""
         connector = aiohttp.TCPConnector(limit=10 * tcp_limit)
-        return aiohttp.ClientSession(connector=connector)
+        return aiohttp.ClientSession(connector=connector,trust_env=True)
 
     async def process_requests_from_file(
         self,
