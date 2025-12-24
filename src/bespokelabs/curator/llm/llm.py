@@ -210,7 +210,7 @@ class LLM:
             system_prompt = self.system_prompt
             logger.info(f"Starting prompt optimization from provided system prompt: {self.system_prompt}")
 
-        logging.getLogger("dspy").setLevel(logging.CRITICAL)
+        logging.getLogger("dspy").setLevel(logging.ERROR)
 
         dspy.configure(lm=dspy.LM(self.model_name))
         

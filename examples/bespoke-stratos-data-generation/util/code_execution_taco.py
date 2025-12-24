@@ -5,36 +5,50 @@ Code from https://github.com/NovaSky-AI/SkyThought/blob/e855aad095f4eeee00ba6a90
 
 import multiprocessing
 import re
+import traceback
 from multiprocessing import Pool
 
 import numpy as np
-import timeout_decorator
 from datasets import Dataset
 from tqdm import tqdm
 from util.testing.taco import run_test as taco_run_test
 
 
-@timeout_decorator.timeout(10)
-def run_test_with_timeout(problem, generation):
-    """Run the test with a timeout."""
+# 'fork' copies the parent process memory, so functions don't need to be pickled
+# and child processes can use signals (each child is main thread of its process)
+_mp_context = multiprocessing.get_context('fork')
+
+
+def _run_test_worker(args):
+    """Worker function for process pool. Takes tuple (problem, generation)."""
+    problem, generation = args
     try:
         result = taco_run_test(problem, test=generation, debug=False)
-        return bool(result and np.all(result))
+        is_correct = bool(result and np.all(result))
+        if is_correct:
+            return True, ""
+        else:
+            return False, f"Code is incorrect. Result: {result}"
     except Exception as e:
-        print(f"Exception in run_test_with_timeout: {e}")
-        return False
+        return False, f"Exception: {str(e)}\n{traceback.format_exc()}"
 
 
-def check_correctness(problem, generation):
-    """Check if the code is correct."""
+def check_correctness(problem, generation, timeout=10):
+    """Run the test with a timeout using a separate process.
+    
+    Uses fork context so the child process can use signals internally.
+    Works from both main thread and worker threads (e.g., GEPA optimization).
+    """
     try:
-        return run_test_with_timeout(problem, generation)
-    except timeout_decorator.TimeoutError:
-        print("Test execution timed out")
-        return False
+        with _mp_context.Pool(processes=1) as pool:
+            async_result = pool.apply_async(_run_test_worker, ((problem, generation),))
+            try:
+                return async_result.get(timeout=timeout)
+            except multiprocessing.TimeoutError:
+                pool.terminate()
+                return False, "Test execution timed out"
     except Exception as e:
-        print(f"Error in check_correctness: {e}")
-        return False
+        return False, f"Process error: {str(e)}\n{traceback.format_exc()}"
 
 
 def has_code(response: str) -> list:
@@ -52,6 +66,10 @@ def has_code(response: str) -> list:
 
 def process_single_row(row: dict) -> dict:
     """Process a single row of the dataset.
+    
+    Called from Pool workers in process_dataset_parallel.
+    Since Pool workers are forked processes, we call _run_test_worker directly
+    (taco_run_test has its own signal-based timeout).
 
     Args:
         row (dict): Dataset row containing solution and metadata
@@ -66,13 +84,9 @@ def process_single_row(row: dict) -> dict:
             return {**row, "correctness": False, "reason": "Does not contain code component."}
 
         last_code = code_blocks[-1]
-        if check_correctness(row, last_code):
-            row["correctness"] = True
-            row["reason"] = ""
-        else:
-            row["correctness"] = False
-            row["reason"] = "Code is incorrect."
-
+        # Call _run_test_worker directly - we're in a forked process, signals work,
+        # and taco_run_test has its own timeout handling
+        row["correctness"], row["reason"] = _run_test_worker((row, last_code))
         return row
 
     except Exception as e:

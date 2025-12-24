@@ -171,7 +171,9 @@ except ImportError:
     IPython = None
 else:
     # Replace IPython's argspec
-    oipyargspec = IPython.core.oinspect.getargspec
+    # oipyargspec = IPython.core.oinspect.getargspec
+    import inspect
+    oipyargspec = inspect.getfullargspec
 
     def _ipyargspec(func):
         return __targspec(func, oipyargspec, "__orig_arg_ipy__")
