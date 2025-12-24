@@ -173,6 +173,7 @@ else:
     # Replace IPython's argspec
     # oipyargspec = IPython.core.oinspect.getargspec
     import inspect
+
     oipyargspec = inspect.getfullargspec
 
     def _ipyargspec(func):

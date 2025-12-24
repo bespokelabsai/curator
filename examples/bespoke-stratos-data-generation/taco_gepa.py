@@ -5,15 +5,17 @@ import copy
 import json
 import multiprocessing
 import re
-import numpy as np
 import resource
-import dspy
-
 from multiprocessing import Manager
-from bespokelabs import curator
+
+import dspy
+import numpy as np
 from datasets import load_dataset
-from util.code_execution_taco import process_single_row, process_dataset_parallel
+from util.code_execution_taco import process_dataset_parallel, process_single_row
 from util.prompt import SKY_T1_SYSTEM_PROMPT, generate_prompt
+
+from bespokelabs import curator
+
 
 class TACOCurator(curator.LLM):
     """Curator class for processing TACO (Testing Algorithmic Coding prOblems) dataset.
@@ -36,6 +38,7 @@ class TACOCurator(curator.LLM):
         input["deepseek_solution"] = response["choices"][0]["message"]["content"]
         return input
 
+
 def metric_fn(example, pred, trace=None, pred_name=None, pred_trace=None):
     """Metric function to evaluate correctness of generated code."""
     try:
@@ -47,6 +50,7 @@ def metric_fn(example, pred, trace=None, pred_name=None, pred_trace=None):
         print(f"Error in metric_fn: {e}")
         return False
 
+
 if __name__ == "__main__":
     # Set up command line arguments
     args = argparse.ArgumentParser()
@@ -54,9 +58,8 @@ if __name__ == "__main__":
     args.add_argument("--optimize_prompt", action="store_true")
     args = args.parse_args()
 
-    # Initialize curator with GPT-4o-mini model
-    curator = TACOCurator(model_name="gpt-4o-mini-2024-07-18",
-                        system_prompt=SKY_T1_SYSTEM_PROMPT)
+    # Initialize curator with GPT-4o model
+    curator = TACOCurator(model_name="gpt-4o-2024-08-06", system_prompt=SKY_T1_SYSTEM_PROMPT)
 
     # Load and filter TACO dataset based on split
     if args.split == "train":
@@ -65,28 +68,23 @@ if __name__ == "__main__":
     else:
         taco_dataset = load_dataset("BAAI/TACO", trust_remote_code=True)[args.split]
 
-    # TEMPORARY: Select a subset of examples.
-    taco_dataset = taco_dataset.select(range(45))
+    # Select a subset of examples to experiment with.
+    taco_dataset = taco_dataset.shuffle(seed=79).select(range(200))
 
     if args.optimize_prompt:
-        train_dataset = [
-            dspy.Example(
-                prompt=curator.prompt(row),
-                row=row
-            ).with_inputs("prompt")
-            for row in taco_dataset.select(range(10))
-        ]
+        # Choose small subset of training data for prompt optimization.
+        train_dataset = [dspy.Example(prompt=curator.prompt(row), row=row).with_inputs("prompt") for row in taco_dataset.select(range(50))]
 
-        # Optimize system prompt using GEPA
+        # Optimize system prompt using GEPA.
+        # These arguments are meant for DSPY's GEPA implementation.
         curator.optimize_system_prompt(
             metric=metric_fn,
             train_dataset=train_dataset,
-            # auto="light",
-            max_metric_calls=50,
+            max_metric_calls=150,
             num_threads=32,
             track_stats=True,
-            reflection_minibatch_size=5,
-            reflection_lm=dspy.LM(model="gpt-4o-mini-2024-07-18", temperature=1.0, max_tokens=32000)
+            reflection_minibatch_size=25,
+            reflection_lm=dspy.LM(model="gpt-5", temperature=1.0, max_tokens=32000),  # strong reflection model
         )
 
     # Generate solutions using curator

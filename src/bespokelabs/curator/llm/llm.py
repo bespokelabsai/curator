@@ -1,14 +1,14 @@
 """Curator: Bespoke Labs Synthetic Data Generation Library."""
 
 import inspect
-import os
-import dspy
 import logging
+import os
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar, Union
 
+import dspy
 from datasets import Dataset
 from pydantic import BaseModel
 from xxhash import xxh64
@@ -126,7 +126,7 @@ class LLM:
 
         if response_format is not None:
             self.response_format = response_format
-       
+
         self.batch_mode = batch
         self.prompt_formatter = self.create_prompt_formatter()
 
@@ -139,8 +139,12 @@ class LLM:
             generation_params=self._generation_params,
             return_completions_object=self.return_completions_object,
         )
-    
+
     def create_prompt_formatter(self):
+        """Create a PromptFormatter for this LLM.
+
+        This is a separate method so that it can be re-created if the system prompt changes.
+        """
         return PromptFormatter(
             model_name=self.model_name,
             prompt_func=self.prompt,
@@ -193,14 +197,17 @@ class LLM:
             logger.warning(f"Failed to load curator cached response: {e}")
             return None
 
+    def optimize_system_prompt(self, metric: callable, train_dataset: Dataset, **kwargs):
+        """Optimize and set the LLM's system prompt using dspy.GEPA.
 
-    def optimize_system_prompt(
-        self, 
-        metric: callable,
-        train_dataset: Dataset,
-        **kwargs
-    ):
-        """Optimize the system prompt using GEPA."""
+        Args:
+            metric: Higher-is-better scoring function used by GEPA during search.
+            train_dataset: Training dataset of examples for prompt optimization.
+            **kwargs: Additional dspy.GEPA configuration (e.g., steps, seed, budget).
+
+        Side effects:
+            Updates ``self.system_prompt`` with the optimized instructions.
+        """
         logger.debug("Using dspy.GEPA to optimize system prompt")
 
         if self.system_prompt is None:
@@ -213,26 +220,18 @@ class LLM:
         logging.getLogger("dspy").setLevel(logging.ERROR)
 
         dspy.configure(lm=dspy.LM(self.model_name))
-        
+
         class GEPAProgram(dspy.Module):
             def __init__(self):
                 super().__init__()
-                self.predict = dspy.Predict(
-                    dspy.Signature(
-                        "prompt -> output",
-                        instructions=system_prompt
-                    )
-                )
+                self.predict = dspy.Predict(dspy.Signature("prompt -> output", instructions=system_prompt))
 
             def forward(self, prompt):
                 prediction = self.predict(prompt=prompt)
                 return dspy.Prediction(output=prediction.output)
-            
+
         # Instantiate the dspy GEPA optimizer
-        optimizer = dspy.GEPA(
-            metric=metric,
-            **kwargs
-        )
+        optimizer = dspy.GEPA(metric=metric, **kwargs)
 
         optimized_program = optimizer.compile(
             GEPAProgram(),
@@ -241,7 +240,6 @@ class LLM:
 
         self.system_prompt = optimized_program.predict.signature.instructions
         logger.info(f"Optimized system prompt: {self.system_prompt}")
-
 
     def __call__(
         self,
@@ -266,7 +264,7 @@ class LLM:
         # We convert from iterable to Dataset because Dataset has random access via row_idx
         if dataset:
             dataset = _convert_to_dataset(dataset)
-        
+
         # Re-create the prompt formatter to reflect any changes to system prompt
         self.prompt_formatter = self.create_prompt_formatter()
 
