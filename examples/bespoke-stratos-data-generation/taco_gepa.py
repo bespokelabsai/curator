@@ -43,7 +43,7 @@ def metric_fn(example, pred, trace=None, pred_name=None, pred_trace=None):
         return dspy.Prediction(score=score, feedback=code_check.get("reason", ""))
     except Exception as e:
         print(f"Error in metric_fn: {e}")
-        return False
+        return dspy.Prediction(score=0, feedback="Exception during evaluation")
 
 
 if __name__ == "__main__":
