@@ -168,6 +168,7 @@ class LLM:
                     str(self.prompt_formatter.model_name),
                     str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
                     str(self.batch_mode),
+                    str(self.system_prompt or ""),
                 ]
             )
 
@@ -211,8 +212,8 @@ class LLM:
         logger.debug("Using dspy.GEPA to optimize system prompt")
 
         if self.system_prompt is None:
-            system_prompt = ""
-            logger.info("No system prompt provided, starting from empty prompt for optimization.")
+            system_prompt = "You are an assistant."
+            logger.info(f"No system prompt provided, using '{system_prompt}' as starting point.")
         else:
             system_prompt = self.system_prompt
             logger.info(f"Starting prompt optimization from provided system prompt: {self.system_prompt}")

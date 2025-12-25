@@ -1,15 +1,10 @@
 """Curate data using curator on the APPS dataset."""
 
 import argparse
-import copy
 import json
-import multiprocessing
-import re
 import resource
-from multiprocessing import Manager
 
 import dspy
-import numpy as np
 from datasets import load_dataset
 from util.code_execution_taco import process_dataset_parallel, process_single_row
 from util.prompt import SKY_T1_SYSTEM_PROMPT, generate_prompt
