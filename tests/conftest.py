@@ -7,6 +7,7 @@ import vcr
 from datasets import Dataset
 
 os.environ["TELEMETRY_ENABLED"] = "false"
+os.environ["CURATOR_VIEWER"] = "false"
 mode = os.environ.get("VCR_MODE", None)
 _KEY_MAP = {
     "openai": "OPENAI_API_KEY",
