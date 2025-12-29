@@ -20,7 +20,16 @@ T = TypeVar("T")
 
 _DEFAULT_ANTHROPIC_URL: str = "https://api.anthropic.com/v1/messages"
 
-_ANTHROPIC_MULTIMODAL_SUPPORTED_MODELS = {"claude-3", "claude-3-sonnet", "claude-3-haiku", "claude-3-opus"}
+_ANTHROPIC_MULTIMODAL_SUPPORTED_MODELS = {
+    "claude-3",
+    "claude-3-sonnet",
+    "claude-3-haiku",
+    "claude-3-opus",
+    # Claude 4.5 models use new naming pattern: claude-{model}-4-5
+    "claude-sonnet-4",
+    "claude-haiku-4",
+    "claude-opus-4",
+}
 _ANTHROPIC_ALLOWED_IMAGE_SIZE_MB = 20  # MB
 
 
@@ -223,7 +232,15 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
             request["system"] = request.get("system", "") + "\nYou must respond in JSON format matching this schema: " + str(generic_request.response_format)
             # Anthropic has native JSON response format in Claude 3.5 and above
             # For those models, we should use the native format
-            if "claude-3.5" in generic_request.model or "claude-3-5" in generic_request.model:
+            model = generic_request.model
+            supports_json = (
+                "claude-3.5" in model
+                or "claude-3-5" in model
+                or "claude-3.7" in model
+                or "claude-3-7" in model
+                or "-4-" in model  # All Claude 4.x models (4.0, 4.1, 4.5, etc.)
+            )
+            if supports_json:
                 request["response_format"] = {"type": "json_schema", "schema": generic_request.response_format}
 
         # Handle thinking parameter if provided
