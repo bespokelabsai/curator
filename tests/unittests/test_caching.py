@@ -191,23 +191,26 @@ def test_disable_cache(tmp_path, temp_working_dir):
 
     os.environ["CURATOR_DISABLE_CACHE"] = "true"
 
-    prompter = curator.LLM(model_name="gpt-4o-mini")
+    try:
+        prompter = curator.LLM(model_name="gpt-4o-mini")
 
-    # Run twice and store results
-    with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        result1 = prompter(["Say '1'. Do not explain."], working_dir=str(tmp_path)).dataset
+        # Run twice and store results
+        with vcr_config.use_cassette("basic_diff_cache.yaml"):
+            result1 = prompter(["Say '1'. Do not explain."], working_dir=str(tmp_path)).dataset
 
-    with vcr_config.use_cassette("basic_diff_cache.yaml"):
-        result2 = prompter(["Say '1'. Do not explain."], working_dir=str(tmp_path)).dataset
+        with vcr_config.use_cassette("basic_diff_cache.yaml"):
+            result2 = prompter(["Say '1'. Do not explain."], working_dir=str(tmp_path)).dataset
 
-    # Verify both runs produced the expected output
-    assert result1.to_pandas().iloc[0]["response"] == "1"
-    assert result2.to_pandas().iloc[0]["response"] == "1"
+        # Verify both runs produced the expected output
+        assert result1.to_pandas().iloc[0]["response"] == "1"
+        assert result2.to_pandas().iloc[0]["response"] == "1"
 
-    # Check cache directory, excluding metadata.db
-    cache_dirs = [d for d in tmp_path.glob("*") if d.name != "metadata.db"]
+        # Check cache directory, excluding metadata.db
+        cache_dirs = [d for d in tmp_path.glob("*") if d.name != "metadata.db"]
 
-    # Should have exactly 2 different cache directories
-    assert len(cache_dirs) == 2
-    # All directories should be different (no duplicates)
-    assert len({str(d) for d in cache_dirs}) == 2
+        # Should have exactly 2 different cache directories
+        assert len(cache_dirs) == 2
+        # All directories should be different (no duplicates)
+        assert len({str(d) for d in cache_dirs}) == 2
+    finally:
+        os.environ.pop("CURATOR_DISABLE_CACHE", None)

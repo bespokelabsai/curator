@@ -1,8 +1,20 @@
 import os
 
+import pytest
 import vcr
 
 from bespokelabs.curator.utils import load_dataset, push_to_viewer
+
+
+@pytest.fixture(autouse=True)
+def reset_curator_viewer_env():
+    """Reset CURATOR_VIEWER to false after each test to avoid affecting other tests."""
+    original_value = os.environ.get("CURATOR_VIEWER")
+    yield
+    if original_value is not None:
+        os.environ["CURATOR_VIEWER"] = original_value
+    else:
+        os.environ.pop("CURATOR_VIEWER", None)
 
 
 def test_smoke(mock_dataset):
