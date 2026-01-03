@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import zipfile
@@ -5,6 +6,8 @@ import zipfile
 import pytest
 import vcr
 from datasets import Dataset
+
+logger = logging.getLogger(__name__)
 
 os.environ["TELEMETRY_ENABLED"] = "false"
 os.environ["CURATOR_VIEWER"] = "false"
@@ -77,3 +80,12 @@ def mock_reasoning_dataset():
 def camel_gt_dataset():
     dataset = Dataset.from_parquet("tests/integrations/common_fixtures/camel_gt_dataset.parquet")
     yield dataset
+
+
+def importorskip(modname: str, minversion: str | None = None, reason: str | None = None):
+    """Wrapper around pytest.importorskip that logs a warning when skipping."""
+    try:
+        return pytest.importorskip(modname, minversion=minversion, reason=reason)
+    except pytest.skip.Exception:
+        logger.warning(f"Skipping test: module '{modname}' is not available")
+        raise

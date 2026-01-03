@@ -233,14 +233,8 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
             # Anthropic has native JSON response format in Claude 3.5 and above
             # For those models, we should use the native format
             model = generic_request.model
-            supports_json = (
-                "claude-3.5" in model
-                or "claude-3-5" in model
-                or "claude-3.7" in model
-                or "claude-3-7" in model
-                or "-4-" in model  # All Claude 4.x models (4.0, 4.1, 4.5, etc.)
-            )
-            if supports_json:
+            json_supported_patterns = ("claude-3.5", "claude-3-5", "claude-3.7", "claude-3-7", "-4-")
+            if any(pattern in model for pattern in json_supported_patterns):
                 request["response_format"] = {"type": "json_schema", "schema": generic_request.response_format}
 
         # Handle thinking parameter if provided
