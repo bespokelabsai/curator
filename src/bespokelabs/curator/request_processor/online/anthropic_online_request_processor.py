@@ -20,16 +20,13 @@ T = TypeVar("T")
 
 _DEFAULT_ANTHROPIC_URL: str = "https://api.anthropic.com/v1/messages"
 
-_ANTHROPIC_MULTIMODAL_SUPPORTED_MODELS = {
+# Prefixes for models that support multimodal (image) input
+_MULTIMODAL_SUPPORTED_PREFIXES = (
     "claude-3",
-    "claude-3-sonnet",
-    "claude-3-haiku",
-    "claude-3-opus",
-    # Claude 4.5 models use new naming pattern: claude-{model}-4-5
     "claude-sonnet-4",
     "claude-haiku-4",
     "claude-opus-4",
-}
+)
 _ANTHROPIC_ALLOWED_IMAGE_SIZE_MB = 20  # MB
 
 
@@ -210,7 +207,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
     @property
     def _multimodal_prompt_supported(self) -> bool:
         """Check if the model supports multimodal prompts."""
-        return any(model_prefix in self.config.model for model_prefix in _ANTHROPIC_MULTIMODAL_SUPPORTED_MODELS)
+        return any(prefix in self.config.model for prefix in _MULTIMODAL_SUPPORTED_PREFIXES)
 
     def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
         """Create an Anthropic-specific request from a generic request.
