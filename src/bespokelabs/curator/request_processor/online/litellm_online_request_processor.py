@@ -45,8 +45,8 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
     def __init__(self, config: OnlineRequestProcessorConfig):
         """Initialize the LiteLLMOnlineRequestProcessor."""
         super().__init__(config)
-        if self.config.base_url is not None:
-            litellm.api_base = self.config.base_url
+        # NOTE: Removed global litellm.api_base assignment - now passed per-request
+        # to allow multiple LLM instances with different base_urls
         self.client = instructor.from_litellm(litellm.acompletion)
         self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
 
@@ -185,6 +185,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         completion = litellm.completion(
             model=self.config.model,
             messages=[{"role": "user", "content": "hi"}],  # Some models (e.g. Claude) require an non-empty message to get rate limits.
+            api_base=self.config.base_url,  # Pass api_base per-request
             **self.config.generation_params,
         )
         # Try the method of caculating cost
@@ -251,6 +252,10 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
         for key, value in generic_request.generation_params.items():
             request[key] = value
+
+        # Pass api_base per-request instead of globally
+        if self.config.base_url is not None:
+            request["api_base"] = self.config.base_url
 
         # Add safety settings for Gemini models
         if "gemini" in generic_request.model.lower():
