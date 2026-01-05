@@ -1,12 +1,14 @@
 """Curator: Bespoke Labs Synthetic Data Generation Library."""
 
 import inspect
+import logging
 import os
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar, Union
 
+import dspy
 from datasets import Dataset
 from pydantic import BaseModel
 from xxhash import xxh64
@@ -118,21 +120,15 @@ class LLM:
                     - batch_size: The size of the batch to use, only used if batch is True
             system_prompt: The system prompt to use for the LLM
         """
-        generation_params = generation_params or {}
+        self._generation_params = generation_params or {}
         self.model_name = model_name
+        self.system_prompt = system_prompt
 
         if response_format is not None:
             self.response_format = response_format
 
-        self.prompt_formatter = PromptFormatter(
-            model_name=model_name,
-            prompt_func=self.prompt,
-            parse_func=self.parse,
-            response_format=self.response_format,
-            generation_params=_remove_none_values(generation_params),
-            system_prompt=system_prompt,
-        )
         self.batch_mode = batch
+        self.prompt_formatter = self.create_prompt_formatter()
 
         self._request_processor = _RequestProcessorFactory.create(
             params=backend_params,
@@ -140,8 +136,22 @@ class LLM:
             batch=batch,
             response_format=response_format,
             backend=backend,
-            generation_params=generation_params,
+            generation_params=self._generation_params,
             return_completions_object=self.return_completions_object,
+        )
+
+    def create_prompt_formatter(self):
+        """Create a PromptFormatter for this LLM.
+
+        This is a separate method so that it can be re-created if the system prompt changes.
+        """
+        return PromptFormatter(
+            model_name=self.model_name,
+            prompt_func=self.prompt,
+            parse_func=self.parse,
+            response_format=self.response_format,
+            generation_params=_remove_none_values(self._generation_params),
+            system_prompt=self.system_prompt,
         )
 
     def _hash_fingerprint(self, dataset_hash: str = "", disable_cache: bool = False):
@@ -158,6 +168,7 @@ class LLM:
                     str(self.prompt_formatter.model_name),
                     str(self.prompt_formatter.response_format.model_json_schema() if self.prompt_formatter.response_format else "text"),
                     str(self.batch_mode),
+                    str(self.system_prompt or ""),
                 ]
             )
 
@@ -187,6 +198,50 @@ class LLM:
             logger.warning(f"Failed to load curator cached response: {e}")
             return None
 
+    def optimize_system_prompt(self, metric: callable, train_dataset: Dataset, **kwargs):
+        """Optimize and set the LLM's system prompt using dspy.GEPA.
+
+        Args:
+            metric: Higher-is-better scoring function used by GEPA during search.
+            train_dataset: Training dataset of examples for prompt optimization.
+            **kwargs: Additional dspy.GEPA configuration (e.g., steps, seed, budget).
+
+        Side effects:
+            Updates ``self.system_prompt`` with the optimized instructions.
+        """
+        logger.debug("Using dspy.GEPA to optimize system prompt")
+
+        if self.system_prompt is None:
+            system_prompt = "You are an assistant."
+            logger.info(f"No system prompt provided, using '{system_prompt}' as starting point.")
+        else:
+            system_prompt = self.system_prompt
+            logger.info(f"Starting prompt optimization from provided system prompt: {self.system_prompt}")
+
+        logging.getLogger("dspy").setLevel(logging.ERROR)
+
+        dspy.configure(lm=dspy.LM(self.model_name))
+
+        class GEPAProgram(dspy.Module):
+            def __init__(self):
+                super().__init__()
+                self.predict = dspy.Predict(dspy.Signature("prompt -> output", instructions=system_prompt))
+
+            def forward(self, prompt):
+                prediction = self.predict(prompt=prompt)
+                return dspy.Prediction(output=prediction.output)
+
+        # Instantiate the dspy GEPA optimizer
+        optimizer = dspy.GEPA(metric=metric, **kwargs)
+
+        optimized_program = optimizer.compile(
+            GEPAProgram(),
+            trainset=train_dataset,
+        )
+
+        self.system_prompt = optimized_program.predict.signature.instructions
+        logger.info(f"Optimized system prompt: {self.system_prompt}")
+
     def __call__(
         self,
         dataset: Optional[Iterable | CuratorResponse] = None,
@@ -210,6 +265,9 @@ class LLM:
         # We convert from iterable to Dataset because Dataset has random access via row_idx
         if dataset:
             dataset = _convert_to_dataset(dataset)
+
+        # Re-create the prompt formatter to reflect any changes to system prompt
+        self.prompt_formatter = self.create_prompt_formatter()
 
         dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
 
