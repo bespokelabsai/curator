@@ -2,6 +2,7 @@
 import pytest
 
 from bespokelabs import curator
+from tests.conftest import importorskip
 
 
 @pytest.mark.asyncio
@@ -32,7 +33,7 @@ print(f"You entered: {input_value}")
 @pytest.mark.asyncio
 async def test_simple_code_execution_ray():
     """Test simple code execution with basic input/output."""
-    pytest.importorskip("ray")
+    importorskip("ray")
 
     # Initialize backend
     class TestCodeExecutor(curator.CodeExecutor):
