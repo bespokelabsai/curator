@@ -14,6 +14,7 @@ from rich.console import Console
 
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.generic_response import GenericRequest, GenericResponse
+from tests.conftest import importorskip
 from tests.integrations import helper
 
 ##############################
@@ -565,7 +566,7 @@ def test_failed_requests_file_in_cache(temp_working_dir, mock_dataset):
 @pytest.mark.parametrize("temp_working_dir", ([{"integration": "vllm"}]), indirect=True)
 def test_basic_offline(temp_working_dir, mock_dataset):
     """Test basic completion with VLLM backend"""
-    pytest.importorskip("vllm")
+    importorskip("vllm")
     temp_working_dir, _, _ = temp_working_dir
 
     import json

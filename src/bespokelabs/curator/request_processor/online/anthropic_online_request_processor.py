@@ -20,7 +20,13 @@ T = TypeVar("T")
 
 _DEFAULT_ANTHROPIC_URL: str = "https://api.anthropic.com/v1/messages"
 
-_ANTHROPIC_MULTIMODAL_SUPPORTED_MODELS = {"claude-3", "claude-3-sonnet", "claude-3-haiku", "claude-3-opus"}
+# Prefixes for models that support multimodal (image) input
+_MULTIMODAL_SUPPORTED_PREFIXES = (
+    "claude-3",
+    "claude-sonnet-4",
+    "claude-haiku-4",
+    "claude-opus-4",
+)
 _ANTHROPIC_ALLOWED_IMAGE_SIZE_MB = 20  # MB
 
 
@@ -201,7 +207,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
     @property
     def _multimodal_prompt_supported(self) -> bool:
         """Check if the model supports multimodal prompts."""
-        return any(model_prefix in self.config.model for model_prefix in _ANTHROPIC_MULTIMODAL_SUPPORTED_MODELS)
+        return any(prefix in self.config.model for prefix in _MULTIMODAL_SUPPORTED_PREFIXES)
 
     def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
         """Create an Anthropic-specific request from a generic request.
@@ -223,7 +229,9 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
             request["system"] = request.get("system", "") + "\nYou must respond in JSON format matching this schema: " + str(generic_request.response_format)
             # Anthropic has native JSON response format in Claude 3.5 and above
             # For those models, we should use the native format
-            if "claude-3.5" in generic_request.model or "claude-3-5" in generic_request.model:
+            model = generic_request.model
+            json_supported_patterns = ("claude-3.5", "claude-3-5", "claude-3.7", "claude-3-7", "-4-")
+            if any(pattern in model for pattern in json_supported_patterns):
                 request["response_format"] = {"type": "json_schema", "schema": generic_request.response_format}
 
         # Handle thinking parameter if provided
