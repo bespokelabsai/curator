@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 import time
-from typing import TypeVar
 
 import aiohttp
 import litellm
@@ -22,27 +21,20 @@ from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatu
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse, _TokenUsage
 
-T = TypeVar("T")
-
 _DEFAULT_OPENAI_URL: str = "https://api.openai.com/v1/chat/completions"
 
 _OPENAI_ALLOWED_IMAGE_SIZE_MB = 20
 
 
 async def _handle_longlive_response(response: aiohttp.ClientResponse):
-    content_lines = []
     content_buffer = ""
 
     async for line in response.content:
         line_str = line.decode("utf-8").strip()
+        if line_str:
+            content_buffer += line_str
 
-        if not line_str:
-            continue
-
-        content_buffer += line_str
-        content_lines.append(line_str)
-
-    if not content_lines:
+    if not content_buffer:
         return {
             "error": "Received an empty response from the API. Some providers, "
             "such as DeepSeek, may disconnect after 30 minutes of inactivity, which can result in missing responses."
@@ -50,11 +42,8 @@ async def _handle_longlive_response(response: aiohttp.ClientResponse):
 
     try:
         return json.loads(content_buffer)
-    except json.JSONDecodeError:
-        try:
-            return json.loads("".join(content_lines))
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse API response: {e}\nRaw response: {content_buffer}") from e
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse API response: {e}\nRaw response: {content_buffer}") from e
 
 
 async def fetch_response(session, *, url, headers, payload, timeout, longlived_response=False):
@@ -269,10 +258,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         return True
 
     def create_api_specific_request_online(self, generic_request: GenericRequest) -> dict:
-        """Create an OpenAI-specific request from a generic request.
-
-        Delegates to the mixin implementation.
-        """
+        """Create an OpenAI-specific request from a generic request."""
         return OpenAIRequestMixin.create_api_specific_request_online(self, generic_request)
 
     async def call_single_request(
@@ -345,13 +331,6 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             finish_reason=finish_reason,
         )
 
-    def get_token_encoding(self) -> str:
-        """Get the token encoding name for a given model."""
-        if self.config.model.startswith("gpt-4"):
-            name = "cl100k_base"
-        elif self.config.model.startswith("gpt-3.5"):
-            name = "cl100k_base"
-        else:
-            name = "cl100k_base"  # Default to cl100k_base
-
-        return tiktoken.get_encoding(name)
+    def get_token_encoding(self):
+        """Get the token encoding for the model."""
+        return tiktoken.get_encoding("cl100k_base")
