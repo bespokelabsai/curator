@@ -57,6 +57,61 @@ async def fetch_response(session, *, url, headers, payload, timeout, longlived_r
         return await response.json()
 
 
+async def fetch_response_streamed(session, *, url, headers, payload, timeout, longlived_response=False):
+    """Fetch response from the API."""
+    #
+    payload["stream"] = True
+    payload["stream_options"] = {"include_usage": True}
+
+    content = ""
+    reasoning_content = ""
+    finish_reason = None
+    usage = None
+    body = None
+
+    #
+    async with session.post(url, headers=headers, json=payload, timeout=timeout) as response:
+        if response.status != 200:
+            error_text = await response.text()
+            raise Exception(f"API Error: {response.status} - {error_text}")
+
+        async for line in response.content:
+            line = line.decode("utf-8").strip()
+            if not line or not line.startswith("data: "):
+                continue
+            data = line[6:]
+            if data == "[DONE]":
+                break
+            parsed = json.loads(data)
+            body = parsed
+            if not parsed["choices"]:
+                usage = parsed["usage"]
+            else:
+                delta = parsed["choices"][0].get("delta", {})
+                if delta.get("reasoning_content", None) is not None:
+                    reasoning_content += delta["reasoning_content"]
+                if delta.get("content", None) is not None:
+                    content += delta["content"]
+                if parsed["choices"][0].get("finish_reason", None) is not None:
+                    finish_reason = parsed["choices"][0]["finish_reason"]
+
+    body["choices"] = [
+        {
+            "message": {
+                "content": content,
+                "reasoning_content": reasoning_content,
+                "role": "assistant",
+            },
+            "finish_reason": finish_reason,
+            "index": 0,
+            "logprobs": None,
+        }
+    ]
+    body["object"] = "chat.completion"
+    body["usage"] = usage or body["usage"]
+    return body
+
+
 class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixin):
     """OpenAI-specific implementation of the OnlineRequestProcessor.
 
@@ -103,6 +158,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
             self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
         self.token_encoding = self.get_token_encoding()
+        if self.config.stream:
+            logger.info("Stream mode on.")
 
     @property
     def backend(self):
@@ -280,14 +337,24 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         request_header = {"Authorization": f"Bearer {self.api_key}"}
         if "/deployments" in self.url:  # Azure deployment
             request_header = {"api-key": f"{self.api_key}"}
-        response = await fetch_response(
-            session,
-            url=self.url,
-            headers=request_header,
-            payload=request.api_specific_request,
-            timeout=self.config.request_timeout,
-            longlived_response=self._longlived_response,
-        )
+        if getattr(self.config, "stream", False):
+            response = await fetch_response_streamed(
+                session,
+                url=self.url,
+                headers=request_header,
+                payload=request.api_specific_request,
+                timeout=self.config.request_timeout,
+                longlived_response=self._longlived_response,
+            )
+        else:
+            response = await fetch_response(
+                session,
+                url=self.url,
+                headers=request_header,
+                payload=request.api_specific_request,
+                timeout=self.config.request_timeout,
+                longlived_response=self._longlived_response,
+            )
 
         if response is None:
             raise Exception("Response is empty")
