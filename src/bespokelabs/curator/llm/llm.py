@@ -143,6 +143,38 @@ class LLM:
             generation_params=generation_params,
             return_completions_object=self.return_completions_object,
         )
+        self.backend = backend
+        self.backend_params = backend_params
+
+    def clone(self, **kwargs) -> "LLM":
+        """Create a clone of the LLM instance.
+
+        This method creates a new instance of the LLM using the
+        same initialization parameters as the original. Mutable parameters
+        are deep-copied to ensure independence.
+
+        Args:
+            **kwargs: Additional arguments to override in the new instance.
+
+        Returns:
+            A new independent LLM instance with the same configuration.
+        """
+        import copy
+
+        # Extract parameters from the existing LLM
+        init_kwargs = {
+            "model_name": self.model_name,
+            "response_format": self.response_format,
+            "batch": self.batch_mode,
+            "backend": self.backend,
+            "backend_params": copy.deepcopy(self.backend_params),
+            "generation_params": copy.deepcopy(self.prompt_formatter.generation_params),
+            "system_prompt": self.prompt_formatter.system_prompt,
+        }
+        # Update with any overrides
+        init_kwargs.update(kwargs)
+
+        return self.__class__(**init_kwargs)
 
     def _hash_fingerprint(self, dataset_hash: str = "", disable_cache: bool = False):
         if disable_cache:
