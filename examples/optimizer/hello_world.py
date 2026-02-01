@@ -5,6 +5,8 @@ that generates math word problems. An LLM judge evaluates the quality of generat
 problems on clarity, correctness, and grade-appropriateness.
 """
 
+import os
+
 import gepa
 from datasets import Dataset
 from pydantic import BaseModel, Field
@@ -12,6 +14,7 @@ from pydantic import BaseModel, Field
 from bespokelabs import curator
 from bespokelabs.curator.blocks.gepa import CuratorAdapter, EvaluationResult
 
+os.environ["CURATOR_DISABLE_CACHE"] = "true"  # required since Curator doesn't add system prompt to the cache key
 # =============================================================================
 # Step 1: Define the Generator LLM to optimize
 # =============================================================================
