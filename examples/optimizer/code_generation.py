@@ -150,14 +150,16 @@ def main():
     print("\nOptimized System Prompt:")
     print(f"  {best.get('system_prompt', 'N/A')}")
 
-    # Evaluate optimized prompts
-    optimized_eval = adapter.evaluate(valset, best)
-    optimized_score = sum(optimized_eval.scores) / len(optimized_eval.scores) if optimized_eval.scores else 0
+    # Print summary
     breakpoint()
+    best_idx = result.best_idx
+    best_val_score = result.val_aggregate_scores[best_idx]
+    baseline_score = result.val_aggregate_scores[0]
     print("\n" + "-" * 70)
     print("Results Summary")
     print("-" * 70)
-    print(f"Optimized validation score: {optimized_score:.2%}")
+    print(f"Optimized validation score: {best_val_score:.2%}")
+    print(f"Improvement: {(best_val_score - baseline_score) * 100:+.2f} percentage points")
 
 
 if __name__ == "__main__":
