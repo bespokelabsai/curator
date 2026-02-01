@@ -3,12 +3,6 @@
 This example demonstrates how to use GEPA to optimize the prompts of a Curator LLM
 that generates math word problems. An LLM judge evaluates the quality of generated
 problems on clarity, correctness, and grade-appropriateness.
-
-Requirements:
-    pip install gepa
-
-Usage:
-    python examples/optimizer/gepa_example.py
 """
 
 import gepa
@@ -27,18 +21,12 @@ class MathProblemGenerator(curator.LLM):
     """Generates math word problems for students.
 
     This is the LLM we want to optimize - GEPA will evolve its
-    system prompt and prompt template to produce better problems.
-
-    Define prompts as class attributes so GEPA can extract and optimize them.
+    system prompt to produce better problems.
     """
 
-    # Seed prompts - GEPA will evolve these
-    system_prompt = "You are a math teacher creating word problems for students."
-    prompt_template = "Create a math word problem about {topic} for {grade_level} students."
-
     def prompt(self, input: dict) -> str:
-        """Use the prompt_template (will be optimized by GEPA)."""
-        return self.prompt_template.format(**input)
+        """Use the prompt template."""
+        return "Create a math word problem about {topic} for {grade_level} students.".format(**input)
 
     def parse(self, input: dict, response: str) -> dict:
         """Parse the response into the output format."""
@@ -215,15 +203,15 @@ def main():
     trainset, valset = create_datasets()
     print(f"\nDataset sizes: train={len(trainset)}, val={len(valset)}")
 
+    # Create the LLM instance
+    generator = MathProblemGenerator(model_name="gpt-4o-mini", system_prompt="You are a math teacher creating word problems for students.")
+
     # Create the Curator adapter
-    adapter = CuratorAdapter(
-        llm_class=MathProblemGenerator,
-        metric=metric,
-        model_name="gpt-4o-mini",  # Model for the generator
-    )
+    adapter = CuratorAdapter(llm=generator, metric=metric)
 
     # Extract seed candidate from the LLM class
     seed_candidate = adapter.get_seed_candidate()
+    print(f"\nSeed System Prompt: {seed_candidate.get('system_prompt', 'N/A')}")
 
     # Run GEPA optimization
     print("\nStarting GEPA optimization...")
@@ -242,7 +230,6 @@ def main():
     print("\nBest Candidate Found:")
     best = result.best_candidate
     print(f"  System Prompt: {best.get('system_prompt', 'N/A')}")
-    print(f"  Prompt Template: {best.get('prompt_template', 'N/A')}")
 
     # Test the optimized prompts
     print("\n" + "-" * 60)
