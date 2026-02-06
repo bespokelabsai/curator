@@ -6,6 +6,7 @@ allowing GEPA to optimize system prompts and prompt templates in Curator LLM cla
 Reference: https://github.com/gepa-ai/gepa
 """
 
+import os
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, TypedDict
@@ -130,8 +131,18 @@ class CuratorAdapter(GEPAAdapter[Dict[str, Any], CuratorTrajectory, CuratorRollo
         # Convert batch to Dataset for Curator
         dataset = Dataset.from_list(batch)
 
-        # Run the LLM on the dataset
-        result = llm(dataset)
+        # GEPA requires fresh rollouts per candidate. Curator's cache fingerprint
+        # does not include system prompt, so we disable cache for optimization.
+        previous_disable_cache = os.environ.get("CURATOR_DISABLE_CACHE")
+        os.environ["CURATOR_DISABLE_CACHE"] = "true"
+        try:
+            result = llm(dataset)
+        finally:
+            if previous_disable_cache is None:
+                os.environ.pop("CURATOR_DISABLE_CACHE", None)
+            else:
+                os.environ["CURATOR_DISABLE_CACHE"] = previous_disable_cache
+
         output_dataset = result.dataset
 
         # Convert outputs to list of dicts
