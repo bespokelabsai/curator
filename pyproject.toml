@@ -41,10 +41,12 @@ e2b-code-interpreter = { version = "1.0.3", optional = true }
 
 posthog = "^3.11.0"
 mistralai = "^1.5.1"
+gepa = {markers = "python_version < \"3.15\"", version = "^0.0.26", optional = true}
 
 [tool.poetry.extras]
 vllm = ["vllm"]
 code_execution = ["ray", "aiodocker", "e2b-code-interpreter"]
+optimizer = ["gepa"]
 
 [tool.poetry.group.dev.dependencies]
 twine = "^5.0.0"
