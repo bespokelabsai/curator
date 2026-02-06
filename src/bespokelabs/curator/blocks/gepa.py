@@ -115,7 +115,6 @@ class CuratorAdapter(GEPAAdapter[Dict[str, Any], CuratorTrajectory, CuratorRollo
             batch: List of input examples to evaluate
             candidate: Dict containing prompt components:
                 - "system_prompt": Optional system prompt
-                - "prompt_template": Optional prompt template
             capture_traces: If True, populate trajectories for reflection
 
         Returns:
@@ -140,6 +139,10 @@ class CuratorAdapter(GEPAAdapter[Dict[str, Any], CuratorTrajectory, CuratorRollo
 
         # Evaluate all outputs using the metric function
         eval_results = self.metric(batch, output_dicts)
+        if not isinstance(eval_results, list):
+            raise TypeError(f"metric function must return list[EvaluationResult], got {type(eval_results)}")
+        if len(eval_results) != len(batch):
+            raise ValueError(f"metric function must return a list of the same length as the input batch (expected {len(batch)}, got {len(eval_results)})")
         scores = [float(r["score"]) for r in eval_results]
 
         # Build outputs and trajectories
@@ -151,7 +154,6 @@ class CuratorAdapter(GEPAAdapter[Dict[str, Any], CuratorTrajectory, CuratorRollo
                     {
                         "input": input_row,
                         "system_prompt": candidate.get("system_prompt", ""),
-                        "prompt_template": candidate.get("prompt_template", ""),
                         "output": output_dict,
                         "score": float(eval_result["score"]),
                         "feedback": eval_result["feedback"],
@@ -194,8 +196,6 @@ class CuratorAdapter(GEPAAdapter[Dict[str, Any], CuratorTrajectory, CuratorRollo
 
                 if component == "system_prompt":
                     inputs["current_system_prompt"] = traj["system_prompt"]
-                elif component == "prompt_template":
-                    inputs["current_prompt_template"] = traj["prompt_template"]
 
                 items.append(
                     {

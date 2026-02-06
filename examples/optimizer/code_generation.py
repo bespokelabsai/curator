@@ -151,7 +151,6 @@ def main():
     print(f"  {best.get('system_prompt', 'N/A')}")
 
     # Print summary
-    breakpoint()
     best_idx = result.best_idx
     best_val_score = result.val_aggregate_scores[best_idx]
     baseline_score = result.val_aggregate_scores[0]
