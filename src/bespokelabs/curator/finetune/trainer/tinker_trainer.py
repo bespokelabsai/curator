@@ -339,7 +339,9 @@ class TinkerTrainer(BaseTrainer):
 
                 if epoch_steps > 0:
                     avg_epoch_loss = epoch_loss / epoch_steps
-                    loss_history.append(avg_epoch_loss)
+                    # Only append if the last step wasn't already logged by per-step logging
+                    if current_step % self.config.log_every_n_steps != 0:
+                        loss_history.append(avg_epoch_loss)
                     logger.info(f"Epoch {epoch}/{self.config.epochs} complete. Average loss: {avg_epoch_loss:.4f}")
                 else:
                     avg_epoch_loss = 0.0
@@ -597,7 +599,7 @@ class TinkerTrainer(BaseTrainer):
                     max_tokens=sampling_config.max_tokens,
                     temperature=sampling_config.temperature,
                     top_p=sampling_config.top_p,
-                    top_k=sampling_config.top_k if sampling_config.top_k else -1,
+                    top_k=sampling_config.top_k if sampling_config.top_k is not None else -1,
                     stop=sampling_config.stop_sequences if sampling_config.stop_sequences else None,
                 )
                 sample_result = sampling_client.sample(prompt_input, num_samples=1, sampling_params=sample_params).result()
