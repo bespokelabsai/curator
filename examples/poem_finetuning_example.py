@@ -325,25 +325,7 @@ def main(use_mock: bool = False):
     # Step 2: Convert to chat format
     print("\n[Step 2] Converting to chat format for fine-tuning...")
 
-    # Convert poem data to chat format directly (works with list of dicts)
-    training_data = []
-    for row in poem_data:
-        messages = [
-            {
-                "role": "system",
-                "content": "You are a creative poet who writes beautiful poems in various styles. "
-                "When asked to write a poem, you provide both the poem and a brief explanation of its meaning.",
-            },
-            {
-                "role": "user",
-                "content": f"Write a {row['style']} poem about \"{row['theme']}\".",
-            },
-            {
-                "role": "assistant",
-                "content": f"{row['poem']}\n\n---\n\n**Explanation:** {row['explanation']}",
-            },
-        ]
-        training_data.append({"messages": messages})
+    training_data = convert_to_chat_format(poem_data)
 
     print(f"  Training examples: {len(training_data)}")
 
