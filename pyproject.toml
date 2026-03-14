@@ -38,6 +38,7 @@ vllm = { version = "^0.6.3", optional = true }
 aiodocker = { version = "^0.24.0", optional = true }
 ray = { version = "^2.41.0", optional = true }
 e2b-code-interpreter = { version = "1.0.3", optional = true }
+tinker = { version = "^0.8.0", optional = true, python = ">=3.11" }
 
 posthog = "^3.11.0"
 mistralai = "^1.5.1"
@@ -45,6 +46,7 @@ mistralai = "^1.5.1"
 [tool.poetry.extras]
 vllm = ["vllm"]
 code_execution = ["ray", "aiodocker", "e2b-code-interpreter"]
+finetune = ["tinker"]
 
 [tool.poetry.group.dev.dependencies]
 twine = "^5.0.0"

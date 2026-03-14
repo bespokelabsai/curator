@@ -62,6 +62,7 @@ pip install bespokelabs-curator
 | **Product feature extraction** | <a target="_blank" href="https://colab.research.google.com/drive/1YoA23-cBcWpaSErULzBI2bo2LPGo37GQ"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> | Finetuning a model to identify features of a product |
 | **Sentiment analysis** | <a href="https://colab.research.google.com/drive/1Zfl3g7POsqqYQqkzXdyhYRSAymLhZugn?usp=sharing" target="_blank"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> | Aspect-based sentiment analysis of restaurant reviews and finetuning using Together.ai |
 | **RAFT for domain-specific RAG** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/blocks/raft" target="_blank">Code</a> | Implement Retrieval Augmented Fine-Tuning (RAFT) that processes domain-specific documents, generates questions, and prepares data for fine-tuning LLMs. |
+| **Poem generation & LoRA fine-tuning** | <a href="https://github.com/bespokelabsai/curator/blob/main/examples/poem_finetuning_example.py" target="_blank">Code</a> | End-to-end pipeline: curate poem data with Curator, then LoRA fine-tune with TinkerTrainer |
 
 ### Data Generation
 | **Task** | **Link(s)** | **Goal** |
@@ -295,6 +296,76 @@ See documentation:
 * [Gemini batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-gemini-for-batch-inference)
 * [kluster.ai batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-kluster.ai-for-batch-inference)
 * [Mistral batch mode](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides/using-mistral-for-batch-inference)
+
+## 🔧 Fine-Tuning with Tinker
+
+Curator integrates with the [Tinker SDK](https://github.com/thinking-machines-lab/tinker-cookbook) so you can go from curated data to a LoRA fine-tuned model in a few lines of Python.
+
+```bash
+pip install bespokelabs-curator tinker
+export TINKER_API_KEY="your-tinker-key"
+```
+
+```python
+from bespokelabs.curator import TinkerTrainer, TinkerTrainerConfig
+
+# Configure training
+config = TinkerTrainerConfig(
+    base_model="Qwen/Qwen3-8B",
+    epochs=3,
+    batch_size=4,
+    lora_config={"rank": 16, "alpha": 32, "dropout": 0.05},
+    checkpoint_every_epoch=True,
+)
+
+# Training data is a list of chat-format dicts (or a HuggingFace Dataset)
+training_data = [
+    {"messages": [
+        {"role": "user", "content": "What is Python?"},
+        {"role": "assistant", "content": "Python is a programming language."},
+    ]},
+    # ...
+]
+
+# Train
+trainer = TinkerTrainer(config)
+result = trainer.train(training_data)
+print(f"Final loss: {result.final_loss:.4f}")
+
+# Sample from the fine-tuned model
+response = trainer.sample("Explain recursion in Python")
+print(response)
+```
+
+### Checkpoint Resume
+
+Training can be resumed from any saved checkpoint. The trainer restores both model weights and optimizer state, then continues from where it left off — no data is replayed.
+
+```python
+# Resume from an earlier run's checkpoint
+checkpoints = result.checkpoints  # list of CheckpointInfo
+trainer = TinkerTrainer(config)
+trainer.load_checkpoint(checkpoints[-1])
+result = trainer.train(training_data)  # continues from the checkpoint
+```
+
+### Custom Data Formats
+
+Subclass `TinkerTrainer` to handle non-standard data layouts:
+
+```python
+class MyTrainer(TinkerTrainer):
+    def format_example(self, row):
+        return TrainingExample.from_dict_messages([
+            {"role": "user", "content": row["question"]},
+            {"role": "assistant", "content": row["answer"]},
+        ])
+
+trainer = MyTrainer(config)
+result = trainer.train([{"question": "What is 2+2?", "answer": "4"}, ...])
+```
+
+See the full [poem fine-tuning example](examples/poem_finetuning_example.py) for an end-to-end pipeline that curates data with `curator.LLM` and then fine-tunes with `TinkerTrainer`.
 
 ## Bespoke Curator Viewer
 The hosted curator viewer is a rich interface to visualize data -- and makes visually inspecting the data much easier.
