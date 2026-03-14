@@ -65,6 +65,8 @@ class TinkerTrainer(BaseTrainer):
         self._weights_path: Optional[str] = None
         self._is_trained = False
         self._checkpoints: List[CheckpointInfo] = []
+        self._resume_from_step: int = 0
+        self._resume_from_epoch: int = 0
 
         # These will be initialized when Tinker SDK is available
         self._service_client: Optional[Any] = None
@@ -85,10 +87,13 @@ class TinkerTrainer(BaseTrainer):
             return
 
         try:
-            self._service_client = tinker.ServiceClient()
+            self._service_client = tinker.ServiceClient(api_key=self.config.api_key)
             self._training_client = self._service_client.create_lora_training_client(
                 base_model=self.config.base_model,
                 rank=self.config.lora_config.rank,
+                alpha=self.config.lora_config.alpha,
+                dropout=self.config.lora_config.dropout,
+                target_modules=self.config.lora_config.target_modules,
                 train_mlp=True,
                 train_attn=True,
                 train_unembed=True,
@@ -150,26 +155,33 @@ class TinkerTrainer(BaseTrainer):
             logger.info(f"Checkpoint saved (mock): {name} at step {step}")
             return checkpoint
 
-    def load_checkpoint(self, checkpoint_path: str) -> bool:
-        """Load a training checkpoint to resume training.
+    def load_checkpoint(self, checkpoint: CheckpointInfo) -> bool:
+        """Load a training checkpoint, recreating the training client from saved state.
+
+        This replaces the current training client with one restored from the
+        checkpoint, which is the correct Tinker API for resuming training.
 
         Args:
-            checkpoint_path: Path to the checkpoint (from CheckpointInfo.path)
+            checkpoint: CheckpointInfo from a previous save_checkpoint call
 
         Returns:
             True if checkpoint was loaded successfully, False otherwise
         """
-        if self._training_client is not None and TINKER_AVAILABLE:
+        if self._service_client is not None and TINKER_AVAILABLE:
             try:
-                load_future = self._training_client.load_state_with_optimizer(checkpoint_path)
-                load_future.result()
-                logger.info(f"Checkpoint loaded: {checkpoint_path}")
+                self._training_client = self._service_client.create_lora_training_client_from_state(checkpoint.path)
+                self._tokenizer = self._training_client.get_tokenizer()
+                self._resume_from_step = checkpoint.step
+                self._resume_from_epoch = checkpoint.epoch
+                logger.info(f"Checkpoint loaded: {checkpoint.name} (step {checkpoint.step}, epoch {checkpoint.epoch})")
                 return True
             except Exception as e:
                 logger.warning(f"Failed to load checkpoint: {e}")
                 return False
         else:
-            logger.info(f"Checkpoint load (mock): {checkpoint_path}")
+            self._resume_from_step = checkpoint.step
+            self._resume_from_epoch = checkpoint.epoch
+            logger.info(f"Checkpoint load (mock): {checkpoint.name} (step {checkpoint.step}, epoch {checkpoint.epoch})")
             return True
 
     def get_checkpoints(self) -> List[CheckpointInfo]:
@@ -227,7 +239,20 @@ class TinkerTrainer(BaseTrainer):
         steps_per_epoch = (num_examples + self.config.batch_size - 1) // self.config.batch_size
         total_steps = steps_per_epoch * self.config.epochs
 
-        logger.info(f"Starting training: {num_examples} examples, {self.config.epochs} epochs, {total_steps} total steps")
+        # Determine resume point from a previously loaded checkpoint
+        resume_step = self._resume_from_step
+        resume_epoch = self._resume_from_epoch
+        # Reset so subsequent train() calls without load_checkpoint start fresh
+        self._resume_from_step = 0
+        self._resume_from_epoch = 0
+
+        if resume_step > 0:
+            logger.info(
+                f"Resuming training from step {resume_step} (epoch {resume_epoch}): "
+                f"{num_examples} examples, {self.config.epochs} epochs, {total_steps} total steps"
+            )
+        else:
+            logger.info(f"Starting training: {num_examples} examples, {self.config.epochs} epochs, {total_steps} total steps")
 
         # Initialize status tracker
         status_tracker = FinetuneStatusTracker(
@@ -248,14 +273,26 @@ class TinkerTrainer(BaseTrainer):
                 epoch_loss = 0.0
                 epoch_steps = 0
 
+                # Skip fully completed epochs when resuming
+                if epoch < resume_epoch:
+                    current_step += steps_per_epoch
+                    continue
+
                 for batch_start in range(0, num_examples, self.config.batch_size):
                     batch_end = min(batch_start + self.config.batch_size, num_examples)
                     batch = data_list[batch_start:batch_end]
 
                     current_step += 1
+
+                    # Skip steps already completed when resuming
+                    if current_step <= resume_step:
+                        continue
+
                     lr = self._get_learning_rate(current_step, total_steps)
                     batch_data = self._prepare_batch(batch)
-                    loss, batch_tokens = self._training_step(batch_data, learning_rate=lr)
+                    # Only step the optimizer after accumulating enough gradients
+                    should_optim_step = current_step % self.config.gradient_accumulation_steps == 0
+                    loss, batch_tokens = self._training_step(batch_data, learning_rate=lr, should_optim_step=should_optim_step)
 
                     epoch_loss += loss
                     epoch_steps += 1
@@ -334,12 +371,13 @@ class TinkerTrainer(BaseTrainer):
         logger.info(f"Training complete. Final loss: {final_loss:.4f}, Time: {total_time:.2f}s")
         return result
 
-    def _training_step(self, batch_data: List[Any], learning_rate: float) -> tuple:
-        """Execute a single training step.
+    def _training_step(self, batch_data: List[Any], learning_rate: float, should_optim_step: bool = True) -> tuple:
+        """Execute a single training step (forward-backward, and optionally optimizer step).
 
         Args:
             batch_data: List of Tinker Datum objects or formatted examples
             learning_rate: Current learning rate for this step
+            should_optim_step: Whether to run the optimizer step (False when accumulating gradients)
 
         Returns:
             Tuple of (loss, tokens_processed)
@@ -353,15 +391,16 @@ class TinkerTrainer(BaseTrainer):
                 total_tokens = sum(len(datum.model_input.chunks[0].tokens) for datum in batch_data if hasattr(datum, "model_input"))
                 avg_loss = loss_sum / max(total_tokens, 1)
 
-                adam_params = tinker.AdamParams(
-                    learning_rate=learning_rate,
-                    beta1=self.config.adam_params.beta1,
-                    beta2=self.config.adam_params.beta2,
-                    eps=self.config.adam_params.epsilon,
-                    weight_decay=self.config.adam_params.weight_decay,
-                )
-                optim_future = self._training_client.optim_step(adam_params)
-                optim_future.result()  # Wait for completion
+                if should_optim_step:
+                    adam_params = tinker.AdamParams(
+                        learning_rate=learning_rate,
+                        beta1=self.config.adam_params.beta1,
+                        beta2=self.config.adam_params.beta2,
+                        eps=self.config.adam_params.epsilon,
+                        weight_decay=self.config.adam_params.weight_decay,
+                    )
+                    optim_future = self._training_client.optim_step(adam_params)
+                    optim_future.result()  # Wait for completion
 
                 return avg_loss, total_tokens
 

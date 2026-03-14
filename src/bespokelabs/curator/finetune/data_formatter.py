@@ -131,22 +131,27 @@ class DataFormatter:
             tokens = list(range(mock_token_count))
             weights = [1.0] * len(tokens)
 
+        # Causal-LM shift: input=tokens[:-1], target=tokens[1:], weights aligned to targets
+        input_tokens = tokens[:-1]
+        target_tokens = tokens[1:]
+        shifted_weights = weights[1:]
+
         if TINKER_AVAILABLE and tokenizer is not None:
-            model_input = tinker.ModelInput(chunks=[tinker.EncodedTextChunk(tokens=tokens)])
+            model_input = tinker.ModelInput(chunks=[tinker.EncodedTextChunk(tokens=input_tokens)])
             datum = tinker.Datum(
                 model_input=model_input,
                 loss_fn_inputs={
-                    "target_tokens": list(tokens),
-                    "weights": weights,
+                    "target_tokens": target_tokens,
+                    "weights": shifted_weights,
                 },
             )
             return datum
 
         return {
-            "model_input": tokens,
+            "model_input": input_tokens,
             "loss_fn_inputs": {
-                "target_tokens": tokens,
-                "weights": weights,
+                "target_tokens": target_tokens,
+                "weights": shifted_weights,
             },
             "metadata": {
                 "original_text": chat_text if tokenizer is None else "",
