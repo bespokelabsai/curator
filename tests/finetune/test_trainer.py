@@ -1,9 +1,12 @@
 """Tests for TinkerTrainer."""
 
+from types import SimpleNamespace
+
 import pytest
 
 from bespokelabs.curator.finetune.config import TinkerTrainerConfig
 from bespokelabs.curator.finetune.trainer import TinkerTrainer
+from bespokelabs.curator.finetune.trainer import tinker_trainer as tinker_trainer_module
 from bespokelabs.curator.finetune.types import TrainingExample, TrainingResult
 
 
@@ -147,6 +150,40 @@ class TestTinkerTrainer:
         client = trainer.get_sampling_client()
         # In mock mode, client is None
         assert client is None
+
+    def test_training_step_normalizes_loss_by_weighted_targets(self, trainer, monkeypatch):
+        """Test loss uses active target weights, not total prompt length."""
+
+        class FakeFuture:
+            def result(self):
+                return SimpleNamespace(metrics={"loss:sum": 2.0})
+
+        class FakeTrainingClient:
+            def forward_backward(self, batch_data, loss_fn):
+                assert loss_fn == "cross_entropy"
+                return FakeFuture()
+
+        class FakeChunk:
+            def __init__(self, tokens):
+                self.tokens = tokens
+
+        class FakeModelInput:
+            def __init__(self, tokens):
+                self.chunks = [FakeChunk(tokens)]
+
+        class FakeDatum:
+            def __init__(self, input_tokens, weights):
+                self.model_input = FakeModelInput(input_tokens)
+                self.loss_fn_inputs = {"weights": weights}
+
+        monkeypatch.setattr(tinker_trainer_module, "TINKER_AVAILABLE", True)
+        trainer._training_client = FakeTrainingClient()
+        batch = [FakeDatum([10, 11, 12, 13], [0.0, 0.0, 1.0, 1.0])]
+
+        loss, tokens_processed = trainer._training_step(batch, learning_rate=1e-4, should_optim_step=False)
+
+        assert loss == pytest.approx(1.0)
+        assert tokens_processed == 4
 
 
 class TestCustomTrainer:

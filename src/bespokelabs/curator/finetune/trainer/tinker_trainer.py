@@ -169,7 +169,7 @@ class TinkerTrainer(BaseTrainer):
         """
         if self._service_client is not None and TINKER_AVAILABLE:
             try:
-                self._training_client = self._service_client.create_lora_training_client_from_state(checkpoint.path)
+                self._training_client = self._service_client.create_training_client_from_state_with_optimizer(checkpoint.path)
                 self._tokenizer = self._training_client.get_tokenizer()
                 self._resume_from_step = checkpoint.step
                 self._resume_from_epoch = checkpoint.epoch
@@ -266,28 +266,40 @@ class TinkerTrainer(BaseTrainer):
         loss_history: List[float] = []
         tokens_processed = 0
         samples_processed = 0
-        current_step = 0
+
+        # Compute loop start bounds from resume state (cookbook pattern:
+        # adjust loop bounds rather than skipping inside loops)
+        if resume_step > 0:
+            steps_before_resume_epoch = (resume_epoch - 1) * steps_per_epoch
+            resume_batch_offset = resume_step - steps_before_resume_epoch
+            if resume_batch_offset >= steps_per_epoch:
+                # Entire epoch was completed (e.g. end-of-epoch checkpoint)
+                start_epoch = resume_epoch + 1
+                start_batch_idx = 0
+            else:
+                start_epoch = resume_epoch
+                start_batch_idx = resume_batch_offset
+        else:
+            start_epoch = 1
+            start_batch_idx = 0
+
+        current_step = resume_step
 
         try:
-            for epoch in range(1, self.config.epochs + 1):
+            for epoch in range(start_epoch, self.config.epochs + 1):
                 epoch_loss = 0.0
                 epoch_steps = 0
 
-                # Skip fully completed epochs when resuming
-                if epoch < resume_epoch:
-                    current_step += steps_per_epoch
-                    continue
+                # On the first resumed epoch, skip already-completed batches;
+                # subsequent epochs start from 0
+                first_batch = start_batch_idx if epoch == start_epoch else 0
+                batch_positions = list(range(0, num_examples, self.config.batch_size))
 
-                for batch_start in range(0, num_examples, self.config.batch_size):
+                for batch_start in batch_positions[first_batch:]:
                     batch_end = min(batch_start + self.config.batch_size, num_examples)
                     batch = data_list[batch_start:batch_end]
 
                     current_step += 1
-
-                    # Skip steps already completed when resuming
-                    if current_step <= resume_step:
-                        continue
-
                     lr = self._get_learning_rate(current_step, total_steps)
                     batch_data = self._prepare_batch(batch)
                     # Only step the optimizer after accumulating enough gradients
@@ -325,9 +337,13 @@ class TinkerTrainer(BaseTrainer):
                             loss=loss,
                         )
 
-                avg_epoch_loss = epoch_loss / epoch_steps
-                loss_history.append(avg_epoch_loss)
-                logger.info(f"Epoch {epoch}/{self.config.epochs} complete. Average loss: {avg_epoch_loss:.4f}")
+                if epoch_steps > 0:
+                    avg_epoch_loss = epoch_loss / epoch_steps
+                    loss_history.append(avg_epoch_loss)
+                    logger.info(f"Epoch {epoch}/{self.config.epochs} complete. Average loss: {avg_epoch_loss:.4f}")
+                else:
+                    avg_epoch_loss = 0.0
+                    logger.info(f"Epoch {epoch}/{self.config.epochs} complete. No steps executed.")
 
                 if self.config.checkpoint_every_epoch:
                     checkpoint_name = f"{self.config.checkpoint_name_prefix}_epoch_{epoch}"
@@ -337,6 +353,26 @@ class TinkerTrainer(BaseTrainer):
                         epoch=epoch,
                         loss=avg_epoch_loss,
                     )
+
+            # Flush any remaining accumulated gradients from a partial window
+            if (
+                self.config.gradient_accumulation_steps > 1
+                and current_step % self.config.gradient_accumulation_steps != 0
+                and self._training_client is not None
+                and TINKER_AVAILABLE
+            ):
+                try:
+                    lr = self._get_learning_rate(current_step, total_steps)
+                    adam_params = tinker.AdamParams(
+                        learning_rate=lr,
+                        beta1=self.config.adam_params.beta1,
+                        beta2=self.config.adam_params.beta2,
+                        eps=self.config.adam_params.epsilon,
+                        weight_decay=self.config.adam_params.weight_decay,
+                    )
+                    self._training_client.optim_step(adam_params).result()
+                except Exception as e:
+                    logger.warning(f"Failed to flush final gradient accumulation: {e}")
 
         finally:
             status_tracker.stop_tracker()
@@ -388,8 +424,9 @@ class TinkerTrainer(BaseTrainer):
                 fwd_bwd_result = fwd_bwd_future.result()
 
                 loss_sum = fwd_bwd_result.metrics.get("loss:sum", 0.0)
-                total_tokens = sum(len(datum.model_input.chunks[0].tokens) for datum in batch_data if hasattr(datum, "model_input"))
-                avg_loss = loss_sum / max(total_tokens, 1)
+                total_tokens = self._get_batch_token_count(batch_data)
+                effective_target_weight = self._get_effective_target_weight(batch_data)
+                avg_loss = loss_sum / max(effective_target_weight, 1.0)
 
                 if should_optim_step:
                     adam_params = tinker.AdamParams(
@@ -410,18 +447,52 @@ class TinkerTrainer(BaseTrainer):
         import random
 
         mock_loss = 2.5 - (random.random() * 0.5)
-        mock_tokens = 0
-        for d in batch_data:
-            if hasattr(d, "model_input"):
-                mock_tokens += len(d.model_input.chunks[0].tokens)
-            elif isinstance(d, dict) and "model_input" in d:
-                mock_tokens += len(d.get("model_input", []))
-            else:
-                mock_tokens += 100
+        mock_tokens = self._get_batch_token_count(batch_data)
+        if mock_tokens == 0:
+            mock_tokens = len(batch_data) * 100
 
         time.sleep(0.01)
 
-        return mock_loss, mock_tokens if mock_tokens > 0 else len(batch_data) * 100
+        return mock_loss, mock_tokens
+
+    @staticmethod
+    def _get_batch_token_count(batch_data: List[Any]) -> int:
+        """Count model input tokens across a batch."""
+        total_tokens = 0
+        for datum in batch_data:
+            if hasattr(datum, "model_input") and getattr(datum.model_input, "chunks", None):
+                total_tokens += len(datum.model_input.chunks[0].tokens)
+            elif isinstance(datum, dict):
+                total_tokens += len(datum.get("model_input", []))
+        return total_tokens
+
+    @staticmethod
+    def _get_effective_target_weight(batch_data: List[Any]) -> float:
+        """Count the weighted target tokens that contribute to loss."""
+        effective_weight = 0.0
+        found_weights = False
+
+        for datum in batch_data:
+            if isinstance(datum, dict):
+                loss_fn_inputs = datum.get("loss_fn_inputs", {})
+            else:
+                loss_fn_inputs = getattr(datum, "loss_fn_inputs", {})
+
+            if hasattr(loss_fn_inputs, "get"):
+                weights = loss_fn_inputs.get("weights")
+            else:
+                weights = getattr(loss_fn_inputs, "weights", None)
+
+            if weights is None:
+                continue
+
+            found_weights = True
+            effective_weight += sum(float(weight) for weight in weights)
+
+        if found_weights and effective_weight > 0:
+            return effective_weight
+
+        return float(TinkerTrainer._get_batch_token_count(batch_data))
 
     def _get_learning_rate(self, step: int, total_steps: int) -> float:
         """Calculate learning rate with optional warmup.

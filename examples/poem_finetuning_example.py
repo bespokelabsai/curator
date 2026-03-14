@@ -132,7 +132,7 @@ def convert_to_chat_format(poem_data: list) -> list:
     """Convert the poem dataset to chat format for fine-tuning."""
     chat_data = []
 
-    for row in dataset:
+    for row in poem_data:
         # Create a training example where:
         # - User asks for a poem with specific theme and style
         # - Assistant provides the poem with explanation
