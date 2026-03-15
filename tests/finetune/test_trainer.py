@@ -188,6 +188,40 @@ class TestTinkerTrainer:
         }
         assert trainer._tokenizer.vocab_size == 123
 
+    def test_initialize_client_keeps_kwargs_for_var_keyword_signatures(self, monkeypatch):
+        """Test client initialization preserves kwargs when the SDK accepts **kwargs."""
+        captured = {}
+
+        class FakeTrainingClient:
+            def get_tokenizer(self):
+                return SimpleNamespace(vocab_size=123)
+
+        class FakeServiceClient:
+            def __init__(self, api_key):
+                captured["api_key"] = api_key
+
+            def create_lora_training_client(self, **kwargs):
+                captured["kwargs"] = kwargs
+                return FakeTrainingClient()
+
+        monkeypatch.setattr(tinker_trainer_module, "TINKER_AVAILABLE", True)
+        monkeypatch.setattr(tinker_trainer_module, "tinker", SimpleNamespace(ServiceClient=FakeServiceClient))
+
+        trainer = TinkerTrainer(TinkerTrainerConfig(base_model="Qwen3-8B", epochs=1, api_key="test-key"))
+
+        assert captured["api_key"] == "test-key"
+        assert captured["kwargs"] == {
+            "base_model": "Qwen3-8B",
+            "rank": 16,
+            "alpha": 32,
+            "dropout": 0.05,
+            "target_modules": ["q_proj", "v_proj", "k_proj", "o_proj"],
+            "train_mlp": True,
+            "train_attn": True,
+            "train_unembed": True,
+        }
+        assert trainer._tokenizer.vocab_size == 123
+
     def test_training_step_normalizes_loss_by_weighted_targets(self, trainer, monkeypatch):
         """Test loss uses active target weights, not total prompt length."""
 

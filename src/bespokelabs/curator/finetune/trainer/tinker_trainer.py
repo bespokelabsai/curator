@@ -18,10 +18,16 @@ from bespokelabs.curator.finetune.types import (
 )
 from bespokelabs.curator.log import logger
 
+tinker = None
 try:
-    import tinker
+    import tinker as _tinker
 
-    TINKER_AVAILABLE = True
+    required_tinker_attrs = ("ServiceClient", "Datum", "ModelInput", "EncodedTextChunk")
+    if all(hasattr(_tinker, attr) for attr in required_tinker_attrs):
+        tinker = _tinker
+        TINKER_AVAILABLE = True
+    else:
+        TINKER_AVAILABLE = False
 except ImportError:
     TINKER_AVAILABLE = False
 
@@ -126,6 +132,9 @@ class TinkerTrainer(BaseTrainer):
         try:
             parameters = inspect.signature(callable_obj).parameters
         except (TypeError, ValueError):
+            return kwargs, []
+
+        if any(parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in parameters.values()):
             return kwargs, []
 
         supported_kwargs = {key: value for key, value in kwargs.items() if key in parameters}

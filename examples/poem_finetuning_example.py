@@ -21,16 +21,8 @@ Usage:
 """
 
 import argparse
-import sys
-from pathlib import Path
 
 from pydantic import BaseModel, Field
-
-# Avoid shadowing the real `tinker` package with `examples/tinker/` when this
-# file is executed as `python examples/poem_finetuning_example.py`.
-EXAMPLES_DIR = Path(__file__).resolve().parent
-if str(EXAMPLES_DIR) in sys.path:
-    sys.path.remove(str(EXAMPLES_DIR))
 
 from bespokelabs.curator import LLM, TinkerTrainer, TinkerTrainerConfig
 
