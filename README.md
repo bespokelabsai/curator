@@ -22,7 +22,8 @@
 [ English | <a href="docs/README_zh.md">中文</a> ]
 </div>
 
-## 🎉 What's New 
+## 🎉 What's New
+* **[2026.03.14]** [Tinker integration for fine-tuning](examples/poem_finetuning_example.py): Go from curated data to a LoRA fine-tuned model in a few lines of Python using the Tinker SDK.
 * **[2025.12.05]** [Launched OpenThoughts-Agents](https://www.open-thoughts.ai/blog/agent) whose data was curated using Curator.
 * **[2025.04.09]** [Launching Reasoning Datasets Competition](https://huggingface.co/blog/bespokelabs/reasoning-datasets-competition) with HuggingFace and Together.ai. Win $5000 USD worth of prizes!
 * **[2025.04.03]** We used Bespoke Curator to create [OpenThoughts2-1M](https://huggingface.co/datasets/open-thoughts/OpenThoughts2-1M) dataset, which was used to train OpenThinker2-32B that outperforms DeepSeek-R1-32B. The dataset started trending on HuggingFace.
