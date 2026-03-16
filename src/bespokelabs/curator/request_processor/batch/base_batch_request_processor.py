@@ -327,18 +327,13 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         else:
             from bespokelabs.curator.cost import external_model_cost
 
-            self.tracker.input_cost_per_million = (
-                external_model_cost(self.prompt_formatter.model_name, provider=self.compatible_provider, completion_window=self.config.completion_window)[
-                    "input_cost_per_token"
-                ]
-                * 1_000_000
-            )
-            self.tracker.output_cost_per_million = (
-                external_model_cost(self.prompt_formatter.model_name, provider=self.compatible_provider, completion_window=self.config.completion_window)[
-                    "output_cost_per_token"
-                ]
-                * 1_000_000
-            )
+            cost_info = external_model_cost(self.prompt_formatter.model_name, provider=self.compatible_provider, completion_window=self.config.completion_window)
+            input_cost = cost_info["input_cost_per_token"]
+            output_cost = cost_info["output_cost_per_token"]
+            if input_cost is not None:
+                self.tracker.input_cost_per_million = input_cost * 1_000_000
+            if output_cost is not None:
+                self.tracker.output_cost_per_million = output_cost * 1_000_000
 
         # Start the tracker with the console from constructor
         self.tracker.start_tracker(self._tracker_console)
