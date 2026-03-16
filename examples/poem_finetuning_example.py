@@ -6,9 +6,12 @@ This example demonstrates:
 3. Fine-tuning a model using TinkerTrainer
 
 Usage:
+    # Install the optional fine-tuning dependency for real Tinker training
+    poetry install --extras finetune
+
     # Set your API keys
     export OPENAI_API_KEY="your-openai-key"
-    export TINKER_API_KEY="your-tinker-key"  # Optional, runs in mock mode without it
+    export TINKER_API_KEY="your-tinker-key"  # Optional, runs in mock mode without it or without the SDK
 
     # Run the example
     poetry run python examples/poem_finetuning_example.py
@@ -46,10 +49,12 @@ class PoemRequest(BaseModel):
 # =============================================================================
 # Step 2: Create the Curator LLM for data generation
 # =============================================================================
-def create_poem_curator() -> LLM:
-    """Create a Curator LLM configured for poem generation."""
+class PoemCurator(LLM):
+    """Curator LLM configured for poem generation."""
 
-    def prompt_func(row: dict) -> str:
+    response_format = Poem
+
+    def prompt(self, row: dict) -> str:
         """Generate a prompt for creating a poem."""
         return f"""You are a creative poet. Write a {row['style']} poem about "{row['theme']}".
 
@@ -58,7 +63,7 @@ while adhering to the conventions of the specified style.
 
 After the poem, provide a brief explanation of its meaning and imagery."""
 
-    def parse_func(row: dict, response: Poem) -> dict:
+    def parse(self, row: dict, response: Poem) -> dict:
         """Parse the response into training format."""
         return {
             "theme": response.theme,
@@ -69,12 +74,10 @@ After the poem, provide a brief explanation of its meaning and imagery."""
             "request_style": row["style"],
         }
 
-    return LLM(
-        model_name="gpt-4o-mini",
-        prompt_func=prompt_func,
-        parse_func=parse_func,
-        response_format=Poem,
-    )
+
+def create_poem_curator() -> LLM:
+    """Create a Curator LLM configured for poem generation."""
+    return PoemCurator(model_name="gpt-4o-mini")
 
 
 # =============================================================================
@@ -119,7 +122,7 @@ def generate_poem_dataset() -> list:
     poem_response = poem_curator(requests)
 
     # Convert response to list
-    poem_data = poem_response.to_list()
+    poem_data = poem_response.dataset.to_list()
 
     print(f"Generated {len(poem_data)} poems")
     return poem_data

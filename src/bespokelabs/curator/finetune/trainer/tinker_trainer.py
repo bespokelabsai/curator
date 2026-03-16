@@ -1,5 +1,6 @@
 """TinkerTrainer implementation for LoRA fine-tuning via Tinker API."""
 
+import inspect
 import time
 from typing import Any, Dict, List, Optional
 
@@ -17,10 +18,16 @@ from bespokelabs.curator.finetune.types import (
 )
 from bespokelabs.curator.log import logger
 
+tinker = None
 try:
-    import tinker
+    import tinker as _tinker
 
-    TINKER_AVAILABLE = True
+    required_tinker_attrs = ("ServiceClient", "Datum", "ModelInput", "EncodedTextChunk")
+    if all(hasattr(_tinker, attr) for attr in required_tinker_attrs):
+        tinker = _tinker
+        TINKER_AVAILABLE = True
+    else:
+        TINKER_AVAILABLE = False
 except ImportError:
     TINKER_AVAILABLE = False
 
@@ -88,16 +95,26 @@ class TinkerTrainer(BaseTrainer):
 
         try:
             self._service_client = tinker.ServiceClient(api_key=self.config.api_key)
-            self._training_client = self._service_client.create_lora_training_client(
-                base_model=self.config.base_model,
-                rank=self.config.lora_config.rank,
-                alpha=self.config.lora_config.alpha,
-                dropout=self.config.lora_config.dropout,
-                target_modules=self.config.lora_config.target_modules,
-                train_mlp=True,
-                train_attn=True,
-                train_unembed=True,
+            training_client_kwargs = {
+                "base_model": self.config.base_model,
+                "rank": self.config.lora_config.rank,
+                "alpha": self.config.lora_config.alpha,
+                "dropout": self.config.lora_config.dropout,
+                "target_modules": self.config.lora_config.target_modules,
+                "train_mlp": True,
+                "train_attn": True,
+                "train_unembed": True,
+            }
+            supported_kwargs, ignored_kwargs = self._get_supported_kwargs(
+                self._service_client.create_lora_training_client,
+                training_client_kwargs,
             )
+            if ignored_kwargs:
+                logger.warning(
+                    "Installed Tinker SDK does not support LoRA args %s; continuing with supported args only.",
+                    ", ".join(ignored_kwargs),
+                )
+            self._training_client = self._service_client.create_lora_training_client(**supported_kwargs)
             self._tokenizer = self._training_client.get_tokenizer()
 
             logger.info(f"TinkerTrainer initialized for model: {self.config.base_model}")
@@ -108,6 +125,21 @@ class TinkerTrainer(BaseTrainer):
             self._service_client = None
             self._training_client = None
             self._tokenizer = None
+
+    @staticmethod
+    def _get_supported_kwargs(callable_obj: Any, kwargs: Dict[str, Any]) -> tuple[Dict[str, Any], List[str]]:
+        """Filter keyword arguments to those accepted by the callable."""
+        try:
+            parameters = inspect.signature(callable_obj).parameters
+        except (TypeError, ValueError):
+            return kwargs, []
+
+        if any(parameter.kind == inspect.Parameter.VAR_KEYWORD for parameter in parameters.values()):
+            return kwargs, []
+
+        supported_kwargs = {key: value for key, value in kwargs.items() if key in parameters}
+        ignored_kwargs = [key for key in kwargs if key not in supported_kwargs]
+        return supported_kwargs, ignored_kwargs
 
     def save_checkpoint(self, name: str, step: int, epoch: int, loss: float) -> Optional[CheckpointInfo]:
         """Save a training checkpoint.
@@ -487,6 +519,11 @@ class TinkerTrainer(BaseTrainer):
 
             if weights is None:
                 continue
+
+            if hasattr(weights, "data"):
+                weights = weights.data
+            elif isinstance(weights, dict) and "data" in weights:
+                weights = weights["data"]
 
             found_weights = True
             effective_weight += sum(float(weight) for weight in weights)
