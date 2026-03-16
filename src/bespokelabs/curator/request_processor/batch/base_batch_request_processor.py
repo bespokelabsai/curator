@@ -327,7 +327,11 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
         else:
             from bespokelabs.curator.cost import external_model_cost
 
-            cost_info = external_model_cost(self.prompt_formatter.model_name, provider=self.compatible_provider, completion_window=self.config.completion_window)
+            cost_info = external_model_cost(
+                self.prompt_formatter.model_name,
+                provider=self.compatible_provider,
+                completion_window=self.config.completion_window,
+            )
             input_cost = cost_info["input_cost_per_token"]
             output_cost = cost_info["output_cost_per_token"]
             if input_cost is not None:
