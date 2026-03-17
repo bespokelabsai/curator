@@ -220,9 +220,10 @@ class LLM:
         # Build GenericRequest objects in memory
         generic_requests = []
         generation_params_per_row = any("generation_params" in row for row in rows if isinstance(row, dict))
+        if self.prompt_formatter.generation_params and generation_params_per_row:
+            logger.warning("Found both default and row-level generation_params. Collided keys will follow values in row-level config.")
         for idx, row in enumerate(rows):
             req = self.prompt_formatter.create_generic_request(row, idx, generation_params_per_row)
-            req.generation_params = {**self._request_processor.config.generation_params, **req.generation_params}
             generic_requests.append(req)
 
         self._request_processor.prompt_formatter = self.prompt_formatter
@@ -230,16 +231,19 @@ class LLM:
         self._request_processor.total_requests = len(generic_requests)
         self._request_processor._is_cached_dataset = False
 
-        # Process requests in memory — use asyncio.run directly to avoid
-        # run_in_event_loop overhead (Rich console cleanup, nest_asyncio checks)
+        # Process requests in memory. Only fall back to nest_asyncio when
+        # there is already a running event loop; runtime failures from the
+        # coroutine itself must propagate instead of retrying the whole batch.
         _kwargs = {
             "processor": self._request_processor,
             "requests": generic_requests,
             "prompt_formatter": self.prompt_formatter,
         }
         try:
-            result = asyncio.run(_process_requests_in_memory(**_kwargs))
+            asyncio.get_running_loop()
         except RuntimeError:
+            result = asyncio.run(_process_requests_in_memory(**_kwargs))
+        else:
             # Fallback if already in an event loop (e.g., Jupyter)
             import nest_asyncio
 

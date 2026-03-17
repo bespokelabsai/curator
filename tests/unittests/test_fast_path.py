@@ -2,6 +2,8 @@ import asyncio
 import datetime
 from contextlib import asynccontextmanager
 
+import pytest
+
 from bespokelabs import curator
 from bespokelabs.curator.constants import _INTERNAL_PROMPT_KEY
 from bespokelabs.curator.request_processor.config import OnlineRequestProcessorConfig
@@ -75,6 +77,16 @@ class DummyFastPathProcessor(BaseOnlineRequestProcessor):
             response_cost=event.get("response_cost"),
             finish_reason=event.get("finish_reason"),
         )
+
+
+class RecordingFastPathProcessor(DummyFastPathProcessor):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.seen_generation_params = []
+
+    async def call_single_request(self, request, session, status_tracker) -> GenericResponse:
+        self.seen_generation_params.append(dict(request.generic_request.generation_params))
+        return await super().call_single_request(request, session, status_tracker)
 
 
 def test_fast_path_response_preserves_failed_requests_and_metadata(tmp_path, monkeypatch):
@@ -175,3 +187,74 @@ def test_fast_path_keeps_consumed_token_capacity_on_invalid_finish(monkeypatch):
     assert result.tracker.available_token_capacity < 0.5
     assert result.tracker.total_prompt_tokens == 1
     assert result.tracker.total_tokens == 1
+
+
+def test_fast_path_does_not_retry_runtime_errors(monkeypatch, tmp_path):
+    monkeypatch.setenv("CURATOR_DISABLE_CACHE", "true")
+
+    llm = curator.LLM(model_name="gpt-4o-mini")
+    llm._request_processor = DummyFastPathProcessor(
+        config=OnlineRequestProcessorConfig(
+            model="gpt-4o-mini",
+            max_retries=0,
+            require_all_responses=False,
+        ),
+        scripted_results={},
+    )
+
+    call_count = 0
+
+    async def fail_in_memory(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        raise RuntimeError("processing exploded")
+
+    monkeypatch.setattr(
+        "bespokelabs.curator.request_processor.online.in_memory_request_processor._process_requests_in_memory",
+        fail_in_memory,
+    )
+
+    with pytest.raises(RuntimeError, match="processing exploded"):
+        llm._run_fast_path(
+            raw_input=["hello"],
+            run_cache_dir=str(tmp_path),
+            metadata={},
+        )
+
+    assert call_count == 1
+
+
+def test_fast_path_matches_standard_generation_params_filtering(tmp_path, monkeypatch):
+    monkeypatch.setenv("CURATOR_DISABLE_CACHE", "true")
+    monkeypatch.setenv("CURATOR_CACHE_DIR", str(tmp_path))
+    monkeypatch.setenv("CURATOR_VIEWER", "false")
+    monkeypatch.delenv("CURATOR_DISABLE_FAST_PATH", raising=False)
+
+    llm = curator.LLM(
+        model_name="gpt-4o-mini",
+        generation_params={"temperature": None, "max_tokens": 7},
+    )
+    processor = RecordingFastPathProcessor(
+        config=OnlineRequestProcessorConfig(
+            model="gpt-4o-mini",
+            max_retries=0,
+            require_all_responses=False,
+            generation_params={"temperature": None, "max_tokens": 7},
+        ),
+        scripted_results={
+            0: [
+                {
+                    "response_message": "ok",
+                    "token_usage": _TokenUsage(input=1, output=1),
+                    "response_cost": 0.01,
+                    "finish_reason": "stop",
+                }
+            ]
+        },
+    )
+    llm._request_processor = processor
+
+    response = llm(["hello"])
+
+    assert len(response.dataset) == 1
+    assert processor.seen_generation_params == [{"max_tokens": 7}]
