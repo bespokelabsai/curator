@@ -10,8 +10,8 @@ llm = curator.LLM(model_name="gpt-4o-mini")
 poem = llm(["Write a poem about the importance of data in AI."])
 print(poem.dataset.to_pandas().iloc[0]["response"])
 
-# Use Claude 3.5 Sonnet for this example.
-llm = curator.LLM(model_name="claude-sonnet-4-20250514", backend="anthropic")
+# Use Claude Sonnet 4.6 for this example.
+llm = curator.LLM(model_name="claude-sonnet-4-6", backend="anthropic")
 poem = llm(["Write a poem about the importance of data in AI."])
 print(poem.dataset.to_pandas().iloc[0]["response"])
 

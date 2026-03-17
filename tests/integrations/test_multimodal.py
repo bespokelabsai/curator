@@ -59,14 +59,14 @@ def test_basic_multimodal_image_url(temp_working_dir):
 def test_basic_multimodal_file_url(temp_working_dir):
     temp_working_dir, backend, vcr_config = temp_working_dir
     hash_book = {
-        "litellm": "e31aa6465350a8385d7432d95b7107b7c191eb7e26af016c08b03e4ad9d45149",
+        "litellm": "d400b0a53fba7dc9b537a2ea0d0a4c0b5f91808d2337680f0396b8d94f11d4d4",
     }
 
     url = "https://pdfobject.com/pdf/sample.pdf"
     dataset = Dataset.from_dict({"pdf": [url], "text": ["Describe the pdf"]})
 
     with vcr_config.use_cassette("basic_multimodal_file_url_completion.yaml"):
-        model_name = "anthropic/claude-3-5-sonnet-20241022"
+        model_name = "anthropic/claude-sonnet-4-6"
         prompter = helper.create_multimodal_llm(model=model_name, backend=backend, input_type="file")
         dataset = prompter(dataset=dataset, working_dir=temp_working_dir).dataset
         recipes = "".join([recipe[0] for recipe in dataset.to_pandas().values.tolist()])
