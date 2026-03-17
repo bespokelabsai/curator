@@ -48,7 +48,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         # NOTE: Removed global litellm.api_base assignment - now passed per-request
         # to allow multiple LLM instances with different base_urls
         self.client = instructor.from_litellm(litellm.acompletion)
-        self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+        self._rate_limits_initialized = False
 
         self._validate_config(config)
         self._set_manual_tpm(config)
@@ -65,6 +65,12 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             assert config.max_input_tokens_per_minute is None, "`max_input_tokens_per_minute` cannot be used with `combined` token strategy"
             assert config.max_output_tokens_per_minute is None, "`max_output_tokens_per_minute` cannot be used with `combined` token strategy"
+
+    def _ensure_rate_limits(self):
+        """Lazily initialize rate limits from API headers on first access."""
+        if not self._rate_limits_initialized:
+            self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+            self._rate_limits_initialized = True
 
     @property
     def _provider(self):
@@ -96,6 +102,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         or uses default value as last resort.
         """
         if not self._concurrency_only_rate_limited:
+            self._ensure_rate_limits()
             return super().max_requests_per_minute
 
     @property
@@ -106,6 +113,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         or uses default value as last resort.
         """
         if not self._concurrency_only_rate_limited:
+            self._ensure_rate_limits()
             return super().max_tokens_per_minute
 
     @property

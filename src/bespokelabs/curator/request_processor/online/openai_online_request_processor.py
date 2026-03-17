@@ -101,8 +101,26 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             self.default_max_tokens_per_minute = None
         else:
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
-            self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+            self._rate_limits_initialized = False
         self.token_encoding = self.get_token_encoding()
+
+    def _ensure_rate_limits(self):
+        """Lazily initialize rate limits from API headers on first access."""
+        if not getattr(self, "_rate_limits_initialized", True):
+            self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+            self._rate_limits_initialized = True
+
+    @property
+    def max_requests_per_minute(self) -> int:
+        """Get max requests per minute, lazily initializing rate limits."""
+        self._ensure_rate_limits()
+        return super().max_requests_per_minute
+
+    @property
+    def max_tokens_per_minute(self) -> int:
+        """Get max tokens per minute, lazily initializing rate limits."""
+        self._ensure_rate_limits()
+        return super().max_tokens_per_minute
 
     @property
     def backend(self):

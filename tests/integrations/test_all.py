@@ -226,6 +226,8 @@ def test_auto_rpm(temp_working_dir):
     _, _, vcr_config = temp_working_dir
     with vcr_config.use_cassette("basic_completion.yaml"):
         llm = helper.create_llm()
+        # Access the public property to trigger lazy rate limit initialization
+        _ = llm._request_processor.max_requests_per_minute
         assert llm._request_processor.header_based_max_requests_per_minute == 10_000
         assert llm._request_processor.header_based_max_tokens_per_minute == 200_000
 

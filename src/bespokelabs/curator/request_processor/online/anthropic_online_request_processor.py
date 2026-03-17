@@ -66,8 +66,8 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         # Handle separate input/output token rate limits
         self._set_manual_tpm(config)
 
-        # Attempt to get rate limits from headers
-        self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+        # Defer rate limit detection to first access
+        self._rate_limits_initialized = False
         self.token_encoding = self.get_token_encoding()
         self._multimodal_key_map = {"image": "image"}
 
@@ -80,6 +80,24 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
             self.manual_max_tokens_per_minute = _TokenUsage(input=config.max_input_tokens_per_minute, output=config.max_output_tokens_per_minute)
         else:
             self.manual_max_tokens_per_minute = None
+
+    def _ensure_rate_limits(self):
+        """Lazily initialize rate limits from API headers on first access."""
+        if not self._rate_limits_initialized:
+            self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+            self._rate_limits_initialized = True
+
+    @property
+    def max_requests_per_minute(self) -> int:
+        """Get max requests per minute, lazily initializing rate limits."""
+        self._ensure_rate_limits()
+        return super().max_requests_per_minute
+
+    @property
+    def max_tokens_per_minute(self) -> int:
+        """Get max tokens per minute, lazily initializing rate limits."""
+        self._ensure_rate_limits()
+        return super().max_tokens_per_minute
 
     @property
     def backend(self):
@@ -103,7 +121,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
                     "content": "Hello, Claude",
                 }
             ],
-            model="claude-3-5-sonnet-latest",
+            model=self.config.model,
         )
 
         return response.headers
