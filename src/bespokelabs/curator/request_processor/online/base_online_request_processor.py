@@ -273,10 +273,13 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         Args:
             generic_request_files: List of request files to process
         """
+        max_requests_per_minute = self.max_requests_per_minute
+        max_tokens_per_minute = self.max_tokens_per_minute
+
         self.tracker = OnlineStatusTracker(
             token_limit_strategy=self.token_limit_strategy,
-            max_requests_per_minute=self.max_requests_per_minute,
-            max_tokens_per_minute=self.max_tokens_per_minute,
+            max_requests_per_minute=max_requests_per_minute,
+            max_tokens_per_minute=max_tokens_per_minute,
             compatible_provider=self.compatible_provider,
             viewer_client=self._viewer_client,
             model=self.prompt_formatter.model_name,

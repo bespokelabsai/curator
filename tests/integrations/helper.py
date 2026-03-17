@@ -170,7 +170,7 @@ def create_camel(temp_working_dir, batch=False, batch_check_interval=1):
 
 _DEFAULT_MODEL_MAP = {
     "openai": "gpt-3.5-turbo",
-    "anthropic": "claude-3-5-sonnet-20241022",
+    "anthropic": "claude-sonnet-4-6",
     "litellm": "gpt-3.5-turbo",
     "vllm": "Qwen/Qwen2.5-1.5B-Instruct",
     "gemini": "gemini-1.5-flash-002",

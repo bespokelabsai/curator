@@ -1,6 +1,7 @@
 """Curator: Bespoke Labs Synthetic Data Generation Library."""
 
 import inspect
+import json
 import os
 from datetime import datetime
 from io import BytesIO
@@ -20,6 +21,8 @@ from bespokelabs.curator.request_processor._factory import _RequestProcessorFact
 from bespokelabs.curator.request_processor.config import BackendParamsType
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.curator_response import CuratorResponse
+
+_DEFAULT_FAST_PATH_THRESHOLD = 100
 
 if TYPE_CHECKING:
     from dataset import Dataset
@@ -144,6 +147,135 @@ class LLM:
             return_completions_object=self.return_completions_object,
         )
 
+    def _should_use_fast_path_early(self, dataset, batch_cancel: bool, working_dir: Optional[str] = None) -> bool:
+        """Decide whether to use the in-memory fast path (before Dataset conversion).
+
+        The fast path bypasses disk I/O, Arrow serialization, caching, and heavy
+        orchestration for small batches. It is enabled only when:
+        - Cache is explicitly disabled (CURATOR_DISABLE_CACHE=true)
+        - Not in batch mode / not an offline processor
+        - Input is small (single item, small list, or small Dataset)
+        - Not explicitly disabled via CURATOR_DISABLE_FAST_PATH env var
+
+        When cache is enabled (the default), the standard pipeline always runs so
+        that repeated prompts hit the fingerprint-based cache under ~/.cache/curator
+        or the user-configured CURATOR_CACHE_DIR / working_dir.
+        """
+        from bespokelabs.curator.request_processor.online.base_online_request_processor import BaseOnlineRequestProcessor
+
+        if batch_cancel:
+            return False
+        if self.batch_mode:
+            return False
+        if not isinstance(self._request_processor, BaseOnlineRequestProcessor):
+            return False
+        # The fast path skips fingerprinting and caching entirely.  Only enable it
+        # when the user has explicitly opted out of caching.
+        disable_cache = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
+        if not disable_cache:
+            return False
+        if working_dir is not None:
+            return False
+        if getattr(self._request_processor, "_tracker_console", None) is not None:
+            return False
+        if os.getenv("CURATOR_DISABLE_FAST_PATH", "").lower() in ["true", "1"]:
+            return False
+
+        # Estimate size without converting to Dataset
+        if dataset is None:
+            return True  # Single request (no dataset)
+        if isinstance(dataset, str) or _is_message_list(dataset):
+            return True  # Single string/message prompt
+        if isinstance(dataset, Dataset):
+            return len(dataset) <= _DEFAULT_FAST_PATH_THRESHOLD
+        if isinstance(dataset, CuratorResponse):
+            return len(dataset.dataset) <= _DEFAULT_FAST_PATH_THRESHOLD
+        if isinstance(dataset, list):
+            return len(dataset) <= _DEFAULT_FAST_PATH_THRESHOLD
+        # For generators/iterables we can't know size cheaply, fall back to standard path
+        return False
+
+    def _run_fast_path(
+        self,
+        raw_input,
+        run_cache_dir: str,
+        metadata: dict[str, Any],
+    ) -> CuratorResponse:
+        """Execute the in-memory fast path for small batches.
+
+        Accepts raw input (before Dataset conversion) to avoid Arrow serialization.
+        Populates the same response metadata and failure artifacts as the standard path.
+        """
+        import asyncio
+
+        from bespokelabs.curator.request_processor.online.in_memory_request_processor import (
+            _process_requests_in_memory,
+            process_responses_to_dataset,
+        )
+
+        # Convert raw input to list of row dicts without going through HuggingFace Dataset
+        rows = _raw_input_to_rows(raw_input)
+        logger.info(f"Using fast path for {len(rows)} request(s)")
+
+        # Build GenericRequest objects in memory
+        generic_requests = []
+        generation_params_per_row = any("generation_params" in row for row in rows if isinstance(row, dict))
+        if self.prompt_formatter.generation_params and generation_params_per_row:
+            logger.warning("Found both default and row-level generation_params. Collided keys will follow values in row-level config.")
+        for idx, row in enumerate(rows):
+            req = self.prompt_formatter.create_generic_request(row, idx, generation_params_per_row)
+            generic_requests.append(req)
+
+        self._request_processor.prompt_formatter = self.prompt_formatter
+        self._request_processor.working_dir = run_cache_dir
+        self._request_processor.total_requests = len(generic_requests)
+        self._request_processor._is_cached_dataset = False
+
+        # Process requests in memory. Only fall back to nest_asyncio when
+        # there is already a running event loop; runtime failures from the
+        # coroutine itself must propagate instead of retrying the whole batch.
+        _kwargs = {
+            "processor": self._request_processor,
+            "requests": generic_requests,
+            "prompt_formatter": self.prompt_formatter,
+        }
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            result = asyncio.run(_process_requests_in_memory(**_kwargs))
+        else:
+            # Fallback if already in an event loop (e.g., Jupyter)
+            import nest_asyncio
+
+            nest_asyncio.apply()
+            result = asyncio.run(_process_requests_in_memory(**_kwargs))
+
+        # Build dataset directly from responses, honoring require_all_responses
+        output = process_responses_to_dataset(
+            result.responses,
+            self.prompt_formatter,
+            require_all_responses=self._request_processor.config.require_all_responses,
+            total_requests=len(generic_requests),
+        )
+        failed_requests_path = _write_fast_path_failed_requests(
+            run_cache_dir=run_cache_dir,
+            requests=generic_requests,
+            failed_request_indices=output.failed_request_indices,
+        )
+        self._request_processor.tracker = result.tracker
+
+        response = CuratorResponse(
+            cache_dir=run_cache_dir,
+            dataset=output.dataset,
+            batch_mode=self.batch_mode,
+            viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+            failed_requests_path=failed_requests_path,
+            model_name=self.prompt_formatter.model_name,
+            metadata=metadata,
+        )
+        response.update_tracker_stats(result.tracker)
+        return response
+
     def _hash_fingerprint(self, dataset_hash: str = "", disable_cache: bool = False):
         if disable_cache:
             fingerprint = xxh64(os.urandom(8)).hexdigest()
@@ -207,11 +339,17 @@ class LLM:
         Returns:
             CuratorResponse: A response object containing the dataset, failed requests, and various statistics
         """
+        raw_dataset = dataset
+        use_fast_path = self._should_use_fast_path_early(raw_dataset, batch_cancel, working_dir)
+
         # We convert from iterable to Dataset because Dataset has random access via row_idx
-        if dataset:
+        if dataset and not use_fast_path:
             dataset = _convert_to_dataset(dataset)
 
-        dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
+        if use_fast_path:
+            dataset_hash = _get_fast_path_dataset_hash(raw_dataset)
+        else:
+            dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
 
         if working_dir is None:
             curator_cache_dir = os.environ.get(
@@ -275,14 +413,23 @@ class LLM:
         metadata_dict["is_hosted_viewer_synced"] = False
         metadata_db.store_metadata(metadata_dict)
 
-        parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
-        dataset = self._request_processor.run(
-            dataset=dataset,
-            working_dir=run_cache_dir,
-            parse_func_hash=parse_func_hash,
-            prompt_formatter=self.prompt_formatter,
-        )
-        viewer_url = self._request_processor.viewer_client.curator_viewer_url
+        if use_fast_path:
+            response = self._run_fast_path(
+                raw_dataset,
+                run_cache_dir=run_cache_dir,
+                metadata=metadata_dict,
+            )
+            dataset = response.dataset
+            viewer_url = response.viewer_url
+        else:
+            parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
+            dataset = self._request_processor.run(
+                dataset=dataset,
+                working_dir=run_cache_dir,
+                parse_func_hash=parse_func_hash,
+                prompt_formatter=self.prompt_formatter,
+            )
+            viewer_url = self._request_processor.viewer_client.curator_viewer_url
 
         if existing_session_id is not None and existing_viewer_sync is False:
             msg = (
@@ -298,6 +445,11 @@ class LLM:
 
         if self._request_processor.viewer_client.hosted:
             metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
+
+        if use_fast_path:
+            response.viewer_url = viewer_url
+            response.save(run_cache_dir)
+            return response
 
         # Get tracker information
         if not self._request_processor._is_cached_dataset:
@@ -390,9 +542,76 @@ def _remove_none_values(d: dict) -> dict:
     return {k: v for k, v in d.items() if v is not None}
 
 
-def _is_message_list(list: list) -> bool:
+def _get_fast_path_dataset_hash(raw_input) -> str:
+    """Hash small fast-path inputs without converting them to an Arrow dataset."""
+    if isinstance(raw_input, CuratorResponse):
+        return raw_input.dataset._fingerprint
+    if isinstance(raw_input, Dataset):
+        return raw_input._fingerprint
+
+    rows = _raw_input_to_rows(raw_input)
+    try:
+        serialized = json.dumps(rows, sort_keys=True, default=str)
+    except TypeError:
+        serialized = repr(rows)
+    return xxh64(serialized.encode("utf-8")).hexdigest()
+
+
+def _write_fast_path_failed_requests(
+    run_cache_dir: str,
+    requests: list,
+    failed_request_indices: list[int],
+) -> Path:
+    """Write the failed-request artifact exposed by CuratorResponse."""
+    failed_requests_path = Path(run_cache_dir) / "failed_requests.jsonl"
+    failed_request_index_set = set(failed_request_indices)
+
+    with failed_requests_path.open("w") as failed_file:
+        for request in requests:
+            if request.original_row_idx in failed_request_index_set:
+                failed_file.write(request.model_dump_json())
+                failed_file.write("\n")
+
+    return failed_requests_path
+
+
+def _is_message_list(value: Any) -> bool:
     """Check if a list is a list of messages."""
-    return all(isinstance(item, dict) and "role" in item and "content" in item for item in list)
+    if not isinstance(value, list):
+        return False
+    return all(isinstance(item, dict) and "role" in item and "content" in item for item in value)
+
+
+def _raw_input_to_rows(raw_input) -> list[dict]:
+    """Convert raw input to a list of row dicts without HuggingFace Dataset overhead.
+
+    This is used by the fast path to avoid Arrow serialization.
+    """
+    if raw_input is None:
+        return [{}]
+    if isinstance(raw_input, CuratorResponse):
+        raw_input = raw_input.dataset
+    if isinstance(raw_input, str) or _is_message_list(raw_input):
+        return [{_INTERNAL_PROMPT_KEY: raw_input}]
+    if isinstance(raw_input, Dataset):
+        # Already a Dataset — iterate without re-creating
+        return list(raw_input)
+    if isinstance(raw_input, list):
+        rows = []
+        for item in raw_input:
+            if isinstance(item, str) or _is_message_list(item):
+                rows.append({_INTERNAL_PROMPT_KEY: item})
+            else:
+                rows.append(item)
+        return rows
+    # Fallback for other iterables
+    rows = []
+    for item in raw_input:
+        if isinstance(item, str) or _is_message_list(item):
+            rows.append({_INTERNAL_PROMPT_KEY: item})
+        else:
+            rows.append(item)
+    return rows
 
 
 def _convert_to_dataset(iterable: Iterable | CuratorResponse) -> "Dataset":
