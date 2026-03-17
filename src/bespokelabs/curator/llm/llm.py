@@ -1,6 +1,7 @@
 """Curator: Bespoke Labs Synthetic Data Generation Library."""
 
 import inspect
+import json
 import os
 from datetime import datetime
 from io import BytesIO
@@ -194,26 +195,22 @@ class LLM:
         # For generators/iterables we can't know size cheaply, fall back to standard path
         return False
 
-    def _run_fast_path(self, raw_input) -> CuratorResponse:
+    def _run_fast_path(
+        self,
+        raw_input,
+        run_cache_dir: str,
+        metadata: dict[str, Any],
+    ) -> CuratorResponse:
         """Execute the in-memory fast path for small batches.
 
         Accepts raw input (before Dataset conversion) to avoid Arrow serialization.
-        Populates CuratorResponse stats (token_usage, cost_info, request_stats,
-        performance_stats) from the in-memory responses so that callers see the
-        same public fields as the standard pipeline.
+        Populates the same response metadata and failure artifacts as the standard path.
         """
         import asyncio
-        import time as _time
 
         from bespokelabs.curator.request_processor.online.in_memory_request_processor import (
             _process_requests_in_memory,
             process_responses_to_dataset,
-        )
-        from bespokelabs.curator.types.curator_response import (
-            CostInfo,
-            PerformanceStats,
-            RequestStats,
-            TokenUsage,
         )
 
         # Convert raw input to list of row dicts without going through HuggingFace Dataset
@@ -228,6 +225,11 @@ class LLM:
             req.generation_params = {**self._request_processor.config.generation_params, **req.generation_params}
             generic_requests.append(req)
 
+        self._request_processor.prompt_formatter = self.prompt_formatter
+        self._request_processor.working_dir = run_cache_dir
+        self._request_processor.total_requests = len(generic_requests)
+        self._request_processor._is_cached_dataset = False
+
         # Process requests in memory — use asyncio.run directly to avoid
         # run_in_event_loop overhead (Rich console cleanup, nest_asyncio checks)
         _kwargs = {
@@ -235,66 +237,40 @@ class LLM:
             "requests": generic_requests,
             "prompt_formatter": self.prompt_formatter,
         }
-        start_time = _time.time()
         try:
-            responses = asyncio.run(_process_requests_in_memory(**_kwargs))
+            result = asyncio.run(_process_requests_in_memory(**_kwargs))
         except RuntimeError:
             # Fallback if already in an event loop (e.g., Jupyter)
             import nest_asyncio
 
             nest_asyncio.apply()
-            responses = asyncio.run(_process_requests_in_memory(**_kwargs))
-        elapsed = _time.time() - start_time
+            result = asyncio.run(_process_requests_in_memory(**_kwargs))
 
         # Build dataset directly from responses, honoring require_all_responses
-        output_dataset = process_responses_to_dataset(
-            responses,
+        output = process_responses_to_dataset(
+            result.responses,
             self.prompt_formatter,
             require_all_responses=self._request_processor.config.require_all_responses,
             total_requests=len(generic_requests),
         )
-
-        # Aggregate stats from responses
-        total_input_tokens = 0
-        total_output_tokens = 0
-        total_cost = 0.0
-        num_succeeded = 0
-        num_failed = 0
-        for resp in responses:
-            if resp.response_errors is not None:
-                num_failed += 1
-            else:
-                num_succeeded += 1
-            if resp.token_usage is not None:
-                total_input_tokens += resp.token_usage.input or 0
-                total_output_tokens += resp.token_usage.output or 0
-            if resp.response_cost is not None:
-                total_cost += resp.response_cost
-
-        total_tokens = total_input_tokens + total_output_tokens
-        elapsed_minutes = max(0.001, elapsed / 60.0)
-
-        return CuratorResponse(
-            dataset=output_dataset,
-            model_name=self.prompt_formatter.model_name,
-            token_usage=TokenUsage(
-                input=total_input_tokens,
-                output=total_output_tokens,
-                total=total_tokens,
-            ),
-            cost_info=CostInfo(total_cost=total_cost),
-            request_stats=RequestStats(
-                total=len(generic_requests),
-                succeeded=num_succeeded,
-                failed=num_failed,
-            ),
-            performance_stats=PerformanceStats(
-                total_time=elapsed,
-                requests_per_minute=num_succeeded / elapsed_minutes,
-                input_tokens_per_minute=total_input_tokens / elapsed_minutes,
-                output_tokens_per_minute=total_output_tokens / elapsed_minutes,
-            ),
+        failed_requests_path = _write_fast_path_failed_requests(
+            run_cache_dir=run_cache_dir,
+            requests=generic_requests,
+            failed_request_indices=output.failed_request_indices,
         )
+        self._request_processor.tracker = result.tracker
+
+        response = CuratorResponse(
+            cache_dir=run_cache_dir,
+            dataset=output.dataset,
+            batch_mode=self.batch_mode,
+            viewer_url=self._request_processor.viewer_client.curator_viewer_url,
+            failed_requests_path=failed_requests_path,
+            model_name=self.prompt_formatter.model_name,
+            metadata=metadata,
+        )
+        response.update_tracker_stats(result.tracker)
+        return response
 
     def _hash_fingerprint(self, dataset_hash: str = "", disable_cache: bool = False):
         if disable_cache:
@@ -359,17 +335,17 @@ class LLM:
         Returns:
             CuratorResponse: A response object containing the dataset, failed requests, and various statistics
         """
-        # Fast path for small batches: bypass disk I/O and heavy orchestration
-        # Check before _convert_to_dataset to avoid Arrow serialization overhead
         raw_dataset = dataset
-        if self._should_use_fast_path_early(raw_dataset, batch_cancel, working_dir):
-            return self._run_fast_path(raw_dataset)
+        use_fast_path = self._should_use_fast_path_early(raw_dataset, batch_cancel, working_dir)
 
         # We convert from iterable to Dataset because Dataset has random access via row_idx
-        if dataset:
+        if dataset and not use_fast_path:
             dataset = _convert_to_dataset(dataset)
 
-        dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
+        if use_fast_path:
+            dataset_hash = _get_fast_path_dataset_hash(raw_dataset)
+        else:
+            dataset_hash = dataset._fingerprint if dataset is not None else xxh64("").hexdigest()
 
         if working_dir is None:
             curator_cache_dir = os.environ.get(
@@ -433,14 +409,23 @@ class LLM:
         metadata_dict["is_hosted_viewer_synced"] = False
         metadata_db.store_metadata(metadata_dict)
 
-        parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
-        dataset = self._request_processor.run(
-            dataset=dataset,
-            working_dir=run_cache_dir,
-            parse_func_hash=parse_func_hash,
-            prompt_formatter=self.prompt_formatter,
-        )
-        viewer_url = self._request_processor.viewer_client.curator_viewer_url
+        if use_fast_path:
+            response = self._run_fast_path(
+                raw_dataset,
+                run_cache_dir=run_cache_dir,
+                metadata=metadata_dict,
+            )
+            dataset = response.dataset
+            viewer_url = response.viewer_url
+        else:
+            parse_func_hash = _get_function_hash(self.prompt_formatter.parse_func)
+            dataset = self._request_processor.run(
+                dataset=dataset,
+                working_dir=run_cache_dir,
+                parse_func_hash=parse_func_hash,
+                prompt_formatter=self.prompt_formatter,
+            )
+            viewer_url = self._request_processor.viewer_client.curator_viewer_url
 
         if existing_session_id is not None and existing_viewer_sync is False:
             msg = (
@@ -456,6 +441,11 @@ class LLM:
 
         if self._request_processor.viewer_client.hosted:
             metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
+
+        if use_fast_path:
+            response.viewer_url = viewer_url
+            response.save(run_cache_dir)
+            return response
 
         # Get tracker information
         if not self._request_processor._is_cached_dataset:
@@ -546,6 +536,39 @@ def _get_function_source(func) -> str:
 def _remove_none_values(d: dict) -> dict:
     """Remove all None values from a dictionary."""
     return {k: v for k, v in d.items() if v is not None}
+
+
+def _get_fast_path_dataset_hash(raw_input) -> str:
+    """Hash small fast-path inputs without converting them to an Arrow dataset."""
+    if isinstance(raw_input, CuratorResponse):
+        return raw_input.dataset._fingerprint
+    if isinstance(raw_input, Dataset):
+        return raw_input._fingerprint
+
+    rows = _raw_input_to_rows(raw_input)
+    try:
+        serialized = json.dumps(rows, sort_keys=True, default=str)
+    except TypeError:
+        serialized = repr(rows)
+    return xxh64(serialized.encode("utf-8")).hexdigest()
+
+
+def _write_fast_path_failed_requests(
+    run_cache_dir: str,
+    requests: list,
+    failed_request_indices: list[int],
+) -> Path:
+    """Write the failed-request artifact exposed by CuratorResponse."""
+    failed_requests_path = Path(run_cache_dir) / "failed_requests.jsonl"
+    failed_request_index_set = set(failed_request_indices)
+
+    with failed_requests_path.open("w") as failed_file:
+        for request in requests:
+            if request.original_row_idx in failed_request_index_set:
+                failed_file.write(request.model_dump_json())
+                failed_file.write("\n")
+
+    return failed_requests_path
 
 
 def _is_message_list(list: list) -> bool:

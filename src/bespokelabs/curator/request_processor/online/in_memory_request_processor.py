@@ -10,14 +10,15 @@ Activated only when CURATOR_DISABLE_CACHE=true is set.
 import asyncio
 import datetime
 import time
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, List, Optional
 
-import aiohttp
 from datasets import Dataset
 from pydantic import BaseModel
 
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.online.base_online_request_processor import APIRequest, BaseOnlineRequestProcessor
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
 from bespokelabs.curator.types.generic_request import GenericRequest
 from bespokelabs.curator.types.generic_response import GenericResponse
 from bespokelabs.curator.types.token_usage import _TokenUsage
@@ -26,11 +27,23 @@ if TYPE_CHECKING:
     from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 
 
+@dataclass
+class _InMemoryRequestResult:
+    responses: List[GenericResponse]
+    tracker: "_SharedStatusTracker"
+
+
+@dataclass
+class _DatasetBuildResult:
+    dataset: Dataset
+    failed_request_indices: list[int]
+
+
 async def _process_requests_in_memory(
     processor: BaseOnlineRequestProcessor,
     requests: List[GenericRequest],
     prompt_formatter: "PromptFormatter",
-) -> List[GenericResponse]:
+) -> _InMemoryRequestResult:
     """Process a list of GenericRequests in memory using the processor's API call logic.
 
     Respects the processor's concurrency limits (max_concurrent_requests),
@@ -45,7 +58,7 @@ async def _process_requests_in_memory(
         prompt_formatter: Formatter for prompts and responses
 
     Returns:
-        List of GenericResponse objects
+        Responses and aggregate tracker stats for the batch
     """
     # Determine concurrency limit from processor config
     max_concurrent = processor.max_concurrent_requests
@@ -59,17 +72,29 @@ async def _process_requests_in_memory(
     tpm = processor.max_tokens_per_minute
     shared_tracker = _SharedStatusTracker(
         seconds_to_pause=processor.config.seconds_to_pause_on_rate_limit,
+        total_requests=len(requests),
         max_requests_per_minute=rpm,
         max_tokens_per_minute=tpm,
+        token_limit_strategy=processor.token_limit_strategy,
+        compatible_provider=processor.compatible_provider,
+        viewer_client=processor.viewer_client,
+        model=prompt_formatter.model_name,
     )
+    shared_tracker.num_tasks_started = len(requests)
 
     async def _call_single(
-        session: aiohttp.ClientSession,
+        session,
         generic_request: GenericRequest,
         idx: int,
     ) -> Optional[GenericResponse]:
         """Make a single API call with retries, respecting concurrency, RPM, and TPM limits."""
         async with semaphore:
+            shared_tracker.num_tasks_in_progress += 1
+            shared_tracker.max_concurrent_requests_seen = max(
+                shared_tracker.max_concurrent_requests_seen,
+                shared_tracker.num_tasks_in_progress,
+            )
+
             generic_request = processor._unpack_multimodal(generic_request)
             api_specific_request = processor.create_api_specific_request_online(generic_request)
 
@@ -88,59 +113,70 @@ async def _process_requests_in_memory(
                 token_estimate = _TokenUsage()
 
             last_error = None
-            for attempt in range(processor.config.max_retries + 1):
-                # Honour shared cooldown from 429s on other requests
-                await shared_tracker.wait_for_cooldown()
+            try:
+                for attempt in range(processor.config.max_retries + 1):
+                    # Wait for RPM + TPM capacity (mirrors the normal path)
+                    await shared_tracker.reserve_capacity(token_estimate)
 
-                # Wait for RPM + TPM capacity (mirrors has_capacity loop)
-                await shared_tracker.wait_for_capacity(token_estimate)
-                shared_tracker.consume_capacity(token_estimate)
+                    try:
+                        generic_response = await processor.call_single_request(
+                            request=request,
+                            session=session,
+                            status_tracker=shared_tracker,
+                        )
 
-                try:
-                    generic_response = await processor.call_single_request(
-                        request=request,
-                        session=session,
-                        status_tracker=shared_tracker,
-                    )
+                        # Validate response format
+                        if generic_response.finish_reason in processor.config.invalid_finish_reasons:
+                            shared_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+                            raise ValueError(f"finish_reason was {generic_response.finish_reason}")
 
-                    # Free the over-estimated capacity; actual usage is in the response
-                    if generic_response.token_usage is not None:
-                        shared_tracker.free_capacity(generic_response.token_usage, token_estimate)
+                        prompt_formatter.response_to_response_format(generic_response.response_message)
 
-                    # Validate response format
-                    if generic_response.finish_reason in processor.config.invalid_finish_reasons:
-                        raise ValueError(f"finish_reason was {generic_response.finish_reason}")
+                        # Success mirrors the file-based path: only free over-estimation
+                        # after the response passes validation.
+                        shared_tracker.update_stats(generic_response.token_usage, generic_response.response_cost)
+                        if generic_response.token_usage is not None:
+                            shared_tracker.free_capacity(generic_response.token_usage, token_estimate)
 
-                    prompt_formatter.response_to_response_format(generic_response.response_message)
-                    return generic_response
+                        shared_tracker.num_tasks_succeeded += 1
+                        return generic_response
 
-                except Exception as e:
-                    last_error = e
-                    # Free blocked capacity on failure
-                    shared_tracker.free_capacity(_TokenUsage(), token_estimate)
-                    if attempt < processor.config.max_retries:
-                        logger.warning(f"Request {idx} attempt {attempt + 1}/{processor.config.max_retries + 1} failed: {e}")
-                        await asyncio.sleep(min(2**attempt, 10))
+                    except Exception as e:
+                        last_error = e
+                        if attempt < processor.config.max_retries:
+                            logger.warning(f"Request {idx} attempt {attempt + 1}/{processor.config.max_retries + 1} failed: {e}")
+                            await asyncio.sleep(min(2**attempt, 10))
 
-            # All retries exhausted
-            logger.error(f"Request {idx} failed permanently: {last_error}")
-            return GenericResponse(
-                response_message=None,
-                response_errors=[str(last_error)],
-                raw_request=api_specific_request,
-                raw_response=None,
-                generic_request=generic_request,
-                created_at=datetime.datetime.now(),
-                finished_at=datetime.datetime.now(),
-            )
+                # All retries exhausted
+                logger.error(f"Request {idx} failed permanently: {last_error}")
+                shared_tracker.num_tasks_failed += 1
+                return GenericResponse(
+                    response_message=None,
+                    response_errors=[str(last_error)],
+                    raw_request=api_specific_request,
+                    raw_response=None,
+                    generic_request=generic_request,
+                    created_at=datetime.datetime.now(),
+                    finished_at=datetime.datetime.now(),
+                )
+            finally:
+                shared_tracker.num_tasks_in_progress -= 1
 
-    connector = aiohttp.TCPConnector(limit=min(len(requests) * 2, 100))
-    timeout = aiohttp.ClientTimeout(total=processor.config.request_timeout)
-    async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
+    tcp_limit = max_concurrent if rpm is None else rpm
+    if processor.viewer_client is not None:
+        await processor.viewer_client.session_inprogress()
+
+    async with processor.aiohttp_connector(tcp_limit) as session:
         tasks = [_call_single(session, req, idx) for idx, req in enumerate(requests)]
         responses = await asyncio.gather(*tasks)
 
-    return [r for r in responses if r is not None]
+    if processor.viewer_client is not None:
+        await processor.viewer_client.session_completed()
+
+    return _InMemoryRequestResult(
+        responses=[r for r in responses if r is not None],
+        tracker=shared_tracker,
+    )
 
 
 def process_responses_to_dataset(
@@ -148,7 +184,7 @@ def process_responses_to_dataset(
     prompt_formatter: "PromptFormatter",
     require_all_responses: bool = True,
     total_requests: int = 0,
-) -> Dataset:
+) -> _DatasetBuildResult:
     """Build a HuggingFace Dataset directly from in-memory responses.
 
     Mirrors the validation behaviour of
@@ -163,7 +199,7 @@ def process_responses_to_dataset(
         total_requests: Total number of requests submitted
 
     Returns:
-        Dataset containing processed responses
+        Dataset and failed request indices
 
     Raises:
         ValueError: If require_all_responses is True and any requests failed,
@@ -176,11 +212,13 @@ def process_responses_to_dataset(
     rows = []
     failed_count = 0
     failed_requests = []
+    failed_request_indices = []
 
     for response in responses:
         if response.response_errors is not None:
             failed_count += 1
             failed_requests.append(response)
+            failed_request_indices.append(response.generic_request.original_row_idx)
             continue
 
         try:
@@ -189,6 +227,7 @@ def process_responses_to_dataset(
             logger.warning("Skipping response due to error parsing response into response format")
             failed_count += 1
             failed_requests.append(response)
+            failed_request_indices.append(response.generic_request.original_row_idx)
             continue
 
         if prompt_formatter.parse_func:
@@ -203,6 +242,7 @@ def process_responses_to_dataset(
                 logger.warning(f"Skipping response due to error in `parse_func` :: {e}")
                 failed_count += 1
                 failed_requests.append(response)
+                failed_request_indices.append(response.generic_request.original_row_idx)
                 continue
 
             if not isinstance(parsed, list):
@@ -210,6 +250,7 @@ def process_responses_to_dataset(
 
             # Validate rows — invalid types / empty dicts are hard errors,
             # matching BaseRequestProcessor.create_dataset_files behaviour.
+            produced_row = False
             for item in parsed:
                 if isinstance(item, BaseModel):
                     item = item.model_dump()
@@ -218,6 +259,9 @@ def process_responses_to_dataset(
                 if not item:
                     raise ValueError(f"Got empty row {item} from `parse_func`. {error_help}")
                 rows.append(item)
+                produced_row = True
+            if not produced_row:
+                failed_request_indices.append(response.generic_request.original_row_idx)
         else:
             response_value = response_message
             if hasattr(response_value, "model_dump"):
@@ -236,10 +280,13 @@ def process_responses_to_dataset(
             error_sample = [str(r.response_errors) for r in failed_requests[:10]]
             raise ValueError(f"{failed_count} requests failed and require_all_responses is True.\n" f"Sample errors: {error_sample}")
 
-    return Dataset.from_list(rows)
+    return _DatasetBuildResult(
+        dataset=Dataset.from_list(rows),
+        failed_request_indices=failed_request_indices,
+    )
 
 
-class _SharedStatusTracker:
+class _SharedStatusTracker(OnlineStatusTracker):
     """Shared status tracker across all in-flight requests in a fast-path batch.
 
     Provides the same attributes that ``call_single_request`` writes to on
@@ -252,35 +299,26 @@ class _SharedStatusTracker:
     def __init__(
         self,
         seconds_to_pause: int = 10,
+        total_requests: int = 0,
         max_requests_per_minute: int | None = None,
         max_tokens_per_minute=None,
+        token_limit_strategy=None,
+        compatible_provider: str | None = None,
+        viewer_client=None,
+        model: str = "",
     ):
-        # Fields written by call_single_request in provider processors
-        self.num_api_errors = 0
-        self.num_rate_limit_errors = 0
-        self.num_other_errors = 0
-        self.time_of_last_rate_limit_error: float = 0
-        self.max_concurrent_requests_seen = 0
+        super().__init__(
+            total_requests=total_requests,
+            max_requests_per_minute=max_requests_per_minute,
+            max_tokens_per_minute=max_tokens_per_minute,
+            token_limit_strategy=token_limit_strategy,
+            compatible_provider=compatible_provider,
+            viewer_client=viewer_client,
+            model=model,
+        )
 
         self._seconds_to_pause = seconds_to_pause
-
-        # RPM capacity
-        self._max_rpm = max_requests_per_minute
-        self._available_request_capacity: float = float(max_requests_per_minute) if max_requests_per_minute else 0
-        self._last_rpm_update: float = time.time()
-
-        # TPM capacity — may be an int (combined) or _TokenUsage (separate)
-        self._max_tpm = max_tokens_per_minute
-        if isinstance(max_tokens_per_minute, _TokenUsage):
-            self._available_token_capacity = _TokenUsage(
-                input=max_tokens_per_minute.input,
-                output=max_tokens_per_minute.output,
-            )
-        elif max_tokens_per_minute is not None:
-            self._available_token_capacity: int | _TokenUsage = int(max_tokens_per_minute)
-        else:
-            self._available_token_capacity = None
-        self._last_tpm_update: float = time.time()
+        self._capacity_lock = asyncio.Lock()
 
     # ------------------------------------------------------------------
     # Cooldown
@@ -295,101 +333,22 @@ class _SharedStatusTracker:
         if remaining > 0:
             logger.warning(f"Fast-path rate-limit cooldown: pausing {int(remaining)}s")
             await asyncio.sleep(remaining)
+            self.last_update_time = time.time()
 
     # ------------------------------------------------------------------
     # RPM + TPM capacity
     # ------------------------------------------------------------------
 
-    def _refresh_capacity(self) -> None:
-        """Replenish capacity based on elapsed time (token-bucket style)."""
-        now = time.time()
+    def update_display(self):
+        """Disable Rich/tqdm tracker updates for the in-memory fast path."""
+        return None
 
-        if self._max_rpm:
-            elapsed = now - self._last_rpm_update
-            self._available_request_capacity = min(
-                self._available_request_capacity + self._max_rpm * elapsed / 60.0,
-                float(self._max_rpm),
-            )
-            self._last_rpm_update = now
-
-        if self._max_tpm is not None and self._available_token_capacity is not None:
-            elapsed = now - self._last_tpm_update
-            if isinstance(self._max_tpm, _TokenUsage):
-                self._available_token_capacity.input = min(
-                    self._available_token_capacity.input + int(self._max_tpm.input * elapsed / 60.0),
-                    self._max_tpm.input,
-                )
-                self._available_token_capacity.output = min(
-                    self._available_token_capacity.output + int(self._max_tpm.output * elapsed / 60.0),
-                    self._max_tpm.output,
-                )
-            else:
-                total = token_total(self._available_token_capacity)
-                max_total = token_total(self._max_tpm)
-                self._available_token_capacity = min(
-                    total + int(max_total * elapsed / 60.0),
-                    max_total,
-                )
-            self._last_tpm_update = now
-
-    def _has_capacity(self, token_estimate: _TokenUsage) -> bool:
-        """Check if there is RPM + TPM capacity for one more request."""
-        self._refresh_capacity()
-
-        # RPM check
-        if self._max_rpm and self._available_request_capacity < 1:
-            return False
-
-        # TPM check
-        if self._available_token_capacity is not None and self._max_tpm is not None:
-            if isinstance(self._available_token_capacity, _TokenUsage):
-                if (token_estimate.input or 0) > (self._available_token_capacity.input or 0):
-                    return False
-                if (token_estimate.output or 0) > (self._available_token_capacity.output or 0):
-                    return False
-            else:
-                needed = (token_estimate.input or 0) + (token_estimate.output or 0)
-                if needed > token_total(self._available_token_capacity):
-                    return False
-
-        return True
-
-    async def wait_for_capacity(self, token_estimate: _TokenUsage) -> None:
-        """Block until RPM + TPM capacity is available."""
-        while not self._has_capacity(token_estimate):
+    async def reserve_capacity(self, token_estimate: _TokenUsage) -> None:
+        """Block until RPM + TPM capacity is available, then reserve it."""
+        while True:
+            await self.wait_for_cooldown()
+            async with self._capacity_lock:
+                if self.has_capacity(token_estimate):
+                    self.consume_capacity(token_estimate)
+                    return
             await asyncio.sleep(0.1)
-
-    def consume_capacity(self, token_estimate: _TokenUsage) -> None:
-        """Reserve capacity before dispatching a request."""
-        if self._max_rpm:
-            self._available_request_capacity -= 1
-
-        if self._available_token_capacity is not None:
-            if isinstance(self._available_token_capacity, _TokenUsage):
-                self._available_token_capacity.input -= token_estimate.input or 0
-                self._available_token_capacity.output -= token_estimate.output or 0
-            else:
-                self._available_token_capacity -= (token_estimate.input or 0) + (token_estimate.output or 0)
-
-    def free_capacity(self, used: _TokenUsage, blocked: _TokenUsage) -> None:
-        """Return over-estimated capacity after a request completes."""
-        if self._available_token_capacity is None:
-            return
-        if isinstance(self._available_token_capacity, _TokenUsage):
-            freed_in = (blocked.input or 0) - (used.input or 0)
-            freed_out = (blocked.output or 0) - (used.output or 0)
-            if freed_in > 0:
-                self._available_token_capacity.input += freed_in
-            if freed_out > 0:
-                self._available_token_capacity.output += freed_out
-        else:
-            freed = ((blocked.input or 0) + (blocked.output or 0)) - ((used.input or 0) + (used.output or 0))
-            if freed > 0:
-                self._available_token_capacity += freed
-
-
-def token_total(value) -> int:
-    """Extract a scalar total from an int or _TokenUsage."""
-    if isinstance(value, _TokenUsage):
-        return (value.input or 0) + (value.output or 0)
-    return int(value)
