@@ -22,6 +22,15 @@ _OTPM_LIMIT = defaultdict(lambda: "output_tokens")
 _OTPM_LIMIT["anthropic"] = "max_tokens"
 _CONCURRENT_ONLY_RATELIMIT_PROVIDERS = {"deepinfra"}
 _FILE_UPLOAD_LIMIT_PROVIDERS = {"openai": 20}  # MB
+_ANTHROPIC_MULTIMODAL_SUPPORTED_PREFIXES = (
+    "claude-3",
+    "claude-sonnet-4",
+    "claude-haiku-4",
+    "claude-opus-4",
+)
+_ANTHROPIC_PDF_BETA_HEADER = {"anthropic-beta": "pdfs-2024-09-25"}
+_ANTHROPIC_IMAGE_TOKEN_ESTIMATE = 1024
+_ANTHROPIC_DOCUMENT_TOKEN_ESTIMATE = 2048
 
 
 class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
@@ -48,7 +57,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         # NOTE: Removed global litellm.api_base assignment - now passed per-request
         # to allow multiple LLM instances with different base_urls
         self.client = instructor.from_litellm(litellm.acompletion)
-        self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+        self._rate_limits_initialized = False
 
         self._validate_config(config)
         self._set_manual_tpm(config)
@@ -65,6 +74,12 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             assert config.max_input_tokens_per_minute is None, "`max_input_tokens_per_minute` cannot be used with `combined` token strategy"
             assert config.max_output_tokens_per_minute is None, "`max_output_tokens_per_minute` cannot be used with `combined` token strategy"
+
+    def _ensure_rate_limits(self):
+        """Lazily initialize rate limits from API headers on first access."""
+        if not self._rate_limits_initialized:
+            self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
+            self._rate_limits_initialized = True
 
     @property
     def _provider(self):
@@ -96,6 +111,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         or uses default value as last resort.
         """
         if not self._concurrency_only_rate_limited:
+            self._ensure_rate_limits()
             return super().max_requests_per_minute
 
     @property
@@ -106,6 +122,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         or uses default value as last resort.
         """
         if not self._concurrency_only_rate_limited:
+            self._ensure_rate_limits()
             return super().max_tokens_per_minute
 
     @property
@@ -129,7 +146,54 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
 
     @property
     def _multimodal_prompt_supported(self) -> bool:
-        return litellm.supports_vision(self.config.model)
+        if litellm.supports_vision(self.config.model):
+            return True
+
+        # LiteLLM's local model map can lag Anthropic releases and return a
+        # false negative for newer or provider-prefixed Claude aliases.
+        model_name = self.config.model.split("/", 1)[-1]
+        if model_name.startswith("claude-"):
+            return any(prefix in model_name for prefix in _ANTHROPIC_MULTIMODAL_SUPPORTED_PREFIXES)
+
+        return False
+
+    def _uses_anthropic_multimodal_format(self, model: str | None = None) -> bool:
+        model_name = (model or self.config.model).split("/", 1)[-1]
+        return model_name.startswith("claude-")
+
+    def _format_multimodal(self, data, mime_type="image/png"):
+        mime_type = mime_type or "image/png"
+        if not self._uses_anthropic_multimodal_format():
+            return super()._format_multimodal(data, mime_type=mime_type)
+
+        block_type = "image" if "image" in mime_type else "document"
+        if data.url and not data.is_local:
+            return {"type": block_type, "source": {"type": "url", "url": data.url}}
+
+        base64_content = data.serialize()
+        self.file_upload_limit_check(base64_content)
+        return {
+            "type": block_type,
+            "source": {
+                "type": "base64",
+                "media_type": mime_type,
+                "data": base64_content,
+            },
+        }
+
+    @staticmethod
+    def _has_anthropic_pdf_document(messages: list[dict]) -> bool:
+        for message in messages:
+            content = message.get("content", [])
+            if not isinstance(content, list):
+                continue
+            for block in content:
+                if block.get("type") != "document":
+                    continue
+                source = block.get("source", {})
+                if source.get("media_type") == "application/pdf" or source.get("type") == "url":
+                    return True
+        return False
 
     def check_structured_output_support(self):
         """Verify if the model supports structured output via litellm.
@@ -176,9 +240,41 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
         Returns:
             _TokenUsage: Total estimated tokens (input and output)
         """
-        input_tokens = litellm.token_counter(model=self.config.model, messages=messages)
+        try:
+            input_tokens = litellm.token_counter(model=self.config.model, messages=messages)
+        except ValueError:
+            if self._uses_anthropic_multimodal_format() and self._has_anthropic_pdf_document(messages):
+                input_tokens = self._estimate_anthropic_document_tokens(messages)
+            else:
+                raise
         output_tokens = int(self.estimate_output_tokens())
         return _TokenUsage(input=input_tokens, output=output_tokens)
+
+    def _estimate_anthropic_document_tokens(self, messages: list[dict]) -> int:
+        input_tokens = 0
+        for message in messages:
+            content = message.get("content", "")
+            role = message.get("role", "user")
+            if isinstance(content, str):
+                input_tokens += litellm.token_counter(model=self.config.model, messages=[{"role": role, "content": content}])
+                continue
+
+            if not isinstance(content, list):
+                continue
+
+            for block in content:
+                block_type = block.get("type")
+                if block_type == "text":
+                    input_tokens += litellm.token_counter(
+                        model=self.config.model,
+                        messages=[{"role": role, "content": block.get("text", "")}],
+                    )
+                elif block_type == "image":
+                    input_tokens += _ANTHROPIC_IMAGE_TOKEN_ESTIMATE
+                elif block_type == "document":
+                    input_tokens += _ANTHROPIC_DOCUMENT_TOKEN_ESTIMATE
+
+        return input_tokens
 
     def test_call(self):
         """Test call to get rate limits."""
@@ -281,6 +377,12 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
                     "threshold": "BLOCK_NONE",
                 },
             ]
+
+        if self._uses_anthropic_multimodal_format(generic_request.model) and self._has_anthropic_pdf_document(generic_request.messages):
+            request["extra_headers"] = {
+                **request.get("extra_headers", {}),
+                **_ANTHROPIC_PDF_BETA_HEADER,
+            }
 
         return request
 
