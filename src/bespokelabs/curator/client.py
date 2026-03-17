@@ -48,11 +48,6 @@ class Client:
         return self._session
 
     @property
-    def authenticated(self):
-        """Check if the client is authenticated."""
-        return self._authenticated
-
-    @property
     def hosted(self):
         """Check if the client is hosted."""
         return self._hosted
