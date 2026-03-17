@@ -571,9 +571,11 @@ def _write_fast_path_failed_requests(
     return failed_requests_path
 
 
-def _is_message_list(list: list) -> bool:
+def _is_message_list(value: Any) -> bool:
     """Check if a list is a list of messages."""
-    return all(isinstance(item, dict) and "role" in item and "content" in item for item in list)
+    if not isinstance(value, list):
+        return False
+    return all(isinstance(item, dict) and "role" in item and "content" in item for item in value)
 
 
 def _raw_input_to_rows(raw_input) -> list[dict]:
