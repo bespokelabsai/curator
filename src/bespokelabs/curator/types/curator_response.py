@@ -10,7 +10,6 @@ from pydantic import BaseModel
 
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.status_tracker.offline_status_tracker import OfflineStatusTracker
-from bespokelabs.curator.status_tracker.tqdm_constants.colors import COST, END, ERROR, HEADER, METRIC, MODEL, SUCCESS
 
 
 @dataclass
@@ -368,52 +367,3 @@ class CuratorResponse:
         self.request_stats.add(other.request_stats)
         self.performance_stats.add(other.performance_stats)
 
-    def display_stats(self):
-        """Display final statistics in plain text format.
-
-        This method prints a formatted summary of all statistics including
-        model information, request statistics, token usage, costs, and
-        performance metrics. The output is color-coded for better readability.
-        """
-        elapsed_time = time.time() - self.start_time
-        elapsed_minutes = elapsed_time / 60
-        rpm = self.request_stats.num_tasks_succeeded / max(0.001, elapsed_minutes)
-        input_tpm = self.token_usage.prompt_tokens / max(0.001, elapsed_minutes)
-        output_tpm = self.token_usage.completion_tokens / max(0.001, elapsed_minutes)
-
-        stats = [
-            f"\n{HEADER}Final Statistics:{END}",
-            f"{HEADER}Model Information:{END}",
-            f"  Model: {MODEL}{self.model_name}{END}",
-            f"  Rate Limit (RPM): {METRIC}{self.max_requests_per_minute}{END}",
-            f"  Rate Limit (TPM): {METRIC}{self.max_tokens_per_minute}{END}",
-            "",
-            f"{HEADER}Request Statistics:{END}",
-            f"  Total Requests: {METRIC}{self.request_stats.total_requests}{END}",
-            f"  Cached: {SUCCESS}{self.request_stats.num_tasks_already_completed}{END}",
-            f"  Successful: {SUCCESS}{self.request_stats.num_tasks_succeeded}{END}",
-            f"  Failed: {ERROR}{self.request_stats.num_tasks_failed}{END}",
-            "",
-            f"{HEADER}Token Statistics:{END}",
-            f"  Total Tokens Used: {METRIC}{self.token_usage.total_tokens:,}{END}",
-            f"  Total Input Tokens: {METRIC}{self.token_usage.prompt_tokens:,}{END}",
-            f"  Total Output Tokens: {METRIC}{self.token_usage.completion_tokens:,}{END}",
-            f"  Average Tokens per Request: {METRIC}{int(self.token_usage.total_tokens / max(1, self.request_stats.num_tasks_succeeded))}{END}",
-            f"  Average Input Tokens: {METRIC}{int(self.token_usage.prompt_tokens / max(1, self.request_stats.num_tasks_succeeded))}{END}",
-            f"  Average Output Tokens: {METRIC}{int(self.token_usage.completion_tokens / max(1, self.request_stats.num_tasks_succeeded))}{END}",
-            "",
-            f"{HEADER}Cost Statistics:{END}",
-            f"  Total Cost: {COST}${self.cost_info.total_cost:.3f}{END}",
-            f"  Average Cost per Request: {COST}${self.cost_info.total_cost / max(1, self.request_stats.num_tasks_succeeded):.3f}{END}",
-            f"  Input Cost per 1M Tokens: {COST}${self.cost_info.input_cost_per_million:.3f}{END}",
-            f"  Output Cost per 1M Tokens: {COST}${self.cost_info.output_cost_per_million:.3f}{END}",
-            "",
-            f"{HEADER}Performance Statistics:{END}",
-            f"  Total Time: {METRIC}{elapsed_time:.2f}s{END}",
-            f"  Average Time per Request: {METRIC}{elapsed_time / max(1, self.request_stats.num_tasks_succeeded):.2f}s{END}",
-            f"  Requests per Minute: {METRIC}{rpm:.1f}{END}",
-            f"  Max Concurrent Requests: {METRIC}{self.performance_stats.max_concurrent_requests}{END}",
-            f"  Input Tokens per Minute: {METRIC}{input_tpm:.1f}{END}",
-            f"  Output Tokens per Minute: {METRIC}{output_tpm:.1f}{END}",
-        ]
-        logger.info("\n".join(stats))

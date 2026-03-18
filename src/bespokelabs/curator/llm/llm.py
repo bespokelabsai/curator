@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Iterable, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Iterable, Optional, Type, TypeVar, Union
 
 from datasets import Dataset
 from pydantic import BaseModel
@@ -20,9 +20,6 @@ from bespokelabs.curator.request_processor._factory import _RequestProcessorFact
 from bespokelabs.curator.request_processor.config import BackendParamsType
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.curator_response import CuratorResponse
-
-if TYPE_CHECKING:
-    from dataset import Dataset
 
 T = TypeVar("T")
 _DictOrBaseModel = Dict[str, Any] | BaseModel
