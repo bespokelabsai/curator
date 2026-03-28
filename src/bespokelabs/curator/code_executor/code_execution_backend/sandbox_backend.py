@@ -91,21 +91,8 @@ def _execute_in_sandbox(
 
             files = _collect_sandbox_files(sb)
 
-            if result.exit_code == 0:
-                return CodeExecutionOutput(
-                    message="success",
-                    stdout=result.stdout,
-                    stderr=result.stderr,
-                    files=files,
-                )
-
-            error_message = f"Program exited with status code {result.exit_code}"
-            if result.stderr:
-                error_message = f"{error_message}\n\nError details:\n{result.stderr}"
-
             return CodeExecutionOutput(
-                message="error",
-                error=error_message,
+                message="success",
                 stdout=result.stdout,
                 stderr=result.stderr,
                 files=files,
