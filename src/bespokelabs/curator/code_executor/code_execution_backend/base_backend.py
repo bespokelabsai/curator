@@ -654,4 +654,3 @@ class BaseCodeExecutionBackend:
         async with aiofiles.open(filename, "a") as f:
             await f.write(json_string + "\n")
         logger.debug(f"Successfully appended response to {filename}")
-

@@ -366,4 +366,3 @@ class CuratorResponse:
         self.cost_info.add(other.cost_info)
         self.request_stats.add(other.request_stats)
         self.performance_stats.add(other.performance_stats)
-
