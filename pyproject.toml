@@ -36,9 +36,6 @@ anthropic = "^0.84.0"
 vertexai = "1.71.1"
 vllm = { version = "^0.6.3", optional = true }
 bespokelabs-sandbox = "0.1.1"
-docker = { version = ">=7.0.0", optional = true }
-ray = { version = ">=2.0.0", optional = true }
-e2b-code-interpreter = { version = ">=1.0.0", optional = true }
 tinker = { version = "^0.8.0", optional = true, python = ">=3.11" }
 
 posthog = "^3.11.0"
@@ -46,7 +43,6 @@ mistralai = "^1.5.1"
 
 [tool.poetry.extras]
 vllm = ["vllm"]
-code_execution = ["docker", "ray", "e2b-code-interpreter"]
 finetune = ["tinker"]
 
 [tool.poetry.group.dev.dependencies]
