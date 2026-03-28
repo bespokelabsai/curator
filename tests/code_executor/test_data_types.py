@@ -101,15 +101,22 @@ def test_code_execution_backend_config():
     assert config.max_requests_per_minute == 10000
     assert config.max_retries == 3
     assert config.seconds_to_pause_on_rate_limit == 10
+    assert config.image is None
+    assert config.docker_image is None
     assert config.base_url is None
 
     # Test custom values
-    custom_config = CodeExecutionBackendConfig(max_requests_per_minute=5000, max_retries=5, seconds_to_pause_on_rate_limit=20, base_url="http://test.com")
+    custom_config = CodeExecutionBackendConfig(max_requests_per_minute=5000, max_retries=5, seconds_to_pause_on_rate_limit=20, image="python:3.11-slim")
 
     assert custom_config.max_requests_per_minute == 5000
     assert custom_config.max_retries == 5
     assert custom_config.seconds_to_pause_on_rate_limit == 20
-    assert custom_config.base_url == "http://test.com"
+    assert custom_config.image == "python:3.11-slim"
+
+    # Test legacy docker_image and base_url still accepted
+    legacy_config = CodeExecutionBackendConfig(docker_image="manimcommunity/manim:latest", base_url="http://ray-cluster:8265")
+    assert legacy_config.docker_image == "manimcommunity/manim:latest"
+    assert legacy_config.base_url == "http://ray-cluster:8265"
 
 
 def test_invalid_code_execution_result():

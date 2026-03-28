@@ -68,5 +68,7 @@ class CodeExecutionBackendConfig(BaseModel):
     max_requests_per_minute: int = 10000
     max_retries: int = 3
     seconds_to_pause_on_rate_limit: int = 10
-    base_url: Optional[str] = None
+    image: Optional[str] = None
+    # Legacy aliases — mapped to sandbox params at runtime
     docker_image: Optional[str] = None
+    base_url: Optional[str] = None

@@ -1,9 +1,6 @@
-import ast
 import asyncio
-import io
 import json
 import os
-import tarfile
 import tempfile
 import time
 from unittest.mock import Mock, patch
@@ -78,53 +75,6 @@ def test_backend_property(backend):
 
 
 @pytest.mark.asyncio
-async def test_create_temp_file(temp_dir):
-    content = "print('hello')"
-    file_path = BaseCodeExecutionBackend._create_temp_file(content, temp_dir)
-
-    assert os.path.exists(file_path)
-    with open(file_path) as f:
-        assert f.read() == content
-
-
-@pytest.mark.asyncio
-async def test_get_created_files(temp_dir):
-    # Create some test files
-    test_files = {"test1.txt": "content1"}
-
-    for path, content in test_files.items():
-        full_path = os.path.join(temp_dir, path)
-        os.makedirs(os.path.dirname(full_path), exist_ok=True)
-        with open(full_path, "w") as f:
-            f.write(content)
-
-    # Add program.py which should be included
-    with open(os.path.join(temp_dir, "program.py"), "w") as f:
-        f.write("print('test')")
-
-    # Get tar bytes
-    tar_bytes = BaseCodeExecutionBackend._get_created_files(temp_dir)
-
-    # Read back the tar contents
-    tar_buffer = io.BytesIO(ast.literal_eval(tar_bytes))
-    with tarfile.open(fileobj=tar_buffer, mode="r") as tar:
-        files = tar.getnames()
-        # Convert paths to use forward slashes for consistency
-        files = [f.replace("\\", "/") for f in files]
-
-        # Verify program.py is included (since base implementation includes all files)
-        assert "program.py" in files
-
-        # Verify other files are included with correct content
-        for path, content in test_files.items():
-            assert path in files
-            # Extract and read the file content
-            member = tar.extractfile(path)
-            assert member is not None
-            assert member.read().decode() == content
-
-
-@pytest.mark.asyncio
 async def test_append_execution_response(temp_dir):
     response_file = os.path.join(temp_dir, "responses.jsonl")
 
@@ -152,8 +102,6 @@ async def test_validate_existing_response_file(backend, temp_dir):
                     code_input="test input",
                     original_row={"input": "test"},
                     execution_directory=temp_dir,
-                    language="python",
-                    timeout=30,
                 ),
                 attempts_left=3,
                 code_formatter=None,
