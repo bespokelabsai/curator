@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install poetry
-          poetry install --with dev --extras "vllm code_execution"
+          poetry install --with dev --extras "vllm"
 
       - name: Run ruff
         run: |
