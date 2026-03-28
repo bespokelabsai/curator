@@ -87,7 +87,7 @@ def _execute_in_sandbox(
             sb.write_file(f"{WORKSPACE_DIR}/program.py", code)
             sb.write_file(f"{WORKSPACE_DIR}/input.txt", code_input)
 
-            result = sb.execute_command("bash", args=["-c", f"cd {WORKSPACE_DIR} && python program.py < input.txt"])
+            result = sb.execute_command("bash", args=["-c", f"cd {WORKSPACE_DIR} && timeout {timeout} python program.py < input.txt"])
 
             files = _collect_sandbox_files(sb)
 
