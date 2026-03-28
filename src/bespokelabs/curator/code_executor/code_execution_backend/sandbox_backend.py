@@ -79,6 +79,10 @@ def _execute_in_sandbox(
     """
     from bespokelabs.sandbox import Sandbox
 
+    sb = None
+    result = None
+    files = ""
+
     try:
         kwargs = {**sandbox_kwargs}
         kwargs.setdefault("timeout_secs", timeout + 30)
@@ -88,21 +92,55 @@ def _execute_in_sandbox(
             sb.write_file(f"{WORKSPACE_DIR}/input.txt", code_input)
 
             result = sb.execute_command("bash", args=["-c", f"cd {WORKSPACE_DIR} && timeout {timeout} python program.py < input.txt"])
-
             files = _collect_sandbox_files(sb)
+            stdout = result.stdout
+            stderr = result.stderr
+
+            if result.exit_code == 0:
+                return CodeExecutionOutput(
+                    message="success",
+                    stdout=stdout,
+                    stderr=stderr,
+                    files=files,
+                )
+
+            if result.exit_code == 124:
+                return CodeExecutionOutput(
+                    message="timeout",
+                    error=f"Execution timed out after {timeout}s",
+                    stdout=stdout,
+                    stderr=stderr,
+                    files=files,
+                )
 
             return CodeExecutionOutput(
-                message="success",
-                stdout=result.stdout,
-                stderr=result.stderr,
+                message="error",
+                error=_format_exit_code_error(result.exit_code, stderr),
+                stdout=stdout,
+                stderr=stderr,
                 files=files,
             )
 
     except Exception as e:
+        if sb is not None and not files:
+            files = _collect_sandbox_files(sb)
+
         return CodeExecutionOutput(
             message="error",
             error=str(e),
+            stdout=getattr(result, "stdout", None),
+            stderr=getattr(result, "stderr", None),
+            files=files,
         )
+
+
+def _format_exit_code_error(exit_code: int | None, stderr: str | None) -> str:
+    """Format a descriptive error message for non-zero exits."""
+    status = "unknown" if exit_code is None else str(exit_code)
+    error_message = f"Program exited with status code {status}"
+    if stderr:
+        error_message = f"{error_message}\n\nError details:\n{stderr}"
+    return error_message
 
 
 def _collect_sandbox_files(sandbox) -> str:
