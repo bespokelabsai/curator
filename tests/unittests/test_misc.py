@@ -14,7 +14,6 @@ def test_safe_model_dump_with_pydantic():
 
 
 def test_safe_model_dump_fallback():
-
     class FakeModel:
         def __init__(self):
             self.name = "test"
