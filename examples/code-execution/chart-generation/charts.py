@@ -108,16 +108,11 @@ plt.close()
                     tar.extractall(path=temp_dir)
 
                 # read the chart image
-                # it is in workspace/chart.png for 'docker' backend and chart.png for 'multiprocessing' backend
                 try:
-                    with open(os.path.join(temp_dir, "workspace/chart.png"), "rb") as f:
+                    with open(os.path.join(temp_dir, "chart.png"), "rb") as f:
                         row["chart_image"] = f.read()
                 except Exception:
-                    try:
-                        with open(os.path.join(temp_dir, "chart.png"), "rb") as f:
-                            row["chart_image"] = f.read()
-                    except Exception:
-                        row["chart_image"] = None
+                    row["chart_image"] = None
 
         return row
 
@@ -126,7 +121,7 @@ if __name__ == "__main__":
     # This section demonstrates how to use the ChartCodeExecutor
 
     # Initialize executor with the multiprocessing backend (runs code in a separate process)
-    executor = ChartCodeExecutor(backend="multiprocessing")  # or ray, docker (with matplotlib image)
+    executor = ChartCodeExecutor(backend="local")  # or docker, e2b, modal, daytona
 
     # Create a simple dataset with one example
     dataset = Dataset.from_list([{"id": 1}])

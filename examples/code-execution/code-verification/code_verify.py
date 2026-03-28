@@ -1,4 +1,4 @@
-"""This example demonstrates how to use Curator's code execution functionality with Ray backend for executing code on large datasets.
+"""This example demonstrates how to use Curator's code execution functionality for executing code on large datasets.
 
 It shows how to verify code solutions against expected outputs.
 
@@ -60,7 +60,7 @@ class TACOCodeExecutor(curator.CodeExecutor):
 
 
 if __name__ == "__main__":
-    executor = TACOCodeExecutor(backend="ray")  # or multiprocessing, docker, e2b
+    executor = TACOCodeExecutor(backend="local")  # or docker, e2b, modal, daytona
     dataset = load_dataset("bespokelabs/sky-t1-taco-test-rejection-sampled-shreyas")
     execution_output = executor(dataset["train"].select(range(10)))
 

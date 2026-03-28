@@ -75,8 +75,8 @@ if __name__ == "__main__":
                     with tarfile.open(fileobj=bytes_io) as tar:
                         tar.extractall(path=temp_dir)
 
-                    # get the video file
-                    video_file = os.path.join(temp_dir, "workspace/media/videos/temp_animation/720p30/video.mp4")
+                    # get the video file (path relative to sandbox workspace)
+                    video_file = os.path.join(temp_dir, "media/videos/temp_animation/720p30/video.mp4")
                     if os.path.exists(video_file):
                         # Copy the video file to the output dataset
                         input["video"] = open(video_file, "rb").read()
@@ -111,7 +111,7 @@ def execute_manim_code(dataset_name="pimpalgaonkar/manim_codes_10k", output_data
     executor = ManimCodeExecutor(
         backend="docker",
         backend_params={
-            "docker_image": "manimcommunity/manim:latest",
+            "image": "manimcommunity/manim:latest",
         },
     )
 

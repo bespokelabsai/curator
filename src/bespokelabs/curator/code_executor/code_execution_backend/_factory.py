@@ -1,31 +1,35 @@
+"""Factory for creating code execution backends."""
+
 from typing import Optional
 
 from bespokelabs.curator.code_executor.types import CodeExecutionBackendConfig
 
+# Map old backend names to sandbox backend names
+_BACKEND_ALIASES = {
+    "multiprocessing": "local",
+}
+
 
 class _CodeExecutionBackendFactory:
+    """Factory for creating code execution backends."""
+
     @classmethod
-    def create(cls, backend: str, backend_params: Optional[CodeExecutionBackendConfig] = None):
+    def create(cls, backend: str, backend_params: Optional[dict] = None):
+        """Create a code execution backend.
+
+        Args:
+            backend: Backend name (e.g. "local", "docker", "e2b", "modal", "daytona")
+            backend_params: Configuration parameters for the backend
+
+        Returns:
+            SandboxCodeExecutionBackend instance
+        """
         if backend_params is None:
             backend_params = {}
 
-        if backend == "multiprocessing":
-            from bespokelabs.curator.code_executor.code_execution_backend.multiprocessing_backend import MultiprocessingCodeExecutionBackend
+        backend_name = _BACKEND_ALIASES.get(backend, backend)
+        config = CodeExecutionBackendConfig(**backend_params)
 
-            _code_executor = MultiprocessingCodeExecutionBackend(CodeExecutionBackendConfig(**backend_params))
-        elif backend == "docker":
-            from bespokelabs.curator.code_executor.code_execution_backend.docker_backend import DockerCodeExecutionBackend
+        from bespokelabs.curator.code_executor.code_execution_backend.sandbox_backend import SandboxCodeExecutionBackend
 
-            _code_executor = DockerCodeExecutionBackend(CodeExecutionBackendConfig(**backend_params))
-        elif backend == "ray":
-            from bespokelabs.curator.code_executor.code_execution_backend.ray_backend import RayCodeExecutionBackend
-
-            _code_executor = RayCodeExecutionBackend(CodeExecutionBackendConfig(**backend_params))
-        elif backend == "e2b":
-            from bespokelabs.curator.code_executor.code_execution_backend.e2b_backend import E2BCodeExecutionBackend
-
-            _code_executor = E2BCodeExecutionBackend(CodeExecutionBackendConfig(**backend_params))
-        else:
-            raise ValueError(f"Unsupported backend: {backend}")
-
-        return _code_executor
+        return SandboxCodeExecutionBackend(config, backend_name=backend_name)

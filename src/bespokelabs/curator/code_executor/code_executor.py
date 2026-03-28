@@ -48,13 +48,13 @@ class CodeExecutor:
 
     def __init__(
         self,
-        backend: str = "multiprocessing",
+        backend: str = "local",
         backend_params: dict = None,
     ):
         """Initialize the CodeExecutor with specified backend and parameters.
 
         Args:
-            backend: The execution backend to use ("multiprocessing" by default)
+            backend: The sandbox backend to use (e.g. "local", "docker", "e2b", "modal", "daytona")
             backend_params: Configuration parameters for the backend
         """
         self._code_executor = _CodeExecutionBackendFactory.create(backend=backend, backend_params=backend_params)

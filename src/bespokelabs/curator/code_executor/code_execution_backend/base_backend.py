@@ -2,11 +2,9 @@
 
 import asyncio
 import glob
-import io
 import json
 import os
 import resource
-import tarfile
 import time
 from abc import abstractmethod
 from typing import TYPE_CHECKING, List, Optional
@@ -656,47 +654,3 @@ class BaseCodeExecutionBackend:
         async with aiofiles.open(filename, "a") as f:
             await f.write(json_string + "\n")
         logger.debug(f"Successfully appended response to {filename}")
-
-    @classmethod
-    def _create_temp_file(cls, content: str, execution_directory: str) -> str:
-        """Create a temporary file with the given content.
-
-        Args:
-            content: Content to write to temp file
-            execution_directory: Directory to create the temp file in
-
-        Returns:
-            Path to the created temp file
-        """
-        # create execution directory if it doesn't exist
-        os.makedirs(execution_directory, exist_ok=True)
-
-        temp_file_path = os.path.join(execution_directory, "program.py")
-        with open(temp_file_path, "w", encoding="utf-8") as temp_file:
-            temp_file.write(content)
-        return temp_file_path
-
-    @classmethod
-    def _get_created_files(cls, program_dir: str) -> bytes:
-        """Get any files created during code execution.
-
-        Args:
-            program_dir: Directory containing the executed program and created files
-
-        Returns:
-            Bytes containing a zip archive of any created files
-        """
-        # Create a BytesIO object to store the zip data
-        tar_buffer = io.BytesIO()
-
-        # Create a zip archive containing all files in program_dir
-        with tarfile.open(fileobj=tar_buffer, mode="w") as tar:
-            # Add all files in program_dir to the archive
-            for filename in os.listdir(program_dir):
-                file_path = os.path.join(program_dir, filename)
-                if os.path.isfile(file_path):
-                    tar.add(file_path, arcname=filename)
-
-        # Get the bytes from the buffer
-        tar_buffer.seek(0)
-        return str(tar_buffer.getvalue())
