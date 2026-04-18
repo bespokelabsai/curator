@@ -3,7 +3,8 @@ from unittest.mock import patch
 
 from rich.console import Console
 
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
+from bespokelabs.curator.types.generic_response import _TokenUsage
 
 
 def test_online_status_tracker_display():
@@ -120,3 +121,18 @@ def test_online_status_tracker_external_model_cost_missing_keys():
             assert tracker.output_cost_per_million is None
             assert "N/A" in tracker.input_cost_str
             assert "N/A" in tracker.output_cost_str
+
+
+def test_online_status_tracker_prefills_capacity_from_limits():
+    """Online trackers should begin with full request/token buckets."""
+    combined_tracker = OnlineStatusTracker(max_requests_per_minute=120, max_tokens_per_minute=2400)
+    assert combined_tracker.available_request_capacity == 120
+    assert combined_tracker.available_token_capacity == 2400
+
+    separate_tracker = OnlineStatusTracker(
+        token_limit_strategy=TokenLimitStrategy.seperate,
+        max_requests_per_minute=60,
+        max_tokens_per_minute=_TokenUsage(input=5000, output=1000),
+    )
+    assert separate_tracker.available_request_capacity == 60
+    assert separate_tracker.available_token_capacity == _TokenUsage(input=5000, output=1000, total=6000)

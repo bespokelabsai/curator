@@ -6,7 +6,6 @@ import time
 import aiohttp
 import litellm
 import openai
-import requests
 import tiktoken
 from pydantic import BaseModel
 
@@ -53,8 +52,8 @@ async def fetch_response(session, *, url, headers, payload, timeout, longlived_r
             error_text = await response.text()
             raise Exception(f"API Error: {response.status} - {error_text}")
         if longlived_response:
-            return await _handle_longlive_response(response)
-        return await response.json()
+            return await _handle_longlive_response(response), response.headers
+        return await response.json(), response.headers
 
 
 class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixin):
@@ -101,7 +100,6 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             self.default_max_tokens_per_minute = None
         else:
             self.api_key = self.config.api_key or os.getenv("OPENAI_API_KEY")
-            self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
         self.token_encoding = self.get_token_encoding()
 
     @property
@@ -123,23 +121,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         else:
             return super().aiohttp_connector(tcp_limit)
 
-    def get_header_based_rate_limits(self) -> tuple[int, int]:
-        """Get rate limits from OpenAI API headers.
-
-        Returns:
-            tuple[int, int]: Contains 'max_requests_per_minute' and 'max_tokens_per_minute'
-
-        Note:
-            - Makes a dummy request to get actual rate limits
-        """
-        if not self.api_key:
-            raise ValueError("Missing OpenAI API Key - Please set OPENAI_API_KEY in your environment vars")
-
-        response = requests.post(
-            self.url,
-            headers={"Authorization": f"Bearer {self.api_key}"},
-            json={"model": self.config.model, "messages": []},
-        )
+    def parse_header_based_rate_limits(self, headers) -> tuple[int, int]:
+        """Parse rate limit headers from a real API response."""
         from bespokelabs.curator.cost import RATE_LIMIT_HEADER
 
         for provider in RATE_LIMIT_HEADER:
@@ -147,16 +130,16 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
                 rate_limit_header = RATE_LIMIT_HEADER[provider]
                 rpm_key = rate_limit_header["request-key"]
                 tpm_key = rate_limit_header["token-key"]
-                rpm = float(response.headers.get(rpm_key["key"], 0))
-                tpm = float(response.headers.get(tpm_key["key"], 0))
+                rpm = float(headers.get(rpm_key["key"], 0))
+                tpm = float(headers.get(tpm_key["key"], 0))
                 if rpm_key.get("type") == "rps":
                     rpm = rpm * 60
                 if tpm_key.get("type") == "tps":
                     tpm = tpm * 60
                 return int(rpm), int(tpm)
 
-        rpm = int(response.headers.get("x-ratelimit-limit-requests", 0))
-        tpm = int(response.headers.get("x-ratelimit-limit-tokens", 0))
+        rpm = int(headers.get("x-ratelimit-limit-requests", 0))
+        tpm = int(headers.get("x-ratelimit-limit-tokens", 0))
 
         return rpm, tpm
 
@@ -280,7 +263,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         request_header = {"Authorization": f"Bearer {self.api_key}"}
         if "/deployments" in self.url:  # Azure deployment
             request_header = {"api-key": f"{self.api_key}"}
-        response = await fetch_response(
+        response, headers = await fetch_response(
             session,
             url=self.url,
             headers=request_header,
@@ -288,6 +271,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             timeout=self.config.request_timeout,
             longlived_response=self._longlived_response,
         )
+        rpm, tpm = self.parse_header_based_rate_limits(headers)
+        self._maybe_update_rate_limits(rpm=rpm, tpm=tpm, status_tracker=status_tracker)
 
         if response is None:
             raise Exception("Response is empty")

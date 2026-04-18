@@ -6,7 +6,6 @@ from typing import TypeVar
 import aiohttp
 import litellm
 import tiktoken
-from anthropic import Anthropic
 from litellm.litellm_core_utils.core_helpers import map_finish_reason
 
 from bespokelabs.curator.cost import cost_processor_factory
@@ -61,13 +60,10 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         self.api_key = self.config.api_key or os.getenv("ANTHROPIC_API_KEY")
 
         # Set token limit strategy to separate for input/output token accounting
-        self.token_limit_strategy = TokenLimitStrategy.seperate
+        self._set_token_limit_strategy(TokenLimitStrategy.seperate)
 
         # Handle separate input/output token rate limits
         self._set_manual_tpm(config)
-
-        # Attempt to get rate limits from headers
-        self.header_based_max_requests_per_minute, self.header_based_max_tokens_per_minute = self.get_header_based_rate_limits()
         self.token_encoding = self.get_token_encoding()
         self._multimodal_key_map = {"image": "image"}
 
@@ -91,23 +87,6 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
         """Compatible provider property."""
         return self._compatible_provider
 
-    def test_call(self):
-        """Test call to get rate limits."""
-        url = "/".join(self.url.split("/")[:-2])
-        client = Anthropic(base_url=url)
-        response = client.messages.with_raw_response.create(
-            max_tokens=1024,
-            messages=[
-                {
-                    "role": "user",
-                    "content": "Hello, Claude",
-                }
-            ],
-            model="claude-3-5-sonnet-latest",
-        )
-
-        return response.headers
-
     def _format_multimodal(self, data, mime_type="image/png"):
         """Format multimodal prompt data for API request."""
         mime_type = mime_type or "image/png"
@@ -127,28 +106,18 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
             }
             return content
 
-    def get_header_based_rate_limits(self) -> tuple[int, _TokenUsage]:
-        """Get rate limits from Anthropic API headers.
+    def parse_header_based_rate_limits(self, headers) -> tuple[int, _TokenUsage]:
+        """Parse rate limit headers from a real Anthropic response.
 
-        Returns:
-            tuple[int, _TokenUsage]: Contains 'max_requests_per_minute' and 'max_tokens_per_minute'
-                with separate input and output token limits
-
-        Note:
-            - Makes a dummy request to get actual rate limits from headers
+        Returns zeros when a header is absent so `_maybe_update_rate_limits`
+        leaves the tracker on its conservative defaults — proxies or custom
+        `base_url`s that strip the `anthropic-ratelimit-*` headers would
+        otherwise silently run at fabricated tier-4 limits.
         """
-        if not self.api_key:
-            raise ValueError("Missing Anthropic API Key - Please set ANTHROPIC_API_KEY in your environment vars")
-
-        # Default to these values when header-based limits can't be determined
-        # Based on Anthropic's documented default rate limits
-        # These defaults are true for tier 4 Claude 3.7
-        # More information: https://docs.anthropic.com/en/api/rate-limits#rate-limits
-        headers = self.test_call()
-        rpm = headers.get("anthropic-ratelimit-requests-limit", 4000)
-        input_tpm = headers.get("anthropic-ratelimit-output-tokens-limit", 80000)
-        output_tpm = headers.get("anthropic-ratelimit-input-tokens-limit", 400000)
-        return int(rpm), _TokenUsage(input=int(input_tpm), output=int(output_tpm))
+        rpm = int(headers.get("anthropic-ratelimit-requests-limit", 0))
+        input_tpm = int(headers.get("anthropic-ratelimit-input-tokens-limit", 0))
+        output_tpm = int(headers.get("anthropic-ratelimit-output-tokens-limit", 0))
+        return rpm, _TokenUsage(input=input_tpm, output=output_tpm)
 
     def estimate_output_tokens(self) -> int:
         """Estimate number of tokens in the response.
@@ -274,6 +243,8 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
             timeout=self.config.request_timeout,
         ) as response_obj:
             response = await response_obj.json()
+            rpm, tpm = self.parse_header_based_rate_limits(response_obj.headers)
+            self._maybe_update_rate_limits(rpm=rpm, tpm=tpm, status_tracker=status_tracker)
 
             if response is None:
                 raise Exception("Response is empty")

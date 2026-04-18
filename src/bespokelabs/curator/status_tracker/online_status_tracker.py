@@ -95,13 +95,23 @@ class OnlineStatusTracker:
 
     def __post_init__(self):
         """Post init."""
+        if self.max_requests_per_minute:
+            self.available_request_capacity = float(self.max_requests_per_minute)
+
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             self.available_token_capacity = t.cast(float, self.available_token_capacity)
+            if self.max_tokens_per_minute:
+                self.available_token_capacity = float(t.cast(int, self.max_tokens_per_minute))
         else:
             self.available_token_capacity = t.cast(_TokenUsage, self.available_token_capacity)
             self.available_token_capacity = _TokenUsage()
             if not self.max_tokens_per_minute:
                 self.max_tokens_per_minute = _TokenUsage()
+            self.max_tokens_per_minute = t.cast(_TokenUsage, self.max_tokens_per_minute)
+            self.available_token_capacity = _TokenUsage(
+                input=self.max_tokens_per_minute.input or 0,
+                output=self.max_tokens_per_minute.output or 0,
+            )
 
         # Initialize cost strings
         if self.model in model_cost:

@@ -605,6 +605,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
 
         processed_responses = self._process_response(generic_response)
         generic_response.parsed_response_message = processed_responses
+        generic_response.parsed_response_message_parse_func_hash = self.parse_func_hash
         if processed_responses is None:
             failed_processed_responses.append(request_idx)
             return

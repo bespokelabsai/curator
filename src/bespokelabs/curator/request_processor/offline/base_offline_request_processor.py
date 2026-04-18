@@ -180,6 +180,7 @@ class BaseOfflineRequestProcessor(BaseRequestProcessor, ABC):
             for response in responses:
                 processed_response = self._process_response(response)
                 response.parsed_response_message = processed_response
+                response.parsed_response_message_parse_func_hash = self.parse_func_hash
                 json_string = json.dumps(response.model_dump(mode="json"), default=str)
                 f.write(json_string + "\n")
 

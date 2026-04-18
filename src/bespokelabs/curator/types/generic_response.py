@@ -30,6 +30,7 @@ class GenericResponse(BaseModel):
 
     response_message: Optional[Dict[str, Any]] | str | BaseModel = None
     parsed_response_message: Optional[list] = None
+    parsed_response_message_parse_func_hash: Optional[str] = None
     response_errors: Optional[List[str]] = None
     raw_response: Optional[Dict[str, Any]]
     raw_request: Optional[Dict[str, Any]] = None

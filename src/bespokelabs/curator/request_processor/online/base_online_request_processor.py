@@ -75,7 +75,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self.manual_max_tokens_per_minute = config.max_tokens_per_minute
         self.default_max_requests_per_minute = defaults["max_requests_per_minute"]
         self.default_max_concurrent_requests = defaults["max_concurrent_requests"]
-        self.default_max_tokens_per_minute = defaults["max_tokens_per_minute"][self.token_limit_strategy.value]
+        self.default_max_tokens_per_minute = None
+        self._set_token_limit_strategy(self.token_limit_strategy)
         self.header_based_max_requests_per_minute = None
         self.header_based_max_tokens_per_minute = None
 
@@ -86,6 +87,85 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         self._tracker_console = None
         self._output_tokens_window = deque(maxlen=_MAX_OUTPUT_MVA_WINDOW)
         self._semaphore = None
+
+    def _set_token_limit_strategy(self, strategy: TokenLimitStrategy) -> None:
+        """Update the token limit strategy and the corresponding default limits."""
+        defaults = _DEFAULT_COST_MAP["online"]["default"]["ratelimit"]["max_tokens_per_minute"][strategy.value]
+        self.token_limit_strategy = strategy
+        if isinstance(defaults, dict):
+            self.default_max_tokens_per_minute = _TokenUsage(**defaults)
+        else:
+            self.default_max_tokens_per_minute = defaults
+
+    def _maybe_update_rate_limits(self, *, rpm: int | None = None, tpm: int | _TokenUsage | None = None, status_tracker=None) -> None:
+        """Update cached header-based rate limits and sync the in-flight tracker.
+
+        Each axis (RPM, input-TPM, output-TPM) is only applied when its incoming
+        value is > 0. This way, a partial header set never hard-zeros an axis we
+        have no fresh signal on.
+        """
+        if rpm and rpm > 0:
+            self.header_based_max_requests_per_minute = rpm
+            if status_tracker is not None and self.manual_max_requests_per_minute is None:
+                old_rpm = status_tracker.max_requests_per_minute or 0
+                status_tracker.max_requests_per_minute = rpm
+                status_tracker.available_request_capacity = min(
+                    float(rpm),
+                    status_tracker.available_request_capacity + max(0, rpm - old_rpm),
+                )
+
+        if tpm is None:
+            return
+
+        if isinstance(tpm, int):
+            if tpm <= 0:
+                return
+            self.header_based_max_tokens_per_minute = tpm
+            if status_tracker is None or self.manual_max_tokens_per_minute is not None:
+                return
+            old_tpm = t.cast(int, status_tracker.max_tokens_per_minute or 0)
+            status_tracker.max_tokens_per_minute = tpm
+            status_tracker.available_token_capacity = min(
+                float(tpm),
+                t.cast(float, status_tracker.available_token_capacity) + max(0, tpm - old_tpm),
+            )
+            return
+
+        # Separate strategy: _TokenUsage. Merge per-axis so axes missing from
+        # the header set inherit whichever value is currently in effect.
+        new_input = tpm.input if (tpm.input or 0) > 0 else None
+        new_output = tpm.output if (tpm.output or 0) > 0 else None
+        if new_input is None and new_output is None:
+            return
+
+        base = status_tracker.max_tokens_per_minute if status_tracker is not None else self.header_based_max_tokens_per_minute
+        if not isinstance(base, _TokenUsage):
+            base = _TokenUsage()
+
+        merged = _TokenUsage(
+            input=new_input if new_input is not None else (base.input or 0),
+            output=new_output if new_output is not None else (base.output or 0),
+        )
+        self.header_based_max_tokens_per_minute = merged
+
+        if status_tracker is None or self.manual_max_tokens_per_minute is not None:
+            return
+
+        current_capacity = status_tracker.available_token_capacity
+        if not isinstance(current_capacity, _TokenUsage):
+            current_capacity = _TokenUsage()
+
+        status_tracker.max_tokens_per_minute = merged
+        status_tracker.available_token_capacity = _TokenUsage(
+            input=min(
+                merged.input or 0,
+                current_capacity.input + max(0, (merged.input or 0) - (base.input or 0)),
+            ),
+            output=min(
+                merged.output or 0,
+                current_capacity.output + max(0, (merged.output or 0) - (base.output or 0)),
+            ),
+        )
 
     @property
     def backend(self) -> str:
@@ -622,6 +702,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         if not responses:
             return
         data.parsed_response_message = responses
+        data.parsed_response_message_parse_func_hash = self.parse_func_hash
         data.response_message = raw_response
         data_dump = data.model_dump()
         json_string = json.dumps(data_dump, default=str)

@@ -222,10 +222,10 @@ def test_low_rpm_setting(temp_working_dir, mock_dataset):
 
 
 @pytest.mark.parametrize("temp_working_dir", (_ONLINE_BACKENDS), indirect=True)
-def test_auto_rpm(temp_working_dir):
-    _, _, vcr_config = temp_working_dir
+def test_auto_rpm(temp_working_dir, mock_dataset):
+    temp_working_dir, backend, vcr_config = temp_working_dir
     with vcr_config.use_cassette("basic_completion.yaml"):
-        llm = helper.create_llm()
+        _, llm = helper.create_basic(temp_working_dir, mock_dataset, backend=backend, return_prompter=True)
         assert llm._request_processor.header_based_max_requests_per_minute == 10_000
         assert llm._request_processor.header_based_max_tokens_per_minute == 200_000
 

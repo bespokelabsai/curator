@@ -123,6 +123,7 @@ class BaseRequestProcessor(ABC):
         """
         self.prompt_formatter = prompt_formatter
         self.working_dir = working_dir
+        self.parse_func_hash = parse_func_hash
         self.total_requests = len(dataset) if dataset is not None else 1
 
         # load from already completed dataset
@@ -464,10 +465,9 @@ class BaseRequestProcessor(ABC):
                                 error_sample.append(str(response.response_errors))
                             continue
 
-                        # TODO: Find a way to not process responses that have already been processed
-                        # We cannot just check if parsed_response_message is not None because it could be from cached previous run
-                        # response.
-                        response.parsed_response_message = self._process_response(response)
+                        if response.parsed_response_message_parse_func_hash != parse_func_hash:
+                            response.parsed_response_message = self._process_response(response)
+                            response.parsed_response_message_parse_func_hash = parse_func_hash
                         if response.parsed_response_message is None:
                             failed_responses_count += 1
                             continue
