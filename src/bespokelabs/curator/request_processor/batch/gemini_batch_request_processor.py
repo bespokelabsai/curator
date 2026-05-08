@@ -299,7 +299,7 @@ class GeminiBatchRequestProcessor(BaseBatchRequestProcessor):
         token_usage = None
         cost = None
         response_message = None
-        finish_reason = "unkown"
+        finish_reason = "unknown"
 
         response_message_raw = ""
         if result_type == "succeeded":

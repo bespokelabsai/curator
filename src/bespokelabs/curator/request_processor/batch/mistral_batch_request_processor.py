@@ -5,6 +5,7 @@ import httpx
 import instructor
 import litellm
 from litellm import model_cost
+from litellm.litellm_core_utils.core_helpers import map_finish_reason
 from mistralai import Mistral
 from mistralai.models import BatchJobOut, UploadFileOutTypedDict
 
@@ -174,24 +175,26 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
 
         Reference: Mistral API request/response format: https://docs.mistral.ai/api/#tag/chat
         """
+        finish_reason = "unknown"
         if raw_response["response"]["status_code"] != 200:
             response_message = None
             response_errors = raw_response["detail"]["msg"]
             token_usage = None
             cost = None
         else:
-            response_message = raw_response["response"]["body"]["choices"][0]["message"]["content"]
+            choice = raw_response["response"]["body"]["choices"][0]
+            response_message = choice["message"]["content"]
             response_errors = None
+            finish_reason = choice.get("finish_reason", "unknown")
             token_usage = _TokenUsage(
                 input=int(raw_response["response"]["body"]["usage"]["prompt_tokens"]),
                 output=int(raw_response["response"]["body"]["usage"]["completion_tokens"]),
                 total=int(raw_response["response"]["body"]["usage"]["total_tokens"]),
             )
-            print("[DEBUG] self.tracker.input_cost_per_million:", self.tracker.input_cost_per_million)
-            print("[DEBUG] self.tracker.output_cost_per_million:", self.tracker.output_cost_per_million)
 
             cost = self._cost_processor.cost(model="mistral/" + self.config.model, prompt=str(generic_request.messages), completion=response_message)
 
+        finish_reason = map_finish_reason(finish_reason)
         generic_response = GenericResponse(
             response_message=response_message,
             response_errors=response_errors,
@@ -202,6 +205,7 @@ class MistralBatchRequestProcessor(BaseBatchRequestProcessor):
             finished_at=batch.finished_at,
             token_usage=token_usage,
             response_cost=cost,
+            finish_reason=finish_reason,
         )
         return generic_response
 
