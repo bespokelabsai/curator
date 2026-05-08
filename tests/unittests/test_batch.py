@@ -6,10 +6,82 @@ from datasets import Dataset
 from pydantic import BaseModel, Field
 
 from bespokelabs import curator
+from bespokelabs.curator.request_processor.batch.mistral_batch_request_processor import MistralBatchRequestProcessor
+from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig
+from bespokelabs.curator.types.generic_batch import GenericBatch, GenericBatchRequestCounts, GenericBatchStatus
+from bespokelabs.curator.types.generic_request import GenericRequest
 
 
 class Answer(BaseModel):
     answer: int = Field(description="The answer to the question")
+
+
+class _CostProcessorStub:
+    def cost(self, **kwargs):
+        return 0.0
+
+
+def _generic_request() -> GenericRequest:
+    return GenericRequest(
+        model="mistral-small-latest",
+        messages=[{"role": "user", "content": "hello"}],
+        original_row={},
+        original_row_idx=0,
+    )
+
+
+def _generic_batch() -> GenericBatch:
+    now = pd.Timestamp("2025-01-01T00:00:00Z").to_pydatetime()
+    return GenericBatch(
+        request_file="requests.jsonl",
+        id="batch-id",
+        created_at=now,
+        finished_at=now,
+        status=GenericBatchStatus.FINISHED.value,
+        api_key_suffix="test",
+        request_counts=GenericBatchRequestCounts(
+            failed=0,
+            succeeded=1,
+            total=1,
+            raw_request_counts_object={},
+        ),
+        raw_batch={},
+        raw_status="SUCCESS",
+    )
+
+
+def test_mistral_batch_response_includes_normalized_finish_reason() -> None:
+    """Mistral batch responses expose finish_reason for invalid-finish retries."""
+    processor = MistralBatchRequestProcessor.__new__(MistralBatchRequestProcessor)
+    processor.config = BatchRequestProcessorConfig(model="mistral-small-latest")
+    processor._cost_processor = _CostProcessorStub()
+
+    raw_response = {
+        "response": {
+            "status_code": 200,
+            "body": {
+                "choices": [
+                    {
+                        "message": {"content": "hello"},
+                        "finish_reason": "length",
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 1,
+                    "completion_tokens": 2,
+                    "total_tokens": 3,
+                },
+            },
+        }
+    }
+
+    response = processor.parse_api_specific_response(
+        raw_response=raw_response,
+        generic_request=_generic_request(),
+        batch=_generic_batch(),
+    )
+
+    assert response.finish_reason == "length"
 
 
 def batch_call(model_name, prompts):
