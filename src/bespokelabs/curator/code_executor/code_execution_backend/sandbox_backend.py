@@ -91,7 +91,16 @@ def _execute_in_sandbox(
             sb.write_file(f"{WORKSPACE_DIR}/program.py", code)
             sb.write_file(f"{WORKSPACE_DIR}/input.txt", code_input)
 
-            result = sb.execute_command("bash", args=["-c", f"cd {WORKSPACE_DIR} && timeout {timeout} python program.py < input.txt"])
+            # Host-style backends (local, ray) rebase absolute paths under
+            # $SANDBOX_ROOT, but their shell prelude does not wrap `cd`, so the
+            # workspace path must be rebased explicitly. Container backends
+            # (docker, e2b, ...) leave SANDBOX_ROOT unset and have a real
+            # /workspace. `python3` rather than `python`: stock macOS hosts
+            # (local backend) have no bare `python` binary.
+            result = sb.execute_command(
+                "bash",
+                args=["-c", f'cd "${{SANDBOX_ROOT:-}}{WORKSPACE_DIR}" && timeout {timeout} python3 program.py < input.txt'],
+            )
             files = _collect_sandbox_files(sb)
             stdout = result.stdout
             stderr = result.stderr
