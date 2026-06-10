@@ -8,8 +8,8 @@ except importlib.metadata.PackageNotFoundError:
     __version__ = "unknown"
 
 from .code_executor.code_executor import CodeExecutor
-from .finetune.config import TinkerTrainerConfig
-from .finetune.trainer import TinkerTrainer
+from .finetune.config import FireworksTrainerConfig, TinkerTrainerConfig
+from .finetune.trainer import FireworksTrainer, TinkerTrainer
 from .llm.llm import LLM
 from .types import prompt as types
 from .utils import load_dataset, push_to_viewer
@@ -19,6 +19,8 @@ __all__ = [
     "CodeExecutor",
     "TinkerTrainer",
     "TinkerTrainerConfig",
+    "FireworksTrainer",
+    "FireworksTrainerConfig",
     "types",
     "push_to_viewer",
     "load_dataset",

@@ -1,9 +1,10 @@
 """Configuration models for fine-tuning."""
 
 import os
+import re
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class AdamParams(BaseModel):
@@ -71,3 +72,105 @@ class TinkerTrainerConfig(BaseModel):
         if "api_key" not in data or data["api_key"] is None:
             data["api_key"] = os.environ.get("TINKER_API_KEY")
         super().__init__(**data)
+
+
+_VALID_LORA_RANKS = (1, 2, 4, 8, 16, 32)
+_RESOURCE_NAME_RE = re.compile(r"^[a-z0-9-]+$")
+
+
+class FireworksTrainerConfig(BaseModel):
+    """Configuration for FireworksTrainer (Fireworks AI managed fine-tuning).
+
+    Fireworks runs supervised fine-tuning (SFT) as a managed, server-side job: a
+    chat-format JSONL dataset is uploaded, an SFT job is submitted against a base
+    model, and the result is a new (LoRA) model that is served via an on-demand
+    deployment. This mirrors :class:`TinkerTrainerConfig` but uses the parameters
+    that the Fireworks API actually exposes.
+
+    Attributes:
+        base_model: Base model to fine-tune. Either a short id (e.g. ``"qwen3-4b"``)
+            or a fully-qualified id (``"accounts/fireworks/models/qwen3-4b"``).
+        epochs: Number of training epochs (``examples * epochs`` must be <= 3,000,000).
+            Note: Fireworks packs examples into batches by token count, so a small
+            dataset may be a single batch (one optimizer step) per epoch. For tiny
+            datasets, use many epochs so the LoRA gets enough gradient steps to learn.
+        learning_rate: Learning rate. ``None`` lets Fireworks auto-select per base
+            model (recommended).
+        lora_rank: LoRA rank; must be a power of two up to 32. ``None`` requests a
+            full-parameter fine-tune instead of LoRA.
+        batch_size: Training batch size (tokens packed per step). ``None`` uses the
+            Fireworks default.
+        max_context_length: Maximum context length during training. ``None`` uses
+            the base-model default.
+        early_stop: Whether to enable early stopping.
+        output_model: Desired id for the resulting fine-tuned model. ``None`` lets
+            Fireworks derive it from the job id.
+        display_name: Human-readable job name; must match ``^[a-z0-9-]+$``.
+        api_key: Fireworks API key (defaults to the ``FIREWORKS_API_KEY`` env var).
+        account_id: Fireworks account id. ``None`` auto-discovers it from the key.
+        deployment_type: Deployment strategy used to serve the fine-tuned model for
+            inference. Fine-tuned LoRA models cannot be served serverlessly, so this
+            defaults to ``"on-demand"`` (Live Merge).
+        accelerator_type: Optional accelerator override for the inference deployment.
+        accelerator_count: Optional accelerator count for the inference deployment.
+        auto_deploy: If True, :meth:`FireworksTrainer.sample` provisions an on-demand
+            deployment automatically on first use. Always release it afterwards with
+            :meth:`FireworksTrainer.close` or by using the trainer as a context manager.
+        poll_interval_seconds: How often to poll the fine-tuning job for progress.
+        max_wait_seconds: Maximum time to wait for a fine-tuning job to complete.
+        inference_base_url: OpenAI-compatible base URL for inference.
+    """
+
+    base_model: str
+    epochs: int = Field(default=1, gt=0)
+    learning_rate: Optional[float] = Field(default=None, gt=0)
+    lora_rank: Optional[int] = Field(default=8)
+    batch_size: Optional[int] = Field(default=None, gt=0)
+    max_context_length: Optional[int] = Field(default=None, gt=0)
+    early_stop: Optional[bool] = None
+    output_model: Optional[str] = None
+    display_name: str = "curator-sft"
+    api_key: Optional[str] = None
+    account_id: Optional[str] = None
+
+    # Inference / deployment
+    deployment_type: str = "on-demand"
+    accelerator_type: Optional[str] = None
+    accelerator_count: Optional[int] = Field(default=None, gt=0)
+    auto_deploy: bool = True
+
+    # Polling / inference
+    poll_interval_seconds: int = Field(default=10, gt=0)
+    max_wait_seconds: int = Field(default=3600, gt=0)
+    inference_base_url: str = "https://api.fireworks.ai/inference/v1"
+
+    model_config = ConfigDict(extra="forbid")
+
+    @field_validator("lora_rank")
+    @classmethod
+    def _validate_lora_rank(cls, value: Optional[int]) -> Optional[int]:
+        """Ensure lora_rank is a power of two up to 32 (Fireworks constraint)."""
+        if value is not None and value not in _VALID_LORA_RANKS:
+            raise ValueError(f"lora_rank must be one of {_VALID_LORA_RANKS} or None for full fine-tuning, got {value}")
+        return value
+
+    @field_validator("display_name")
+    @classmethod
+    def _validate_display_name(cls, value: str) -> str:
+        """Ensure display_name only contains lowercase letters, digits, and hyphens."""
+        if not _RESOURCE_NAME_RE.fullmatch(value):
+            raise ValueError(f"display_name must match ^[a-z0-9-]+$ (lowercase a-z, 0-9, hyphen), got {value!r}")
+        return value
+
+    def __init__(self, **data):
+        """Initialize config, loading API key from environment if not provided."""
+        if data.get("api_key") is None:
+            data["api_key"] = os.environ.get("FIREWORKS_API_KEY")
+        super().__init__(**data)
+
+    @property
+    def qualified_base_model(self) -> str:
+        """Return the fully-qualified base model id (``accounts/fireworks/models/...``)."""
+        if self.base_model.startswith("accounts/"):
+            return self.base_model
+        return f"accounts/fireworks/models/{self.base_model}"

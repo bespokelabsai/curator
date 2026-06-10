@@ -368,6 +368,56 @@ result = trainer.train([{"question": "What is 2+2?", "answer": "4"}, ...])
 
 See the full [poem fine-tuning example](examples/poem_finetuning_example.py) for an end-to-end pipeline that curates data with `curator.LLM` and then fine-tunes with `TinkerTrainer`.
 
+## 🎆 Fine-Tuning with Fireworks AI
+
+Curator also integrates with [Fireworks AI](https://docs.fireworks.ai/fine-tuning/fine-tuning-models) managed fine-tuning. Fireworks runs supervised fine-tuning (SFT) as a server-side job: your chat data is uploaded, an SFT job is submitted against a base model, and the resulting LoRA model is served for inference — all behind the same `BaseTrainer` interface as `TinkerTrainer`.
+
+```bash
+pip install bespokelabs-curator fireworks-ai   # fireworks-ai is an optional add-on
+export FIREWORKS_API_KEY="fw_..."
+```
+
+```python
+from bespokelabs.curator import FireworksTrainer, FireworksTrainerConfig
+
+# Configure the managed fine-tuning job
+config = FireworksTrainerConfig(
+    base_model="qwen3-4b",   # smallest fine-tunable Fireworks model
+    epochs=2,
+    lora_rank=8,             # power of two up to 32; None for full fine-tuning
+    learning_rate=1e-4,      # or omit to let Fireworks auto-select
+)
+
+# Training data is a list of chat-format dicts (or a HuggingFace Dataset).
+# Fireworks requires at least 3 examples.
+training_data = [
+    {"messages": [
+        {"role": "user", "content": "What is Python?"},
+        {"role": "assistant", "content": "Python is a programming language."},
+    ]},
+    # ...
+]
+
+# Upload data + run the supervised fine-tuning job (polls until complete)
+trainer = FireworksTrainer(config)
+result = trainer.train(training_data)
+print(f"Fine-tuned model: {result.weights_name}")
+
+# Sample from the fine-tuned model. Fine-tuned LoRA models can't be served
+# serverlessly, so this provisions an on-demand deployment (takes a few minutes).
+response = trainer.sample("Explain recursion in Python")
+print(response)
+
+trainer.close()   # tear down the deployment when done
+```
+
+> **Note:** Running real Fireworks training requires an account with training quota
+> (Tier 2 / credits). Without the SDK or an API key, `FireworksTrainer` runs in mock
+> mode so examples and tests work offline. Subclass `FireworksTrainer` and override
+> `format_example()` to handle custom data layouts, exactly as with `TinkerTrainer`.
+
+See the [Fireworks examples](examples/fireworks/) for basic and custom-trainer pipelines.
+
 ## Bespoke Curator Viewer
 The hosted curator viewer is a rich interface to visualize data -- and makes visually inspecting the data much easier.
 

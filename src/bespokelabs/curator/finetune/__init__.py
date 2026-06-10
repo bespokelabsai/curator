@@ -1,6 +1,7 @@
 """Fine-tuning module for curator.
 
-This module provides LoRA-based fine-tuning via the Tinker API.
+This module provides LoRA-based fine-tuning via the Tinker API (``TinkerTrainer``)
+and managed fine-tuning via the Fireworks AI API (``FireworksTrainer``).
 
 Example usage:
     ```python
@@ -47,10 +48,11 @@ Custom data formatting:
     ```
 """
 
-from bespokelabs.curator.finetune.config import AdamParams, LoRAConfig, TinkerTrainerConfig
+from bespokelabs.curator.finetune.config import AdamParams, FireworksTrainerConfig, LoRAConfig, TinkerTrainerConfig
 from bespokelabs.curator.finetune.data_formatter import DataFormatter
+from bespokelabs.curator.finetune.fireworks_data_formatter import FireworksDataFormatter
 from bespokelabs.curator.finetune.status_tracker import FinetuneStatusTracker
-from bespokelabs.curator.finetune.trainer import BaseTrainer, TinkerTrainer
+from bespokelabs.curator.finetune.trainer import BaseTrainer, FireworksTrainer, TinkerTrainer
 from bespokelabs.curator.finetune.types import (
     ChatMessage,
     CheckpointInfo,
@@ -63,10 +65,12 @@ from bespokelabs.curator.finetune.types import (
 __all__ = [
     # Config
     "TinkerTrainerConfig",
+    "FireworksTrainerConfig",
     "AdamParams",
     "LoRAConfig",
     # Trainers
     "TinkerTrainer",
+    "FireworksTrainer",
     "BaseTrainer",
     # Types
     "TrainingExample",
@@ -77,5 +81,6 @@ __all__ = [
     "CheckpointInfo",
     # Utilities
     "DataFormatter",
+    "FireworksDataFormatter",
     "FinetuneStatusTracker",
 ]
