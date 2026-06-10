@@ -23,6 +23,7 @@
 </div>
 
 ## 🎉 What's New
+* **[2026.06.09]** [Fireworks AI integration for fine-tuning](examples/fireworks/): Run managed supervised fine-tuning (SFT) on Fireworks AI with `FireworksTrainer` — upload curated data, train a LoRA, and sample from the deployed model behind the same trainer interface as Tinker.
 * **[2026.03.14]** [Tinker integration for fine-tuning](examples/poem_finetuning_example.py): Go from curated data to a LoRA fine-tuned model in a few lines of Python using the Tinker SDK.
 * **[2025.12.05]** [Launched OpenThoughts-Agents](https://www.open-thoughts.ai/blog/agent) whose data was curated using Curator.
 * **[2025.04.09]** [Launching Reasoning Datasets Competition](https://huggingface.co/blog/bespokelabs/reasoning-datasets-competition) with HuggingFace and Together.ai. Win $5000 USD worth of prizes!
@@ -64,6 +65,7 @@ pip install bespokelabs-curator
 | **Sentiment analysis** | <a href="https://colab.research.google.com/drive/1Zfl3g7POsqqYQqkzXdyhYRSAymLhZugn?usp=sharing" target="_blank"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a> | Aspect-based sentiment analysis of restaurant reviews and finetuning using Together.ai |
 | **RAFT for domain-specific RAG** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/blocks/raft" target="_blank">Code</a> | Implement Retrieval Augmented Fine-Tuning (RAFT) that processes domain-specific documents, generates questions, and prepares data for fine-tuning LLMs. |
 | **Poem generation & LoRA fine-tuning** | <a href="https://github.com/bespokelabsai/curator/blob/main/examples/poem_finetuning_example.py" target="_blank">Code</a> | End-to-end pipeline: curate poem data with Curator, then LoRA fine-tune with TinkerTrainer |
+| **Managed fine-tuning on Fireworks AI** | <a href="https://github.com/bespokelabsai/curator/tree/main/examples/fireworks" target="_blank">Code</a> | Run a managed SFT job on Fireworks AI with FireworksTrainer, then sample from the deployed LoRA model |
 
 ### Data Generation
 | **Task** | **Link(s)** | **Goal** |
