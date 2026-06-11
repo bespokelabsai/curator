@@ -52,4 +52,6 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          poetry run pytest --cov='bespokelabs' --cov-report=html --cov-fail-under=80  tests/
+          # Scope coverage to curator itself: bespokelabs-sandbox installs into the
+          # same bespokelabs.* namespace and would otherwise be measured too.
+          poetry run pytest --cov='bespokelabs.curator' --cov-report=html --cov-fail-under=80  tests/
