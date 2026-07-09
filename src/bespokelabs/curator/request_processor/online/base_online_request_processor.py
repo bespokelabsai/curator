@@ -315,7 +315,9 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     def aiohttp_connector(self, tcp_limit: int) -> aiohttp.ClientSession:
         """Create an aiohttp connector with rate limiting."""
         connector = aiohttp.TCPConnector(limit=10 * tcp_limit)
-        return aiohttp.ClientSession(connector=connector)
+        # trust_env=True makes aiohttp honor HTTP_PROXY/HTTPS_PROXY/ALL_PROXY/NO_PROXY,
+        # which it otherwise ignores unlike requests/httpx (see issue #699).
+        return aiohttp.ClientSession(connector=connector, trust_env=True)
 
     async def process_requests_from_file(
         self,
