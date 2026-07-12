@@ -177,4 +177,14 @@ class _RequestProcessorFactory:
 
             return MistralBatchRequestProcessor(config)
 
+        if backend == "azure":
+            config.api_key = config.api_key or os.getenv("AZURE_OPENAI_API_KEY")
+            if not config.api_key:
+                raise ValueError("AZURE_OPENAI_API_KEY is not set.")
+            if not batch:
+                raise ValueError("Only batch mode is supported with the Azure backend.")
+            from bespokelabs.curator.request_processor.batch.azure_batch_request_processor import AzureBatchRequestProcessor
+
+            return AzureBatchRequestProcessor(config)
+
         raise ValueError(f"Unknown backend: {backend}")

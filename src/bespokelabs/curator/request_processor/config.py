@@ -70,6 +70,10 @@ class BatchRequestProcessorConfig(RequestProcessorConfig):
         delete_successful_batch_files: Whether to delete batch files after successful processing
         delete_failed_batch_files: Whether to delete batch files after failed processing
         completion_window: Time window to wait for batch completion
+        azure_deployment: Azure OpenAI deployment name to target (required for the Azure backend).
+            This is distinct from `model`, which stays the underlying model name (e.g. "gpt-4o")
+            used for litellm-based cost lookups, since Azure deployment names are user-chosen and
+            don't map 1:1 to a model name.
     """
 
     batch_size: t.Union[int, str] = Field(default=10_000)
@@ -77,6 +81,7 @@ class BatchRequestProcessorConfig(RequestProcessorConfig):
     delete_successful_batch_files: bool = False
     delete_failed_batch_files: bool = False
     completion_window: str = "24h"
+    azure_deployment: str | None = None
 
     def __post_init__(self):
         """Post-initialization hook to validate batch size."""
@@ -165,6 +170,7 @@ class BatchBackendParams(BaseBackendParams, total=False):
     batch_check_interval: t.Optional[int]
     delete_successful_batch_files: t.Optional[bool]
     delete_failed_batch_files: t.Optional[bool]
+    azure_deployment: t.Optional[str]
 
 
 class OfflineBackendParams(BaseBackendParams, total=False):

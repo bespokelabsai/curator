@@ -31,6 +31,10 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
     file uploads, batch submissions, and result retrieval.
     """
 
+    # Overridable so OpenAI-compatible providers with a slightly different batch endpoint
+    # convention (e.g. Azure's, which omits the "/v1" prefix) don't need to duplicate create_batch.
+    _BATCH_ENDPOINT = "/v1/chat/completions"
+
     def __init__(self, config: BatchRequestProcessorConfig, compatible_provider=None) -> None:
         """Initialize the OpenAIBatchRequestProcessor."""
         super().__init__(config)
@@ -295,7 +299,7 @@ class OpenAIBatchRequestProcessor(BaseBatchRequestProcessor, OpenAIRequestMixin)
         try:
             batch = await self.client.batches.create(
                 input_file_id=batch_file_id,
-                endpoint="/v1/chat/completions",
+                endpoint=self._BATCH_ENDPOINT,
                 completion_window=self.config.completion_window,
                 metadata=metadata,
             )

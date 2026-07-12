@@ -125,9 +125,30 @@ class _InferenceNetCostProcessor(_LitellmCostProcessor):
         return super().cost(completion_window=completion_window, **kwargs) * times
 
 
+class _AzureCostProcessor(_LitellmCostProcessor):
+    """Cost processor for Azure OpenAI.
+
+    `config.model` stays the underlying model name (e.g. "gpt-4o") rather than the Azure
+    deployment name, since deployment names are user-chosen and aren't in litellm's cost table.
+    This prefers litellm's `azure/`-prefixed pricing (which can differ slightly from the bare
+    OpenAI entry) when available, falling back to the default OpenAI-style lookup otherwise.
+    """
+
+    def cost(self, *, completion_window="*", **kwargs):
+        azure_model = f"azure/{self.config.model}"
+        if azure_model in litellm.model_cost:
+            kwargs["model"] = azure_model
+            cost_to_complete = litellm.completion_cost(**kwargs)
+            if self.batch:
+                cost_to_complete *= 0.5
+            return cost_to_complete
+        return super().cost(completion_window=completion_window, **kwargs)
+
+
 COST_PROCESSOR = defaultdict(lambda: _LitellmCostProcessor)
 COST_PROCESSOR["klusterai"] = _KlusterAICostProcessor
 COST_PROCESSOR["inference.net"] = _InferenceNetCostProcessor
+COST_PROCESSOR["azure"] = _AzureCostProcessor
 
 
 def cost_processor_factory(backend, config=None, batch=False):
