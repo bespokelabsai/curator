@@ -48,7 +48,7 @@ finetune = ["tinker"]
 [tool.poetry.group.dev.dependencies]
 twine = "^5.0.0"
 ruff = "^0.8.6"
-vcrpy = "^7.0.0"
+vcrpy = ">=7,<9"
 isort = "^5.13.2"
 pre-commit = "^4.0.1"
 pytest = "^8.3.3"
