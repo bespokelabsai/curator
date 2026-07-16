@@ -139,7 +139,21 @@ class BaseRequestProcessor(ABC):
                 raise ValueError(f"Model {self.config.model} does not support structured output, response_format: {self.prompt_formatter.response_format}")
         generic_request_files = self.create_request_files(dataset)
 
-        self.requests_to_responses(generic_request_files)
+        try:
+            self.requests_to_responses(generic_request_files)
+        except KeyboardInterrupt:
+            if not self.config.allow_partial_result_on_interrupt:
+                raise
+
+            logger.warning(
+                "Interrupted before all requests finished. Returning a partial dataset from cached successful responses. "
+                f"Unfinished requests will be written to {os.path.join(self.working_dir, 'failed_requests.jsonl')}."
+            )
+            return self.create_dataset_files(
+                parse_func_hash,
+                allow_incomplete_responses=True,
+            )
+
         return self.create_dataset_files(parse_func_hash)
 
     def _verify_existing_request_files(self, dataset: Optional["Dataset"]) -> List[int]:
@@ -422,11 +436,14 @@ class BaseRequestProcessor(ABC):
     def create_dataset_files(
         self,
         parse_func_hash: str,
+        allow_incomplete_responses: bool = False,
     ) -> "Dataset":
         """Creates dataset from response files.
 
         Args:
             parse_func_hash: Hash identifying the dataset version
+            allow_incomplete_responses: Whether to build a dataset when some requests
+                do not have responses yet.
 
         Returns:
             Dataset containing processed responses
@@ -502,7 +519,7 @@ class BaseRequestProcessor(ABC):
 
             if failed_responses_count > 0:
                 logger.warning(f"{failed_responses_count} requests failed.")
-                if self.config.require_all_responses:
+                if self.config.require_all_responses and not allow_incomplete_responses:
                     os.remove(dataset_file)
                     raise ValueError(f"Some requests failed and require_all_responses is True. {error_sample_msg}")
             # Create a file with all failed requests
@@ -547,7 +564,7 @@ class BaseRequestProcessor(ABC):
                     f"{n_requests - total_responses_count} requests do not have responses. "
                     f"n_requests is {n_requests} and n_responses is {total_responses_count}"
                 )
-                if self.config.require_all_responses:
+                if self.config.require_all_responses and not allow_incomplete_responses:
                     os.remove(dataset_file)
                     raise ValueError("Some requests do not have responses and require_all_responses is True.")
 

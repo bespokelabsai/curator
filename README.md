@@ -190,6 +190,16 @@ for troubleshooting information.
 > So now if you run the same prompt again, you will get the same response, pretty much instantly.
 > You can delete the cache at `~/.cache/curator` or disable it with `export CURATOR_DISABLE_CACHE=true`.
 
+For long runs, you can opt into partial results after a keyboard interrupt:
+
+```python
+llm = curator.LLM(
+    model_name="gpt-4o-mini",
+    backend_params={"allow_partial_result_on_interrupt": True},
+)
+```
+
+If you press Ctrl+C, Curator returns the successful responses already written to cache and records unfinished requests in `failed_requests.jsonl`.
 
 > [!IMPORTANT]
 > Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
