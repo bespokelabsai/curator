@@ -190,6 +190,30 @@ for troubleshooting information.
 > So now if you run the same prompt again, you will get the same response, pretty much instantly.
 > You can delete the cache at `~/.cache/curator` or disable it with `export CURATOR_DISABLE_CACHE=true`.
 
+If you change generation parameters after a partial run, online processors can
+reuse successful responses from the previous cache while retrying only failed or
+unanswered requests with the new parameters:
+
+```python
+first_run = poet(topics, working_dir="my-cache")
+
+poet_with_more_tokens = Poet(
+    model_name="gpt-4o-mini",
+    generation_params={"max_tokens": 16384},
+)
+completed_run = poet_with_more_tokens(
+    topics,
+    working_dir="my-cache",
+    reuse_cache=first_run,
+)
+```
+
+`reuse_cache` also accepts a cache directory or a run fingerprint. For online
+text requests, Curator reuses only successful responses whose original input,
+rendered messages, model, and response schema match exactly. Generation
+parameters and row order may differ. Failed responses and non-matching prompts
+are submitted normally with the new parameters.
+
 
 > [!IMPORTANT]
 > Make sure to set your API keys as environment variables for the model you are calling. For example running `export OPENAI_API_KEY=sk-...` and `export ANTHROPIC_API_KEY=ant-...` will allow you to run the previous two examples. A full list of supported models and their associated environment variable names can be found [in the litellm docs](https://docs.litellm.ai/docs/providers).
