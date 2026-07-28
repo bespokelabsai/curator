@@ -184,6 +184,35 @@ class LLM:
             logger.warning(f"Failed to load curator cached response: {e}")
             return None
 
+    @staticmethod
+    def _resolve_reuse_cache_dir(
+        reuse_cache: Union[str, Path, CuratorResponse],
+        curator_cache_dir: str,
+    ) -> Path:
+        """Resolve an explicit response cache used to seed a new run."""
+        if isinstance(reuse_cache, CuratorResponse):
+            if reuse_cache.cache_dir is None:
+                raise ValueError(
+                    "The supplied CuratorResponse does not have a cache directory."
+                )
+            candidate = Path(reuse_cache.cache_dir)
+        elif isinstance(reuse_cache, (str, Path)) and not isinstance(
+            reuse_cache, bool
+        ):
+            candidate = Path(reuse_cache).expanduser()
+            if not candidate.exists() and not candidate.is_absolute():
+                candidate = Path(curator_cache_dir) / candidate
+        else:
+            raise TypeError(
+                "reuse_cache must be a CuratorResponse, cache directory, "
+                "or run fingerprint."
+            )
+
+        candidate = candidate.resolve()
+        if not candidate.is_dir():
+            raise ValueError(f"Reuse cache directory does not exist: {candidate}")
+        return candidate
+
     def __call__(
         self,
         dataset: Optional[Iterable | CuratorResponse] = None,
@@ -191,6 +220,7 @@ class LLM:
         batch_cancel: bool = False,
         batch_cancel_auto_confirm: bool = False,
         cache_dir: Optional[Union[str, Path]] = None,
+        reuse_cache: Optional[Union[str, Path, CuratorResponse]] = None,
     ) -> CuratorResponse:
         """Apply structured completions in parallel to a dataset using specified model and prompts.
 
@@ -200,6 +230,9 @@ class LLM:
             batch_cancel (bool): Whether to cancel the batch if it is running
             batch_cancel_auto_confirm (bool): Whether we should automatically run batch cancellation without explicit user confirmation (for testing)
             cache_dir: Directory to cache results
+            reuse_cache: Previous CuratorResponse, cache directory, or run
+                fingerprint whose successful exact request matches should be
+                reused. Generation parameters may differ.
 
         Returns:
             CuratorResponse: A response object containing the dataset, failed requests, and various statistics
@@ -217,6 +250,12 @@ class LLM:
             )
         else:
             curator_cache_dir = working_dir
+
+        reuse_cache_dir = (
+            self._resolve_reuse_cache_dir(reuse_cache, curator_cache_dir)
+            if reuse_cache is not None
+            else None
+        )
 
         disable_cache = os.getenv("CURATOR_DISABLE_CACHE", "").lower() in ["true", "1"]
         fingerprint = self._hash_fingerprint(dataset_hash, disable_cache)
@@ -278,6 +317,7 @@ class LLM:
             working_dir=run_cache_dir,
             parse_func_hash=parse_func_hash,
             prompt_formatter=self.prompt_formatter,
+            reuse_cache_dir=str(reuse_cache_dir) if reuse_cache_dir else None,
         )
         viewer_url = self._request_processor.viewer_client.curator_viewer_url
 
