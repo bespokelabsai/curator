@@ -317,7 +317,7 @@ class OnlineStatusTracker:
                 # 3. When costs or tokens change
                 should_update = (
                     current_time - self._last_stats_update >= _STATUS_UPDATE_INTERVAL  # Time-based update
-                    and (
+                    or (
                         self.num_tasks_in_progress != getattr(self, "_last_in_progress", -1)  # Task state change
                         or self.num_tasks_succeeded != getattr(self, "_last_succeeded", -1)
                         or self.num_tasks_failed != getattr(self, "_last_failed", -1)
