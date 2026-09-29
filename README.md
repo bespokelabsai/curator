@@ -56,6 +56,28 @@ Check out our full documentation for [getting started](https://docs.bespokelabs.
 ```bash
 pip install bespokelabs-curator
 ```
+
+Curator and Sandbox share the `bespokelabs` import namespace:
+
+```bash
+python -m pip install bespokelabs-curator bespokelabs-sandbox
+```
+
+```python
+from bespokelabs import curator, sandbox
+```
+
+The separate `bespokelabs` distribution is not required. The Nimble SDK's
+distribution is `bespokelabs-nimble`. Each project must own only its subpackage
+(`bespokelabs/curator`, `bespokelabs/sandbox`, or `bespokelabs/nimble`), leaving
+the shared `bespokelabs` directory without an `__init__.py`.
+
+When upgrading from releases that installed that shared file, use a fresh virtual
+environment and run `python -m pip` with the Python interpreter used by your app
+or notebook. Old editable checkouts or a local `bespokelabs.py` can shadow the
+installed namespace. A traceback naming a dependency inside Curator indicates a
+dependency failure; changing the package name alone will not fix it.
+
 ## 📕 Examples
 
 ### Finetuning/Distillation
