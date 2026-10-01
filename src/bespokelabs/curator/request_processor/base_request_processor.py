@@ -22,6 +22,7 @@ from bespokelabs.curator.file_utilities import count_lines
 from bespokelabs.curator.hf_card_template import HUGGINGFACE_CARD_TEMPLATE
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.log import logger
+from bespokelabs.curator.request_processor.cache import reuse_cached_responses
 from bespokelabs.curator.request_processor.config import BatchRequestProcessorConfig, RequestProcessorConfig
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.types.generic_response import GenericResponse
@@ -106,6 +107,7 @@ class BaseRequestProcessor(ABC):
         working_dir: str,
         parse_func_hash: str,
         prompt_formatter: PromptFormatter,
+        reuse_cache_dir: str | None = None,
     ) -> "Dataset":
         """Uses the API to completing the specific map by calling the LLM.
 
@@ -114,6 +116,8 @@ class BaseRequestProcessor(ABC):
             working_dir: Working directory to save files (requests.jsonl, responses.jsonl, dataset.arrow)
             parse_func_hash: Hash of the parse function for caching
             prompt_formatter: Formatter for generating prompts from dataset rows
+            reuse_cache_dir: Previous run directory whose successful exact
+                request matches should seed this run
 
         Returns:
             Dataset: Completed dataset with LLM responses
@@ -139,8 +143,25 @@ class BaseRequestProcessor(ABC):
                 raise ValueError(f"Model {self.config.model} does not support structured output, response_format: {self.prompt_formatter.response_format}")
         generic_request_files = self.create_request_files(dataset)
 
+        if reuse_cache_dir is not None:
+            if not self.supports_cache_reuse:
+                raise NotImplementedError(
+                    "Cross-run cache reuse is currently supported only by "
+                    "online request processors."
+                )
+            reuse_cached_responses(
+                reuse_cache_dir,
+                generic_request_files,
+                set(self.config.invalid_finish_reasons),
+            )
+
         self.requests_to_responses(generic_request_files)
         return self.create_dataset_files(parse_func_hash)
+
+    @property
+    def supports_cache_reuse(self) -> bool:
+        """Whether this processor can resume from seeded response files."""
+        return False
 
     def _verify_existing_request_files(self, dataset: Optional["Dataset"]) -> List[int]:
         """Verify integrity of the cache and identify files needing regeneration.
