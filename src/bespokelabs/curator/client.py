@@ -69,7 +69,7 @@ class Client:
             return self.session
         metadata.update({"status": _SessionStatus.STARTED})
 
-        response = requests.post(f"{BASE_CLIENT_URL}/sessions", json=metadata, headers=self._headers)
+        response = requests.post(f"{BASE_CLIENT_URL}/sessions", json=metadata, headers=self._headers, timeout=30)
 
         if response.status_code == 200:
             self._session = response.json().get("session_id")
