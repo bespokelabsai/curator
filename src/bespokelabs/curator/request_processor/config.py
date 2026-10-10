@@ -16,6 +16,7 @@ class RequestProcessorConfig(BaseModel):
         max_retries: Maximum number of retry attempts for failed requests
         request_timeout: Timeout in seconds for each request
         require_all_responses: Whether to require successful responses for all requests
+        allow_partial_result_on_interrupt: Whether to return cached successful responses after a keyboard interrupt.
         generation_params: Dictionary of model-specific generation parameters
         api_key: Optional API key for authentication
         in_mtok_cost: Optional cost per million input tokens
@@ -28,6 +29,7 @@ class RequestProcessorConfig(BaseModel):
     max_retries: int = Field(default=10, ge=0)
     request_timeout: int = Field(default=10 * 60, gt=0)
     require_all_responses: bool = Field(default=True)
+    allow_partial_result_on_interrupt: bool = False
     generation_params: dict = Field(default_factory=dict)
     return_completions_object: bool = False
     api_key: str | None = None
@@ -151,6 +153,7 @@ class BaseBackendParams(t.TypedDict, total=False):
     max_retries: t.Optional[int]
     request_timeout: t.Optional[int]
     require_all_responses: t.Optional[bool]
+    allow_partial_result_on_interrupt: t.Optional[bool]
 
 
 class OnlineBackendParams(BaseBackendParams, total=False):
