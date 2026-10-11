@@ -621,15 +621,17 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         """
         raw_response = data.response_message
         responses = self._process_response(data)
-        if not responses:
-            return
         data.parsed_response_message = responses
         data.response_message = raw_response
         data_dump = data.model_dump()
         json_string = json.dumps(data_dump, default=str)
+        # Save the response even when `parse_func` failed on it or returned no rows: a resumed run
+        # skips completed requests, and the dataset is rebuilt from this file.
         async with aiofiles.open(filename, "a") as f:
             await f.write(json_string + "\n")
         logger.debug(f"Successfully appended response to {filename}")
+        if not responses:
+            return
         filename = os.path.basename(filename).split(".")[0]
         idx = status_tracker.num_parsed_responses
         status_tracker.num_parsed_responses = idx + len(responses)
