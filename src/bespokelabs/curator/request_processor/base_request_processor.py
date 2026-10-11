@@ -1,6 +1,7 @@
 """Base module for request processing functionality."""
 
 import asyncio
+import contextlib
 import functools
 import glob
 import json
@@ -28,6 +29,23 @@ from bespokelabs.curator.types.generic_response import GenericResponse
 
 if TYPE_CHECKING:
     from datasets import Dataset
+
+
+@contextlib.contextmanager
+def _write_atomically(path: str):
+    """Yield a temporary path and move it to `path` only if the block finishes without raising.
+
+    An interrupted or failed write then never leaves a partial file at `path`. The temporary name
+    includes the process id so two runs writing the same file don't remove or move each other's.
+    """
+    tmp_path = f"{path}.{os.getpid()}.tmp"
+    try:
+        yield tmp_path
+    except BaseException:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise
+    os.replace(tmp_path, path)
 
 
 class BaseRequestProcessor(ABC):
@@ -448,10 +466,12 @@ class BaseRequestProcessor(ABC):
         total_responses_count = 0
         failed_responses_count = 0
         error_sample = []
-        dataset_file = os.path.join(self.working_dir, f"{parse_func_hash}.arrow")
+        final_dataset_file = os.path.join(self.working_dir, f"{parse_func_hash}.arrow")
         from datasets.arrow_writer import ArrowWriter
 
-        with ArrowWriter(path=dataset_file) as writer:
+        # A partial dataset file would be loaded as the cached result by the next run, so write
+        # to a temporary file and move it into place once the dataset is complete.
+        with _write_atomically(final_dataset_file) as dataset_file, ArrowWriter(path=dataset_file) as writer:
             for responses_file in responses_files:
                 with open(responses_file, "r") as f_in:
                     for generic_response_string in f_in:
@@ -551,7 +571,7 @@ class BaseRequestProcessor(ABC):
                     os.remove(dataset_file)
                     raise ValueError("Some requests do not have responses and require_all_responses is True.")
 
-        return self._load_from_dataset_file(dataset_file)
+        return self._load_from_dataset_file(final_dataset_file)
 
     def _load_from_dataset_file(self, dataset_file: str) -> "Dataset":
         from datasets import Dataset
