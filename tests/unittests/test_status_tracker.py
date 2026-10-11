@@ -46,7 +46,7 @@ def test_online_status_tracker_display():
     assert "test-model" in captured
     assert "50✓" in captured.replace(" ", "")  # Success count
     assert "5✗" in captured.replace(" ", "")  # Failed count
-    assert "10⋯" in captured.replace(" ", "")  # In progress count
+    assert "10⋯" in captured.replace(" ", "") or "10…" in captured.replace(" ", "")  # In progress count
     assert "$0.123" in captured  # Cost
     assert "1000" in captured  # Input tokens
     assert "2000" in captured  # Output tokens

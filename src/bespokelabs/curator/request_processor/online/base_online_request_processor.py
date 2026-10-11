@@ -403,6 +403,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
 
                     status_tracker.num_tasks_started += 1
                     status_tracker.num_tasks_in_progress += 1
+                    status_tracker.update_display()
 
             if pending_requests:
                 await asyncio.gather(*pending_requests)
@@ -561,6 +562,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
                 await self.append_generic_response(status_tracker, generic_response, response_file)
                 status_tracker.num_tasks_in_progress -= 1
                 status_tracker.num_tasks_failed += 1
+                status_tracker.update_display()
             return
         else:
             self._add_output_token_moving_window(generic_response.token_usage.output)

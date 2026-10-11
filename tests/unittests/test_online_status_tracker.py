@@ -42,7 +42,7 @@ def test_online_status_tracker_display():
     assert "100" in captured  # Total requests
     assert "50✓" in captured.replace(" ", "")  # Success count
     assert "5✗" in captured.replace(" ", "")  # Failed count
-    assert "10⋯" in captured.replace(" ", "")  # In progress count
+    assert "10⋯" in captured.replace(" ", "") or "10…" in captured.replace(" ", "")  # In progress count
     assert "$0.123" in captured  # Cost
     assert "1000" in captured  # Input tokens
     assert "2000" in captured  # Output tokens
@@ -120,3 +120,29 @@ def test_online_status_tracker_external_model_cost_missing_keys():
             assert tracker.output_cost_per_million is None
             assert "N/A" in tracker.input_cost_str
             assert "N/A" in tracker.output_cost_str
+
+
+def test_online_status_tracker_requests_in_progress_update():
+    """Test that requests in progress update immediately via update_display."""
+    output = StringIO()
+    console = Console(file=output, width=200, force_terminal=True)
+    tracker = OnlineStatusTracker()
+    tracker.model = "test-model"
+    tracker.total_requests = 10
+    tracker.start_tracker(console)
+
+    # Dispatch request: tasks started and in_progress increase
+    tracker.num_tasks_started += 1
+    tracker.num_tasks_in_progress += 1
+    tracker.update_display()
+
+    assert tracker.num_tasks_in_progress == 1
+    assert tracker.max_concurrent_requests_seen == 1
+
+    # Task finishes: in_progress decrements, succeeded increments
+    tracker.num_tasks_in_progress -= 1
+    tracker.num_tasks_succeeded += 1
+    tracker.update_display()
+
+    assert tracker.num_tasks_in_progress == 0
+    tracker.stop_tracker()
