@@ -6,6 +6,7 @@ import glob
 import json
 import os
 import resource
+import tempfile
 import typing as t
 from abc import ABC, abstractmethod
 from math import ceil
@@ -451,105 +452,107 @@ class BaseRequestProcessor(ABC):
         dataset_file = os.path.join(self.working_dir, f"{parse_func_hash}.arrow")
         from datasets.arrow_writer import ArrowWriter
 
-        with ArrowWriter(path=dataset_file) as writer:
-            for responses_file in responses_files:
-                with open(responses_file, "r") as f_in:
-                    for generic_response_string in f_in:
-                        total_responses_count += 1
-                        response = GenericResponse.model_validate_json(generic_response_string)
+        # Only publish a finalized, validated dataset. Interrupted builds must not
+        # leave a loadable partial file at the cache path. Staging beside the cache
+        # keeps os.replace on the same filesystem for an atomic publication.
+        with tempfile.TemporaryDirectory(dir=self.working_dir, prefix=".curator-dataset-") as staging_dir:
+            staged_dataset_file = os.path.join(staging_dir, "dataset.arrow")
+            with ArrowWriter(path=staged_dataset_file) as writer:
+                for responses_file in responses_files:
+                    with open(responses_file, "r") as f_in:
+                        for generic_response_string in f_in:
+                            total_responses_count += 1
+                            response = GenericResponse.model_validate_json(generic_response_string)
 
-                        if response.response_errors is not None:
-                            failed_responses_count += 1
-                            if len(error_sample) < 10:
-                                error_sample.append(str(response.response_errors))
-                            continue
-
-                        # TODO: Find a way to not process responses that have already been processed
-                        # We cannot just check if parsed_response_message is not None because it could be from cached previous run
-                        # response.
-                        response.parsed_response_message = self._process_response(response)
-                        if response.parsed_response_message is None:
-                            failed_responses_count += 1
-                            continue
-
-                        for row in response.parsed_response_message:
-                            if isinstance(row, BaseModel):
-                                row = row.model_dump()
-
-                            if not isinstance(row, dict):
-                                os.remove(dataset_file)
-                                raise ValueError(
-                                    f"Got invalid row {row} of type {type(row)} from `parse_func`. This should be type <class 'dict'>. {error_help}"
-                                )
-                            if not row:
-                                os.remove(dataset_file)
-                                raise ValueError(f"Got empty row {row} from `parse_func`. {error_help}")
-                            # Add the original row index to the row so that we can sort by it later.
-                            row["__original_row_idx"] = response.generic_request.original_row_idx
-                            writer.write(row)
-
-            logger.info(f"Read {total_responses_count} responses.")
-            error_sample_str = "\n".join(error_sample)
-            error_sample_msg = f"Sample of the first {len(error_sample)} errors encountered: \n {error_sample_str}"
-            if failed_responses_count == total_responses_count:
-                writer.write({"error": "All requests failed"})
-                writer.finalize()
-                os.remove(dataset_file)
-                raise ValueError(f"All requests failed. {error_sample_msg}")
-            else:
-                logger.info("Finalizing writer")
-                writer.finalize()
-
-            if failed_responses_count > 0:
-                logger.warning(f"{failed_responses_count} requests failed.")
-                if self.config.require_all_responses:
-                    os.remove(dataset_file)
-                    raise ValueError(f"Some requests failed and require_all_responses is True. {error_sample_msg}")
-            # Create a file with all failed requests
-            logger.info("Creating a file with all failed requests")
-            failed_requests_file = os.path.join(self.working_dir, "failed_requests.jsonl")
-
-            # Read the arrow dataset file to get all successful request indices
-            successful_indices = set()
-            try:
-                dataset = Dataset.from_file(dataset_file)
-                # Extract all the original row indices that were successfully processed
-                successful_indices = set(dataset["__original_row_idx"])
-            except Exception as e:
-                logger.warning(f"Error reading dataset file to extract successful indices: {e}")
-
-            # Get all request files
-            request_files = glob.glob(os.path.join(self.working_dir, "requests_*.jsonl"))
-
-            # Write all requests that don't have corresponding entries in the dataset
-            with open(failed_requests_file, "w") as failed_file:
-                for request_file in request_files:
-                    with open(request_file, "r") as f:
-                        for line in f:
-                            try:
-                                request_data = json.loads(line.strip())
-                                original_idx = request_data.get("original_row_idx")
-                                if original_idx is not None and original_idx not in successful_indices:
-                                    failed_file.write(line)
-                            except json.JSONDecodeError:
+                            if response.response_errors is not None:
+                                failed_responses_count += 1
+                                if len(error_sample) < 10:
+                                    error_sample.append(str(response.response_errors))
                                 continue
 
-            logger.info(f"Created file with failed requests at {failed_requests_file}")
+                            # TODO: Find a way to not process responses that have already been processed
+                            # We cannot just check if parsed_response_message is not None because it could be from cached previous run
+                            # response.
+                            response.parsed_response_message = self._process_response(response)
+                            if response.parsed_response_message is None:
+                                failed_responses_count += 1
+                                continue
 
-            # number of responses matches number of requests
-            request_files = glob.glob(os.path.join(self.working_dir, "requests_*.jsonl"))
-            n_requests = 0
-            for request_file in request_files:
-                n_requests += count_lines(request_file)
+                            for row in response.parsed_response_message:
+                                if isinstance(row, BaseModel):
+                                    row = row.model_dump()
 
-            if n_requests != total_responses_count:
-                logger.warning(
-                    f"{n_requests - total_responses_count} requests do not have responses. "
-                    f"n_requests is {n_requests} and n_responses is {total_responses_count}"
-                )
-                if self.config.require_all_responses:
-                    os.remove(dataset_file)
-                    raise ValueError("Some requests do not have responses and require_all_responses is True.")
+                                if not isinstance(row, dict):
+                                    raise ValueError(
+                                        f"Got invalid row {row} of type {type(row)} from `parse_func`. This should be type <class 'dict'>. {error_help}"
+                                    )
+                                if not row:
+                                    raise ValueError(f"Got empty row {row} from `parse_func`. {error_help}")
+                                # Add the original row index to the row so that we can sort by it later.
+                                row["__original_row_idx"] = response.generic_request.original_row_idx
+                                writer.write(row)
+
+                logger.info(f"Read {total_responses_count} responses.")
+                error_sample_str = "\n".join(error_sample)
+                error_sample_msg = f"Sample of the first {len(error_sample)} errors encountered: \n {error_sample_str}"
+                if failed_responses_count == total_responses_count:
+                    writer.write({"error": "All requests failed"})
+                    writer.finalize()
+                    raise ValueError(f"All requests failed. {error_sample_msg}")
+                else:
+                    logger.info("Finalizing writer")
+                    writer.finalize()
+
+                if failed_responses_count > 0:
+                    logger.warning(f"{failed_responses_count} requests failed.")
+                    if self.config.require_all_responses:
+                        raise ValueError(f"Some requests failed and require_all_responses is True. {error_sample_msg}")
+                # Create a file with all failed requests
+                logger.info("Creating a file with all failed requests")
+                failed_requests_file = os.path.join(self.working_dir, "failed_requests.jsonl")
+
+                # Read the arrow dataset file to get all successful request indices
+                successful_indices = set()
+                try:
+                    dataset = Dataset.from_file(staged_dataset_file)
+                    # Extract all the original row indices that were successfully processed
+                    successful_indices = set(dataset["__original_row_idx"])
+                except Exception as e:
+                    logger.warning(f"Error reading dataset file to extract successful indices: {e}")
+
+                # Get all request files
+                request_files = glob.glob(os.path.join(self.working_dir, "requests_*.jsonl"))
+
+                # Write all requests that don't have corresponding entries in the dataset
+                with open(failed_requests_file, "w") as failed_file:
+                    for request_file in request_files:
+                        with open(request_file, "r") as f:
+                            for line in f:
+                                try:
+                                    request_data = json.loads(line.strip())
+                                    original_idx = request_data.get("original_row_idx")
+                                    if original_idx is not None and original_idx not in successful_indices:
+                                        failed_file.write(line)
+                                except json.JSONDecodeError:
+                                    continue
+
+                logger.info(f"Created file with failed requests at {failed_requests_file}")
+
+                # number of responses matches number of requests
+                request_files = glob.glob(os.path.join(self.working_dir, "requests_*.jsonl"))
+                n_requests = 0
+                for request_file in request_files:
+                    n_requests += count_lines(request_file)
+
+                if n_requests != total_responses_count:
+                    logger.warning(
+                        f"{n_requests - total_responses_count} requests do not have responses. "
+                        f"n_requests is {n_requests} and n_responses is {total_responses_count}"
+                    )
+                    if self.config.require_all_responses:
+                        raise ValueError("Some requests do not have responses and require_all_responses is True.")
+
+            os.replace(staged_dataset_file, dataset_file)
 
         return self._load_from_dataset_file(dataset_file)
 
