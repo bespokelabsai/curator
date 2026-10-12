@@ -448,6 +448,8 @@ class BaseRequestProcessor(ABC):
         # Process all response files
         total_responses_count = 0
         failed_responses_count = 0
+        output_rows_count = 0
+        successful_indices = set()
         error_sample = []
         dataset_file = os.path.join(self.working_dir, f"{parse_func_hash}.arrow")
         from datasets.arrow_writer import ArrowWriter
@@ -491,6 +493,10 @@ class BaseRequestProcessor(ABC):
                                 # Add the original row index to the row so that we can sort by it later.
                                 row["__original_row_idx"] = response.generic_request.original_row_idx
                                 writer.write(row)
+                                output_rows_count += 1
+
+                            # An empty list intentionally filters a successful response.
+                            successful_indices.add(response.generic_request.original_row_idx)
 
                 logger.info(f"Read {total_responses_count} responses.")
                 error_sample_str = "\n".join(error_sample)
@@ -501,6 +507,10 @@ class BaseRequestProcessor(ABC):
                     raise ValueError(f"All requests failed. {error_sample_msg}")
                 else:
                     logger.info("Finalizing writer")
+                    if output_rows_count == 0:
+                        # No output rows means Arrow cannot infer a schema. Keep
+                        # the internal sort column until the empty dataset loads.
+                        writer.write_table(pyarrow.table({"__original_row_idx": pyarrow.array([], type=pyarrow.int64())}))
                     writer.finalize()
 
                 if failed_responses_count > 0:
@@ -511,19 +521,10 @@ class BaseRequestProcessor(ABC):
                 logger.info("Creating a file with all failed requests")
                 failed_requests_file = os.path.join(self.working_dir, "failed_requests.jsonl")
 
-                # Read the arrow dataset file to get all successful request indices
-                successful_indices = set()
-                try:
-                    dataset = Dataset.from_file(staged_dataset_file)
-                    # Extract all the original row indices that were successfully processed
-                    successful_indices = set(dataset["__original_row_idx"])
-                except Exception as e:
-                    logger.warning(f"Error reading dataset file to extract successful indices: {e}")
-
                 # Get all request files
                 request_files = glob.glob(os.path.join(self.working_dir, "requests_*.jsonl"))
 
-                # Write all requests that don't have corresponding entries in the dataset
+                # Write requests whose responses failed or are missing, excluding intentional filters.
                 with open(failed_requests_file, "w") as failed_file:
                     for request_file in request_files:
                         with open(request_file, "r") as f:
