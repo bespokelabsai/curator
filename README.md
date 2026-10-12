@@ -23,6 +23,7 @@
 </div>
 
 ## 🎉 What's New
+* **[2026.10.12]** [Nimble](https://github.com/bespokelabsai/nimble)'s data was curated using Curator. Try the hosted API service at [console.bespokelabs.ai](https://console.bespokelabs.ai).
 * **[2026.06.09]** [Fireworks AI integration for fine-tuning](examples/fireworks/): Run managed supervised fine-tuning (SFT) on Fireworks AI with `FireworksTrainer` — upload curated data, train a LoRA, and sample from the deployed model behind the same trainer interface as Tinker.
 * **[2026.03.14]** [Tinker integration for fine-tuning](examples/poem_finetuning_example.py): Go from curated data to a LoRA fine-tuned model in a few lines of Python using the Tinker SDK.
 * **[2025.12.05]** [Launched OpenThoughts-Agents](https://www.open-thoughts.ai/blog/agent) whose data was curated using Curator.
