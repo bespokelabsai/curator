@@ -1,9 +1,13 @@
 from io import StringIO
+from types import SimpleNamespace
 from unittest.mock import patch
 
+import pytest
 from rich.console import Console
 
-from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker
+from bespokelabs.curator.status_tracker import online_status_tracker as tracker_module
+from bespokelabs.curator.status_tracker.online_status_tracker import OnlineStatusTracker, TokenLimitStrategy
+from bespokelabs.curator.types.token_usage import _TokenUsage
 
 
 def test_online_status_tracker_display():
@@ -120,3 +124,94 @@ def test_online_status_tracker_external_model_cost_missing_keys():
             assert tracker.output_cost_per_million is None
             assert "N/A" in tracker.input_cost_str
             assert "N/A" in tracker.output_cost_str
+
+
+@pytest.fixture
+def capacity_clock(monkeypatch):
+    """Control refill time without sleeping or changing the process-wide clock."""
+    clock = SimpleNamespace(now=0.0)
+    monkeypatch.setattr(tracker_module, "time", SimpleNamespace(time=lambda: clock.now))
+    return clock
+
+
+@pytest.mark.parametrize("estimate,required", [(90, 90), (100, 100), (150, 100)])
+def test_combined_capacity_preserves_request_and_token_limits(capacity_clock, estimate, required):
+    tracker = OnlineStatusTracker(model="gpt-4o-mini", max_requests_per_minute=60, max_tokens_per_minute=100, last_update_time=0)
+    tokens = _TokenUsage(input=estimate)
+    tracker.available_request_capacity = 1
+    tracker.available_token_capacity = required - 1
+    assert not tracker.has_capacity(tokens)
+    tracker.available_token_capacity = required
+    tracker.available_request_capacity = 0
+    assert not tracker.has_capacity(tokens)
+    tracker.available_request_capacity = 1
+    assert tracker.has_capacity(tokens)
+
+
+@pytest.mark.parametrize("input_tokens,output_tokens", [(50, 25), (100, 50), (150, 25), (50, 75), (150, 75)])
+def test_separate_capacity_requires_each_bucket(capacity_clock, input_tokens, output_tokens):
+    tracker = OnlineStatusTracker(
+        model="gpt-4o-mini",
+        token_limit_strategy=TokenLimitStrategy.seperate,
+        max_requests_per_minute=60,
+        max_tokens_per_minute=_TokenUsage(input=100, output=50),
+        last_update_time=0,
+    )
+    tokens = _TokenUsage(input=input_tokens, output=output_tokens)
+    required_input, required_output = min(input_tokens, 100), min(output_tokens, 50)
+    tracker.available_token_capacity = _TokenUsage(input=required_input - 1, output=required_output)
+    assert not tracker.has_capacity(tokens)
+    tracker.available_token_capacity = _TokenUsage(input=required_input, output=required_output - 1)
+    assert not tracker.has_capacity(tokens)
+    tracker.available_token_capacity = _TokenUsage(input=required_input, output=required_output)
+    tracker.available_request_capacity = 0
+    assert not tracker.has_capacity(tokens)
+    tracker.available_request_capacity = 1
+    assert tracker.has_capacity(tokens)
+
+
+@pytest.mark.parametrize("strategy", [TokenLimitStrategy.combined, TokenLimitStrategy.seperate])
+@pytest.mark.parametrize("refund", [False, True])
+def test_oversized_capacity_debt_recovers(capacity_clock, caplog, strategy, refund):
+    separate = strategy == TokenLimitStrategy.seperate
+    tracker = OnlineStatusTracker(
+        model="gpt-4o-mini",
+        token_limit_strategy=strategy,
+        max_requests_per_minute=60,
+        max_tokens_per_minute=_TokenUsage(input=100, output=50) if separate else 100,
+        last_update_time=0,
+    )
+    tokens = _TokenUsage(input=150, output=75 if separate else 0)
+    assert not tracker.has_capacity(tokens)
+    assert not tracker.has_capacity(tokens)
+    assert not caplog.records  # No warning on each capacity poll.
+    capacity_clock.now = 60
+    assert tracker.has_capacity(tokens)
+    tracker.consume_capacity(tokens)
+    assert "charging the full estimate" in caplog.text
+    if separate:
+        assert tracker.available_token_capacity.input == -50
+        assert tracker.available_token_capacity.output == -25
+    else:
+        assert tracker.available_token_capacity == -50
+    next_tokens = _TokenUsage(input=1, output=1)
+    assert not tracker.has_capacity(next_tokens)
+    assert not tracker.has_capacity(tokens)  # A retry must also wait for refill.
+
+    if refund:
+        tracker.free_capacity(used=_TokenUsage(input=10, output=5 if separate else 0), blocked=tokens)
+        if separate:
+            assert tracker.available_token_capacity.input == 90
+            assert tracker.available_token_capacity.output == 45
+        else:
+            assert tracker.available_token_capacity == 90
+    else:
+        capacity_clock.now += 30
+        assert not tracker.has_capacity(next_tokens)  # Paying the debt alone is insufficient.
+        capacity_clock.now += 2
+    assert tracker.has_capacity(next_tokens)
+
+
+def test_unlimited_capacity_still_accepts_large_requests(capacity_clock):
+    tracker = OnlineStatusTracker(model="gpt-4o-mini", max_requests_per_minute=None, max_tokens_per_minute=None, last_update_time=0)
+    assert tracker.has_capacity(_TokenUsage(input=1_000_000, output=1_000_000))

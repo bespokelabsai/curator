@@ -626,7 +626,11 @@ class OnlineStatusTracker:
         self.last_update_time = current_time
 
     def has_capacity(self, token_estimate: _TokenUsage) -> bool:
-        """Check if there's enough capacity for a request."""
+        """Check capacity, allowing oversized estimates once their token bucket is full.
+
+        consume_capacity still charges the full estimate, so oversized requests
+        leave token debt that must recover before subsequent requests can run.
+        """
         self.update_capacity()
         if self.token_limit_strategy == TokenLimitStrategy.combined:
             has_capacity = self._check_combined_capacity(token_estimate)
@@ -648,6 +652,8 @@ class OnlineStatusTracker:
             return True
 
         token_estimate = token_estimate.total
+        if self.max_tokens_per_minute is not None:
+            token_estimate = min(token_estimate, self.max_tokens_per_minute)
         has_capacity = self.available_request_capacity >= 1 and self.available_token_capacity >= token_estimate
         return has_capacity
 
@@ -656,15 +662,34 @@ class OnlineStatusTracker:
         if self.max_tokens_per_minute.total is None and self.max_requests_per_minute is None:
             return True
 
+        required_input = token_estimate.input
+        required_output = token_estimate.output
+        if self.max_tokens_per_minute.input is not None:
+            required_input = min(required_input, self.max_tokens_per_minute.input)
+        if self.max_tokens_per_minute.output is not None:
+            required_output = min(required_output, self.max_tokens_per_minute.output)
         has_capacity = (
             self.available_request_capacity >= 1
-            and self.available_token_capacity.input >= token_estimate.input
-            and self.available_token_capacity.output >= token_estimate.output
+            and self.available_token_capacity.input >= required_input
+            and self.available_token_capacity.output >= required_output
         )
         return has_capacity
 
     def consume_capacity(self, token_estimate: _TokenUsage):
         """Consume capacity for a request."""
+        if self.token_limit_strategy == TokenLimitStrategy.combined:
+            token_limits = [("total", token_estimate.total, self.max_tokens_per_minute)]
+        else:
+            token_limits = [
+                ("input", token_estimate.input, self.max_tokens_per_minute.input),
+                ("output", token_estimate.output, self.max_tokens_per_minute.output),
+            ]
+        for token_type, estimate, limit in token_limits:
+            if limit is not None and estimate > limit:
+                logger.warning(
+                    f"Request estimate of {estimate} {token_type} tokens exceeds the {limit} tokens-per-minute limit. "
+                    "Sending with a full token bucket and charging the full estimate; subsequent requests may wait for capacity to recover."
+                )
         if self.max_requests_per_minute is not None:
             self.available_request_capacity -= 1
         if self.token_limit_strategy == TokenLimitStrategy.combined:
