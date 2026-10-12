@@ -104,3 +104,19 @@ def test_dataset_is_rebuilt_from_cached_responses_after_interrupted_build(tmp_pa
     assert sorted(os.listdir(tmp_path)) == sorted(
         [f"{_PARSE_FUNC_HASH}.arrow", "failed_requests.jsonl", "metadata_0.json", "requests_0.jsonl", "responses_0.jsonl"]
     )
+
+
+def test_failed_move_into_place_leaves_no_temporary_file(tmp_path, monkeypatch):
+    """If the final rename fails (for example a permission error), the error surfaces and no dataset or temporary file is left behind."""
+    _write_cached_run(tmp_path)
+
+    def failing_replace(src, dst):
+        raise PermissionError(f"cannot move {src} to {dst}")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(os, "replace", failing_replace)
+        with pytest.raises(PermissionError):
+            _processor(tmp_path, _parse).create_dataset_files(_PARSE_FUNC_HASH)
+
+    assert sorted(os.listdir(tmp_path)) == sorted(["failed_requests.jsonl", "metadata_0.json", "requests_0.jsonl", "responses_0.jsonl"])
+    assert _processor(tmp_path, _parse).attempt_loading_cached_dataset(_PARSE_FUNC_HASH) is None

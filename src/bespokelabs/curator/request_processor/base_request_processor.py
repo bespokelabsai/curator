@@ -41,11 +41,11 @@ def _write_atomically(path: str):
     tmp_path = f"{path}.{os.getpid()}.tmp"
     try:
         yield tmp_path
-    except BaseException:
+        os.replace(tmp_path, path)
+    finally:
+        # Already moved after a successful replace; otherwise the write or the move failed.
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
-        raise
-    os.replace(tmp_path, path)
 
 
 class BaseRequestProcessor(ABC):
