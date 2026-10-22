@@ -248,6 +248,19 @@ def test_a_second_run_without_the_token_gets_a_new_session(viewer, tmp_path):
     assert db.check_existing_hosted_sync("run") is False
 
 
+def test_a_run_whose_upload_did_not_finish_adds_to_the_same_session(viewer, tmp_path):
+    db = MetadataDB(str(tmp_path / "metadata.db"))
+    first = Client()
+    session = _open_viewer_session(first, db, dict(METADATA), None, False)
+    # The upload stopped before the run was marked synced.
+    db.store_metadata({**METADATA, "session_id": session, "is_hosted_viewer_synced": False})
+    second = Client()
+    reopened = _open_viewer_session(second, db, dict(METADATA), db.get_existing_session_id("run"), db.check_existing_hosted_sync("run"))
+    assert reopened == session
+    assert second.write_token == "token-0"
+    assert len(viewer.created) == 1
+
+
 def test_a_second_run_with_a_key_adds_to_the_session_without_a_token(viewer, tmp_path, monkeypatch):
     monkeypatch.setenv("BESPOKE_API_KEY", KEY)
     db, session, second, reopened = run_twice(tmp_path)

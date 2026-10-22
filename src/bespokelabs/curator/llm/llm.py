@@ -280,7 +280,12 @@ class LLM:
         viewer_url = self._request_processor.viewer_client.curator_viewer_url
 
         msg = None
-        if existing_session_id is not None and existing_viewer_sync is False:
+        if existing_session_id is not None and existing_viewer_sync is False and session_id == existing_session_id:
+            msg = (
+                f"The previous run with the same run hash ({metadata_dict['run_hash']}) did not finish uploading to its Curator Viewer session. "
+                "Pushing the full dataset to that session again."
+            )
+        elif existing_session_id is not None and existing_viewer_sync is False:
             msg = (
                 f"There was a previous run with the same run hash ({metadata_dict['run_hash']}) without the CURATOR_VIEWER flag enabled, "
                 "and CURATOR_VIEWER flag is enabled for this run. This means that the Curator Viewer is potentially inconsistent with local data."
@@ -351,9 +356,15 @@ def _open_viewer_session(
     The viewer refuses a change to a session made without an API key unless it
     carries the write token that the session's creator got. A session that an
     older Curator made has no token in this cache, so the run gets a new one.
+
+    A previous run that did not sync its session gets a new one too, since its
+    session ID may never have reached the viewer, unless this cache holds the
+    session's token: then this cache made it there, and the run whose upload
+    did not finish adds to it again.
     """
     write_token = metadata_db.get_viewer_write_token(existing_session_id)
-    if existing_session_id and (not existing_viewer_sync or not viewer_client.can_write_to(write_token)):
+    reusable = viewer_client.can_write_to(write_token) and (existing_viewer_sync or write_token is not None)
+    if existing_session_id and not reusable:
         session_id = viewer_client.create_session(metadata_dict)
     else:
         session_id = viewer_client.create_session(metadata_dict, session_id=existing_session_id, write_token=write_token)
