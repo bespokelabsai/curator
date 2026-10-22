@@ -242,6 +242,10 @@ def test_a_second_run_without_the_token_gets_a_new_session(viewer, tmp_path):
     # The next run adds to the new session, with its token.
     assert db.get_existing_session_id("run") == "session-1"
     assert db.get_viewer_write_token("session-1") == "token-1"
+    # The new session holds none of the run's rows yet. Until the run's
+    # upload completes, the run is not synced, so an upload that stops
+    # halfway is pushed again by the next run.
+    assert db.check_existing_hosted_sync("run") is False
 
 
 def test_a_second_run_with_a_key_adds_to_the_session_without_a_token(viewer, tmp_path, monkeypatch):

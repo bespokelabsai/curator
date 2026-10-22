@@ -166,9 +166,16 @@ class MetadataDB:
             return None
 
     def update_session_id(self, run_hash: str, session_id: str):
-        """Point a run at the viewer session that it now uses."""
+        """Point a run at the viewer session that it now uses.
+
+        The new session holds none of the run's data yet, so the run is not
+        synced to the viewer until its upload to that session completes.
+        """
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute("UPDATE runs SET session_id = ? WHERE run_hash = ?", (session_id, run_hash))
+            conn.execute(
+                "UPDATE runs SET session_id = ?, is_hosted_viewer_synced = ? WHERE run_hash = ?",
+                (session_id, False, run_hash),
+            )
             conn.commit()
 
     def store_viewer_write_token(self, session_id: str | None, write_token: str | None):
