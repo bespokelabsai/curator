@@ -19,6 +19,7 @@ from bespokelabs.curator.client import WRITE_TOKEN_HEADER, Client
 from bespokelabs.curator.constants import BASE_CLIENT_URL
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.llm import _open_viewer_session
+from bespokelabs.curator.status_tracker import agent_status_tracker
 
 KEY = "bespoke-" + "ab" * 32
 METADATA = {
@@ -147,19 +148,27 @@ class Talker(Agent):
         return row["prompt"]
 
 
-def test_a_first_agent_run_uploads_its_rows_with_the_token_and_a_second_run_does_not(viewer, tmp_path, monkeypatch):
+def conversation_of_two(monkeypatch):
+    """Two agents whose conversation runs without a model and yields two rows."""
     monkeypatch.setenv("OPENAI_API_KEY", "sk-mocked")
+    # The tracker starts rich's live display when it is made, and only the
+    # conversation stops it. Rich allows one at a time, so use plain progress.
+    monkeypatch.setattr(agent_status_tracker, "USE_RICH_DISPLAY", False)
     seeder = Talker(name="seeder", model_name="gpt-4o-mini", backend="openai")
     partner = Talker(name="partner", model_name="gpt-4o-mini", backend="openai")
     agents = MultiTurnAgents(seeder=seeder, partner=partner, max_length=2, seed_message="hello")
     rows = Dataset.from_list([{"role": "seeder", "content": "hello"}, {"role": "partner", "content": "hi"}])
 
     async def conversation(working_dir):
-        # The conversation itself, without a model.
         return rows
 
     monkeypatch.setattr(agents._processor, "run", conversation)
     monkeypatch.setattr(agents._processor, "status_tracker", None, raising=False)
+    return agents
+
+
+def test_a_first_agent_run_uploads_its_rows_with_the_token_and_a_second_run_does_not(viewer, tmp_path, monkeypatch):
+    agents = conversation_of_two(monkeypatch)
 
     result = agents(working_dir=str(tmp_path))
     assert result.viewer_url.endswith("/session-0")
@@ -171,6 +180,21 @@ def test_a_first_agent_run_uploads_its_rows_with_the_token_and_a_second_run_does
     # The second run of the same conversation finds it on the viewer.
     agents(working_dir=str(tmp_path))
     assert len([r for r in viewer.requests if r[0] == "POST"]) == 2
+
+
+def test_an_agent_run_after_one_without_the_viewer_pushes_once_and_keeps_its_session(viewer, tmp_path, monkeypatch):
+    agents = conversation_of_two(monkeypatch)
+    monkeypatch.delenv("CURATOR_VIEWER")
+    agents(working_dir=str(tmp_path))  # caches a session ID the viewer never saw
+    assert viewer.created == []
+
+    monkeypatch.setenv("CURATOR_VIEWER", "1")
+    assert agents(working_dir=str(tmp_path)).viewer_url.endswith("/session-0")
+    assert len([r for r in viewer.requests if r[0] == "POST"]) == 2
+    # The next run uses that session, not the ID cached by the first run.
+    assert agents(working_dir=str(tmp_path)).viewer_url.endswith("/session-0")
+    assert len([r for r in viewer.requests if r[0] == "POST"]) == 2
+    assert len(viewer.created) == 1
 
 
 def test_the_cache_keeps_write_tokens_beside_the_runs_table(tmp_path):
