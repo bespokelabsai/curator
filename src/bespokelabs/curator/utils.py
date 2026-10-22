@@ -26,6 +26,7 @@ def push_to_viewer(
     session_id: str | None = None,
     hf_params: t.Optional[t.Dict] = None,
     max_concurrent_requests: int = 100,
+    write_token: str | None = None,
 ):
     """Push a dataset to the Curator Viewer.
 
@@ -34,6 +35,8 @@ def push_to_viewer(
         session_id (str | None): Existing session id.
         hf_params: (dict): Huggingface parameters for load dataset.
         max_concurrent_requests (int): Max concurrent requests limit.
+        write_token (str | None): The write token of session_id, if it was made without an API key.
+            The viewer refuses rows for such a session without it.
 
     Returns:
         str: The URL to view the data
@@ -65,7 +68,7 @@ def push_to_viewer(
     if session_id is None:
         session_id = client.create_session(metadata)
     else:
-        client._session = session_id
+        client.create_session(metadata, session_id=session_id, write_token=write_token)
 
     if not client.session:
         raise Exception("Failed to create session.")

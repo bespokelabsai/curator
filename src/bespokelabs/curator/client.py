@@ -12,6 +12,9 @@ from bespokelabs.curator.constants import BASE_CLIENT_URL, PUBLIC_CURATOR_VIEWER
 from bespokelabs.curator.log import logger
 
 N_CONCURRENT_VIEWER_REQUESTS = 100
+# The viewer gives the creator of a session made without an API key a write
+# token, and refuses any change to that session that does not carry it.
+WRITE_TOKEN_HEADER = "X-Viewer-Write-Token"
 
 
 class _SessionStatus:
@@ -29,6 +32,7 @@ class Client:
     def __init__(self, hosted: bool = False) -> None:
         """Initialize the client."""
         self._session = None
+        self._write_token = None
         self._state = None
         self._last_cost_projection_time = 0
 
@@ -57,13 +61,39 @@ class Client:
         """Get the curator viewer URL."""
         return f"{PUBLIC_CURATOR_VIEWER_DATASET_URL}/{self.session}" if self.session else None
 
-    def create_session(self, metadata: t.Dict, session_id: str | None = None) -> str | None:
-        """Sends a POST request to the server to create a session."""
+    @property
+    def write_token(self):
+        """The token that lets this client change a session it made without an API key."""
+        return self._write_token
+
+    def can_write_to(self, write_token: str | None) -> bool:
+        """Whether this client may change an existing session whose stored write token is write_token.
+
+        A session made with an API key changes with that key. One made without
+        a key changes only with the write token that the viewer gave its creator.
+        """
+        return bool(self.api_key or write_token)
+
+    def _write_headers(self) -> t.Dict[str, str]:
+        """The headers of a request that changes the session."""
+        if self._write_token:
+            return {**self._headers, WRITE_TOKEN_HEADER: self._write_token}
+        return self._headers
+
+    def create_session(self, metadata: t.Dict, session_id: str | None = None, write_token: str | None = None) -> str | None:
+        """Sends a POST request to the server to create a session.
+
+        Args:
+            metadata: The session's metadata.
+            session_id: An existing session to use instead of a new one.
+            write_token: The write token that the viewer gave when it made session_id, for a session made without an API key.
+        """
         if not self.hosted:
             return str(uuid.uuid4().hex)
 
         if session_id:
             self._session = session_id
+            self._write_token = write_token
             return session_id
         if self.session:
             return self.session
@@ -73,6 +103,9 @@ class Client:
 
         if response.status_code == 200:
             self._session = response.json().get("session_id")
+            # Without an API key the session has no owner, and only this token
+            # can change it. An older viewer sends none.
+            self._write_token = response.json().get("write_token")
             self._state = _SessionStatus.STARTED
             return self.session
         else:
@@ -81,7 +114,7 @@ class Client:
 
     async def _update_state(self):
         async with httpx.AsyncClient() as client:
-            response = await client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json={"status": self._state}, headers=self._headers)
+            response = await client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json={"status": self._state}, headers=self._write_headers())
         if response.status_code != 200:
             logger.debug(f"Failed to update session status: {response.status_code}, {response.text}")
 
@@ -115,7 +148,9 @@ class Client:
 
         response_data = json.dumps({"response_data": response_data})
         async with self.semaphore:
-            response = await self._async_client.post(f"{BASE_CLIENT_URL}/sessions/{self.session}/responses/{idx}", data=response_data, headers=self._headers)
+            response = await self._async_client.post(
+                f"{BASE_CLIENT_URL}/sessions/{self.session}/responses/{idx}", data=response_data, headers=self._write_headers()
+            )
 
         if response.status_code != 200:
             logger.debug(f"Failed to stream response to curator Viewer: {response.status_code}, {response.text}")
@@ -141,7 +176,7 @@ class Client:
         info = status_tracker.cost_info()
 
         async with self.semaphore:
-            response = await self._async_client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json=info, headers=self._headers)
+            response = await self._async_client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json=info, headers=self._write_headers())
 
         if response.status_code != 200:
             logger.debug(f"Failed to log cost projection: {response.status_code}, {response.text}")

@@ -165,6 +165,42 @@ class MetadataDB:
         except Exception:
             return None
 
+    def update_session_id(self, run_hash: str, session_id: str):
+        """Point a run at the viewer session that it now uses."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("UPDATE runs SET session_id = ? WHERE run_hash = ?", (session_id, run_hash))
+            conn.commit()
+
+    def store_viewer_write_token(self, session_id: str | None, write_token: str | None):
+        """Keep the write token of a viewer session made without an API key.
+
+        The viewer refuses any change to such a session without the token, so a
+        later run that adds to the same session needs it. It has a table of its
+        own: validate_schema checks the runs table's columns.
+        """
+        if not session_id or not write_token:
+            return
+        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute("CREATE TABLE IF NOT EXISTS viewer_write_tokens (session_id TEXT PRIMARY KEY, write_token TEXT NOT NULL)")
+            conn.execute(
+                "INSERT OR REPLACE INTO viewer_write_tokens (session_id, write_token) VALUES (?, ?)",
+                (session_id, write_token),
+            )
+            conn.commit()
+
+    def get_viewer_write_token(self, session_id: str | None) -> str | None:
+        """Get the write token kept for a viewer session, or None."""
+        if not session_id:
+            return None
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                row = conn.execute("SELECT write_token FROM viewer_write_tokens WHERE session_id = ?", (session_id,)).fetchone()
+        except sqlite3.Error:
+            # A cache from before write tokens has no such table.
+            return None
+        return row[0] if row else None
+
     def check_existing_hosted_sync(self, run_hash: str) -> bool:
         """Check if the run is already hosted on the viewer."""
         return bool(self._get_metadata(run_hash, "is_hosted_viewer_synced"))
