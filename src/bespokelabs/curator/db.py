@@ -3,6 +3,8 @@
 import os
 import sqlite3
 
+from bespokelabs.curator.log import logger
+
 
 class MetadataDB:
     """Database class for storing Bella run metadata."""
@@ -189,6 +191,12 @@ class MetadataDB:
             return
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         with sqlite3.connect(self.db_path) as conn:
+            # Only the owner may read a file that holds write tokens. Before
+            # the first token is written, so SQLite's journal gets the same.
+            try:
+                os.chmod(self.db_path, 0o600)
+            except OSError as e:
+                logger.debug(f"Could not restrict {self.db_path} to its owner: {e}")
             conn.execute("CREATE TABLE IF NOT EXISTS viewer_write_tokens (session_id TEXT PRIMARY KEY, write_token TEXT NOT NULL)")
             conn.execute(
                 "INSERT OR REPLACE INTO viewer_write_tokens (session_id, write_token) VALUES (?, ?)",

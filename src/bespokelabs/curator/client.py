@@ -33,6 +33,7 @@ class Client:
         """Initialize the client."""
         self._session = None
         self._write_token = None
+        self._refused = False
         self._state = None
         self._last_cost_projection_time = 0
 
@@ -74,11 +75,37 @@ class Client:
         """
         return bool(self.api_key or write_token)
 
+    @property
+    def refused(self) -> bool:
+        """Whether the viewer refused a change to this client's session. The client then sends it no more."""
+        return self._refused
+
+    def forget_session(self) -> None:
+        """Drop this client's session, so that the next create_session makes a new one."""
+        self._session = None
+        self._write_token = None
+        self._refused = False
+        self._state = None
+
     def _write_headers(self) -> t.Dict[str, str]:
         """The headers of a request that changes the session."""
         if self._write_token:
             return {**self._headers, WRITE_TOKEN_HEADER: self._write_token}
         return self._headers
+
+    def _check_write(self, response, action: str) -> None:
+        """Note a change to the session that the viewer refused, or log any other failure."""
+        if response.status_code in (401, 403):
+            # Every later change would be refused too, so say so once.
+            if not self._refused:
+                logger.warning(
+                    f"The Curator Viewer refused a change to session {self.session} ({response.status_code}), "
+                    "for example because an older Curator made the session without an API key. "
+                    "No more changes are sent to it."
+                )
+            self._refused = True
+        elif response.status_code != 200:
+            logger.debug(f"Failed to {action}: {response.status_code}, {response.text}")
 
     def create_session(self, metadata: t.Dict, session_id: str | None = None, write_token: str | None = None) -> str | None:
         """Sends a POST request to the server to create a session.
@@ -115,10 +142,11 @@ class Client:
             return str(uuid.uuid4().hex)
 
     async def _update_state(self):
+        if self._refused:
+            return
         async with httpx.AsyncClient() as client:
             response = await client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json={"status": self._state}, headers=self._write_headers())
-        if response.status_code != 200:
-            logger.debug(f"Failed to update session status: {response.status_code}, {response.text}")
+        self._check_write(response, "update session status")
 
     async def session_inprogress(self):
         """Updates the session status to inprogress."""
@@ -145,6 +173,8 @@ class Client:
         """Streams the response data to the server."""
         if not self._hosted and not self.session:
             return
+        if self._refused:
+            return
         if self._async_client is None:
             self._async_client = httpx.AsyncClient()
 
@@ -154,8 +184,7 @@ class Client:
                 f"{BASE_CLIENT_URL}/sessions/{self.session}/responses/{idx}", data=response_data, headers=self._write_headers()
             )
 
-        if response.status_code != 200:
-            logger.debug(f"Failed to stream response to curator Viewer: {response.status_code}, {response.text}")
+        self._check_write(response, "stream response to curator Viewer")
 
     async def close(self):
         """Close the client."""
@@ -165,6 +194,8 @@ class Client:
     async def log_cost_projection(self, status_tracker, force_log: bool = False):
         """Log the cost projection to the server."""
         if not self._hosted and not self.session:
+            return
+        if self._refused:
             return
         # Track the last time we sent a cost projection
         current_time = time.time()
@@ -180,8 +211,7 @@ class Client:
         async with self.semaphore:
             response = await self._async_client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json=info, headers=self._write_headers())
 
-        if response.status_code != 200:
-            logger.debug(f"Failed to log cost projection: {response.status_code}, {response.text}")
+        self._check_write(response, "log cost projection")
 
         # Update the last projection time
         self._last_cost_projection_time = current_time

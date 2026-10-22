@@ -280,7 +280,16 @@ class LLM:
         viewer_url = self._request_processor.viewer_client.curator_viewer_url
 
         msg = None
-        if existing_session_id is not None and existing_viewer_sync is False and session_id == existing_session_id:
+        if viewer_client.hosted and viewer_client.refused:
+            refused_session_id = session_id
+            session_id = _replace_refused_viewer_session(viewer_client, metadata_db, metadata_dict)
+            metadata_dict["session_id"] = session_id
+            msg = (
+                f"The Curator Viewer refused this run's changes to its session {refused_session_id}, "
+                "for example because an older Curator made that session without an API key. "
+                "Pushing the full dataset to a new Curator Viewer session."
+            )
+        elif existing_session_id is not None and existing_viewer_sync is False and session_id == existing_session_id:
             msg = (
                 f"The previous run with the same run hash ({metadata_dict['run_hash']}) did not finish uploading to its Curator Viewer session. "
                 "Pushing the full dataset to that session again."
@@ -372,6 +381,24 @@ def _open_viewer_session(
     if viewer_client.hosted and existing_session_id and session_id != existing_session_id:
         # So that the next run adds to the new session.
         metadata_db.update_session_id(metadata_dict["run_hash"], session_id)
+    return session_id
+
+
+def _replace_refused_viewer_session(viewer_client: Client, metadata_db: MetadataDB, metadata_dict: dict) -> str:
+    """Give the run a new viewer session in place of one that the viewer refused to let this client change.
+
+    With an API key, a run adds to its previous session with the key alone.
+    The viewer refuses that when the key's user does not own the session: for
+    example, a session that an older Curator made without a key has no owner,
+    and nobody can change it any more.
+    """
+    viewer_client.forget_session()
+    metadata = {key: value for key, value in metadata_dict.items() if key not in ("session_id", "is_hosted_viewer_synced")}
+    session_id = viewer_client.create_session(metadata)
+    metadata_db.store_viewer_write_token(session_id, viewer_client.write_token)
+    # So that the next run adds to the new session. The run is not synced
+    # until its upload to the new session completes.
+    metadata_db.update_session_id(metadata_dict["run_hash"], session_id)
     return session_id
 
 
