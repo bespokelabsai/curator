@@ -92,8 +92,10 @@ class Client:
             return str(uuid.uuid4().hex)
 
         if session_id:
+            # Naming the session this client already has keeps its token.
+            if write_token is not None or session_id != self._session:
+                self._write_token = write_token
             self._session = session_id
-            self._write_token = write_token
             return session_id
         if self.session:
             return self.session

@@ -11,8 +11,10 @@ import sqlite3
 from types import SimpleNamespace
 
 import pytest
+from datasets import Dataset
 
 from bespokelabs.curator import client as client_module
+from bespokelabs.curator.agent.agent import MultiTurnAgents
 from bespokelabs.curator.client import WRITE_TOKEN_HEADER, Client
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.llm import _open_viewer_session
@@ -110,6 +112,7 @@ def test_a_session_made_with_a_key_sends_the_key_and_no_token(viewer, monkeypatc
     client.create_session(dict(METADATA))
     assert client.write_token is None
     make_every_change(client)
+    assert len(viewer.requests) == 4
     for _, _, headers in viewer.requests:
         assert headers == {"Authorization": f"Bearer {KEY}"}
 
@@ -119,8 +122,29 @@ def test_a_viewer_without_write_tokens_gets_the_same_requests_as_before(viewer):
     client = Client()
     client.create_session(dict(METADATA))
     make_every_change(client)
+    assert len(viewer.requests) == 4
     for _, _, headers in viewer.requests:
         assert headers == {}
+
+
+def test_naming_the_same_session_again_keeps_its_token(viewer):
+    client = Client()
+    session = client.create_session(dict(METADATA))
+    # As MultiTurnAgents does after creating the session.
+    client.create_session(dict(METADATA), session_id=session)
+    assert client.write_token == "token-0"
+    client.create_session(dict(METADATA), session_id="another-session")
+    assert client.write_token is None
+
+
+def test_an_agent_run_uploads_its_rows_with_the_token(viewer, tmp_path):
+    rows = Dataset.from_list([{"turn": "hello"}, {"turn": "hi"}])
+    url = MultiTurnAgents._handle_viewer_push(None, Client(), rows, dict(METADATA), str(tmp_path))
+    assert url.endswith("/session-0")
+    uploads = [r for r in viewer.requests if r[0] == "POST"]
+    assert len(uploads) == 2
+    for _, _, headers in viewer.requests:
+        assert headers == {WRITE_TOKEN_HEADER: "token-0"}
 
 
 def test_the_cache_keeps_write_tokens_beside_the_runs_table(tmp_path):

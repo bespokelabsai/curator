@@ -157,7 +157,7 @@ class MultiTurnAgents:
         # Push dataset to viewer
         if existing_session_id is None:
             # No existing session, push the dataset
-            push_to_viewer(dataset, session_id=session_id)
+            push_to_viewer(dataset, session_id=session_id, write_token=viewer_client.write_token)
         else:
             # Warn about existing session
             msg = (
