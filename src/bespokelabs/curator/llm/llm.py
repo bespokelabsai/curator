@@ -280,15 +280,26 @@ class LLM:
         viewer_url = self._request_processor.viewer_client.curator_viewer_url
 
         msg = None
+        viewer_synced = True
         if viewer_client.hosted and viewer_client.refused:
             refused_session_id = session_id
-            session_id = _replace_refused_viewer_session(viewer_client, metadata_db, metadata_dict)
-            metadata_dict["session_id"] = session_id
-            msg = (
-                f"The Curator Viewer refused this run's changes to its session {refused_session_id}, "
-                "for example because an older Curator made that session without an API key. "
-                "Pushing the full dataset to a new Curator Viewer session."
-            )
+            new_session_id = _replace_refused_viewer_session(viewer_client, metadata_db, metadata_dict)
+            if new_session_id is None:
+                # The viewer holds none of this run's rows. Unsynced, the next
+                # run with this run hash pushes them to a new session.
+                viewer_synced = False
+                logger.warning(
+                    f"The Curator Viewer refused this run's changes to its session {refused_session_id}, "
+                    "and could not make a new session. The next run with the same run hash pushes the full dataset to a new session."
+                )
+            else:
+                session_id = new_session_id
+                metadata_dict["session_id"] = session_id
+                msg = (
+                    f"The Curator Viewer refused this run's changes to its session {refused_session_id}, "
+                    "for example because an older Curator made that session without an API key. "
+                    "Pushing the full dataset to a new Curator Viewer session."
+                )
         elif existing_session_id is not None and existing_viewer_sync is False and session_id == existing_session_id:
             msg = (
                 f"The previous run with the same run hash ({metadata_dict['run_hash']}) did not finish uploading to its Curator Viewer session. "
@@ -313,7 +324,7 @@ class LLM:
             viewer_url = push_to_viewer(dataset, session_id=session_id, write_token=viewer_client.write_token)
 
         if self._request_processor.viewer_client.hosted:
-            metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
+            metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], viewer_synced)
 
         # Get tracker information
         if not self._request_processor._is_cached_dataset:
@@ -384,17 +395,23 @@ def _open_viewer_session(
     return session_id
 
 
-def _replace_refused_viewer_session(viewer_client: Client, metadata_db: MetadataDB, metadata_dict: dict) -> str:
+def _replace_refused_viewer_session(viewer_client: Client, metadata_db: MetadataDB, metadata_dict: dict) -> str | None:
     """Give the run a new viewer session in place of one that the viewer refused to let this client change.
 
     With an API key, a run adds to its previous session with the key alone.
     The viewer refuses that when the key's user does not own the session: for
     example, a session that an older Curator made without a key has no owner,
     and nobody can change it any more.
+
+    Returns None, and leaves the cache alone, if the viewer did not make a new
+    session.
     """
     viewer_client.forget_session()
     metadata = {key: value for key, value in metadata_dict.items() if key not in ("session_id", "is_hosted_viewer_synced")}
     session_id = viewer_client.create_session(metadata)
+    if viewer_client.session is None:
+        # create_session makes up an ID when the viewer does not make the session.
+        return None
     metadata_db.store_viewer_write_token(session_id, viewer_client.write_token)
     # So that the next run adds to the new session. The run is not synced
     # until its upload to the new session completes.

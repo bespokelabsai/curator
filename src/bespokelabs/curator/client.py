@@ -180,6 +180,9 @@ class Client:
 
         response_data = json.dumps({"response_data": response_data})
         async with self.semaphore:
+            # A row that waited here while another was refused sends nothing.
+            if self._refused:
+                return
             response = await self._async_client.post(
                 f"{BASE_CLIENT_URL}/sessions/{self.session}/responses/{idx}", data=response_data, headers=self._write_headers()
             )
@@ -209,6 +212,8 @@ class Client:
         info = status_tracker.cost_info()
 
         async with self.semaphore:
+            if self._refused:
+                return
             response = await self._async_client.put(f"{BASE_CLIENT_URL}/sessions/{self.session}", json=info, headers=self._write_headers())
 
         self._check_write(response, "log cost projection")

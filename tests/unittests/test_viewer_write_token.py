@@ -17,6 +17,7 @@ from datasets import Dataset
 
 from bespokelabs import curator
 from bespokelabs.curator import client as client_module
+from bespokelabs.curator import db as db_module
 from bespokelabs.curator.agent.agent import Agent, MultiTurnAgents
 from bespokelabs.curator.client import WRITE_TOKEN_HEADER, Client
 from bespokelabs.curator.constants import BASE_CLIENT_URL
@@ -41,12 +42,14 @@ class Viewer:
     """The viewer's session routes. It records each request's headers.
 
     It refuses every change to a session in `refuse`, as the viewer does to a
-    session whose owner the request cannot show it is.
+    session whose owner the request cannot show it is. While `creates` is
+    False, it fails to make sessions.
     """
 
     def __init__(self, tokens=True):
         self.tokens = tokens
         self.refuse = set()
+        self.creates = True
         self.created = []
         self.requests = []
         self._ids = itertools.count()
@@ -63,6 +66,8 @@ class Viewer:
             # Another service, e.g. the OpenAI rate-limit probe of an Agent's
             # backend: an empty answer, without the network.
             return SimpleNamespace(status_code=200, headers={}, json=lambda: {}, text="")
+        if not self.creates:
+            return SimpleNamespace(status_code=503, json=lambda: {}, text="unavailable")
         n = next(self._ids)
         self.created.append(headers)
         body = {"session_id": f"session-{n}"}
@@ -80,12 +85,16 @@ class Viewer:
             async def __aexit__(self, *exc):
                 return False
 
+            # Each answer takes a turn of the event loop, as a real request
+            # does, so concurrent requests interleave.
             async def put(self, url, json, headers):
                 viewer.requests.append(("PUT", url, headers))
+                await asyncio.sleep(0)
                 return viewer.answer(url)
 
             async def post(self, url, data, headers):
                 viewer.requests.append(("POST", url, headers))
+                await asyncio.sleep(0)
                 return viewer.answer(url)
 
             async def aclose(self):
@@ -302,14 +311,33 @@ def test_a_refused_change_is_reported_once_and_no_more_changes_are_sent(viewer, 
     assert len(client_warnings(caplog)) == 1
 
 
+def test_rows_waiting_to_send_when_a_change_is_refused_send_nothing(viewer, monkeypatch):
+    monkeypatch.setenv("BESPOKE_API_KEY", KEY)
+    client = Client()
+    client.create_session(dict(METADATA), session_id="legacy")
+    viewer.refuse.add("legacy")
+    # One request at a time, so the other rows wait while the first is refused.
+    client.semaphore = asyncio.Semaphore(1)
+
+    async def send_rows():
+        await asyncio.gather(*(client.stream_response('{"parsed_response_message": []}', idx) for idx in range(3)))
+        await client.close()
+
+    asyncio.run(send_rows())
+    assert len(viewer.requests) == 1
+
+
 class Echo(curator.LLM):
     def prompt(self, row):
         return row["text"]
 
 
-def test_a_run_whose_session_the_viewer_refuses_pushes_its_rows_to_a_new_session(viewer, tmp_path, monkeypatch, caplog):
+def refused_rerun(viewer, tmp_path, monkeypatch):
+    """Run once as an older Curator did: without a key, and given no token.
+
+    Then set a key. The session has no owner, so the viewer refuses every change to it.
+    """
     monkeypatch.setenv("OPENAI_API_KEY", "sk-mocked")
-    rows = Dataset.from_list([{"text": "a"}, {"text": "b"}])
     llm = Echo(model_name="gpt-4o-mini", backend="openai")
 
     def run(dataset, working_dir, parse_func_hash, prompt_formatter):
@@ -328,15 +356,25 @@ def test_a_run_whose_session_the_viewer_refuses_pushes_its_rows_to_a_new_session
     monkeypatch.setattr(llm._request_processor, "_is_cached_dataset", False, raising=False)
     monkeypatch.setattr(llm._request_processor, "tracker", None, raising=False)
 
-    # The first run makes its session without a key, and gets no token, as
-    # from an older Curator.
+    rows = Dataset.from_list([{"text": "a"}, {"text": "b"}])
     viewer.tokens = False
     assert llm(rows, working_dir=str(tmp_path)).viewer_url.endswith("/session-0")
-
-    # The second run has a key. The session has no owner, so the viewer
-    # refuses every change to it.
     monkeypatch.setenv("BESPOKE_API_KEY", KEY)
     viewer.refuse.add("session-0")
+    return llm, rows
+
+
+def rows_sent_to(viewer, session):
+    return {int(r[1].rsplit("/", 1)[1]) for r in viewer.sent_to(session) if r[0] == "POST"}
+
+
+def cached_runs(tmp_path):
+    with sqlite3.connect(tmp_path / "metadata.db") as conn:
+        return conn.execute("SELECT session_id, is_hosted_viewer_synced FROM runs").fetchall()
+
+
+def test_a_run_whose_session_the_viewer_refuses_pushes_its_rows_to_a_new_session(viewer, tmp_path, monkeypatch, caplog):
+    llm, rows = refused_rerun(viewer, tmp_path, monkeypatch)
     sent_before = len(viewer.sent_to("session-0"))
     with caplog.at_level(logging.WARNING):
         response = llm(rows, working_dir=str(tmp_path))
@@ -346,12 +384,27 @@ def test_a_run_whose_session_the_viewer_refuses_pushes_its_rows_to_a_new_session
     # A new session, made with the key, gets every row.
     assert len(viewer.created) == 2
     assert viewer.created[1] == {"Authorization": f"Bearer {KEY}"}
-    assert len([r for r in viewer.sent_to("session-1") if r[0] == "POST"]) == len(rows)
+    assert rows_sent_to(viewer, "session-1") == set(range(len(rows)))
     assert response.viewer_url.endswith("/session-1")
     assert len(client_warnings(caplog)) == 2  # the client's, and the run's
     # The next run adds to the new session.
-    with sqlite3.connect(tmp_path / "metadata.db") as conn:
-        assert conn.execute("SELECT session_id, is_hosted_viewer_synced FROM runs").fetchall() == [("session-1", 1)]
+    assert cached_runs(tmp_path) == [("session-1", 1)]
+
+
+def test_a_run_that_gets_no_new_session_caches_none_and_the_next_run_pushes(viewer, tmp_path, monkeypatch, caplog):
+    llm, rows = refused_rerun(viewer, tmp_path, monkeypatch)
+    viewer.creates = False
+    with caplog.at_level(logging.WARNING):
+        llm(rows, working_dir=str(tmp_path))
+    # No made-up session ID is cached, and the run is not synced.
+    assert cached_runs(tmp_path) == [("session-0", 0)]
+    assert any("could not make a new session" in message for message in client_warnings(caplog))
+
+    # Once the viewer makes sessions again, the next run pushes every row to a new one.
+    viewer.creates = True
+    assert llm(rows, working_dir=str(tmp_path)).viewer_url.endswith("/session-1")
+    assert rows_sent_to(viewer, "session-1") == set(range(len(rows)))
+    assert cached_runs(tmp_path) == [("session-1", 1)]
 
 
 @pytest.mark.skipif(os.name == "nt", reason="POSIX file permissions")
@@ -360,3 +413,18 @@ def test_the_cache_that_holds_write_tokens_is_readable_only_by_its_owner(tmp_pat
     db.store_metadata({**METADATA, "session_id": "session-0", "is_hosted_viewer_synced": True})
     db.store_viewer_write_token("session-0", "token-0")
     assert os.stat(db.db_path).st_mode & 0o777 == 0o600
+
+
+def test_no_token_is_kept_when_the_cache_cannot_be_made_owner_only(tmp_path, monkeypatch, caplog):
+    db = MetadataDB(str(tmp_path / "metadata.db"))
+    db.store_metadata({**METADATA, "session_id": "session-0", "is_hosted_viewer_synced": True})
+
+    def chmod(path, mode):
+        # As for a cache file that another user owns.
+        raise PermissionError(1, "Operation not permitted", path)
+
+    monkeypatch.setattr(db_module.os, "chmod", chmod)
+    with caplog.at_level(logging.WARNING):
+        db.store_viewer_write_token("session-0", "token-0")
+    assert db.get_viewer_write_token("session-0") is None
+    assert any("Not keeping the Curator Viewer write token" in r.getMessage() for r in caplog.records)

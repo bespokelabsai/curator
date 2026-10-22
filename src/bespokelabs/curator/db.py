@@ -186,17 +186,22 @@ class MetadataDB:
         The viewer refuses any change to such a session without the token, so a
         later run that adds to the same session needs it. It has a table of its
         own: validate_schema checks the runs table's columns.
+
+        Only the file's owner may read a token. If the file cannot be limited
+        to its owner, for example in a cache that another user owns, no token
+        is kept, and the next run starts a new session.
         """
         if not session_id or not write_token:
             return
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         with sqlite3.connect(self.db_path) as conn:
-            # Only the owner may read a file that holds write tokens. Before
-            # the first token is written, so SQLite's journal gets the same.
+            # Before the first token is written, so SQLite's journal files get
+            # the same mode.
             try:
                 os.chmod(self.db_path, 0o600)
             except OSError as e:
-                logger.debug(f"Could not restrict {self.db_path} to its owner: {e}")
+                logger.warning(f"Not keeping the Curator Viewer write token: {self.db_path} could not be made readable only by its owner ({e}).")
+                return
             conn.execute("CREATE TABLE IF NOT EXISTS viewer_write_tokens (session_id TEXT PRIMARY KEY, write_token TEXT NOT NULL)")
             conn.execute(
                 "INSERT OR REPLACE INTO viewer_write_tokens (session_id, write_token) VALUES (?, ?)",
