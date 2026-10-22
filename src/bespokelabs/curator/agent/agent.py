@@ -154,9 +154,10 @@ class MultiTurnAgents:
         metadata_dict["is_hosted_viewer_synced"] = False
         metadata_db.store_metadata(metadata_dict)
 
-        # Push dataset to viewer
-        if existing_session_id is None:
-            # No existing session, push the dataset
+        # Push dataset to viewer. __call__ has already made and stored the
+        # session, so a run whose dataset is not on the viewer yet has a
+        # session ID here too: only the synced flag says it was pushed.
+        if not existing_viewer_sync:
             push_to_viewer(dataset, session_id=session_id, write_token=viewer_client.write_token)
         else:
             # Warn about existing session

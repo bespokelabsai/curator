@@ -14,8 +14,9 @@ import pytest
 from datasets import Dataset
 
 from bespokelabs.curator import client as client_module
-from bespokelabs.curator.agent.agent import MultiTurnAgents
+from bespokelabs.curator.agent.agent import Agent, MultiTurnAgents
 from bespokelabs.curator.client import WRITE_TOKEN_HEADER, Client
+from bespokelabs.curator.constants import BASE_CLIENT_URL
 from bespokelabs.curator.db import MetadataDB
 from bespokelabs.curator.llm.llm import _open_viewer_session
 
@@ -40,7 +41,11 @@ class Viewer:
         self.requests = []
         self._ids = itertools.count()
 
-    def post_session(self, url, json, headers, timeout):
+    def post(self, url, json=None, headers=None, timeout=None, **kwargs):
+        if not url.startswith(BASE_CLIENT_URL):
+            # Another service, e.g. the OpenAI rate-limit probe of an Agent's
+            # backend: an empty answer, without the network.
+            return SimpleNamespace(status_code=200, headers={}, json=lambda: {}, text="")
         n = next(self._ids)
         self.created.append(headers)
         body = {"session_id": f"session-{n}"}
@@ -77,7 +82,7 @@ def viewer(monkeypatch):
     monkeypatch.setenv("CURATOR_VIEWER", "1")
     monkeypatch.delenv("BESPOKE_API_KEY", raising=False)
     fake = Viewer()
-    monkeypatch.setattr(client_module.requests, "post", fake.post_session)
+    monkeypatch.setattr(client_module.requests, "post", fake.post)
     monkeypatch.setattr(client_module.httpx, "AsyncClient", fake.async_client)
     return fake
 
@@ -137,14 +142,35 @@ def test_naming_the_same_session_again_keeps_its_token(viewer):
     assert client.write_token is None
 
 
-def test_an_agent_run_uploads_its_rows_with_the_token(viewer, tmp_path):
-    rows = Dataset.from_list([{"turn": "hello"}, {"turn": "hi"}])
-    url = MultiTurnAgents._handle_viewer_push(None, Client(), rows, dict(METADATA), str(tmp_path))
-    assert url.endswith("/session-0")
+class Talker(Agent):
+    def prompt(self, row):
+        return row["prompt"]
+
+
+def test_a_first_agent_run_uploads_its_rows_with_the_token_and_a_second_run_does_not(viewer, tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-mocked")
+    seeder = Talker(name="seeder", model_name="gpt-4o-mini", backend="openai")
+    partner = Talker(name="partner", model_name="gpt-4o-mini", backend="openai")
+    agents = MultiTurnAgents(seeder=seeder, partner=partner, max_length=2, seed_message="hello")
+    rows = Dataset.from_list([{"role": "seeder", "content": "hello"}, {"role": "partner", "content": "hi"}])
+
+    async def conversation(working_dir):
+        # The conversation itself, without a model.
+        return rows
+
+    monkeypatch.setattr(agents._processor, "run", conversation)
+    monkeypatch.setattr(agents._processor, "status_tracker", None, raising=False)
+
+    result = agents(working_dir=str(tmp_path))
+    assert result.viewer_url.endswith("/session-0")
     uploads = [r for r in viewer.requests if r[0] == "POST"]
     assert len(uploads) == 2
     for _, _, headers in viewer.requests:
         assert headers == {WRITE_TOKEN_HEADER: "token-0"}
+
+    # The second run of the same conversation finds it on the viewer.
+    agents(working_dir=str(tmp_path))
+    assert len([r for r in viewer.requests if r[0] == "POST"]) == 2
 
 
 def test_the_cache_keeps_write_tokens_beside_the_runs_table(tmp_path):
