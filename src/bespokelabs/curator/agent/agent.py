@@ -10,7 +10,7 @@ from bespokelabs.curator.agent.processor import MultiTurnAgenticProcessor
 from bespokelabs.curator.client import Client
 from bespokelabs.curator.constants import PUBLIC_CURATOR_VIEWER_HOME_URL
 from bespokelabs.curator.db import MetadataDB
-from bespokelabs.curator.llm.llm import _CURATOR_DEFAULT_CACHE_DIR, _get_function_source
+from bespokelabs.curator.llm.llm import _CURATOR_DEFAULT_CACHE_DIR, _get_function_source, _open_viewer_session
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 from bespokelabs.curator.utils import push_to_viewer
@@ -127,37 +127,20 @@ class MultiTurnAgents:
             "timestamp": datetime.now().isoformat(),
         }
 
-    def _handle_viewer_push(self, viewer_client: Client, dataset, metadata_dict: dict, working_dir: str) -> str | None:
-        """Handle pushing the dataset to the curator viewer.
+    def _handle_viewer_push(self, viewer_client: Client, dataset, metadata_dict: dict, already_pushed: bool) -> str | None:
+        """Push the dataset to the run's viewer session, unless an earlier run already did.
 
         Args:
-            viewer_client (Client): The curator viewer client.
+            viewer_client (Client): The curator viewer client, holding the run's session.
             dataset: The dataset to push.
-            metadata_dict (dict): Metadata for the viewer.
-            working_dir (str): The working directory for this run.
+            metadata_dict (dict): Metadata for the viewer, with the run's session_id.
+            already_pushed (bool): Whether an earlier run pushed this dataset to this same session.
 
         Returns:
             str | None: The viewer URL if successful, None otherwise.
         """
-        # Create or get existing session
-        metadata_db_path = os.path.join(working_dir, "metadata.db")
-        metadata_db = MetadataDB(metadata_db_path)
-        existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
-        existing_viewer_sync = metadata_db.check_existing_hosted_sync(metadata_dict["run_hash"])
-
-        if not existing_viewer_sync and existing_session_id:
-            session_id = viewer_client.create_session(metadata_dict)
-        else:
-            session_id = viewer_client.create_session(metadata_dict, session_id=existing_session_id)
-
-        metadata_dict["session_id"] = session_id
-        metadata_dict["is_hosted_viewer_synced"] = False
-        metadata_db.store_metadata(metadata_dict)
-
-        # Push dataset to viewer
-        if existing_session_id is None:
-            # No existing session, push the dataset
-            push_to_viewer(dataset, session_id=session_id)
+        if not already_pushed:
+            push_to_viewer(dataset, session_id=metadata_dict["session_id"], write_token=viewer_client.write_token)
         else:
             # Warn about existing session
             msg = (
@@ -167,7 +150,6 @@ class MultiTurnAgents:
             )
             logger.warning(msg)
 
-        metadata_db.update_sync_viewer_flag(metadata_dict["run_hash"], True)
         return viewer_client.curator_viewer_url
 
     def __call__(self, working_dir: t.Optional[str] = None) -> MultiTurnResponse:
@@ -230,11 +212,9 @@ class MultiTurnAgents:
         metadata_dict = self._setup_metadata(fingerprint)
         existing_session_id = metadata_db.get_existing_session_id(metadata_dict["run_hash"])
         existing_viewer_sync = metadata_db.check_existing_hosted_sync(metadata_dict["run_hash"])
-
-        if not existing_viewer_sync and existing_session_id:
-            session_id = viewer_client.create_session(metadata_dict)
-        else:
-            session_id = viewer_client.create_session(metadata_dict, session_id=existing_session_id)
+        # As curator.LLM does: it also records a session that replaces the
+        # cached one, so the next run uses the new session.
+        session_id = _open_viewer_session(viewer_client, metadata_db, metadata_dict, existing_session_id, existing_viewer_sync)
 
         metadata_dict["session_id"] = session_id
         metadata_dict["is_hosted_viewer_synced"] = False
@@ -242,7 +222,10 @@ class MultiTurnAgents:
 
         # Handle viewer push if enabled
         if viewer_client.hosted:
-            viewer_url = self._handle_viewer_push(viewer_client, dataset, metadata_dict, working_dir)
+            # The dataset is on the viewer only if an earlier run pushed it to
+            # this same session.
+            already_pushed = existing_viewer_sync and session_id == existing_session_id
+            viewer_url = self._handle_viewer_push(viewer_client, dataset, metadata_dict, already_pushed)
             response.viewer_url = viewer_url
             if viewer_url:
                 logger.info(f"Curator Viewer: {viewer_url}")

@@ -3,6 +3,8 @@
 import os
 import sqlite3
 
+from bespokelabs.curator.log import logger
+
 
 class MetadataDB:
     """Database class for storing Bella run metadata."""
@@ -164,6 +166,60 @@ class MetadataDB:
 
         except Exception:
             return None
+
+    def update_session_id(self, run_hash: str, session_id: str):
+        """Point a run at the viewer session that it now uses.
+
+        The new session holds none of the run's data yet, so the run is not
+        synced to the viewer until its upload to that session completes.
+        """
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute(
+                "UPDATE runs SET session_id = ?, is_hosted_viewer_synced = ? WHERE run_hash = ?",
+                (session_id, False, run_hash),
+            )
+            conn.commit()
+
+    def store_viewer_write_token(self, session_id: str | None, write_token: str | None):
+        """Keep the write token of a viewer session made without an API key.
+
+        The viewer refuses any change to such a session without the token, so a
+        later run that adds to the same session needs it. It has a table of its
+        own: validate_schema checks the runs table's columns.
+
+        Only the file's owner may read a token. If the file cannot be limited
+        to its owner, for example in a cache that another user owns, no token
+        is kept, and the next run starts a new session.
+        """
+        if not session_id or not write_token:
+            return
+        os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
+        with sqlite3.connect(self.db_path) as conn:
+            # Before the first token is written, so SQLite's journal files get
+            # the same mode.
+            try:
+                os.chmod(self.db_path, 0o600)
+            except OSError as e:
+                logger.warning(f"Not keeping the Curator Viewer write token: {self.db_path} could not be made readable only by its owner ({e}).")
+                return
+            conn.execute("CREATE TABLE IF NOT EXISTS viewer_write_tokens (session_id TEXT PRIMARY KEY, write_token TEXT NOT NULL)")
+            conn.execute(
+                "INSERT OR REPLACE INTO viewer_write_tokens (session_id, write_token) VALUES (?, ?)",
+                (session_id, write_token),
+            )
+            conn.commit()
+
+    def get_viewer_write_token(self, session_id: str | None) -> str | None:
+        """Get the write token kept for a viewer session, or None."""
+        if not session_id:
+            return None
+        try:
+            with sqlite3.connect(self.db_path) as conn:
+                row = conn.execute("SELECT write_token FROM viewer_write_tokens WHERE session_id = ?", (session_id,)).fetchone()
+        except sqlite3.Error:
+            # A cache from before write tokens has no such table.
+            return None
+        return row[0] if row else None
 
     def check_existing_hosted_sync(self, run_hash: str) -> bool:
         """Check if the run is already hosted on the viewer."""
