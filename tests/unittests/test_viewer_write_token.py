@@ -365,7 +365,8 @@ def refused_rerun(viewer, tmp_path, monkeypatch):
 
 
 def rows_sent_to(viewer, session):
-    return {int(r[1].rsplit("/", 1)[1]) for r in viewer.sent_to(session) if r[0] == "POST"}
+    """The indices of the rows posted to a session, sorted, with any repeats."""
+    return sorted(int(r[1].rsplit("/", 1)[1]) for r in viewer.sent_to(session) if r[0] == "POST")
 
 
 def cached_runs(tmp_path):
@@ -381,10 +382,10 @@ def test_a_run_whose_session_the_viewer_refuses_pushes_its_rows_to_a_new_session
 
     # One refused change, then nothing more to that session.
     assert len(viewer.sent_to("session-0")) == sent_before + 1
-    # A new session, made with the key, gets every row.
+    # A new session, made with the key, gets every row once.
     assert len(viewer.created) == 2
     assert viewer.created[1] == {"Authorization": f"Bearer {KEY}"}
-    assert rows_sent_to(viewer, "session-1") == set(range(len(rows)))
+    assert rows_sent_to(viewer, "session-1") == list(range(len(rows)))
     assert response.viewer_url.endswith("/session-1")
     assert len(client_warnings(caplog)) == 2  # the client's, and the run's
     # The next run adds to the new session.
@@ -403,7 +404,8 @@ def test_a_run_that_gets_no_new_session_caches_none_and_the_next_run_pushes(view
     # Once the viewer makes sessions again, the next run pushes every row to a new one.
     viewer.creates = True
     assert llm(rows, working_dir=str(tmp_path)).viewer_url.endswith("/session-1")
-    assert rows_sent_to(viewer, "session-1") == set(range(len(rows)))
+    # The run streams row 0 itself; the full push then sends every row once.
+    assert rows_sent_to(viewer, "session-1") == sorted([0, *range(len(rows))])
     assert cached_runs(tmp_path) == [("session-1", 1)]
 
 
