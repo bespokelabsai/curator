@@ -67,6 +67,7 @@ class MultiTurnAgenticProcessor:
             int: The number of messages loaded from the cache.
         """
         cache_file = os.path.join(working_dir, "responses_0.jsonl")
+        self.conversation_history = [{"role": self.seeder.name, "content": self.seed_message}]
         if os.path.exists(cache_file):
             with open(cache_file, "r") as f:
                 for line in f:
@@ -81,7 +82,7 @@ class MultiTurnAgenticProcessor:
                         self.status_tracker.update_turn(AgentTurn.PARTNER)
                         if self.partner.is_completed(response.response_message):
                             return self.max_length
-        return len(self.conversation_history)
+        return len(self.conversation_history) - 1
 
     async def run(self, working_dir: str) -> Dataset:
         """Execute the multi-turn conversation between agents.
