@@ -420,7 +420,7 @@ class BaseBatchRequestProcessor(BaseRequestProcessor):
             logger.warning(f"Batch {request_file} has no requests to submit.")
             return
         batch = await self.submit_batch(requests, metadata)
-        batch.attempts_left = attempts_left or self.config.max_retries
+        batch.attempts_left = self.config.max_retries if attempts_left is None else attempts_left
         self.tracker.mark_as_submitted(batch, len(requests))
         await self.update_batch_objects_file()
         return batch
