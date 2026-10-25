@@ -43,7 +43,6 @@
 Bespoke Curator makes it easy to create synthetic data pipelines. Whether you are training a model or extracting structured data, Curator will prepare high-quality data quickly and robustly.
 
 * Rich Python based library for generating and curating synthetic data.
-* Viewer to monitor data while it is being generated.
 * First class support for structured outputs.
 * Built-in performance optimizations for asynchronous operations, caching, and fault recovery at every scale.
 * Support for a wide range of inference options via LiteLLM, vLLM, and popular batch APIs.
@@ -443,54 +442,13 @@ trainer.close()   # tear down the deployment when done
 
 See the [Fireworks examples](examples/fireworks/) for basic and custom-trainer pipelines.
 
-## Bespoke Curator Viewer
-The hosted curator viewer is a rich interface to visualize data -- and makes visually inspecting the data much easier.
-
-You can enable it as follows:
-
-Bash:
-
-```shell
-export CURATOR_VIEWER=1
-```
-Python/colab:
-```python
-import os
-os.environ["CURATOR_VIEWER"]="1"
-```
-
-With this enabled, as curator generates data, it gets uploaded and you can see the responses streaming in the viewer. The URL for the viewer is displayed right next to the rich progress.
-
-### Authenticate with a Bespoke Labs API key
-
-By default, datasets are accessible to anyone with the link. To keep your datasets private, you can associate them with a Bespoke Labs account. Doing so also allows you to:
-
-1. Track all datasets associated with your account
-2. Share datasets with collaborators
-3. Analyze data generation costs over time
-
-You can enable authentication as follows;
-
-1. [Sign up](https://curator.bespokelabs.ai/auth/signup) for a Bespoke Labs account.
-2. Create an API key from the [API Key](https://curator.bespokelabs.ai/home/keys) page.
-3. Set the `BESPOKE_API_KEY` and `CURATOR_VIEWER` environment variables:
-
-```shell
-export BESPOKE_API_KEY=<YOUR_API_KEY>
-export CURATOR_VIEWER=1
-```
-
-With the environment variables set, all your datasets will be streamed to the hosted viewer and linked to your Bespoke Labs account. You can visit the [Datasets](https://curator.bespokelabs.ai/home/datasets) page to see datasets generated with your API keys or shared with you by others, and the [Cost Report](https://curator.bespokelabs.ai/home/costs)
-page to see the data generation costs for a given period.
-
 ## Environment Variables
 
 We support a range of environment variables to customize the behavior of Curator.
 
-Here is a complete table of environment variables:
+The following environment variables are available:
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `CURATOR_VIEWER` | Enables the Curator viewer for visualizing data curation when `True`. | `False` |
 | `CURATOR_DISABLE_CACHE` | Disables caching for `curator.LLM` generations when `True`. Useful for fresh runs. | `False` |
 | `CURATOR_CACHE_DIR` | Sets the cache directory used for `curator.LLM` generations. | `~/.cache/curator` |
 | `CURATOR_DISABLE_RICH_DISPLAY` | When `True`, disables [Rich CLI](https://github.com/Textualize/rich) output (and falls back to [tqdm](https://tqdm.github.io/) logging) for local data generation monitoring. This is useful when debugging with inline breakpoints or interactive debuggers like `pdb`, where Rich's dynamic output can interfere with terminal input. | `False` |
