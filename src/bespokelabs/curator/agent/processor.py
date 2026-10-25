@@ -191,13 +191,13 @@ class MultiTurnAgenticProcessor:
                     transformed_conversation_history.append({"role": "user", "content": message["content"]})
 
         request = target_agent.prompt_formatter.create_generic_request({"prompt": transformed_conversation_history[-1]["content"]}, 0)
-        system_prompt = [msg for msg in request.messages if msg["role"] == "system"][0]
+        system_prompts = [msg for msg in request.messages if msg["role"] == "system"]
         request.messages = [msg for msg in request.messages if msg["role"] != "system"]
 
         del transformed_conversation_history[-1]
         transformed_conversation_history += request.messages
         request.messages = transformed_conversation_history
-        request.messages.insert(0, system_prompt)
+        request.messages = system_prompts + request.messages
         return request
 
     def create_dataset_file(self, working_dir: str) -> str:
