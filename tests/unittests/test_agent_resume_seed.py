@@ -21,7 +21,7 @@ async def test_resumed_conversation_keeps_seed_and_next_speaker(tmp_path, comple
         requests.append(request.generic_request.messages)
         now = datetime.now(timezone.utc)
         return GenericResponse(
-            response_message="reply",
+            response_message=f"reply {len(requests)}",
             raw_response={},
             generic_request=request.generic_request,
             created_at=now,
@@ -53,9 +53,19 @@ async def test_resumed_conversation_keeps_seed_and_next_speaker(tmp_path, comple
     assert len(dataset) == 3
     assert resumed.conversation_history == [
         {"role": "seeder", "content": "Opening task"},
-        {"role": "partner", "content": "reply"},
-        {"role": "seeder", "content": "reply"},
-        {"role": "partner", "content": "reply"},
+        {"role": "partner", "content": "reply 1"},
+        {"role": "seeder", "content": "reply 2"},
+        {"role": "partner", "content": "reply 3"},
     ]
-    assert any(message["content"] == "Opening task" for message in requests[completed_turns])
-    assert requests[completed_turns][1]["role"] == ("user" if completed_turns % 2 == 0 else "assistant")
+    system_message = {"role": "system", "content": "Continue the conversation"}
+    expected_requests = [
+        [system_message, {"role": "user", "content": "Opening task"}],
+        [system_message, {"role": "assistant", "content": "Opening task"}, {"role": "user", "content": "reply 1"}],
+        [
+            system_message,
+            {"role": "user", "content": "Opening task"},
+            {"role": "assistant", "content": "reply 1"},
+            {"role": "user", "content": "reply 2"},
+        ],
+    ]
+    assert requests[completed_turns] == expected_requests[completed_turns]
