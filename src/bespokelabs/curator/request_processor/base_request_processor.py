@@ -279,6 +279,7 @@ class BaseRequestProcessor(ABC):
                 return batch_size
 
             if batch_size == "auto":
+                request_files = []
 
                 async def create_all_request_files():
                     tasks = []
@@ -288,6 +289,7 @@ class BaseRequestProcessor(ABC):
                         batch_size = _get_optimal_batch_size(start_idx)
                         request_file = os.path.join(self.working_dir, f"requests_{idx}.jsonl")
                         metadata_file = os.path.join(self.working_dir, f"metadata_{idx}.json")
+                        request_files.append(request_file)
                         tasks.append(self.acreate_request_file(dataset, request_file, metadata_file, start_idx=start_idx, batch_size=batch_size))
                         start_idx += batch_size
                         idx += 1
