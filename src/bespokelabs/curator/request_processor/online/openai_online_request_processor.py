@@ -46,11 +46,33 @@ async def _handle_longlive_response(response: aiohttp.ClientResponse):
         raise ValueError(f"Failed to parse API response: {e}\nRaw response: {content_buffer}") from e
 
 
+class _RateLimitError(Exception):
+    """HTTP 429 returned by an OpenAI-compatible endpoint.
+
+    Attributes:
+        status: HTTP status code of the response.
+        response_text: Raw body returned by the endpoint.
+    """
+
+    def __init__(self, status: int, response_text: str):
+        """Initialize the error with the response details.
+
+        Args:
+            status: HTTP status code of the response.
+            response_text: Raw body returned by the endpoint.
+        """
+        self.status = status
+        self.response_text = response_text
+        super().__init__(f"API Error: {status} - {response_text}")
+
+
 async def fetch_response(session, *, url, headers, payload, timeout, longlived_response=False):
     """Fetch response from the API."""
     async with session.post(url, headers=headers, json=payload, timeout=timeout) as response:
         if response.status != 200:
             error_text = await response.text()
+            if response.status == 429:
+                raise _RateLimitError(response.status, error_text)
             raise Exception(f"API Error: {response.status} - {error_text}")
         if longlived_response:
             return await _handle_longlive_response(response)
@@ -280,14 +302,26 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         request_header = {"Authorization": f"Bearer {self.api_key}"}
         if "/deployments" in self.url:  # Azure deployment
             request_header = {"api-key": f"{self.api_key}"}
-        response = await fetch_response(
-            session,
-            url=self.url,
-            headers=request_header,
-            payload=request.api_specific_request,
-            timeout=self.config.request_timeout,
-            longlived_response=self._longlived_response,
-        )
+        try:
+            response = await fetch_response(
+                session,
+                url=self.url,
+                headers=request_header,
+                payload=request.api_specific_request,
+                timeout=self.config.request_timeout,
+                longlived_response=self._longlived_response,
+            )
+        except _RateLimitError:
+            # The agent processor calls this method without a tracker; keep the original 429 error visible there.
+            if status_tracker is not None:
+                # Record the 429 exactly like the rate-limit branch for an "error" body below.
+                status_tracker.num_api_errors += 1
+                status_tracker.time_of_last_rate_limit_error = time.time()
+                status_tracker.num_rate_limit_errors += 1
+                status_tracker.num_api_errors -= 1
+                # because handle_single_request_with_retries will double count otherwise
+                status_tracker.num_other_errors -= 1
+            raise
 
         if response is None:
             raise Exception("Response is empty")
