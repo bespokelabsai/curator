@@ -70,7 +70,7 @@ def test_get_metadata_allowlist(tmp_path):
 
     # Test valid column names work
     assert db._get_metadata("test_hash", "session_id") == "test_session"
-    assert db._get_metadata("test_hash", "is_hosted_viewer_synced") is True
+    assert db._get_metadata("test_hash", "is_hosted_viewer_synced") == 1
 
     # Test that malicious column names raise ValueError without executing SQL
     with pytest.raises(ValueError, match="Invalid input"):
