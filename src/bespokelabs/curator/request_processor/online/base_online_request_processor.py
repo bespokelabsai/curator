@@ -32,7 +32,7 @@ from bespokelabs.curator.types.token_usage import _TokenUsage
 
 _MAX_OUTPUT_MVA_WINDOW = 50
 
-_MAX_RATE_LIMIT_BACKOFF_SECONDS = 300
+_MIN_RATE_LIMIT_BACKOFF_CAP_SECONDS = 300
 
 
 @dataclass
@@ -47,7 +47,7 @@ class APIRequest:
         result: List to store results/errors from attempts
         prompt_formatter: Formatter for prompts and responses
         created_at: Timestamp when request was created
-        rate_limit_retries: Number of consecutive rate limit errors for this request
+        rate_limit_retries: Number of rate limit errors recorded for this request; the backoff delay doubles each time the request is rate-limited
         not_before: Epoch seconds before which this request must not be retried
     """
 
@@ -319,8 +319,8 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
     def _record_rate_limit_error(self, status_tracker: OnlineStatusTracker, request: APIRequest) -> None:
         """Record a rate limit error and schedule the next attempt of the affected request.
 
-        The delay starts at ``seconds_to_pause_on_rate_limit`` and doubles with each
-        consecutive rate limit error for the same request, capped at
+        The delay starts at ``seconds_to_pause_on_rate_limit`` and doubles each time the
+        request is rate-limited, capped at
         ``max(300, seconds_to_pause_on_rate_limit)`` seconds. It is then increased by a
         random factor in [1.0, 1.25] so retries of different requests spread out.
 
@@ -329,7 +329,7 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             request: The rate-limited request; its retry count and ``not_before`` are updated.
         """
         base = self.config.seconds_to_pause_on_rate_limit
-        cap = max(_MAX_RATE_LIMIT_BACKOFF_SECONDS, base)
+        cap = max(_MIN_RATE_LIMIT_BACKOFF_CAP_SECONDS, base)
         request.rate_limit_retries += 1
         delay = min(cap, base * 2 ** (request.rate_limit_retries - 1)) * random.uniform(1.0, 1.25)
         status_tracker.time_of_last_rate_limit_error = time.time()

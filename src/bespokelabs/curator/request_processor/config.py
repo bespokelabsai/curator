@@ -101,7 +101,7 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
         max_output_tokens_per_minute: Maximum number of output tokens allowed per minute
         max_concurrent_requests: Maximum number of concurrent requests
         seconds_to_pause_on_rate_limit: Duration to pause when a rate limit is hit. It is also the base of the
-            per-request exponential backoff between retries of a repeatedly rate-limited request, capped at
+            per-request exponential backoff, which doubles each time the request is rate-limited, capped at
             ``max(300, seconds_to_pause_on_rate_limit)`` before a random increase of up to 25%
     """
 
