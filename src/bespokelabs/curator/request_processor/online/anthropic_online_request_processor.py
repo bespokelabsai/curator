@@ -1,6 +1,5 @@
 import datetime
 import os
-import time
 from typing import TypeVar
 
 import aiohttp
@@ -282,8 +281,7 @@ class AnthropicOnlineRequestProcessor(BaseOnlineRequestProcessor):
                 error = response["error"]
                 error_message = error.get("message", str(error))
                 if "rate limit" in error_message.lower():
-                    status_tracker.time_of_last_rate_limit_error = time.time()
-                    status_tracker.num_rate_limit_errors += 1
+                    self._record_rate_limit_error(status_tracker, request)
                     status_tracker.num_api_errors -= 1
                     # because handle_single_request_with_retries will double count otherwise
                     status_tracker.num_other_errors -= 1

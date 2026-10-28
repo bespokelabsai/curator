@@ -8,6 +8,7 @@ import asyncio
 import datetime
 import json
 import os
+import random
 import time
 import typing as t
 from abc import ABC, abstractmethod
@@ -31,6 +32,8 @@ from bespokelabs.curator.types.token_usage import _TokenUsage
 
 _MAX_OUTPUT_MVA_WINDOW = 50
 
+_MAX_RATE_LIMIT_BACKOFF_SECONDS = 300
+
 
 @dataclass
 class APIRequest:
@@ -44,6 +47,8 @@ class APIRequest:
         result: List to store results/errors from attempts
         prompt_formatter: Formatter for prompts and responses
         created_at: Timestamp when request was created
+        rate_limit_retries: Number of consecutive rate limit errors for this request
+        not_before: Epoch seconds before which this request must not be retried
     """
 
     task_id: int
@@ -53,6 +58,8 @@ class APIRequest:
     result: list = field(default_factory=list)
     prompt_formatter: PromptFormatter = field(default=None)
     created_at: datetime.datetime = field(default_factory=datetime.datetime.now)
+    rate_limit_retries: int = 0
+    not_before: float = 0.0
 
 
 class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
@@ -309,6 +316,26 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             await asyncio.sleep(remaining_seconds_to_pause)
             status_tracker.last_update_time = time.time()
 
+    def _record_rate_limit_error(self, status_tracker: OnlineStatusTracker, request: APIRequest) -> None:
+        """Record a rate limit error and schedule the next attempt of the affected request.
+
+        The delay starts at ``seconds_to_pause_on_rate_limit`` and doubles with each
+        consecutive rate limit error for the same request, capped at
+        ``max(300, seconds_to_pause_on_rate_limit)`` seconds. It is then increased by a
+        random factor in [1.0, 1.25] so retries of different requests spread out.
+
+        Args:
+            status_tracker: Tracker receiving the rate limit timestamp and error count.
+            request: The rate-limited request; its retry count and ``not_before`` are updated.
+        """
+        base = self.config.seconds_to_pause_on_rate_limit
+        cap = max(_MAX_RATE_LIMIT_BACKOFF_SECONDS, base)
+        request.rate_limit_retries += 1
+        delay = min(cap, base * 2 ** (request.rate_limit_retries - 1)) * random.uniform(1.0, 1.25)
+        status_tracker.time_of_last_rate_limit_error = time.time()
+        status_tracker.num_rate_limit_errors += 1
+        request.not_before = time.time() + delay
+
     def free_capacity(self, tracker, tokens):
         """Free blocked capacity."""
 
@@ -410,12 +437,17 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
             # Process any remaining retries in the queue
             pending_retries = set()
             while not queue_of_requests_to_retry.empty() or pending_retries:
-                # Process new items from the queue if we have capacity
-                if self._semaphore:
-                    await self._semaphore.acquire()
-
                 if not queue_of_requests_to_retry.empty():
                     retry_request = await queue_of_requests_to_retry.get()
+                    remaining_backoff = retry_request.not_before - time.time()
+                    if remaining_backoff > 0:
+                        queue_of_requests_to_retry.put_nowait(retry_request)
+                        await asyncio.sleep(min(remaining_backoff, 0.1))
+                        continue
+
+                    if self._semaphore:
+                        await self._semaphore.acquire()
+
                     if status_tracker.max_tokens_per_minute is not None:
                         token_estimate = self.estimate_total_tokens(retry_request.generic_request.messages)
                     else:

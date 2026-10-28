@@ -1,5 +1,4 @@
 import datetime
-import time
 from collections import defaultdict
 
 import aiohttp
@@ -426,8 +425,7 @@ class LiteLLMOnlineRequestProcessor(BaseOnlineRequestProcessor):
                 else:
                     response_message = completion_obj["choices"][0]["message"]["content"]
         except litellm.RateLimitError as e:
-            status_tracker.time_of_last_rate_limit_error = time.time()
-            status_tracker.num_rate_limit_errors += 1
+            self._record_rate_limit_error(status_tracker, request)
             # because handle_single_request_with_retries will double count otherwise
             status_tracker.num_api_errors -= 1
             raise e

@@ -1,7 +1,6 @@
 import datetime
 import json
 import os
-import time
 
 import aiohttp
 import litellm
@@ -314,10 +313,8 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
         except _RateLimitError:
             # The agent processor calls this method without a tracker; keep the original 429 error visible there.
             if status_tracker is not None:
-                # Record the 429 exactly like the rate-limit branch for an "error" body below.
                 status_tracker.num_api_errors += 1
-                status_tracker.time_of_last_rate_limit_error = time.time()
-                status_tracker.num_rate_limit_errors += 1
+                self._record_rate_limit_error(status_tracker, request)
                 status_tracker.num_api_errors -= 1
                 # because handle_single_request_with_retries will double count otherwise
                 status_tracker.num_other_errors -= 1
@@ -330,8 +327,7 @@ class OpenAIOnlineRequestProcessor(BaseOnlineRequestProcessor, OpenAIRequestMixi
             error = response["error"]
             error_message = error if isinstance(error, str) else error.get("message", "")
             if "rate limit" in error_message.lower():
-                status_tracker.time_of_last_rate_limit_error = time.time()
-                status_tracker.num_rate_limit_errors += 1
+                self._record_rate_limit_error(status_tracker, request)
                 status_tracker.num_api_errors -= 1
                 # because handle_single_request_with_retries will double count otherwise
                 status_tracker.num_other_errors -= 1

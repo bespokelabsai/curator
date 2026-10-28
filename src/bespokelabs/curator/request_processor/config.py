@@ -100,7 +100,9 @@ class OnlineRequestProcessorConfig(RequestProcessorConfig):
         max_input_tokens_per_minute: Maximum number of input tokens allowed per minute
         max_output_tokens_per_minute: Maximum number of output tokens allowed per minute
         max_concurrent_requests: Maximum number of concurrent requests
-        seconds_to_pause_on_rate_limit: Duration to pause when rate limit is hit
+        seconds_to_pause_on_rate_limit: Duration to pause when a rate limit is hit. It is also the base of the
+            per-request exponential backoff between retries of a repeatedly rate-limited request, capped at
+            ``max(300, seconds_to_pause_on_rate_limit)`` before a random increase of up to 25%
     """
 
     max_requests_per_minute: int | None = Field(default=None, gt=0)
