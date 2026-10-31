@@ -24,7 +24,7 @@ NousResearch/Meta-Llama-3-8B-Instruct \
 ```
 
 Note that you still need to provide a dummy API key since OpenAI client expects it (LiteLLM [uses](https://docs.litellm.ai/docs/providers/vllm#usage---litellmcompletion-calling-openai-compatible-endpoint) OpenAI client in the background).
-See [here](examples/vllm-online/start_vllm_server.sh) a full example on starting a vLLM server.
+See [here](../examples/vllm-online/start_vllm_server.sh) a full example on starting a vLLM server.
 
 Then, to use this server, provide the API endpoint URL and the dummy API key. We use LiteLLM to generate data with vLLM hosted local models so you need to set the backend to `litellm`. In order for LiteLLM to recognize proper backend, add `hosted_vllm/` prefix to your model name. Set `HOSTED_VLLM_API_KEY` environment varibale to your dummy API key. Example:
 ```python
@@ -43,8 +43,8 @@ poem_prompter = curator.LLM(
 poem_prompter("Generate a poem")
 ```
 
-See [here](examples/vllm-online/vllm_online.py) a full example.
-LiteLLM supports structured output, see [here](examples/vllm-online/vllm_online_structured.py) an example with a vLLM hosted model.
+See [here](../examples/vllm-online/vllm_online.py) a full example.
+LiteLLM supports structured output, see [here](../examples/vllm-online/vllm_online_structured.py) an example with a vLLM hosted model.
 
 ## Offline Inference with Local Models (vLLM)
 
@@ -80,7 +80,7 @@ curator.LLM(
     )
 ```
 
-See full example [here](examples/vllm-offline/vllm_recipe.py).
+See full example [here](../examples/vllm-offline/vllm_recipe.py).
 
 ### Inference for models that don't fit in one GPU's memory (tensor parallel)
 
@@ -114,7 +114,7 @@ We use [vLLM's Guided Decoding](https://docs.vllm.ai/en/latest/usage/structured_
   cuisines = cuisines_generator("Generate 10 diverse cuisines.")
 ```
 
-See full example [here](examples/vllm-offline/vllm_recipe_structured.py).
+See full example [here](../examples/vllm-offline/vllm_recipe_structured.py).
 
 ### Batched inference
 
@@ -143,7 +143,7 @@ Offline vLLM inference support batch inference by default, the default batch siz
 
 ## Full list of vLLM examples
 
-- [Generate recipes with Meta LLama 3.1 8B offline](examples/vllm-offline/vllm_recipe.py)
-- [Recipes with structured output](examples/vllm-offline/vllm_recipe_structured.py)
-- [Use vLLM OpenAI compatible server](examples/vllm-online/vllm_online.py)
-- [Use vLLM OpenAI compatible server with structured output](examples/vllm-online/vllm_online_structured.py)
+- [Generate recipes with Meta LLama 3.1 8B offline](../examples/vllm-offline/vllm_recipe.py)
+- [Recipes with structured output](../examples/vllm-offline/vllm_recipe_structured.py)
+- [Use vLLM OpenAI compatible server](../examples/vllm-online/vllm_online.py)
+- [Use vLLM OpenAI compatible server with structured output](../examples/vllm-online/vllm_online_structured.py)

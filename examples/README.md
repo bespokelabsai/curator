@@ -1,7 +1,7 @@
 ## Examples
 We have a number of examples to help you get started with `curator`.
 
-1. [Persona Hub](./persona_hub/)
+1. [Persona Hub](./persona-hub/)
 Shows how to use `curator` to use the diverse personas in [persona-hub](https://github.com/tencent-ailab/persona-hub/)
 to generate diverse datasets.
 
