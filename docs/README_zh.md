@@ -2,7 +2,7 @@
   <a href="https://bespokelabs.ai/" target="_blank">
     <picture>
       <source media="(prefers-color-scheme: light)" width="100px" srcset="docs/Bespoke-Labs-Logomark-Red-crop.png">
-      <img alt="Bespoke Labs Logo" width="100px" src="docs/Bespoke-Labs-Logomark-Red-crop.png">
+      <img alt="Bespoke Labs Logo" width="100px" src="Bespoke-Labs-Logomark-Red-crop.png">
     </picture>
   </a>
 </p>
@@ -39,7 +39,7 @@ Bespoke Curator 让创建合成数据流程变得简单。无论您是在训练�
 * 内置性能优化，支持异步操作、缓存和各种规模的故障恢复
 * 通过 LiteLLM、vLLM 和流行的批处理 API 支持广泛的推理选项
 
-![CLI 运行示例](docs/curator-cli.gif)
+![CLI 运行示例](curator-cli.gif)
 
 查看我们完整的文档，包括[入门指南](https://docs.bespokelabs.ai/bespoke-curator/getting-started)、[教程](https://docs.bespokelabs.ai/bespoke-curator/tutorials)、[使用指南](https://docs.bespokelabs.ai/bespoke-curator/how-to-guides)和详细的[参考文档](https://docs.bespokelabs.ai/bespoke-curator/api-reference/llm-api-documentation)。
 
@@ -152,13 +152,13 @@ print(poem.to_pandas())
 * `prompt` 接收输入（`input`）并返回给 LLM 的提示。
 * `parse` 接收输入（`input`）和结构化输出（`response`）并将其转换为字典列表。这样我们就可以轻松地将输出转换为 HuggingFace Dataset 对象。
 
-注意，`topics` 也可以通过另一个 `LLM` 类创建，我们可以扩展这个过程来创建成千上万的不同诗歌。您可以在 [examples/poem-generation/poem.py](examples/poem-generation/poem.py) 文件中看到更详细的示例，以及在 [examples](examples) 目录中查看其他示例。
+注意，`topics` 也可以通过另一个 `LLM` 类创建，我们可以扩展这个过程来创建成千上万的不同诗歌。您可以在 [examples/poem-generation/poem.py](../examples/poem-generation/poem.py) 文件中看到更详细的示例，以及在 [examples](../examples) 目录中查看其他示例。
 
 更多详细信息以及故障排除信息，请参阅[文档](https://docs.bespokelabs.ai/)。
 
 ## Bespoke Curator 查看器
 
-![查看器运行示例](docs/curator-viewer.gif)
+![查看器运行示例](curator-viewer.gif)
 
 要运行 bespoke 数据集查看器：
 
