@@ -153,6 +153,9 @@ class MetadataDB:
         return self._get_metadata(run_hash, "session_id")
 
     def _get_metadata(self, run_hash: str, column: str):
+        allowed_columns = {"session_id", "is_hosted_viewer_synced"}
+        if column not in allowed_columns:
+            raise ValueError("Invalid input")
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
