@@ -97,7 +97,9 @@ class LLM:
                     - max_tokens_per_minute: Maximum number of tokens per minute for rate limiting (combined input and output)
                     - max_input_tokens_per_minute: Maximum number of input tokens per minute for rate limiting
                     - max_output_tokens_per_minute: Maximum number of output tokens per minute for rate limiting
-                    - seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited
+                    - seconds_to_pause_on_rate_limit: Number of seconds to pause when rate limited. Also the base
+                        of the per-request exponential backoff, which doubles each time the request is rate-limited,
+                        capped at max(300, value) before a random increase of up to 25%
 
                 - Batch:
                     - batch_size: The size of the batch to use, only used if batch is True
