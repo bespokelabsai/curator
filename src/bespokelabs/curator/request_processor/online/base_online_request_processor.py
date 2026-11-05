@@ -93,6 +93,11 @@ class BaseOnlineRequestProcessor(BaseRequestProcessor, ABC):
         return "base"
 
     @property
+    def supports_cache_reuse(self) -> bool:
+        """Online processors skip request IDs already present in responses."""
+        return True
+
+    @property
     def compatible_provider(self) -> str:
         """Compatible provider property."""
         return "base"
