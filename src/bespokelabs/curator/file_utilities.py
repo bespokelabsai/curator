@@ -1,3 +1,6 @@
+from bespokelabs.curator.log import logger
+
+
 # https://stackoverflow.com/questions/845058/how-to-get-the-line-count-of-a-large-file-cheaply-in-python
 # https://stackoverflow.com/a/68385697
 def _file_gen(reader):
@@ -28,3 +31,19 @@ def get_base64_size(b64_string):
     size_bytes = (len(b64_string) * 3) // 4 - padding
     size_mb = size_bytes / (1024 * 1024)
     return size_mb
+
+
+def raise_open_file_limit():
+    """Raise the soft limit on open files to avoid "Too many open files" errors.
+
+    The `resource` module only exists on Unix, so this does nothing on Windows.
+    """
+    try:
+        import resource
+    except ImportError:
+        return
+
+    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    desired_limit = min(10_000_000, hard)
+    logger.debug(f"Adjusting file descriptor limit from {soft} to {desired_limit} (hard limit: {hard})")
+    resource.setrlimit(resource.RLIMIT_NOFILE, (desired_limit, hard))

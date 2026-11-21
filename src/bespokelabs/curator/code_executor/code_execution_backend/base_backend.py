@@ -4,7 +4,6 @@ import asyncio
 import glob
 import json
 import os
-import resource
 import time
 from abc import abstractmethod
 from typing import TYPE_CHECKING, List, Optional
@@ -17,7 +16,7 @@ from bespokelabs.curator.code_executor.code_formatter import CodeFormatter
 from bespokelabs.curator.code_executor.tracker import CodeExecutionStatusTracker
 from bespokelabs.curator.code_executor.types import CodeAPIRequest, CodeExecutionOutput, CodeExecutionRequest, CodeExecutionResponse
 from bespokelabs.curator.constants import _CACHE_MSG
-from bespokelabs.curator.file_utilities import count_lines
+from bespokelabs.curator.file_utilities import count_lines, raise_open_file_limit
 from bespokelabs.curator.log import logger
 from bespokelabs.curator.request_processor.event_loop import run_in_event_loop
 
@@ -41,11 +40,7 @@ class BaseCodeExecutionBackend:
         Args:
             config: Configuration object containing processing parameters
         """
-        # Increase the number of open file descriptors to avoid "Too many open files" errors
-        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-        desired_limit = min(10_000_000, hard)
-        logger.debug(f"Adjusting file descriptor limit from {soft} to {desired_limit} (hard limit: {hard})")
-        resource.setrlimit(resource.RLIMIT_NOFILE, (desired_limit, hard))
+        raise_open_file_limit()
         self.config = config
 
         self.manual_max_requests_per_minute = config.max_requests_per_minute

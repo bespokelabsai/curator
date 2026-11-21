@@ -5,7 +5,6 @@ import functools
 import glob
 import json
 import os
-import resource
 import tempfile
 import typing as t
 from abc import ABC, abstractmethod
@@ -19,7 +18,7 @@ from pydantic import BaseModel, ValidationError
 
 from bespokelabs.curator.constants import _CACHE_MSG, _INTERNAL_PROMPT_KEY
 from bespokelabs.curator.cost import cost_processor_factory
-from bespokelabs.curator.file_utilities import count_lines
+from bespokelabs.curator.file_utilities import count_lines, raise_open_file_limit
 from bespokelabs.curator.hf_card_template import HUGGINGFACE_CARD_TEMPLATE
 from bespokelabs.curator.llm.prompt_formatter import PromptFormatter
 from bespokelabs.curator.log import logger
@@ -47,11 +46,7 @@ class BaseRequestProcessor(ABC):
         Args:
             config: Configuration object containing processing parameters
         """
-        # Increase the number of open file descriptors to avoid "Too many open files" errors
-        soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-        desired_limit = min(10_000_000, hard)
-        logger.debug(f"Adjusting file descriptor limit from {soft} to {desired_limit} (hard limit: {hard})")
-        resource.setrlimit(resource.RLIMIT_NOFILE, (desired_limit, hard))
+        raise_open_file_limit()
         self._viewer_client = None
         self.config = config
         self._cost_processor = cost_processor_factory(config=self.config, backend=self.backend)
